@@ -331,7 +331,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             data: "", // serializes the form's elements.
                             success: function (data) {
                                 $(".userName").text(data.data.uname)
-                                alert(data.data.JSESSIONID)
+                                //alert(data.data.JSESSIONID)
                                 _this.props.setCookie(data.data.JSESSIONID)
                             }
                         }
