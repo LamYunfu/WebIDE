@@ -247,10 +247,22 @@ export class UdcTerminal {
         if (rets === []) { return false; }
         let [re, server_ip, server_port, token, certificate] = rets;
         if (re != 'success') { return false; }
+
+        // add by zjd
+        if (this.udcClient) {
+            this.udcClient.OnDeviceLog('::connect to controller success, server ip is ' + server_ip)
+        }
+        
         let result = await this.connect_to_server(server_ip, server_port, certificate, pid);
         console.log("result-----------------------------" + result)
         if (result !== 'success') return false;
         // await this.udcServerClient.write(this.pkt.construct(Packet.packet_type.TERMINAL_LOGIN, "life"));
+        
+        // add by zjd
+        if (this.udcClient) {
+            this.udcClient.OnDeviceLog('::connect to server success')
+        }
+
         if (pid != "null")
             await this.send_packet(Packet.packet_type.TERMINAL_LOGIN, `${this.login_type === LOGINTYPE.FIXED ? this.model : this.uuid},${token},${pid}`)//modifiy,timeout/
         else
@@ -276,14 +288,36 @@ export class UdcTerminal {
     }
 
     async program_device(filepath: string, address: string, devstr: string): Promise<Boolean> {
+        
+        // add by zjd
+        if (this.udcClient) {
+            this.udcClient.OnDeviceLog('::sending hex file to LDC......')
+        }
+        
         let send_result = await this.send_file_to_client(filepath, devstr);
         if (send_result === false) {
             return false;
         }
 
+        // add by zjd
+        if (this.udcClient) {
+            this.udcClient.OnDeviceLog('::send hex file to LDC success')
+        }
+
         let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)}`
         this.send_packet(Packet.DEVICE_PROGRAM, content);
         await this.wait_cmd_excute_done(270000);
+
+        // add by zjd
+        if (this.udcClient) {
+            if (this.cmd_excute_state === 'done') {
+                this.udcClient.OnDeviceLog('::program success')
+            }
+            else {
+                this.udcClient.OnDeviceLog('::program fail')
+            }    
+        }
+
         return (this.cmd_excute_state === 'done' ? true : false);
     }
     async run_command(devstr: string, args: string) {
@@ -497,6 +531,10 @@ export class UdcTerminal {
         let fm = new FormData()
         fm.append("file", b, fn + '.cpp')
         let _this = this
+        // add by zjd
+        if (this.udcClient) {
+            this.udcClient.OnDeviceLog('::sending source file to tinylink server......')
+        }
         return new Promise((resolve, reject) => {
             _this.submitForm(fm,
                 _this.tinyLinkAPIs["hostname"],
@@ -527,6 +565,11 @@ export class UdcTerminal {
                             console.log("download scc")
                             ws.end()
                             this.extractHex(fn).then(() => resolve("scc"))
+
+                            // add by zjd
+                            if (this.udcClient) {
+                                this.udcClient.OnDeviceLog('::compile success')
+                            }
                         })
                     })
                     downloadFd.write("")
