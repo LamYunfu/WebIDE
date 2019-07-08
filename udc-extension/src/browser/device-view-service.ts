@@ -34,16 +34,9 @@ export class DeviceViewService implements WidgetFactory{
     }
 
     push(devices:{[key:string]:number}):void{
-        if(this.widget){
-            this.widget.setDevice_list(devices)
-            // this.onDidChangeDeviceEmitter.fire(devices)
-        }
     }
 
     public clearDevices():void{
-        if(this.widget){
-            this.widget.clearDevice();
-        }
     }
 
 }

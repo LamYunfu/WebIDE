@@ -127,7 +127,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         @inject(UdcConsoleSession) protected readonly udcConsoleSession: UdcConsoleSession,
         @inject(DeviceViewService) protected readonly deviceViewService: DeviceViewService,
         @inject(EditorManager) protected em: EditorManager,
-        @inject(InMemoryResources) protected imr :InMemoryResources
+        @inject(InMemoryResources) protected imr: InMemoryResources
 
     ) {
         this.udcWatcher.onDeviceLog((data: string) => {
@@ -160,32 +160,15 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         )
 
         registry.registerCommand(UdcCommands.Connect, {
-            execute: async () => {
+            execute: async (pid :string) => {
                 let connected = await this.udcService.is_connected();
                 if (connected === true) {
                     this.messageService.info('Already Connected');
                 } else {
-                    this.udcService.get_issues().then()
-                    this.quickOpenService.open(this, {
-                        placeholder: '请选择开发板型号或输入你的Access Key',
-                        fuzzyMatchLabel: true,
-                        selectIndex: (lookfor: string) => {
-                            return 0;
-                        },
-                        onClose: async (cancel: Boolean) => {
-                            if (!cancel) {
-                                let device_modle = await this.udcService.list_models();
-                                let login_type = LOGINTYPE.ADHOC;
-                                if (!device_modle.includes(this.selectDeviceModel)) {
-                                    login_type = LOGINTYPE.FIXED;
-                                }
-                                this.udcService.connect(login_type, this.selectDeviceModel).then(async re => {
-                                    this.messageService.info(re)
-                                }).catch(err => {
-                                    this.messageService.error(err)
-                                })
-                            }
-                        }
+                    this.udcService.connect(LOGINTYPE.ADHOC, this.selectDeviceModel,pid).then(async re => {
+                        this.messageService.info(re)
+                    }).catch(err => {
+                        this.messageService.error(err)
                     })
                 }
             }
@@ -209,11 +192,6 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 })
             }
         })
-        registry.registerCommand(UdcCommands.SetJudgeHostandPort, {
-            execute: (host: string, port: string) => {
-                this.udcService.setJudgeHostandPort(host, port)
-            }
-        })
         // registry.registerCommand(UdcCommands.QueryStatus, {
         //     execute: (x: string) => {
         //         this.udcService.queryStatus(x).then((out) => console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" + out))
@@ -229,50 +207,6 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                     for (let k in re) {
                         this.messageService.info(k + " use=" + re[k]);
                     }
-                })
-            }
-        })
-
-        registry.registerCommand(UdcCommands.Judge, {
-            execute: async () => {
-                const props: OpenFileDialogProps = {
-                    title: "请选择判题文件",
-                    canSelectFiles: true,
-                }
-                const [rootStat] = await this.workspaceService.roots;
-                let dev_list = await this.udcService.get_devices();
-                if (this.udcService.getToken() == null)
-                    this.udcService.get_quiz_token('1')
-                let devstr = "";
-                for (let x in dev_list) {
-                    devstr = x
-                    break
-                }
-                this.fileDialogService.showOpenDialog(props, rootStat).then(async uri => {
-                    if (uri) {
-                        const dialog = new SingleTextInputDialog({
-                            title: 'address',
-                            initialValue: '0x0',
-                            validate: address => address.startsWith('0x0')
-                        })
-                        dialog.open().then(address => {
-                            if (address) {
-                                this.udcService.judge(decodeURI(uri.toString().substring(7)), address, devstr, this.udcService.getToken()).then(re => {
-                                    if (re) {
-                                        this.messageService.info("恭喜你,测试通过!");
-                                        console.log("judge scc")
-                                    } else {
-                                        this.messageService.info("对不起,没通过测试点");
-                                        console.log("judge fail")
-                                    }
-                                }).catch(err => {
-                                    console.log(err);
-                                })
-                            }
-                        })
-                    }
-                }).catch(err => {
-                    console.log(err);
                 })
             }
         })

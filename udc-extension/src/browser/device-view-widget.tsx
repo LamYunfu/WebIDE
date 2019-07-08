@@ -5,10 +5,10 @@ import { Emitter } from "vscode-jsonrpc";
 import { UdcService } from "../common/udc-service";
 import { MessageService, CommandRegistry } from "@theia/core";
 import { UdcCommands } from "./udc-extension-contribution";
-import * as fs from 'fs'
 import * as path from 'path'
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager } from "@theia/editor/lib/browser";
+import * as $ from "jquery"
 // import {ButtonProps} from 'react-bootstrap/Button'
 // import { Button } from "react-bootstrap";
 
@@ -22,197 +22,445 @@ export namespace DeviceViewSymbolInformationNode {
     }
 }
 
-export namespace DeviceItem {
+
+
+// let statusCode: { [key: number]: string } = {
+//     0x0000: '未生成 ',
+//     0x0001: '生成失败',
+//     0x0010: '未提交 ',
+//     0x0011: "正在判题",
+//     0x0012: '烧写错误',
+//     0x0020: '通过  ',
+//     0x0021: '答案错误',
+//     0x0022: '超时  '
+// }
+namespace OptionItem {
     export interface Props {
-        dev_str: string,
-        model_type: string,
-        model_id: string,
-        using_or_not: number,
-        hub_id: string,
-        reset: () => void,
-        program: () => void,
-        openshell: () => void,
-        start: () => void,
-        stop: () => void
-        judge: () => void
+        akey: string
+        titles: { [key: string]: string }
+        choices: { [key: string]: string[] }
+        optionStatus: { [key: string]: string }
     }
 }
-export namespace IssueItem {
-    export interface Props {
-        issue_titles: { [key: string]: string }
-        issueInfos: { [key: string]: string }
-        issue_str: string
-        issueStatusStrs: { [key: string]: string }
-        issue_num: string,
-        open: (e: any) => void
-        set: (mode: string, str: string) => void
-        setCurrentFocus: (issue_num: string) => void
-        update: () => void
-        postSrcFile: (fn: string) => void
-        openSrcFile: (uri: URI) => void
+class OptionItem extends React.Component<OptionItem.Props> {
+    componentWillMount() {
+
     }
-}
-export class IssueItem extends React.Component<IssueItem.Props>{
-    render(): JSX.Element {
-        let statusCode: { [key: number]: string } = {
-            0x0000: '未生成 ',
-            0x0001: '生成失败',
-            0x0010: '未提交 ',
-            0x0011: "正在判题",
-            0x0012: '烧写错误',
-            0x0020: '通过  ',
-            0x0021: '答案错误',
-            0x0022: '超时  '
-        }
-        const { issue_num, issue_str } = this.props
-        //加个括号的事,坑人啊
-        return (
-            <table className='issue-item-table'>
-                <tbody>
-                    <tr >
-                        <td className='item-status' >
-                            <button disabled={true} id={'Item' + issue_num} >{statusCode[parseInt(this.props.issueStatusStrs[issue_num])]}</button>
-                        </td>
-                        <td className="issue-shortcut">
-                            <span className="issue-num">{issue_num}: </span >
-                            <a onClick={(e) => { this.handClick(e) }} >{issue_str}</a>
-                        </td>
-                        <td className='judge'>
-                            <button onClick={() => { this.handJudgeClick(issue_num) }} id={'judge' + issue_num}>提交</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        )
-    }
-    handJudgeClick(n: string) {
-        let statusShowing = document.getElementById("judge" + n)
-        if (statusShowing != null) {
-            this.props.setCurrentFocus(this.props.issue_num)
-            if (statusShowing.innerHTML == '提交') {
-                this.props.postSrcFile(this.props.issue_titles[n])
-                statusShowing.innerHTML = "取消"
-                statusShowing.setAttribute("disabled", "true")
-                return setTimeout(() => {
-                    console.log(statusShowing)
-                    if (statusShowing != null) {
-                        statusShowing.removeAttribute("disabled")
-                        console.log("scc")
+    componentDidMount() {
+        $(document).ready(
+            () => {
+                $(".optionItem").click(
+                    (e) => {
+                        $(".codingInfos").hide()
+                        $(".optionInfos").show()
+                        let x = $(e.currentTarget).children("a").attr("id")
+                        if (x != undefined) {
+                            $(".optionIssueTitle").text(this.props.titles[x])
+                            $("form.options").attr("id", x)
+                            for (let index in this.props.choices[x]) {
+                                let op = $(`.optionContent:eq(${index})`)
+                                op.text(this.props.choices[x][index])
+                            }
+                        }
                     }
+                )
 
-                }, 5000, statusShowing);
             }
-            else {
-                statusShowing.innerHTML = "提交"
-            }
-        }
-    }
-    handClick(e: any) {
-        e.preventDefault();
-        console.log("this.props.issueInfo[this.props.issue_num:" + this.props.issueInfos[this.props.issue_num])
-        this.props.openSrcFile(new URI('file:///home/liang/theiaWorkSpace/'+this.props.issue_titles[this.props.issue_num]+ '.cpp'))
-        this.props.setCurrentFocus(this.props.issue_num)
-        this.props.set('spec', this.props.issueInfos[this.props.issue_num])
-        this.props.update()
-    }
-
-}
-export namespace IssueBlock {
-    export interface Props {
-
-        issueStatusStrs: { [key: string]: string }
-        issueInfos: { [key: string]: string }
-        issue_titles: { [key: string]: string },
-        open: (x: any) => void,
-        set: (mdoe: string, str: string) => void
-        init: () => void
-        setCurrentFocus: (issue_num: string) => void
-        callUpdate: () => void
-        postSrcFile: (fn: string) => void
-        openSrcFile: (uri: URI) => void
-
-    }
-}
-class IssueBlock extends React.Component<IssueBlock.Props>{
-    render(): React.ReactNode {
-        let IssueItemArray = [];
-        const { issue_titles, issueInfos } = this.props
-        for (let i in issue_titles) {
-            // console.log(" " + i)
-            IssueItemArray.push(
-                <IssueItem
-                    openSrcFile={this.props.openSrcFile}
-                    issue_titles={this.props.issue_titles}
-                    postSrcFile={this.props.postSrcFile}
-                    update={this.props.callUpdate}
-                    setCurrentFocus={this.props.setCurrentFocus}
-                    issueStatusStrs={this.props.issueStatusStrs}
-                    key={issue_titles[i]}
-                    issue_num={i}
-                    issue_str={issue_titles[i]}
-                    open={this.props.open}
-                    set={this.props.set}
-                    issueInfos={issueInfos}
-                />
-            )
-        }
-        return (<div >
-            {IssueItemArray}
-        </div>
         )
     }
+    public render(): JSX.Element {
+        return (
+            <div className='optionItem'>
+                <a id={this.props.akey} >-题{this.props.akey}</a><a className="issue_status">●</a><br />
+            </div>
 
+        )
+    }
 }
-export class DeviceItem extends React.Component<DeviceItem.Props>{
+export namespace CodeItem {
+    export interface Props {
+        akey: string,
+        codingTitles: { [key: string]: string }
+        codingInfos: { [key: string]: string }
+        codingStatus: { [key: string]: string }
+        openSrcFile: (uri: URI) => void
+    }
+}
 
-    protected readonly reset = () => this.props.reset()
-    protected readonly program = () => this.props.program()
-    protected readonly openshell = () => this.props.openshell()
-    protected readonly judge = () => this.props.judge()
-    render() {
-        const { dev_str, model_type, model_id, using_or_not, hub_id } = this.props
-        const blockdisplay = {
-            display: 'block'
+class CodeItem extends React.Component<CodeItem.Props>{
+
+    rootDir: string = "/home/project"
+    componentDidMount() {
+        for (let index in this.props.codingStatus) {
+            $(".codeItem").children(`#${index}`).css("color", "red")
         }
-        return <div className={`deviceItem ${dev_str}`}>
-            <div className='deviceBody'>
-                <div className='avatar'><div className='avatarIcon'></div> </div>
-                <div className='deviceInfo' style={blockdisplay}>
-                    <span className='model_type' >model_type: {model_type}</span>
-                    <span className='using_or_not'>status: {using_or_not}</span>
-                    <span className='model_id'>model_id: {model_id}</span>
-                    <span className='hub_id'>hub_id: {hub_id}</span>
+        $(document).ready(
+            (e) => {
+                $(".codeItem").click(
+                    (e) => {
+                        let tmp = $(e.currentTarget).children("a").attr("title")
+                        if (tmp != undefined) {
+                            // console.log('tmp' + tmp)
+                            // console.log("this.props.codingTitles[tmp]" + this.props.codingTitles[tmp])
+                            // console.log("this.props.codinginfos[tmp]" + this.props.codingInfos[tmp])
+                            // console.log("<<<<<<<<<<<<<<<<" + path.join(this.rootDir, `${this.props.codingTitles[tmp]}.cpp`))
+                            this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${this.props.codingTitles[tmp]}.cpp`)))
+                            $(".optionInfos").hide()
+                            $(".codingInfos").show()
+                            $("#coding_title").html(this.props.codingTitles[tmp])
+                            $("#codingInfoArea").val(this.props.codingInfos[tmp])
+                            $("#codingInfoArea").attr("title", tmp)
+                        }
+                    }
+                )
+            }
+        )
+    }
+    public render(): JSX.Element {
+        return (
+            <div className="codeItem" >
+                <a title={this.props.akey}>-题{this.props.akey}</a><a className="issue_status">●</a><br />
+            </div>
+        )
+    }
+}
+namespace OptionInfo {
+    export interface Props {
+        answers: { [key: string]: string }
+    }
+}
+class OptionInfo extends React.Component<OptionInfo.Props>{
+    componentDidMount() {
+        $(document).ready(
+            () => {
+                $(".optionInfoSubmit").click(
+                    (e) => {
+                        e.preventDefault()
+                        let idv = $(".options").attr("id")
+                        // idv != undefined && alert($("input:radio:checked").val() + "right" + this.props.answers[idv])
+                        if (idv != undefined && $("input:radio:checked").val() == this.props.answers[idv]) {
+                            $(`.optionItem a[id=${idv}]`).next().css("color", "green")
+                        }
+                        else {
+                            $(`.optionItem a[id=${idv}]`).next().css("color", "red")
+                        }
+                    }
+                )
+            }
+        )
+    }
+    public render() {
+        return (
+            <div className="optionInfoContainer">
+                <p className="optionIssueTitle">
+                    请选出以下正确的答案()
+                </p>
+                <form className="options" id="1" >
+                    <input type="radio" name="1" value="1" />A:<span className="optionContent"></span><br />
+                    <input type="radio" name="1" value="2" />B:<span className="optionContent"></span><br />
+                    <input type="radio" name="1" value="3" />C:<span className="optionContent"></span><br />
+                    <input type="radio" name="1" value="4" />D:<span className="optionContent"></span><br />
+                    <button className="optionInfoSubmit" type="button">提交</button>
+                </form>
+            </div >
+        )
+    }
+}
+namespace CodingInfo {
+    export interface Props {
+        issueStatusStrs: { [key: string]: string }
+        coding_titles: { [key: string]: string },
+        postSrcFile: (fn: string) => void
+    }
+}
+class CodingInfo extends React.Component<CodingInfo.Props>{
+    componentDidMount() {
+        $(document).ready(
+            () => {
+                $("#submitSrcButton").click(
+                    () => {
+                        let index = $("#codingInfoArea").attr("title")
+                        index != undefined && this.props.postSrcFile(this.props.coding_titles[index])
+                    }
+                )
+            }
+        )
+    }
+    public render() {
+        return (
+            <div>
+                <div className="codingInfoContainer">
+                    <div id="titleAndStatus" >
+                        <span id="coding_title">关于mqtt的一道题</span><a id="issue_status">●</a>
+                    </div>
+                    <div id="codingInfoAreaContainer">
+                        <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea>
+                    </div>
+                    <div><button id="connectButton">需要连接设备?</button></div>
+                    <div><button id="submitSrcButton">提交</button></div>
                 </div>
             </div>
-            <div className='itemButtonsContainer'>
-                {this.renderDeviceItemButtons()}
-            </div>
-        </div>
+        )
     }
-
-    protected renderDeviceItemButtons(): React.ReactNode {
-        return <div className='buttons'>
-            <a className='toolbar-button' title='reset' onClick={() => this.reset()}>
-                reset
-            </a>
-            <span> | </span>
-            <a className='toolbar-button' title='program' onClick={() => this.program()}>
-                program
-            </a>
-            <span> | </span>
-            <a className='toolbar-button' title='shell' onClick={() => this.openshell()}>
-                shell
-                {/* <div className='p-TabBar-tabIcon theia-debug-console-icon' /> */}
-            </a>
-            <span> | </span>
-            <a className='toolbar-button' title='judge' onClick={() => this.judge()}>
-                judge
-                {/* <div className='p-TabBar-tabIcon theia-debug-console-icon' /> */}
-            </a>
-        </div>
+}
+namespace NewIssueUi {
+    export interface Props {
+        connect: (pid: string) => void
+        disconnect: () => void
+        callUpdata: () => void
+        openSrcFile: (uri: URI) => void
+        postSrcFile: (fn: string) => void
+        creatSrcFile: (fns: string[]) => void
+        setCookie: (cookie: string) => void
     }
 }
 
+export class NewIssueUi extends React.Component<NewIssueUi.Props>{
+
+    optionIssues: { [key: string]: string } = {}
+    optionStatus: { [key: string]: string } = {}
+    choices: { [key: string]: string[] } = {}
+    answers: { [key: string]: string } = {}
+    codingIssues: { [key: string]: string } = {}
+    codingInfos: { [key: string]: string } = {}
+    codingStatus: { [key: string]: string } = {}
+    statusColors: { [key: number]: string } = {
+        0x0000: 'white',
+        0x0001: 'black',
+        0x0010: 'white',
+        0x0011: "yellow",
+        0x0012: 'black',
+        0x0020: 'green',
+        0x0021: 'red',
+        0x0022: 'grey'
+    }
+    pids: string[] = []
+    componentWillMount() {
+        let tmp = { "qzid": "1" }
+        let _this = this
+        let form = {
+            username: "emmtest",
+            password: "123456"
+        }
+        $.ajax(
+            {
+                headers: {
+                    "accept": "application/json",
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                method: "POST",
+                url: "http://judge.tinylink.cn/quiz/content",
+                dataType: 'json',
+                contentType: "text/plain",
+                data: JSON.stringify(tmp),
+                success: function (data) {
+                    let x = data.question;
+
+                    for (let item of x) {
+                        _this.optionIssues[item.order] = item.description
+                        _this.answers[item.order] = item.answer
+                        _this.choices[item.order] = item.choices.split("\n")
+                    }
+                }
+            }
+        )
+        $.ajax(
+            {
+                headers: {
+                    "accept": "application/json",
+                },
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: true
+                },
+                method: "POST",
+                type: 'POST',
+                url: "http://api.tinylink.cn/user/login",
+                dataType: 'json',
+                data: form,
+                success: function (data) {
+                    // alert(JSON.stringify(data))
+                    console.log(JSON.stringify(data))
+                    $.ajax(
+                        {
+                            headers: {
+                                "accept": "application/json",
+                            },
+                            crossDomain: true,
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            method: "POST",
+                            url: "http://api.tinylink.cn/problem/query",
+
+                            dataType: 'json',
+                            contentType: "text/plain",
+                            data: "", // serializes the form's elements.
+                            success: function (data) {
+                                // alert(JSON.stringify(data))
+                                let x = data.data; // show response from the php script.
+                                let fns = []
+                                for (let item of x) {
+                                    _this.codingIssues[item.pid] = item.title
+                                    fns.push(item.title)
+                                    _this.codingInfos[item.pid] = item.content
+                                    _this.pids.push(item.pid)
+                                }
+                                _this.props.creatSrcFile(fns)
+                                _this.props.callUpdata()
+
+                            }
+                        }
+                    )
+                    $.ajax(
+                        {
+                            headers: {
+                                "accept": "application/json",
+                            },
+                            crossDomain: true,
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            method: "GET",
+                            url: "http://api.tinylink.cn/user/info",
+                            // processData: false,
+                            dataType: 'json',
+                            contentType: "text/plain",
+                            data: "", // serializes the form's elements.
+                            success: function (data) {
+                                $(".userName").text(data.data.uname)
+                                alert(data.data.JSESSIONID)
+                                _this.props.setCookie(data.data.JSESSIONID)
+                            }
+                        }
+                    )
+                    _this.props.callUpdata()
+                }
+            }
+        )
+    }
+    componentDidMount() {
+        let _this = this
+        setInterval(() => {
+            // alert(document.cookie)
+            // _this.props.setCookie(document.cookie)
+            $.ajax(
+                {
+                    headers: {
+                        "accept": "application/json",
+                    },
+                    crossDomain: true,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    method: "POST",
+                    url: "http://judge.tinylink.cn/problem/status",
+                    dataType: 'json',
+                    // contentType: "text/plain",
+                    data: JSON.stringify({ pid: _this.pids }),
+                    success: function (data) {
+                        // alert(JSON.stringify(data))
+                        let tmp = data.problem
+                        for (let x of tmp) {
+                            _this.codingStatus[x.pid] = x.status
+                            // alert( _this.codingStatus[x.pid])
+                            // $(`.codeItem a[title=${x.pid}]`).next().css("color","red")
+                            $(`.codeItem a[title=${x.pid}]`).next().css("color", _this.statusColors[parseInt(x.status)])
+                            // console.log(">>>>>>>>>>")
+                            // console.log(JSON.stringify($(`.codeItem a[title=${x.pid}]`)))
+
+                        }
+                    }
+                }
+            )
+
+        }, 5000)
+        $(document).ready(
+            () => {
+                $("#connectButton").click(
+                    (e) => {
+                        if ($(e.currentTarget).text() == "断开") {
+                            this.props.disconnect()
+                            $(e.currentTarget).text("连接")
+                        }
+                        else {
+                            let val = $("#codingInfoArea").attr("title")
+                            // alert(val)
+                            val != undefined && this.props.connect(val)
+                            $(e.currentTarget).text("断开")
+                        }
+                    }
+                )
+                $(".welcomeBanner").click(
+                    () => $(".welcomeBanner").fadeOut("slow")
+                )
+                $(".unfoldOptionItems").click(
+                    (e) => {
+                        if ($(e.currentTarget).text() == "-") {
+                            $(".option_items").hide()
+                            $(e.currentTarget).text("+")
+                        }
+                        else {
+                            $(".option_items").show()
+                            $(e.currentTarget).text("-")
+                        }
+                    }
+                )
+                $(".unfoldCodingItems").click(
+                    (e) => {
+                        if ($(e.currentTarget).text() == "-") {
+                            $(".coding_items").hide()
+                            $(e.currentTarget).text("+")
+                        }
+                        else {
+                            $(".coding_items").show()
+                            $(e.currentTarget).text("-")
+                        }
+                    }
+                )
+
+            }
+        )
+    }
+    render(): JSX.Element {
+        let optionItems = []
+        let codingItems = []
+        for (let index in this.optionIssues)
+            optionItems.push(<OptionItem akey={index} key={index} choices={this.choices}
+                optionStatus={this.optionStatus} titles={this.optionIssues} />)
+        for (let entry in this.codingIssues)
+            codingItems.push(<CodeItem akey={entry} key={entry}
+                codingInfos={this.codingInfos} codingTitles={this.codingIssues}
+                codingStatus={this.codingStatus} openSrcFile={this.props.openSrcFile} />)
+
+        return (
+            <div className="contentsAndInfos">
+                <div className="welcomeBanner"><span className="userName"></span>,欢迎你</div>
+                <div className="contents">
+                    <div className="option">
+                        <h3><span className="unfoldOptionItems">+</span> 选择题</h3>
+                        <div className="option_items">{optionItems}</div>
+                    </div>
+                    <div className="coding">
+                        <h3><span className="unfoldCodingItems">+</span> 编程题</h3>
+                        <div className="coding_items">{codingItems}</div>
+                    </div>
+                </div>
+                <div className="codingInfos" >
+                    <CodingInfo issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                        postSrcFile={this.props.postSrcFile} />
+                </div>
+                <div className="optionInfos" >
+                    <OptionInfo answers={this.answers} />
+                </div>
+                <div></div>
+            </div>
+        );
+    }
+
+}
 export type DeviceViewWidgetFactory = () => DeviceViewWidget;
 export const DeviceViewWidgetFactory = Symbol('DeviceViewWidgetFactory')
 @injectable()
@@ -230,277 +478,46 @@ export class DeviceViewWidget extends TreeWidget {
     ) {
         super(treePros, model, contextMenuRenderer);
         this.id = 'device-view';
-        this.title.label = "Remote Device";
+        // this.title.label = "题目目录";
         this.title.caption = "Device";
         this.title.closable = true;
         this.title.iconClass = 'fa outline-view-tab-icon';
         this.addClass('theia-udcdevice-view');
-        this.refresh_devices()
-        // this.refreshIssueStatus()
-        this.issueTitles = {}
-        this.issueInfos = {}
-        this.issueStausStrs = {}
-        this.rootdir = "/home/liang/theiaWorkSpace"
     }
-    protected async refresh_devices() {
-        try {
-            this.device_list = await this.udcService.get_devices()
-            this.update()
-        } catch (err) {
-            this.device_list = undefined
-        }
-    }
+    rootdir: string = "/home/project"
 
-    public setDevice_list(devices: { [key: string]: number }) {
-        this.device_list = devices;
-        this.update()
-    }
-
-    public clearDevice(): void {
-        this.device_list = undefined
-        this.update()
-    }
-    areaMode: boolean = true
-    issueInfos: { [key: string]: string } = {}
-    issueTitles: { [key: string]: string } = { "0": "test", '2': 'test' }
-    issueStausStrs: { [key: string]: string } = {}
-    blackContent: string = ''
-    logInfos: { [key: string]: string } = {}
-    assignedissue?: string
-    rootdir: string = "/home/liang/theiaWork"
-    refreshTag: boolean = false
-    currentFocus: string = ''
-
-    protected setFocus(focus: string) {
-        if (this.issueTitles[focus] != null || this.issueTitles[focus] != '')
-            this.currentFocus = focus
-    }
-    protected setIssueStatusStrs(issue_num: string, issueStausStrs: string) {
-        if (issue_num != null)
-            this.issueStausStrs[issue_num] = issueStausStrs
-        else
-            console.log("null issue_num in 'setIssueStatusStrs'")
-    }
-
-    protected async getIssueStatusData() {//获取状态
-        let tmp = []
-        for (let x in this.issueTitles) {
-            if (this.issueStausStrs[x] != 'scc' || this.issueStausStrs[x] != 'failed') {
-                tmp.push(x)
-            }
-        }
-        console.log("getIssueStatusData<<<" + tmp)
-        this.udcService.queryStatus(JSON.stringify(tmp)).then((res) => { for (let i in res) this.issueStausStrs[i] = res[i] })
-    }
-    protected async getIssues() {//获取问题题目及内容
-        this.udcService.get_issues().then((res) => {
-            // console.log("widget:" + res)
-            let tmp = JSON.parse(res)
-            this.issueInfos = tmp.info
-            // console.log("<<<<<<<<<<<<<<<<<<<tmp :" + JSON.stringify(this.issueInfos))
-            this.issueTitles = tmp.title
-            let cache = []
-            for (let entry in this.issueTitles)
-                cache.push(this.issueTitles[entry])
-            // this.udcService.createSrcFile(cache)
-            this.udcService.createSrcFile(JSON.stringify(cache))
-        })
-    }
-    protected async submitIssues(issue_filename: string) {//提交题目
-        // let tmppath=path.join(this.rootdir,issue_filename)
-
-    }
-    protected async  createSrcFile(fn: string[]) {
-        for (let i of fn) {
-            console.log("tmpPath:-----------" + i)
-            let tmpPath = path.join(this.rootdir, i + '.cpp')
-            fs.exists(tmpPath, (res) => {
-                if (!res)
-                    fs.writeFile(tmpPath, '', {}, (err) => { console.log(err) })
-            })
-        }
-    }
-    protected setIssueInfo() {//设置问题内容通告
-        this.areaMode = true
-        this.blackContent = this.issueInfos[this.currentFocus]
-    }
-    protected setLogInfo() {//设置log通告
-        this.areaMode = false
-        this.blackContent = this.logInfos[this.currentFocus]
-    }
-    protected clearBlackBoard() {
-        this.blackContent = ''
-    }
-    protected setBlackContent() {
-        if (this.areaMode == true)
-            this.setIssueInfo()
-        else
-            this.setLogInfo()
-    }
-    protected renderBlackBoard(): React.ReactNode {//渲染通告板子
-        this.setBlackContent()
-        if (this.blackContent) {
-            return <textarea readOnly value={"这是第" + this.currentFocus + "题的题述:\n" + this.blackContent} />
-        }
-        else
-            return <textarea readOnly value={"这是第" + this.currentFocus + "题的日志:\n"} />
-    }
-    protected renderConnectArea(): React.ReactNode {
-        if (this.device_list) {
-            return <button className='btn disConnect' onClick={this.disconnect}>DisConnect</button>
-        } else {
-            return <button className='btn connect' onClick={this.connect}>Connect</button>
-        }
-    }
     protected renderTree(): React.ReactNode {
-        let l = [];
-        // this.commandRegistry.executeCommand(UdcCommands.SetJudgeHostandPort.id,"192.168.190.38","8000")
-        // this.commandRegistry.executeCommand(UdcCommands.QueryStatus.id,"1").then((scc)=>console.log(scc),(err)=>console.log(err))
-        for (let i in this.device_list) {
-            let dev_str = i;
-            // console.log(dev_str);
-            let arr = dev_str.match(/[A-Za-z0-9]*/g);
-            if (arr === null) continue;
-            arr = arr.filter(e => e != "" && e != null)
-            let [hub_id, , model_type, model_id] = arr;
-            // console.log('as below', hub_id, model_type, model_id);
-            l.push(<DeviceItem
-                key={dev_str}
-                dev_str={dev_str}
-                hub_id={hub_id}
-                model_type={model_type}
-                model_id={model_id}
-                using_or_not={this.device_list[i]}
-                reset={this.reset}
-                program={this.program}
-                judge={this.judge}
-                openshell={this.openShell}
-                start={() => this.messageService.info('start')}
-                stop={() => this.messageService.info('stop')} />)
-        }
-        // let x = [];
-
-
-
-        // for (let i of this.issue_list) {
-        //     console.log("issueInfo :" + this.issue_list)
-        //     console.log("i :" + i)
-        //     let tmp = i.split(" ")
-        //     x.push(
-        //         <IssueItem
-        //             issue_num={tmp[0]}
-        //             issue_str={tmp[1]}
-        //             open={this.open}
-        //             set={this.set}
-        //         />
-        //     )
-        // }
         return (
-            <div>
-                <table className="controls-panel" >
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div id='device-view-widget'>
-                                    {/* <div className="deviceview-selection">
-                <select className="connect-type">
-                    <option>{LOGINTYPE.ADHOC}</option>
-                    <option>{LOGINTYPE.FIXED}</option>
-                </select>
-                <select className="modle-type">
-                    <option>any</option>
-                    <option>{LOGINTYPE.FIXED}</option>
-                </select>
-            </div>
-            <div className="key-input">
-                <input style={{display:'block'}} type="text" name="key" />
-            </div> */}
-                                    <div className="buttons">
-                                        {this.renderConnectArea()}
-                                    </div>
-                                    <div id='Device-Item-Container'>{l}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <IssueBlock openSrcFile={this.openSrcFile} postSrcFile={this.postSrcFile}  callUpdate={this.callUpdata} setCurrentFocus={this.setCurrentFocus} issueStatusStrs={this.issueStausStrs} init={this.init} issue_titles={this.issueTitles} open={this.open} set={this.set} issueInfos={this.issueInfos} />
-                            </td>
-                        </tr>
-                        <tr >
-
-                            <td>
-                                <button id='log-info-switch' onClick={this.switchArea}> log-info</button>
-                            </td>
-                        </tr>
-                        <tr >
-                            <td className='log-info-area'>
-                                {this.renderBlackBoard()}
-                            </td>
-                        </tr>
-                        {/* {this.refreshIssueStatus()} */}
-                    </tbody>
-                </table>
-            </div>)
+            <NewIssueUi
+                setCookie={this.setCookie}
+                disconnect={this.disconnect} connect={this.connect}
+                callUpdata={this.callUpdata}
+                creatSrcFile={this.createSrcFile}
+                openSrcFile={this.openSrcFile}
+                postSrcFile={this.postSrcFile} />
+        )
     }
-
-
-    connect = () => {
-        this.refreshIssueStatus()
-        this.commandRegistry.executeCommand(UdcCommands.Connect.id);
-        this.getIssues()
+    connect = (pid: string) => {
+        this.commandRegistry.executeCommand(UdcCommands.Connect.id, pid);
     }
-
     disconnect = () => {
         this.commandRegistry.executeCommand(UdcCommands.DisConnect.id)
-        this.clearDevice();
     }
-    program = () => {
-        this.commandRegistry.executeCommand(UdcCommands.Program.id)
-    }
-    reset = () => {
-        this.commandRegistry.executeCommand(UdcCommands.Reset.id)
-    }
-    openShell = () => {
-        this.messageService.info('shell')
-    }
-    judge = () => {
-        this.commandRegistry.executeCommand(UdcCommands.Judge.id)
-    }
-    open = (e: any) => {
-        this.messageService.info(e)
-    }
-    set = (mode: string) => {
-        switch (mode) {
-            case "spec": { this.setIssueInfo(); break }
-            case "log": { this.setLogInfo(); break }
-            default: console.log("--------------invaild blackboard mode: " + mode)
-        }
-        this.update()
-    }
-    setCurrentFocus = (focus: string) => {
-        this.currentFocus = focus
-    }
-
     callUpdata = () => {
         this.update()
     }
-    refreshIssueStatus = () => {
-        if (!this.refreshTag) {
-            this.getIssueStatusData()
-            setInterval(() => { this.getIssueStatusData(); this.update(); console.log("refresh at :" + new Date()) }, 5000);
-            this.refreshTag = true
-        }
-    }
-    switchArea = () => {
-        this.areaMode = !this.areaMode
-        console.log("u press")
-        this.update()
+    setCookie = (cookie: string) => {
+        this.udcService.setCookie(`JSESSIONID=${cookie}; Path=/; HttpOnly`);
+        // this.udcService.setCookie(cookie);
     }
     postSrcFile = (fn: string) => {
         this.udcService.postSrcFile(fn)
     }
     openSrcFile = (uri: URI) => {
         this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
+    }
+    createSrcFile = (fn: string[]) => {
+        this.udcService.createSrcFile(JSON.stringify(fn))
+
     }
 }

@@ -20,9 +20,9 @@ export class UdcServiceImpl implements UdcService {
         });
     }
 
-    async connect(login_type: LOGINTYPE, model: string): Promise<string> {
+    async connect(login_type: LOGINTYPE, model: string ,pid:string): Promise<string> {
         try {
-            let result = await this.udcTerminal.connect(login_type, model);
+            let result = await this.udcTerminal.connect(login_type, model,pid);
             if (result === true) {
                 return "连接成功"
             } else {
@@ -60,20 +60,6 @@ export class UdcServiceImpl implements UdcService {
             resolve(result);
         });
     }
-    judge(filepath: string, address: string, devstr: string, token: string): Promise<Boolean> {
-        return this.udcTerminal.judge(filepath, address, devstr, token)
-
-    }
-    get_quiz_token(quizNo: string): boolean {
-        return this.udcTerminal.get_quiz_token(quizNo)
-    }
-    get_quiz_status(quiztoken: string): void {
-        return this.udcTerminal.get_quiz_status(quiztoken)
-    }
-    getToken(): string {
-        return this.udcTerminal.getToken()
-    }
-
     rumcmd(devstr: string, cmdstr: string): Promise<Boolean> {
         return new Promise<Boolean>((resolve, rejects) => {
             let result = this.udcTerminal.run_command(devstr, cmdstr);
@@ -91,29 +77,9 @@ export class UdcServiceImpl implements UdcService {
         this.udcTerminal.setClient(client);
     }
     // get_issues(): Promise<{ [key: string]: {} }> {
-    get_issues(): Promise<string> {
-        // let x: { [key: string]: {} } = {}
-        // x = {
-        //     title: ["spi", "mqtt", "uart"],
-        //     info: ["有关spi", "有关mqtt", "有关uart"]
-        // }
-        // return new Promise((resolve) => resolve(x))
-        return this.udcTerminal.getIssues()
-    }
+
     async quizJudge(host: string, port: string, pid: string): Promise<string> {
         return 'success'
-    }
-    async queryStatus(issueNmuList: string): Promise<{ [key: string]: string }> {
-        // return{
-        //     1:"判题",
-        //     2:"烧写",
-        //     0:"编码"
-        // }
-        return this.udcTerminal.queryStatus(JSON.parse(issueNmuList))
-        // return this.udcTerminal.queryStatus(issueNmuList)
-    }
-    setJudgeHostandPort(judgeHost: string, judgePort: string) {
-        this.udcTerminal.setJudgeHostandPort(judgeHost, judgePort)
     }
     setLdcHostandPort(ldcHost: string, ldcPort: string) {
         this.setLdcHostandPort(ldcHost, ldcPort)
@@ -128,5 +94,8 @@ export class UdcServiceImpl implements UdcService {
     }
     postSrcFile(fn:string):void{
         this.udcTerminal.postSrcFile(fn)
+    }
+    setCookie(cookie:string) :boolean{
+        return this.udcTerminal.setCookie(cookie)
     }
 }

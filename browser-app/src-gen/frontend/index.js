@@ -61,6 +61,7 @@ module.exports = Promise.resolve()
     .then(function () { return import('@theia/task/lib/browser/task-frontend-module').then(load) })
     .then(function () { return import('@theia/plugin-ext/lib/plugin-ext-frontend-module').then(load) })
     .then(function () { return import('udc-extension/lib/browser/udc-extension-frontend-module').then(load) })
+    .then(function () { return import('toy-extension/lib/browser/toy-extension-frontend-module').then(load) })
     .then(start).catch(reason => {
         console.error('Failed to start the frontend application.');
         if (reason) {

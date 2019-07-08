@@ -1,8 +1,8 @@
-import { certificate } from './../common/udc-config';
+// import { certificate } from './../common/udc-config';
 import { UdcClient } from '../common/udc-watcher';
 import { injectable, inject } from "inversify";
-import * as tls from 'tls';
-// import * as net from 'net'
+// import * as tls from 'tls';
+import * as net from 'net'
 import * as fs from 'fs-extra';
 import { Packet } from "./packet";
 import * as events from "events";
@@ -32,7 +32,7 @@ export class UdcTerminal {
     ldcPort: string = "8000"
     judgeHost: string = "192.168.190.38"
     judgePort: string = "6000"
-    rootDir: string = "/home/liang/theiaWorkSpace"
+    rootDir: string = "/home/project"
     quizTitle: { [key: string]: string } = {}
     quizInfo: { [key: string]: string } = {}
     cookie: string = ""
@@ -91,21 +91,21 @@ export class UdcTerminal {
         return uuid;
     }
     login_and_get_server(login_type: LOGINTYPE, model: string): Promise<Array<any>> {
-        let options = {
-            ca: certificate,
-            rejectUnauthorized: false,
-            // requestCert: true,
-        }
-        // let uuid = this.uuid
+        // let options = {
+        //     ca: certificate,
+        //     rejectUnauthorized: false,
+        //     // requestCert: true,
+        // }
+        let uuid = this.uuid
         return new Promise(function (resolve, reject) {
             // let server_ip = "118.31.76.36"
             // let server_port = 2000
             let server_ip = "47.97.253.23"
-            let server_port = 1880
+            let server_port = 5000
             // let server_ip = "192.168.1.233"
             // let server_port = 2000
-            let ctrFd = tls.connect(server_port, server_ip, options, () => {
-                // let ctrFd = net.connect(server_port, server_ip, () => {
+            // let ctrFd = tls.connect(server_port, server_ip, options, () => {
+            let ctrFd = net.connect(server_port, server_ip, () => {
                 console.log("connect scc")
             })
             ctrFd.on('error', () => {
@@ -114,130 +114,20 @@ export class UdcTerminal {
             ctrFd.on('close', () => {
                 console.log('Connection to Udc Server Closed!');
             });
-
             ctrFd.on("data", (data: Buffer) => {
                 let d = data.toString('ascii').substr(1, data.length).split(',')
                 console.log(d.slice(2, d.length))
                 resolve(d.slice(2, d.length))
             });
-            let cm = '{ALGI,00035,terminal,74dfbfad34520000,adhoc,any}'
             // let cm = '{ALGI,00035,terminal,74dfbfad34520000,adhoc,any}'
-            // let cm = '{ALGI,00035,terminal,' + uuid + ',adhoc,any}'
+            // let cm = '{ALGI,00035,terminal,74dfbfad34520000,adhoc,any}'
+            let cm = '{ALGI,00035,terminal,' + uuid + ',adhoc,any}'
             ctrFd.write(cm)
             ctrFd.setTimeout(1000);
             console.log("finish")
         })
     }
-    async setJudgeHostandPort(judgeHost: string, judgePort: string) {
-        this.judgeHost = judgeHost
-        this.judgePort = judgePort
-    }
-    async setLdcHostandPort(ldcHost: string, ldcPort: string) {
-        this.ldcHost = ldcHost
-        this.ldcPort = ldcPort
-    }
-    // getIssues(): Promise<{ [key: string]: {} }> {
-    getIssues(): Promise<string> {
-        // return new Promise((resolve) => {
-        //     this.quizDescriptiontest('1').then(() => {
-        //         resolve({info:this.quizInfo,title:this.quizTitle})
-        //     })
-        // })
-        this.login()
-        return new Promise((resolve) => {
-            resolve(JSON.stringify({
-                title: this.quizTitle,
-                info: this.quizInfo
-            }))
-        })
-    }
-    async queryStatus(issueNumList: string[]): Promise<{ [key: string]: string }> {
-        let data = {
-            pid: issueNumList
-        }
-        console.log("queryStatus<<<<<<<<" + issueNumList)
-        return new Promise((resolve, reject) => {
-            this.postData(this.quizSysAPIs["hostname"], this.quizSysAPIs["port"], "/problem/status", data).then(x => {
-                if (x == null || x == undefined || x == '')
-                console.log("no return in queryStatus")
-                console.log(x)
-                let tmp = JSON.parse(x)
-                let ret: { [key: string]: string } = {}
-                for (let index in tmp['problem']) {
-                    // console.log(tmp['problem'][index]['pid'] + ": " + tmp['problem'][index]['status'])
-                    ret[tmp['problem'][index]['pid']] = tmp['problem'][index]['status']
-                }
-                resolve(ret)
-                // for (let xi in tmp)
-                //     this.quizInfo[xi] = tmp[xi]
-            }, (err) => console.log(err)
-            )
-        }
-        )
 
-        // return this.postData(this.judgeHost, this.judgePort, "/problem/status", issueNumList)
-        // this.quizDescription(pid)
-    }
-    async quizGenerate(host: string, port: string, ppid: string) {//
-        let data = {
-            ppid: ppid
-        }
-        return await this.postData(this.judgeHost, this.judgePort, "/problem/generate", data)
-    }
-
-    async quizDescriptiontest(pid: string) {//获得题目信息
-        let data = {
-            pid: pid
-        }
-        let ret = this.postData(this.judgeHost, this.judgePort, "/problem/description", data)
-        ret.then((x) => {
-            if (x == null || x == undefined || x == '')
-            console.log("no return in quizDescriptionTest")
-            let tmp = JSON.parse(x)
-            // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            // console.log(tmp["pid"])
-            // console.log(tmp["content"])
-            this.quizInfo[tmp["pid"]] = tmp["content"]
-
-        }, (err) => console.log(err))
-    }
-    async quizDescription(pid: string) {
-        let data = {
-            pid: pid
-        }
-        let ret = this.postData(this.linkLabAPIs["hostname"], this.linkLabAPIs["port"], "/problem/description", data)
-        ret.then((x) => {
-            if (x == null || x == undefined || x == '')
-            console.log("no return in quizeDescription")
-            let tmp = JSON.parse(x)
-            for (let xi in tmp)
-                this.quizInfo[xi] = tmp[xi]
-        }, (err) => console.log(err))
-    }
-    async quizJudge(host: string, port: string, pid: string) {
-        let data = {
-            pid: pid
-        }
-        return this.postData(this.linkLabAPIs["hostname"], this.linkLabAPIs["port"], "/problem/judge", data)
-    }
-    // async postData(host: string, port: string, path: string, data: any): Promise<string> {
-    //     return new Promise((resolve, rejects) => {
-    //         let datastr = JSON.stringify(data)
-    //         let respData = ''
-    //         let req = http.request({ method: "POST", host: host, port: port, path: path }, (res) => {
-    //             res.on('data', (b: Buffer) => {
-    //                 respData = b.toString("UTF-8")
-    //                 console.log("<<<<<<: " + respData)
-    //                 resolve(respData)
-    //             })
-    //             res.on('error', err => console.log(err))
-    //         })
-    //         if (req != null) {
-    //             req.write(datastr)
-    //             req.end()
-    //         }
-    //     })
-    // }
     async postData(host: string, port: string, path: string, data: any): Promise<string> {
         return new Promise((resolve, rejects) => {
             let datastr = JSON.stringify(data)
@@ -259,88 +149,17 @@ export class UdcTerminal {
         })
     }
 
-    // login_and_get_server(login_type: LOGINTYPE, model: string): Promise<Array<any>> {
-    //     this.model = model;
-    //     this.login_type = login_type;
-
-    //     const data = JSON.stringify({
-    //         uuid: login_type === LOGINTYPE.ADHOC ? this.uuid : model,
-    //         type: login_type,
-    //         model: login_type === LOGINTYPE.ADHOC ? model : "any",
-    //     })
-
-    //     let options = {
-    //         host: '118.31.76.36',
-    //         port: 8080,
-    //         path: '/terminal/login',
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Content-Length': data.length,
-    //         },
-    //         cert: certificate,
-    //         rejectUnauthorized: false,
-    //     }
-
-    //     return new Promise((resolve, reject) => {
-    //         let req = https.request(options, function (res) {
-    //             res.on('data', (d: Buffer) => {
-    //                 let result = JSON.parse(d.toString('ascii'));
-    //                 if (result.result === "success") {
-    //                     let ret = [result.result, result.host, result.port, result.token, result.certificate]
-    //                     resolve(ret)
-    //                 } else {
-    //                     reject(result.message)
-    //                 }
-    //             })
-    //             res.on('error', (err) => {
-    //                 console.log(err);
-    //                 reject('api call failed')
-    //             })
-    //         });
-    //         req.write(data);
-    //         req.end();
-    //     })
-    // }
-
-    // async connect_to_server(server_ip: string, server_port: number, certificate: string): Promise<string> {
-    //     let options = {
-    //         ca: certificate,
-    //         rejectUnauthorized: false,
-    //         requestCert: false,
-    //     }
-
-    //     let _this = this;
-    //     return new Promise(function (resolve, reject) {
-    //         _this.udcServerClient = tls.connect(server_port, server_ip, options, () => {
-    //             resolve('success')
-    //         })
-    //         _this.udcServerClient.on('error', () => {
-    //             reject('fail')
-    //         });
-    //         _this.udcServerClient.on('close', () => {
-    //             console.log('Connection to Udc Server Closed!');
-    //         });
-    //         _this.udcServerClient.on('data', _this.onUdcServerData);
-
-    //         _this.udcServerClient.setTimeout(10000);
-    //         _this.udcServerClient.on('timeout', () => {
-    //             _this.send_packet(Packet.HEARTBEAT, '');
-    //         })
-    //     })
-    // }
-
-    async connect_to_server(server_ip: string, server_port: number, certificate: string): Promise<string> {
-        let options = {
-            ca: certificate,
-            rejectUnauthorized: false,
-            requestCert: false,
-        }
+    async connect_to_server(server_ip: string, server_port: number, certificate: string, pid: string): Promise<string> {
+        // let options = {
+        //     ca: certificate,
+        //     rejectUnauthorized: false,
+        //     requestCert: false,
+        // }
         console.log("serverPort: " + server_port)
         let _this = this;
         return new Promise(function (resolve, reject) {
-            _this.udcServerClient = tls.connect(server_port, server_ip, options, () => {
-                // _this.udcServerClient = net.connect(server_port, server_ip, () => {
+            // _this.udcServerClient = tls.connect(server_port, server_ip, options, () => {
+            _this.udcServerClient = net.connect(server_port, server_ip, () => {
 
                 resolve('success')
             })
@@ -350,7 +169,8 @@ export class UdcTerminal {
             _this.udcServerClient.on('close', () => {
                 console.log('Connection to Udc Server Closed!');
             });
-            _this.udcServerClient.on('data', _this.onUdcServerData);
+            console.log("server:pid<<<<<<<<<<<<<<<<<<<"+pid)
+            _this.udcServerClient.on('data', (data:Buffer)=>_this.onUdcServerData(data,pid));
 
             _this.udcServerClient.setTimeout(10000);
             _this.udcServerClient.on('timeout', () => {
@@ -359,7 +179,7 @@ export class UdcTerminal {
         })
     }
 
-    onUdcServerData = (data: Buffer) => {
+    onUdcServerData = (data: Buffer, pid: string) => {
         // let [type, length, value, msg] = this.pkt.parse(data.toString('ascii'));
         let [type, , value] = this.pkt.parse(data.toString('ascii'));
         // console.log(`Received: type=${type} length=${length} value= ${value} msg=${msg}`);
@@ -390,7 +210,7 @@ export class UdcTerminal {
                 console.log('server login success');
             } else {
                 console.log('login failed retrying ...');
-                this.connect(this.login_type, this.model)
+                this.connect(this.login_type, this.model, pid)
             }
         } else if (type === Packet.CMD_DONE || type === Packet.CMD_ERROR) {
             console.log(data.toString('ascii'));
@@ -415,52 +235,26 @@ export class UdcTerminal {
             'tinylink_platform_1',
             'tinylink_lora',
             'tinylink_raspi'];
-        // let default_devices = ["RandomDevice"];
-
-        // let options = {
-        //     host: '118.31.76.36',
-        //     port: 8080,
-        //     path: '/list/models',
-        //     method: 'GET',
-        //     cert: certificate,
-        //     rejectUnauthorized: false
-        // }
-
-        // return new Promise((resolve, reject) => {
-        //     https.request(options, function (res) {
-        //         res.on('data', (d: Buffer) => {
-        //             let result = JSON.parse(d.toString('ascii'));
-        //             if (result.result === "success" && result.models != null) {
-        //                 resolve(result.models)
-        //             } else {
-        //                 resolve(default_devices)
-        //             }
-        //         })
-
-        //         res.on('error', (err) => {
-        //             console.log(err);
-        //             resolve(default_devices)
-        //         })
-        //     }).end();
-        // })
         return new Promise((resolve, reject) => resolve(default_devices))
     }
 
     get is_connected(): Boolean {
         return (this.udcServerClient != null);
     }
-
-    async connect(login_type: LOGINTYPE, model: string): Promise<Boolean | string> {
+    async connect(login_type: LOGINTYPE, model: string, pid: string): Promise<Boolean | string> {
+        console.log(">>>>>>>>>pid"+pid)
         let rets = await this.login_and_get_server(login_type, model);
         if (rets === []) { return false; }
         let [re, server_ip, server_port, token, certificate] = rets;
         if (re != 'success') { return false; }
-        let result = await this.connect_to_server(server_ip, server_port, certificate);
+        let result = await this.connect_to_server(server_ip, server_port, certificate, pid);
         console.log("result-----------------------------" + result)
         if (result !== 'success') return false;
         // await this.udcServerClient.write(this.pkt.construct(Packet.packet_type.TERMINAL_LOGIN, "life"));
-
-        await this.send_packet(Packet.packet_type.TERMINAL_LOGIN, `${this.login_type === LOGINTYPE.FIXED ? this.model : this.uuid},${token}`)//modifiy,timeout/
+        if (pid != "null")
+            await this.send_packet(Packet.packet_type.TERMINAL_LOGIN, `${this.login_type === LOGINTYPE.FIXED ? this.model : this.uuid},${token},${pid}`)//modifiy,timeout/
+        else
+            await this.send_packet(Packet.packet_type.TERMINAL_LOGIN, `${this.login_type === LOGINTYPE.FIXED ? this.model : this.uuid},${token},${pid}`)//modifiy,timeout/
         // await this.send_packet(Packet.packet_type.TERMINAL_LOGIN, `${this.login_type === LOGINTYPE.FIXED ? this.model : this.uuid},${token}`)
         return true;
     }
@@ -488,78 +282,10 @@ export class UdcTerminal {
         }
 
         let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)}`
-        // console.log(content);
         this.send_packet(Packet.DEVICE_PROGRAM, content);
         await this.wait_cmd_excute_done(270000);
         return (this.cmd_excute_state === 'done' ? true : false);
     }
-    // async judgeIssue(filepath: string, address: string, devstr: string,issueNum:string): Promise<Boolean> {
-    //     let send_result = await this.send_file_to_client(filepath, devstr);
-    //     if (send_result === false) {
-    //         return false;
-    //     }
-
-    //     let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)}`
-    //     // console.log(content);
-    //     this.send_packet(Packet.DEVICE_PROGRAM, content);
-    //     await this.wait_cmd_excute_done(270000);
-    //     return (this.cmd_excute_state === 'done' ? true : false);
-    // }
-    token: any
-    async judge(filepath: string, address: string, devstr: string, token: string): Promise<boolean> {
-        let send_result = await this.send_file_to_client(filepath, devstr)
-        if (send_result === false) {
-            return false;
-        }
-        let content = `${token},${devstr},${address},${await this.pkt.hash_of_file(filepath)}`
-        this.send_packet(Packet.QUIZ_JUDGE, content);
-        await this.wait_cmd_excute_done(60000);
-        console.log("judge finish:" + this.cmd_excute_return)
-        return (this.cmd_excute_state === 'done' ? true : false);
-    }
-    get_quiz_token(quizNo: string): boolean {
-        this.send_packet(Packet.GET_QUIZ_TOKEN, quizNo)
-        this.wait_cmd_excute_done(5000)
-        if (this.cmd_excute_state == 'done') {
-            console.log("token has generated!")
-            this.token = this.cmd_excute_return.split(" ").pop()
-            return true
-        }
-        else {
-            console.log("token generating failure!")
-            return false
-        }
-    }
-    get_quiz_status(quiztoken: string): void {
-        this.send_packet(Packet.GET_QUIZ_STATUS, this.token)
-        this.wait_cmd_excute_done(5000)
-        if (this.cmd_excute_state == 'done') {
-            console.log("get quiz status scc: " + this.cmd_excute_return)
-        }
-        else {
-            console.log("command execute failed")
-        }
-    }
-    getToken(): string {
-        return this.token
-    }
-
-
-    // def get_quiz_status(self, args):
-    //     if len(args) < 1 or len(args) > 2:
-    //         self.cmdrun_status_display('Usage error, usage: quizstatus <token>')
-    //         return False
-    //     token = args[0]
-    //     self.send_packet(pkt.GET_QUIZ_STATUS, token)
-    //     self.wait_cmd_excute_done(5)
-
-    //     status_str = ''
-    //     if self.cmd_excute_state == 'done':
-    //         status_str = 'succeed: your quiz is ' + self.cmd_excute_return
-    //     else:
-    //         status_str = 'failed: ' + self.cmd_excute_return
-    //     self.cmd_excute_state = 'idle'
-    //     self.cmdrun_status_display(status_str)
     async run_command(devstr: string, args: string) {
         let content = `${devstr}:${args.replace(' ', '|')}`
         this.send_packet(Packet.DEVICE_CMD, content);
@@ -714,7 +440,6 @@ export class UdcTerminal {
             resolve('scc')
         })
     }
-
     extractHex(fn: string): Promise<string> {
         let rootDir = this.rootDir
         let _this = this
@@ -744,73 +469,26 @@ export class UdcTerminal {
                         entry.autodrain();
                     }
                 })
-            // x.on("end", () => {
-            //     console.log("programming------------------------")
-            //     // _this.program_device(path.join(rootDir,fn+'sketch.ino.hex'),'0','0')
-            //     let dev_list = _this.get_devlist();
-            //     let devstr = "";
-            //     for (let k in dev_list) {
-            //         devstr = k;
-            //         break;
-            //     }
-            //     console.log("-----------------devstr is :" + devstr)
-            //     _this.program_device(path.join(rootDir, 'sketch.ino.hex'), '0', devstr)
-            //     console.log("find")
-            //     resolve("scc")
+        })
+    }
+    // login(): Promise<string> {
+    //     let fm = new FormData()
+    //     // fm.append("username", "emmtest")
+    //     fm.append("username", "emmtest")
+    //     fm.append("password", "123456")
+    //     return new Promise((resolve) => {
+    //         this.submitForm(fm, this.linkLabAPIs["hostname"], this.linkLabAPIs["port"], this.linkLabAPIs["loginPath"], "POST").then(res => {
+    //             // console.log(res);
+    //             this.getIssuesData().then(back => {
+    //                 // for (let ctn in back) {
+    //                 //     console.log(ctn + ": " + back[ctn])
+    //                 // }
+    //                 resolve('scc')
 
-            // });
-        })
-    }
-    login(): Promise<string> {
-        let fm = new FormData()
-        // fm.append("username", "emmtest")
-        fm.append("username", "emmtest")
-        fm.append("password", "123456")
-        return new Promise((resolve) => {
-            this.submitForm(fm, this.linkLabAPIs["hostname"], this.linkLabAPIs["port"], this.linkLabAPIs["loginPath"], "POST").then(res => {
-                // console.log(res);
-                this.getIssuesData().then(back => {
-                    // for (let ctn in back) {
-                    //     console.log(ctn + ": " + back[ctn])
-                    // }
-                    resolve('scc')
-
-                })
-            })
-        })
-    }
-    getIssuesData(): Promise<{ [key: string]: string }> {
-        // return new Promise((resolve) => {
-        //     this.quizDescriptiontest('1').then(() => {
-        //         resolve({info:this.quizInfo,title:this.quizTitle})
-        //     })
-        // })
-        let data = {
-        }
-        return new Promise((resolve) => {
-            this.postData(this.linkLabAPIs["hostname"], this.linkLabAPIs["port"], this.linkLabAPIs['quizRequestPath'], data).then(x => {
-                let ret: { [key: string]: string } = {}
-                // console.log(x)
-                if (x == null || x == undefined || x == '')
-                    console.log("no return in getIssuesData")
-                let entryArry = JSON.parse(x)['data']
-                // console.log(entryArry)
-                for (let entry of entryArry) {
-                    // console.log(tmp['problem'][index]['pid'] + ": " + tmp['problem'][index]['status'])
-                    this.quizInfo[entry['pid']] = entry['content']
-                    this.quizTitle[entry['pid']] = entry['title']
-                    // console.log(entry['pid'] + ": " + entry['title'])
-                }
-                // for (let tmp in this.quizInfo) {
-                //     console.log(this.quizTitle[tmp] + ': ' + this.quizInfo[tmp])
-                // }
-                resolve(ret)
-                // for (let xi in tmp)
-                //     this.quizInfo[xi] = tmp[xi]
-            }, (err) => console.log(err)
-            )
-        })
-    }
+    //             })
+    //         })
+    //     })
+    // }
 
     postSrcFile(fn: string): Promise<string> {
         let rootDir = this.rootDir
@@ -826,7 +504,7 @@ export class UdcTerminal {
                 _this.tinyLinkAPIs["srcPostPath"],
                 "POST").then(res => {
                     if (res == null || res == undefined || res == '')
-                    console.log("no return in getIssuesData")
+                        console.log("no return in getIssuesData")
                     let tmp = JSON.parse(res)
                     console.log("scc")
                     if (tmp["message"] != 'success')
@@ -884,6 +562,7 @@ export class UdcTerminal {
     //     })
     // }
     submitForm(fm: FormData, hostname: string, port: string, path: string, method: string): Promise<string> {
+        let _this=this
         return new Promise((resolve, reject) => {
             fm.submit({
                 method: method,
@@ -895,7 +574,7 @@ export class UdcTerminal {
                 headers: {
                     "Accept": "application/json",
                     "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
-                    "Cookie": this.cookie
+                    "Cookie": _this.cookie
                 },
             }, (err, res) => {
                 // console.log(err)    
@@ -921,6 +600,15 @@ export class UdcTerminal {
                 )
             })
         })
+    }
+    setCookie(cookie: string): boolean {
+        if (cookie != null && cookie != undefined && cookie != "") {
+            this.cookie = cookie
+            console.log('cookie is :' + this.cookie)
+            return false
+        }
+        console.log(" null cookie")
+        return true
     }
 
 }
