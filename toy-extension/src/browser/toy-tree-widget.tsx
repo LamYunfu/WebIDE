@@ -34,7 +34,7 @@ export class ToyViewWidget extends TreeWidget {
     ) {
         super(treePros, model, contextMenuRenderer);
         this.id = 'toy-view';
-        this.title.label = "教学视屏";
+        this.title.label = "教学视频";
         this.title.caption = "Toy";
         this.title.closable = true;
         this.title.iconClass = 'fa outline-view-tab-icon';
@@ -43,7 +43,7 @@ export class ToyViewWidget extends TreeWidget {
     }
     protected renderTree(): React.ReactNode {
         return (<div>
-            <a onClick={this.openViewPanel}>视屏1</a><br/>     
+            <a onClick={this.openViewPanel}>视频 1</a><br/>     
         </div>)
     }
     openViewPanel=()=>{
