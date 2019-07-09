@@ -10060,11 +10060,6 @@ vscode-nls@^4.0.0:
   resolved "http://registry.npm.taobao.org/vscode-nls/download/vscode-nls-4.1.0.tgz#d9b4afb9477c2101517d6a6aac22f4d9ff066dda"
   integrity sha1-2bSvuUd8IQFRfWpqrCL02f8Gbdo=
 
-vscode-ripgrep@^1.2.0:
-  version "1.3.0"
-  resolved "https://registry.npm.taobao.org/vscode-ripgrep/download/vscode-ripgrep-1.3.0.tgz#19206685812204694fb894fa5c828d36a37287b7"
-  integrity sha1-GSBmhYEiBGlPuJT6XIKNNqNyh7c=
-
 vscode-ripgrep@^1.2.4:
   version "1.2.5"
   resolved "http://registry.npm.taobao.org/vscode-ripgrep/download/vscode-ripgrep-1.2.5.tgz#2093c8f36d52bd2dab9eb45b003dd02533c5499c"

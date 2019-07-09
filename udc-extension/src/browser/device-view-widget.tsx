@@ -52,7 +52,7 @@ class OptionItem extends React.Component<OptionItem.Props> {
                 $(".optionItem").click(
                     (e) => {
                         $(".codingInfos").hide()
-                        $(".optionInfos").show()
+                        $(".optionInfos").show()    
                         let x = $(e.currentTarget).children("a").attr("id")
                         if (x != undefined) {
                             $(".optionIssueTitle").text(this.props.titles[x])
@@ -71,7 +71,7 @@ class OptionItem extends React.Component<OptionItem.Props> {
     public render(): JSX.Element {
         return (
             <li className='optionItem list-group-item'>
-                <a id={this.props.akey} >-题{this.props.akey}</a>
+                <a id={this.props.akey} ><h6>>选择题{this.props.akey}</h6></a>
                 {/* <a className="issue_status">●</a><br /> */}
             </li>
 
@@ -109,7 +109,8 @@ class CodeItem extends React.Component<CodeItem.Props>{
                             $(".optionInfos").hide()
                             $(".codingInfos").show()
                             $("#coding_title").html(this.props.codingTitles[tmp])
-                            $("#codingInfoArea").val(this.props.codingInfos[tmp])
+                            //$("#codingInfoArea").val(this.props.codingInfos[tmp])
+                            $("#codingInfoArea").text(this.props.codingInfos[tmp])
                             $("#codingInfoArea").attr("title", tmp)
                         }
                     }
@@ -119,9 +120,10 @@ class CodeItem extends React.Component<CodeItem.Props>{
     }
     public render(): JSX.Element {
         return (
-            <div className="codeItem" >
-                <a title={this.props.akey}>-题{this.props.akey}</a><a className="issue_status">●</a><br />
-            </div>
+            <li className="codeItem list-group-item" >
+                <a title={this.props.akey}><h6>{this.props.codingTitles[this.props.akey]}</h6></a>
+                {/* <a className="issue_status">●</a><br /> */}
+            </li>
         )
     }
 }
@@ -154,40 +156,43 @@ class OptionInfo extends React.Component<OptionInfo.Props>{
     }
     public render() {
         return (
-            <div className="optionInfoContainer">
-                <p className="optionIssueTitle">
-                    请选出以下正确的答案()
-                </p>
-                <form className="options" id="1" >
-                    <div className="custom-control custom-radio">
-                        <input className="custom-control-input" id="optionRadio1" type="radio" name="1" value="1" />
-                        <label className="custom-control-label" htmlFor="optionRadio1">
-                            A. <span className="optionContent"></span><br />
-                        </label>
-                    </div>
-                    <div className="custom-control custom-radio">
-                        <input className="custom-control-input" id="optionRadio2" type="radio" name="1" value="2" />
-                        <label className="custom-control-label" htmlFor="optionRadio2">
-                            B. <span className="optionContent"></span><br />
-                        </label>
-                    </div>
-                    <div className="custom-control custom-radio">
-                        <input className="custom-control-input" id="optionRadio3" type="radio" name="1" value="3" />
-                        <label className="custom-control-label" htmlFor="optionRadio3">
-                            C. <span className="optionContent"></span><br />
-                        </label>
-                    </div>
-                    <div className="custom-control custom-radio">
-                        <input className="custom-control-input" id="optionRadio4" type="radio" name="1" value="4" />
-                        <label className="custom-control-label" htmlFor="optionRadio4">
-                            D. <span className="optionContent"></span><br />
-                        </label>
-                    </div>
-                    {/* <input type="radio" name="1" value="2" />B:<span className="optionContent"></span><br />
-                    <input type="radio" name="1" value="3" />C:<span className="optionContent"></span><br />
-                    <input type="radio" name="1" value="4" />D:<span className="optionContent"></span><br /> */}
-                    <button className="optionInfoSubmit btn btn-secondary" type="button">提交</button>
-                </form>
+            <div className="optionInfoContainer card text-white bg-secondary">
+                <div className="card-body">
+                    <p className="optionIssueTitle">
+                        请选出以下正确的答案()
+                    </p>
+                    <form className="options" id="1" >
+                        <div className="custom-control custom-radio">
+                            <input className="custom-control-input" id="optionRadio1" type="radio" name="1" value="1" />
+                            <label className="custom-control-label" htmlFor="optionRadio1">
+                                A. <span className="optionContent"></span><br />
+                            </label>
+                        </div>
+                        <div className="custom-control custom-radio">
+                            <input className="custom-control-input" id="optionRadio2" type="radio" name="1" value="2" />
+                            <label className="custom-control-label" htmlFor="optionRadio2">
+                                B. <span className="optionContent"></span><br />
+                            </label>
+                        </div>
+                        <div className="custom-control custom-radio">
+                            <input className="custom-control-input" id="optionRadio3" type="radio" name="1" value="3" />
+                            <label className="custom-control-label" htmlFor="optionRadio3">
+                                C. <span className="optionContent"></span><br />
+                            </label>
+                        </div>
+                        <div className="custom-control custom-radio">
+                            <input className="custom-control-input" id="optionRadio4" type="radio" name="1" value="4" />
+                            <label className="custom-control-label" htmlFor="optionRadio4">
+                                D. <span className="optionContent"></span><br />
+                            </label>
+                        </div>
+                        {/* <input type="radio" name="1" value="2" />B:<span className="optionContent"></span><br />
+                        <input type="radio" name="1" value="3" />C:<span className="optionContent"></span><br />
+                        <input type="radio" name="1" value="4" />D:<span className="optionContent"></span><br /> */}
+                        <hr/>
+                        <button className="optionInfoSubmit btn btn-primary" type="button">提交</button>
+                    </form>
+                </div>
             </div >
         )
     }
@@ -214,16 +219,18 @@ class CodingInfo extends React.Component<CodingInfo.Props>{
     }
     public render() {
         return (
-            <div>
-                <div className="codingInfoContainer">
-                    <div id="titleAndStatus" >
-                        <span id="coding_title">关于mqtt的一道题</span><a id="issue_status">●</a>
-                    </div>
+            <div className="card text-white bg-secondary">
+                <div className="codingInfoContainer card-body">
+                    <h5 id="titleAndStatus" className="card-title">
+                        <span id="coding_title">关于mqtt的一道题</span>
+                    </h5>
                     <div id="codingInfoAreaContainer">
-                        <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea>
+                        {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
+                        <p className="card-text" id="codingInfoArea" title="1">你需要使用mqtt来实现这一道题目</p>
                     </div>
-                    <div><button id="connectButton">需要连接设备?</button></div>
-                    <div><button id="submitSrcButton">提交</button></div>
+                    <div><button className="btn btn-info" id="connectButton">需要连接设备?</button></div>
+                    <br/>
+                    <div><button className="btn btn-primary" id="submitSrcButton">提交</button></div>
                 </div>
             </div>
         )
@@ -250,6 +257,16 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
     codingIssues: { [key: string]: string } = {}
     codingInfos: { [key: string]: string } = {}
     codingStatus: { [key: string]: string } = {}
+    statusCode: { [key: number]: string } = {
+        0x0000: 'NO_GEN',
+        0x0001: 'GEN_FAIL',
+        0x0010: 'NO_SUB',
+        0x0011: "JUDGING",
+        0x0012: 'PROG_ERR',
+        0x0020: 'ACCEPT',
+        0x0021: 'WRONG_ANSWER',
+        0x0022: 'TIMEOUT'
+    }
     statusColors: { [key: number]: string } = {
         0x0000: 'white',
         0x0001: 'black',
@@ -282,7 +299,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 contentType: "text/plain",
                 data: JSON.stringify(tmp),
                 success: function (data) {
-                    let x = data.question;
+                    let x = data.question.slice(0,10);
 
                     for (let item of x) {
                         _this.optionIssues[item.order] = item.description
@@ -393,10 +410,21 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             _this.codingStatus[x.pid] = x.status
                             // alert( _this.codingStatus[x.pid])
                             // $(`.codeItem a[title=${x.pid}]`).next().css("color","red")
-                            $(`.codeItem a[title=${x.pid}]`).next().css("color", _this.statusColors[parseInt(x.status)])
+                            //$(`.codeItem a[title=${x.pid}]`).next().css("color", _this.statusColors[parseInt(x.status)])
                             // console.log(">>>>>>>>>>")
                             // console.log(JSON.stringify($(`.codeItem a[title=${x.pid}]`)))
-
+                            let status = _this.statusCode[parseInt(x.status)];
+                            if (status == 'JUDGING') {
+                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
+                            } else if (status == 'ACCEPT') {
+                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
+                            } else if (status == 'WRONG_ANSWER') {
+                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
+                            } else if (status == 'TIMEOUT') {
+                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
+                            } else {
+                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
+                            }
                         }
                     }
                 }
@@ -422,27 +450,27 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 $(".welcomeBanner").click(
                     () => $(".welcomeBanner").fadeOut("slow")
                 )
-                $(".unfoldOptionItems").click(
+                $(".unfoldOptionSwitch").click(
                     (e) => {
-                        if ($(e.currentTarget).text() == "-") {
+                        if ($("span.unfoldOptionItems").text() == "-") {
                             $(".option_items").hide()
-                            $(e.currentTarget).text("+")
+                            $("span.unfoldOptionItems").text("+")
                         }
                         else {
                             $(".option_items").show()
-                            $(e.currentTarget).text("-")
+                            $("span.unfoldOptionItems").text("-")
                         }
                     }
                 )
-                $(".unfoldCodingItems").click(
+                $(".unfoldCodingSwitch").click(
                     (e) => {
-                        if ($(e.currentTarget).text() == "-") {
+                        if ($("span.unfoldCodingItems").text() == "-") {
                             $(".coding_items").hide()
-                            $(e.currentTarget).text("+")
+                            $("span.unfoldCodingItems").text("+")
                         }
                         else {
                             $(".coding_items").show()
-                            $(e.currentTarget).text("-")
+                            $("span.unfoldCodingItems").text("-")
                         }
                     }
                 )
@@ -462,26 +490,34 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 codingStatus={this.codingStatus} openSrcFile={this.props.openSrcFile} />)
 
         return (
-            <div className="contentsAndInfos">
-                <div className="welcomeBanner"><h5><span className="userName"></span>,欢迎你</h5></div>
-                <div className="contents">
-                    <div className="option">
-                        <h5><span className="unfoldOptionItems">+</span> 选择题</h5>
-                        <ul className="option_items list-group">{optionItems}</ul>
+            <div className="contentsAndInfos container">
+                <div className="row"><div className="welcomeBanner col"><h5><span className="userName"></span>,欢迎你<br/></h5></div></div>
+                <hr/>
+                <div className="row">
+                    <div className="contents col-5">
+                        <div className="row">
+                            <div className="option col-12">
+                                <h5 className="unfoldOptionSwitch"><span className="unfoldOptionItems">+</span> 选择题</h5>
+                                <ul className="option_items list-group">{optionItems}</ul>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div className="row">
+                            <div className="coding col-12">
+                                <h5 className="unfoldCodingSwitch"><span className="unfoldCodingItems">+</span> 编程题</h5>
+                                <ul className="coding_items list-group">{codingItems}</ul>
+                            </div>
+                        </div>
                     </div>
-                    <div className="coding">
-                        <h5><span className="unfoldCodingItems">+</span> 编程题</h5>
-                        <ul className="coding_items list-group">{codingItems}</ul>
+                    <div className="codingInfos col-7" >
+                        <CodingInfo issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                            postSrcFile={this.props.postSrcFile} />
+                    </div>
+                    <div className="optionInfos col-7" >
+                        <OptionInfo answers={this.answers} />
                     </div>
                 </div>
-                <div className="codingInfos" >
-                    <CodingInfo issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
-                        postSrcFile={this.props.postSrcFile} />
-                </div>
-                <div className="optionInfos" >
-                    <OptionInfo answers={this.answers} />
-                </div>
-                <div></div>
+                
             </div>
         );
     }

@@ -1,4 +1,4 @@
-.deviceInfo span {
+/* .deviceInfo span {
     display: block
 }
 
@@ -73,7 +73,6 @@ deviceInfo {
     opacity: true;
     font-size: 60%;
     background-color: 29292A;
-    /* border-radius:100%; */
     color: #29292A;
     width: 40px
 }
@@ -91,7 +90,6 @@ deviceInfo {
     border-radius: 20%;
     font-size: 80%;
     right: 0%;
-    /* position: absolute; */
 }
 
 .issue-item-table {
@@ -144,7 +142,6 @@ textarea {
 }
 
 #issue_title {
-    /* width: 190px; */
     font-size: 1.17em;
     font-weight: bold;
 }
@@ -164,13 +161,11 @@ textarea {
 }
 
 .codingInfoContainer {
-    /* display: none; */
     margin-top: 15.21px;
     height: 400px;
 }
 
 .contentsAndInfos {
-    /* display: none; */
     width: 380px;
     min-width: 380px;
     max-width: 400px;
@@ -204,4 +199,4 @@ textarea {
 }
 #codingInfoAreaContainer{
     height: 400px;
-}
+} */
