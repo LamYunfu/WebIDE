@@ -22,8 +22,6 @@
     "@types/unzip": "^0.1.1",
     "jquery": "^3.4.1",
     "react-bootstrap": "^1.0.0-beta.9",
-    "universal-cookie": "^4.0.1",
-    "unzip": "^0.1.11",
-    "vscode-ripgrep": "^1.2.0"
+    "unzip": "^0.1.11"
   }
 }

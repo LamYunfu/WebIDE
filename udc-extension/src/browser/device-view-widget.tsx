@@ -70,9 +70,10 @@ class OptionItem extends React.Component<OptionItem.Props> {
     }
     public render(): JSX.Element {
         return (
-            <div className='optionItem'>
-                <a id={this.props.akey} >-题{this.props.akey}</a><a className="issue_status">●</a><br />
-            </div>
+            <li className='optionItem list-group-item'>
+                <a id={this.props.akey} >-题{this.props.akey}</a>
+                {/* <a className="issue_status">●</a><br /> */}
+            </li>
 
         )
     }
@@ -139,10 +140,12 @@ class OptionInfo extends React.Component<OptionInfo.Props>{
                         let idv = $(".options").attr("id")
                         // idv != undefined && alert($("input:radio:checked").val() + "right" + this.props.answers[idv])
                         if (idv != undefined && $("input:radio:checked").val() == this.props.answers[idv]) {
-                            $(`.optionItem a[id=${idv}]`).next().css("color", "green")
+                            //$(`.optionItem a[id=${idv}]`).next().css("color", "green")
+                            $(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-success")
                         }
                         else {
-                            $(`.optionItem a[id=${idv}]`).next().css("color", "red")
+                            //$(`.optionItem a[id=${idv}]`).next().css("color", "red")
+                            $(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-danger")
                         }
                     }
                 )
@@ -156,11 +159,34 @@ class OptionInfo extends React.Component<OptionInfo.Props>{
                     请选出以下正确的答案()
                 </p>
                 <form className="options" id="1" >
-                    <input type="radio" name="1" value="1" />A:<span className="optionContent"></span><br />
-                    <input type="radio" name="1" value="2" />B:<span className="optionContent"></span><br />
+                    <div className="custom-control custom-radio">
+                        <input className="custom-control-input" id="optionRadio1" type="radio" name="1" value="1" />
+                        <label className="custom-control-label" htmlFor="optionRadio1">
+                            A. <span className="optionContent"></span><br />
+                        </label>
+                    </div>
+                    <div className="custom-control custom-radio">
+                        <input className="custom-control-input" id="optionRadio2" type="radio" name="1" value="2" />
+                        <label className="custom-control-label" htmlFor="optionRadio2">
+                            B. <span className="optionContent"></span><br />
+                        </label>
+                    </div>
+                    <div className="custom-control custom-radio">
+                        <input className="custom-control-input" id="optionRadio3" type="radio" name="1" value="3" />
+                        <label className="custom-control-label" htmlFor="optionRadio3">
+                            C. <span className="optionContent"></span><br />
+                        </label>
+                    </div>
+                    <div className="custom-control custom-radio">
+                        <input className="custom-control-input" id="optionRadio4" type="radio" name="1" value="4" />
+                        <label className="custom-control-label" htmlFor="optionRadio4">
+                            D. <span className="optionContent"></span><br />
+                        </label>
+                    </div>
+                    {/* <input type="radio" name="1" value="2" />B:<span className="optionContent"></span><br />
                     <input type="radio" name="1" value="3" />C:<span className="optionContent"></span><br />
-                    <input type="radio" name="1" value="4" />D:<span className="optionContent"></span><br />
-                    <button className="optionInfoSubmit" type="button">提交</button>
+                    <input type="radio" name="1" value="4" />D:<span className="optionContent"></span><br /> */}
+                    <button className="optionInfoSubmit btn btn-secondary" type="button">提交</button>
                 </form>
             </div >
         )
@@ -437,15 +463,15 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
 
         return (
             <div className="contentsAndInfos">
-                <div className="welcomeBanner"><span className="userName"></span>,欢迎你</div>
+                <div className="welcomeBanner"><h5><span className="userName"></span>,欢迎你</h5></div>
                 <div className="contents">
                     <div className="option">
-                        <h3><span className="unfoldOptionItems">+</span> 选择题</h3>
-                        <div className="option_items">{optionItems}</div>
+                        <h5><span className="unfoldOptionItems">+</span> 选择题</h5>
+                        <ul className="option_items list-group">{optionItems}</ul>
                     </div>
                     <div className="coding">
-                        <h3><span className="unfoldCodingItems">+</span> 编程题</h3>
-                        <div className="coding_items">{codingItems}</div>
+                        <h5><span className="unfoldCodingItems">+</span> 编程题</h5>
+                        <ul className="coding_items list-group">{codingItems}</ul>
                     </div>
                 </div>
                 <div className="codingInfos" >
