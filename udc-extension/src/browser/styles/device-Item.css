@@ -126,12 +126,14 @@
 }
 
 .contents {
-    float: left
+    float: left;
+    padding-right: 0;
 }
 
 .optionInfos {
     float: left;
     display: none;
+    padding: 0;
 }
 
 .codingInfos {
@@ -167,7 +169,26 @@
 .coding_items.list-group{
     display: none;
 }
+.video_items.list-group{
+    display: none;
+}
 
 .contentsAndInfos {
     margin: 0;
+}
+
+.contentsAndInfos.container {
+    padding-right: 0;
+}
+
+.contents.col-5 {
+    padding-right: 0;
+}
+
+.optionInfos.col-7 {
+    padding: 0;
+}
+
+.codingInfos.col-7 {
+    padding: 0;
 }

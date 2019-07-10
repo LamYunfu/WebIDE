@@ -80,7 +80,7 @@ class OptionItem extends React.Component<OptionItem.Props> {
 }
 namespace VedioItem {
     export interface Props {
-        id: string
+        title: string
         vedioNames: string[]
         uris: string[]
         gotoVedio: (uri: string) => void
@@ -89,13 +89,15 @@ namespace VedioItem {
 class VedioItem extends React.Component<VedioItem.Props>{
     componentDidMount() {
         $(".vedioName").click((e) => {
-            let index = $(e.currentTarget).attr("id")
+            let index = $(e.currentTarget).attr("title")
             index != undefined && this.props.gotoVedio(this.props.uris[parseInt(index)])
         })
     }
     render(): JSX.Element {
         return (
-            <a className="vedioName" id={this.props.id}>{this.props.vedioNames[parseInt(this.props.id)]}</a>
+            <li className='videoItem list-group-item'>
+                <a className="vedioName" title={this.props.title}>{this.props.vedioNames[parseInt(this.props.title)]}</a>
+            </li>
         )
 
     }
@@ -499,6 +501,18 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         }
                     }
                 )
+                $(".unfoldVideoSwitch").click(
+                    (e) => {
+                        if ($("span.unfoldVideoItems").text() == "-") {
+                            $(".video_items").hide()
+                            $("span.unfoldVideoItems").text("+")
+                        }
+                        else {
+                            $(".video_items").show()
+                            $("span.unfoldVideoItems").text("-")
+                        }
+                    }
+                )
 
             }
         )
@@ -533,7 +547,15 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                                 <ul className="coding_items list-group">{codingItems}</ul>
                             </div>
                         </div>
-                        <VedioItem id ='0' vedioNames={this.vedioNames} uris={this.uris} gotoVedio={this.props.gotoVedio}></VedioItem>
+                        <hr />
+                        <div className="row">
+                            <div className="coding col-12">
+                                <h5 className="unfoldVideoSwitch"><span className="unfoldVideoItems">+</span> 视频</h5>
+                                <ul className="video_items list-group">
+                                    <VedioItem title='0' vedioNames={this.vedioNames} uris={this.uris} gotoVedio={this.props.gotoVedio}></VedioItem>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <div className="codingInfos col-7" >
                         <CodingInfo issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
