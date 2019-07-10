@@ -13,9 +13,9 @@ const { mode }  = yargs.option('mode', {
 }).argv;
 const development = mode === 'development';
 
-const monacoEditorCorePath = development ? '/home/liang/load/webIDE_git/node_modules/@typefox/monaco-editor-core/dev/vs' : '/home/liang/load/webIDE_git/node_modules/@typefox/monaco-editor-core/min/vs';
-const monacoCssLanguagePath = '/home/liang/load/webIDE_git/node_modules/monaco-css/release/min';
-const monacoHtmlLanguagePath = '/home/liang/load/webIDE_git/node_modules/monaco-html/release/min';
+const monacoEditorCorePath = development ? '/home/zjd/Documents/ali/LinkLab/webIDE_lfq/webide/node_modules/@typefox/monaco-editor-core/dev/vs' : '/home/zjd/Documents/ali/LinkLab/webIDE_lfq/webide/node_modules/@typefox/monaco-editor-core/min/vs';
+const monacoCssLanguagePath = '/home/zjd/Documents/ali/LinkLab/webIDE_lfq/webide/node_modules/monaco-css/release/min';
+const monacoHtmlLanguagePath = '/home/zjd/Documents/ali/LinkLab/webIDE_lfq/webide/node_modules/monaco-html/release/min';
 
 module.exports = {
     entry: path.resolve(__dirname, 'src-gen/frontend/index.js'),
