@@ -78,25 +78,25 @@ class OptionItem extends React.Component<OptionItem.Props> {
         )
     }
 }
-namespace VedioItem {
+namespace VideoItem {
     export interface Props {
         title: string
-        vedioNames: string[]
+        videoNames: string[]
         uris: string[]
-        gotoVedio: (uri: string) => void
+        gotoVideo: (uri: string) => void
     }
 }
-class VedioItem extends React.Component<VedioItem.Props>{
+class VideoItem extends React.Component<VideoItem.Props>{
     componentDidMount() {
-        $(".vedioName").click((e) => {
+        $(".videoName").click((e) => {
             let index = $(e.currentTarget).attr("title")
-            index != undefined && this.props.gotoVedio(this.props.uris[parseInt(index)])
+            index != undefined && this.props.gotoVideo(this.props.uris[parseInt(index)])
         })
     }
     render(): JSX.Element {
         return (
             <li className='videoItem list-group-item'>
-                <a className="vedioName" title={this.props.title}>{this.props.vedioNames[parseInt(this.props.title)]}</a>
+                <a className="videoName" title={this.props.title}>{this.props.videoNames[parseInt(this.props.title)]}</a>
             </li>
         )
 
@@ -269,7 +269,7 @@ namespace NewIssueUi {
         postSrcFile: (fn: string) => void
         creatSrcFile: (fns: string[]) => void
         setCookie: (cookie: string) => void
-        gotoVedio: (uri: string) => void
+        gotoVideo: (uri: string) => void
     }
 }
 
@@ -302,16 +302,12 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0021: 'red',
         0x0022: 'grey'
     }
-    vedioNames:string[]=["宣讲视频"]    
+    videoNames:string[]=["宣讲视频"]    
     uris:string[]=[`http://linklab.tinylink.cn/java1-1.mp4`]
     pids: string[] = []
     componentWillMount() {
         let tmp = { "qzid": "1" }
         let _this = this
-        let form = {
-            username: "emmtest",
-            password: "123456"
-        }
         $.ajax(
             {
                 headers: {
@@ -336,23 +332,28 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 }
             }
         )
-        $.ajax(
-            {
-                headers: {
-                    "accept": "application/json",
-                },
-                crossDomain: true,
-                xhrFields: {
-                    withCredentials: true
-                },
-                method: "POST",
-                type: 'POST',
-                url: "http://api.tinylink.cn/user/login",
-                dataType: 'json',
-                data: form,
-                success: function (data) {
-                    // alert(JSON.stringify(data))
-                    console.log(JSON.stringify(data))
+        // let form = {
+        //     username: "emmtest",
+        //     password: "123456"
+        // }
+        // $.ajax(
+        //     {
+        //         headers: {
+        //             "accept": "application/json",
+        //         },
+        //         crossDomain: true,
+        //         xhrFields: {
+        //             withCredentials: true
+        //         },
+        //         method: "POST",
+        //         type: 'POST',
+        //         url: "http://api.tinylink.cn/user/login",
+        //         dataType: 'json',
+        //         data: form,
+        //         success: 
+        //         function (data) {
+        //             // alert(JSON.stringify(data))
+        //             console.log(JSON.stringify(data))
                     $.ajax(
                         {
                             headers: {
@@ -408,9 +409,9 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                     )
                     _this.props.callUpdata()
                 }
-            }
-        )
-    }
+    //         }
+    //     )
+    // }
     componentDidMount() {
         let _this = this
         setInterval(() => {
@@ -552,7 +553,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             <div className="coding col-12">
                                 <h5 className="unfoldVideoSwitch"><span className="unfoldVideoItems">+</span> 视频</h5>
                                 <ul className="video_items list-group">
-                                    <VedioItem title='0' vedioNames={this.vedioNames} uris={this.uris} gotoVedio={this.props.gotoVedio}></VedioItem>
+                                    <VideoItem title='0' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                 </ul>
                             </div>
                         </div>
@@ -598,7 +599,7 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <NewIssueUi
-                gotoVedio={this.gotoVedio}
+                gotoVideo={this.gotoVideo}
                 setCookie={this.setCookie}
                 disconnect={this.disconnect} connect={this.connect}
                 callUpdata={this.callUpdata}
@@ -630,7 +631,7 @@ export class DeviceViewWidget extends TreeWidget {
         this.udcService.createSrcFile(JSON.stringify(fn))
 
     }
-    gotoVedio = (uri: string) => {
+    gotoVideo = (uri: string) => {
         this.commandRegistry.executeCommand(UdcCommands.openViewPanel.id, uri)
     }
 }
