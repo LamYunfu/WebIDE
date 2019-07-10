@@ -39,7 +39,7 @@ export function start(context: theia.PluginContext) {
                     }
                 );
                 panel.webview.html = IoTWebview.generateHTML(
-                    " http://linklab.tinylink.cn/java1-1.mp4"
+                    args[0]
                 );
             }
         )

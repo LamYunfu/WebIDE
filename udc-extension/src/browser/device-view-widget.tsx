@@ -52,7 +52,7 @@ class OptionItem extends React.Component<OptionItem.Props> {
                 $(".optionItem").click(
                     (e) => {
                         $(".codingInfos").hide()
-                        $(".optionInfos").show()    
+                        $(".optionInfos").show()
                         let x = $(e.currentTarget).children("a").attr("id")
                         if (x != undefined) {
                             $(".optionIssueTitle").text(this.props.titles[x])
@@ -76,6 +76,28 @@ class OptionItem extends React.Component<OptionItem.Props> {
             </li>
 
         )
+    }
+}
+namespace VedioItem {
+    export interface Props {
+        id: string
+        vedioNames: string[]
+        uris: string[]
+        gotoVedio: (uri: string) => void
+    }
+}
+class VedioItem extends React.Component<VedioItem.Props>{
+    componentDidMount() {
+        $(".vedioName").click((e) => {
+            let index = $(e.currentTarget).attr("id")
+            index != undefined && this.props.gotoVedio(this.props.uris[parseInt(index)])
+        })
+    }
+    render(): JSX.Element {
+        return (
+            <a className="vedioName" id={this.props.id}>{this.props.vedioNames[parseInt(this.props.id)]}</a>
+        )
+
     }
 }
 export namespace CodeItem {
@@ -189,7 +211,7 @@ class OptionInfo extends React.Component<OptionInfo.Props>{
                         {/* <input type="radio" name="1" value="2" />B:<span className="optionContent"></span><br />
                         <input type="radio" name="1" value="3" />C:<span className="optionContent"></span><br />
                         <input type="radio" name="1" value="4" />D:<span className="optionContent"></span><br /> */}
-                        <hr/>
+                        <hr />
                         <button className="optionInfoSubmit btn btn-primary" type="button">提交</button>
                     </form>
                 </div>
@@ -229,7 +251,7 @@ class CodingInfo extends React.Component<CodingInfo.Props>{
                         <p className="card-text" id="codingInfoArea" title="1">你需要使用mqtt来实现这一道题目</p>
                     </div>
                     <div><button className="btn btn-info" id="connectButton">需要连接设备?</button></div>
-                    <br/>
+                    <br />
                     <div><button className="btn btn-primary" id="submitSrcButton">提交</button></div>
                 </div>
             </div>
@@ -245,6 +267,7 @@ namespace NewIssueUi {
         postSrcFile: (fn: string) => void
         creatSrcFile: (fns: string[]) => void
         setCookie: (cookie: string) => void
+        gotoVedio: (uri: string) => void
     }
 }
 
@@ -277,6 +300,8 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0021: 'red',
         0x0022: 'grey'
     }
+    vedioNames:string[]=["宣讲视频"]    
+    uris:string[]=[`http://linklab.tinylink.cn/java1-1.mp4`]
     pids: string[] = []
     componentWillMount() {
         let tmp = { "qzid": "1" }
@@ -299,7 +324,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 contentType: "text/plain",
                 data: JSON.stringify(tmp),
                 success: function (data) {
-                    let x = data.question.slice(0,10);
+                    let x = data.question.slice(0, 10);
 
                     for (let item of x) {
                         _this.optionIssues[item.order] = item.description
@@ -491,8 +516,8 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
 
         return (
             <div className="contentsAndInfos container">
-                <div className="row"><div className="welcomeBanner col"><h5><span className="userName"></span>,欢迎你<br/></h5></div></div>
-                <hr/>
+                <div className="row"><div className="welcomeBanner col"><h5><span className="userName"></span>,欢迎你<br /></h5></div></div>
+                <hr />
                 <div className="row">
                     <div className="contents col-5">
                         <div className="row">
@@ -501,13 +526,14 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                                 <ul className="option_items list-group">{optionItems}</ul>
                             </div>
                         </div>
-                        <hr/>
+                        <hr />
                         <div className="row">
                             <div className="coding col-12">
                                 <h5 className="unfoldCodingSwitch"><span className="unfoldCodingItems">+</span> 编程题</h5>
                                 <ul className="coding_items list-group">{codingItems}</ul>
                             </div>
                         </div>
+                        <VedioItem id ='0' vedioNames={this.vedioNames} uris={this.uris} gotoVedio={this.props.gotoVedio}></VedioItem>
                     </div>
                     <div className="codingInfos col-7" >
                         <CodingInfo issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
@@ -517,11 +543,10 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         <OptionInfo answers={this.answers} />
                     </div>
                 </div>
-                
+
             </div>
         );
     }
-
 }
 export type DeviceViewWidgetFactory = () => DeviceViewWidget;
 export const DeviceViewWidgetFactory = Symbol('DeviceViewWidgetFactory')
@@ -551,6 +576,7 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <NewIssueUi
+                gotoVedio={this.gotoVedio}
                 setCookie={this.setCookie}
                 disconnect={this.disconnect} connect={this.connect}
                 callUpdata={this.callUpdata}
@@ -581,5 +607,8 @@ export class DeviceViewWidget extends TreeWidget {
     createSrcFile = (fn: string[]) => {
         this.udcService.createSrcFile(JSON.stringify(fn))
 
+    }
+    gotoVedio = (uri: string) => {
+        this.commandRegistry.executeCommand(UdcCommands.openViewPanel.id, uri)
     }
 }

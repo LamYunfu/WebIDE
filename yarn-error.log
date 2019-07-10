@@ -1,25 +1,25 @@
 Arguments: 
-  /usr/bin/node /usr/local/bin/yarn
+  /home/liang/.nvm/versions/node/v8.16.0/bin/node /home/liang/.nvm/versions/node/v8.16.0/bin/yarn
 
 PATH: 
-  /home/zlasd/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+  /home/liang/.local/bin:/home/liang/.nvm/versions/node/v8.16.0/bin:/home/liang/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/jdk/bin:/usr/jdk/bin:/usr/hadoop/sbin:/usr/hadoop/bin:/home/hadoop/hive/bin:/opt/armgcc/bin:/usr/jdk/bin:/usr/jdk/bin:/usr/hadoop/sbin:/usr/hadoop/bin:/home/hadoop/hive/bin:/opt/armgcc/bin
 
 Yarn version: 
-  1.16.0
+  1.15.2
 
 Node version: 
-  8.10.0
+  8.16.0
 
 Platform: 
   linux x64
 
 Trace: 
-  SyntaxError: /home/zlasd/workspace/repo/webide/package.json: Unexpected token } in JSON at position 698
+  SyntaxError: /home/liang/load/webIDE_git/browser-app/package.json: Unexpected token } in JSON at position 589
       at JSON.parse (<anonymous>)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
+      at /home/liang/.nvm/versions/node/v8.16.0/lib/node_modules/yarn/lib/cli.js:1625:59
       at Generator.next (<anonymous>)
-      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:304:30)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:315:13
+      at step (/home/liang/.nvm/versions/node/v8.16.0/lib/node_modules/yarn/lib/cli.js:304:30)
+      at /home/liang/.nvm/versions/node/v8.16.0/lib/node_modules/yarn/lib/cli.js:315:13
       at <anonymous>
 
 npm manifest: 
@@ -39,7 +39,6 @@ npm manifest:
     "workspaces": [
       "udc-extension",
       "browser-app",
-      "toy-extension",
       "plugin/tinylink"
     ],
     "dependencies": {
@@ -47,7 +46,7 @@ npm manifest:
       "@types/unzip": "^0.1.1",
       "jquery": "^3.4.1",
       "react-bootstrap": "^1.0.0-beta.9",
-      "unzip": "^0.1.11",
+      "unzip": "^0.1.11"
     }
   }
 
@@ -10116,11 +10115,6 @@ Lockfile:
     version "4.1.0"
     resolved "http://registry.npm.taobao.org/vscode-nls/download/vscode-nls-4.1.0.tgz#d9b4afb9477c2101517d6a6aac22f4d9ff066dda"
     integrity sha1-2bSvuUd8IQFRfWpqrCL02f8Gbdo=
-  
-  vscode-ripgrep@^1.2.0:
-    version "1.3.0"
-    resolved "https://registry.npm.taobao.org/vscode-ripgrep/download/vscode-ripgrep-1.3.0.tgz#19206685812204694fb894fa5c828d36a37287b7"
-    integrity sha1-GSBmhYEiBGlPuJT6XIKNNqNyh7c=
   
   vscode-ripgrep@^1.2.4:
     version "1.2.5"

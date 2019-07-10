@@ -17,8 +17,8 @@
     "@theia/typescript": "latest",
     "@theia/messages": "latest",
     "@theia/plugin-ext": "latest",
-    "udc-extension": "0.0.0",
-    "toy-extension":"0.0.0"
+    "udc-extension": "0.0.0"
+    
   },
   "devDependencies": {
     "@theia/cli": "latest"

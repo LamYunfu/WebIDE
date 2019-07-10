@@ -91,6 +91,10 @@ export namespace UdcCommands {
         category: UDC_MENU_CATEGORY,
         label: "setjudgehostandport"
     }
+    export const openViewPanel: Command = {
+        id: "openViewPanel",
+        label: "no label"
+    };
 }
 
 @injectable()
@@ -181,6 +185,11 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 }).catch(err => {
                     this.messageService.error(err)
                 })
+            }
+        })
+        registry.registerCommand(UdcCommands.openViewPanel, {
+            execute: async (uri:string) => {
+                registry.executeCommand("iot.plugin.tinylink.compile",uri)
             }
         })
         registry.registerCommand(UdcCommands.JudgeButton, {

@@ -14,7 +14,6 @@
   "workspaces": [
     "udc-extension",
     "browser-app",
-    "toy-extension",
     "plugin/tinylink"
   ],
   "dependencies": {

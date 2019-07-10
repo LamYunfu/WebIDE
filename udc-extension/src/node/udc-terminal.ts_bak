@@ -169,8 +169,8 @@ export class UdcTerminal {
             _this.udcServerClient.on('close', () => {
                 console.log('Connection to Udc Server Closed!');
             });
-            console.log("server:pid<<<<<<<<<<<<<<<<<<<" + pid)
-            _this.udcServerClient.on('data', (data: Buffer) => _this.onUdcServerData(data, pid));
+            console.log("server:pid<<<<<<<<<<<<<<<<<<<"+pid)
+            _this.udcServerClient.on('data', (data:Buffer)=>_this.onUdcServerData(data,pid));
 
             _this.udcServerClient.setTimeout(10000);
             _this.udcServerClient.on('timeout', () => {
@@ -242,7 +242,7 @@ export class UdcTerminal {
         return (this.udcServerClient != null);
     }
     async connect(login_type: LOGINTYPE, model: string, pid: string): Promise<Boolean | string> {
-        console.log(">>>>>>>>>pid" + pid)
+        console.log(">>>>>>>>>pid"+pid)
         let rets = await this.login_and_get_server(login_type, model);
         if (rets === []) { return false; }
         let [re, server_ip, server_port, token, certificate] = rets;
@@ -252,12 +252,12 @@ export class UdcTerminal {
         if (this.udcClient) {
             this.udcClient.OnDeviceLog('::connect to controller success, server ip is ' + server_ip)
         }
-
+        
         let result = await this.connect_to_server(server_ip, server_port, certificate, pid);
         console.log("result-----------------------------" + result)
         if (result !== 'success') return false;
         // await this.udcServerClient.write(this.pkt.construct(Packet.packet_type.TERMINAL_LOGIN, "life"));
-
+        
         // add by zjd
         if (this.udcClient) {
             this.udcClient.OnDeviceLog('::connect to server success')
@@ -288,12 +288,12 @@ export class UdcTerminal {
     }
 
     async program_device(filepath: string, address: string, devstr: string): Promise<Boolean> {
-
+        
         // add by zjd
         if (this.udcClient) {
             this.udcClient.OnDeviceLog('::sending hex file to LDC......')
         }
-
+        
         let send_result = await this.send_file_to_client(filepath, devstr);
         if (send_result === false) {
             return false;
@@ -315,7 +315,7 @@ export class UdcTerminal {
             }
             else {
                 this.udcClient.OnDeviceLog('::program fail')
-            }
+            }    
         }
 
         return (this.cmd_excute_state === 'done' ? true : false);
@@ -474,17 +474,7 @@ export class UdcTerminal {
             resolve('scc')
         })
     }
-    getHexNmame(fn :string){
-        let x='B'
-        for (let i=0;i<fn.length;i++){
-            x+=fn.charCodeAt(i).toString(16)
-        }
-        console.log("16>>>>>>>>>>>>>>>>>>"+x)
-        return x
-       
-    }
     extractHex(fn: string): Promise<string> {
-        this.getHexNmame(fn)
         let rootDir = this.rootDir
         let _this = this
         return new Promise((resolve, reject) => {
@@ -493,7 +483,7 @@ export class UdcTerminal {
                 .on('entry', function (entry) {
                     var fileName = entry.path;
                     if (fileName == "Install/sketch.ino.hex") {
-                        let fss = fs.createWriteStream(path.join(rootDir,  _this.getHexNmame(fn)+'sketch.ino.hex'))
+                        let fss = fs.createWriteStream(path.join(rootDir, 'sketch.ino.hex'))
                         entry.pipe(fss);
                         fss.on("close", () => {
                             console.log("programming------------------------")
@@ -505,7 +495,7 @@ export class UdcTerminal {
                                 break;
                             }
                             console.log("-----------------devstr is :" + devstr)
-                            _this.program_device(path.join(rootDir, _this.getHexNmame(fn)+'sketch.ino.hex'), '0', devstr)
+                            _this.program_device(path.join(rootDir, 'sketch.ino.hex'), '0', devstr)
                             console.log("find")
                             resolve("scc")
                         })
@@ -515,6 +505,25 @@ export class UdcTerminal {
                 })
         })
     }
+    // login(): Promise<string> {
+    //     let fm = new FormData()
+    //     // fm.append("username", "emmtest")
+    //     fm.append("username", "emmtest")
+    //     fm.append("password", "123456")
+    //     return new Promise((resolve) => {
+    //         this.submitForm(fm, this.linkLabAPIs["hostname"], this.linkLabAPIs["port"], this.linkLabAPIs["loginPath"], "POST").then(res => {
+    //             // console.log(res);
+    //             this.getIssuesData().then(back => {
+    //                 // for (let ctn in back) {
+    //                 //     console.log(ctn + ": " + back[ctn])
+    //                 // }
+    //                 resolve('scc')
+
+    //             })
+    //         })
+    //     })
+    // }
+
     postSrcFile(fn: string): Promise<string> {
         let rootDir = this.rootDir
         let tmpPath = path.join(rootDir, fn + ".cpp")
@@ -524,7 +533,7 @@ export class UdcTerminal {
         let _this = this
         // add by zjd
         if (this.udcClient) {
-            this.udcClient.OnDeviceLog('::online compiling......')
+            this.udcClient.OnDeviceLog('::sending source file to tinylink server......')
         }
         return new Promise((resolve, reject) => {
             _this.submitForm(fm,
@@ -535,53 +544,37 @@ export class UdcTerminal {
                     if (res == null || res == undefined || res == '')
                         console.log("no return in getIssuesData")
                     let tmp = JSON.parse(res)
-                    console.log("<<<<<<<<<compile result:" + JSON.stringify(tmp))
-                    console.log("<<<<<<<<<<<<<<<<<<<<"+tmp["data"]["systemState"])
-                    if (tmp["data"]["systemState"] == '1')
+                    console.log("scc")
+                    if (tmp["message"] != 'success')
                         reject("srcFile Post failed")
-                    else {
-                        let downloadFd = http.request({
-                            method: "GET",
-                            hostname: _this.tinyLinkAPIs["hostname"],
-                            port: _this.tinyLinkAPIs["port"],
-                            path: _this.tinyLinkAPIs["downloadHexPath"],
-                            headers: {
-                                Cookie: this.cookie
-                            }
-                        }, (mesg) => {
-                            fs.exists(path.join(this.rootDir, fn + 'Install.zip'), (tag) => {if(tag==true) fs.remove(path.join(this.rootDir, fn + 'Install.zip')) })
-                            let ws = fs.createWriteStream(path.join(this.rootDir, fn + 'Install.zip'))
-                            mesg.on("data", (b: Buffer) => {
-                                console.log("downloading")
-                                ws.write(b)
-                            })
-                            mesg.on("end", () => {
-                                if (_this.udcClient) {
-                                    _this.udcClient.OnDeviceLog('::download hex.zip completion now extract hex file')
-                                }
-                                console.log("download scc")
-                                ws.end()
-                                _this.extractHex(fn).then(() => {
-                                    // add by zjd
-                                    // if (_this.udcClient) {
-                                    //     _this.udcClient.OnDeviceLog('::extract completion')
-                                    // }
-                                    fs.remove(path.join(this.rootDir, fn + 'Install.zip'))
-                                    resolve("scc")
-                                },()=>{
-                                    if (_this.udcClient) {
-                                        _this.udcClient.OnDeviceLog('::extract failure')
-                                    }
-                                })
-
-
-                            })
+                    let downloadFd = http.request({
+                        method: "GET",
+                        hostname: _this.tinyLinkAPIs["hostname"],
+                        port: _this.tinyLinkAPIs["port"],
+                        path: _this.tinyLinkAPIs["downloadHexPath"],
+                        headers: {
+                            Cookie: this.cookie
+                        }
+                    }, (mesg) => {
+                        let ws = fs.createWriteStream(path.join(this.rootDir, fn + 'Install.zip'))
+                        mesg.on("data", (b: Buffer) => {
+                            console.log("downloading")
+                            ws.write(b)
                         })
-                        downloadFd.write("")
-                        downloadFd.end()
-                    }
-                }, err => console.log("err"))
+                        mesg.on("end", () => {
+                            console.log("download scc")
+                            ws.end()
+                            this.extractHex(fn).then(() => resolve("scc"))
 
+                            // add by zjd
+                            if (this.udcClient) {
+                                this.udcClient.OnDeviceLog('::compile success')
+                            }
+                        })
+                    })
+                    downloadFd.write("")
+                    downloadFd.end()
+                }, err => console.log("err"))
         })
     }
     // submitForm(fm: FormData, hostname: string, port: string, path: string, method: string): Promise<string> {
@@ -612,7 +605,7 @@ export class UdcTerminal {
     //     })
     // }
     submitForm(fm: FormData, hostname: string, port: string, path: string, method: string): Promise<string> {
-        let _this = this
+        let _this=this
         return new Promise((resolve, reject) => {
             fm.submit({
                 method: method,
