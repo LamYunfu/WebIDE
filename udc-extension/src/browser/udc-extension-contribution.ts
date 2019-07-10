@@ -4,6 +4,7 @@ import { AboutDialog } from './about-dailog';
 import { UdcService, LOGINTYPE } from '../common/udc-service';
 import { injectable, inject } from "inversify";
 import { CommandContribution, MenuContribution, MenuModelRegistry, MessageService, MAIN_MENU_BAR, Command } from "@theia/core/lib/common";
+import { LanguageGrammarDefinitionContribution, TextmateRegistry } from '@theia/monaco/lib/browser/textmate';
 import { WorkspaceService } from "@theia/workspace/lib/browser/"
 import { FileDialogService, OpenFileDialogProps } from "@theia/filesystem/lib/browser"
 import { FileSystem } from '@theia/filesystem/lib/common';
@@ -283,5 +284,62 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
 @injectable()
 export class UdcExtensionMenuContribution implements MenuContribution {
     registerMenus(menus: MenuModelRegistry): void {
+    }
+}
+
+@injectable()
+export class UdcExtensionHighlightContribution implements LanguageGrammarDefinitionContribution {
+    readonly id = 'cpp';
+    readonly scopeName = 'source.cpp';
+    readonly config: monaco.languages.LanguageConfiguration = {
+        comments: {
+            lineComment: '//',
+            blockComment: ['/*', '*/'],
+        },
+        brackets: [
+            ['{', '}'],
+            ['[', ']'],
+            ['(', ')']
+        ],
+        autoClosingPairs: [
+            { open: '[', close: ']' },
+            { open: '{', close: '}' },
+            { open: '(', close: ')' },
+            { open: '\'', close: '\'', notIn: ['string', 'comment'] },
+            { open: '"', close: '"', notIn: ['string'] },
+            { open: '/*', close: ' */', notIn: ['string'] }
+        ],
+        surroundingPairs: [
+            { open: '{', close: '}' },
+            { open: '[', close: ']' },
+            { open: '(', close: ')' },
+            { open: '"', close: '"' },
+            { open: '\'', close: '\'' },
+        ],
+        folding: {
+            markers: {
+                start: new RegExp('^\\s*#pragma\\s+region\\b'),
+                end: new RegExp('^\\s*#pragma\\s+endregion\\b')
+            }
+        }
+    };
+
+    registerTextmateLanguage(registry: TextmateRegistry) {
+
+        monaco.languages.register({
+            id: this.id,
+            extensions: ['.cpp', '.cc', '.cxx', '.hpp', '.hh', '.hxx', '.h', '.ino', '.inl', '.ipp', 'cl'],
+            aliases: ['C++', 'Cpp', 'cpp'],
+        });
+        monaco.languages.setLanguageConfiguration(this.id, this.config);
+        registry.registerTextmateGrammarScope(this.scopeName, {
+            async getGrammarDefinition() {
+                return {
+                    format: 'json',
+                    content: require('../../data/cpp.tmLanguage.json'),
+                }
+            }
+        });
+        registry.mapLanguageIdToTextmateGrammar(this.id, this.scopeName);
     }
 }

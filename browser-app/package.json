@@ -17,8 +17,6 @@
     "@theia/typescript": "latest",
     "@theia/messages": "latest",
     "@theia/plugin-ext": "latest",
-    "@theia/cpp": "latest",
-    "@theia/mini-browser": "latest",
     "udc-extension": "0.0.0"    
   },
   "devDependencies": {

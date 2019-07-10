@@ -4,12 +4,13 @@ import { UdcWatcher } from './../common/udc-watcher';
 import { UdcService } from './../common/udc-service';
 import { AboutDialog, AboutDialogProps } from './about-dailog';
 
-import { UdcExtensionCommandContribution, UdcExtensionMenuContribution } from './udc-extension-contribution';
+import { UdcExtensionCommandContribution, UdcExtensionMenuContribution, UdcExtensionHighlightContribution } from './udc-extension-contribution';
 import {
     CommandContribution,
     MenuContribution,
     bindContributionProvider
 } from "@theia/core/lib/common";
+import { LanguageGrammarDefinitionContribution } from '@theia/monaco/lib/browser/textmate/textmate-contribution';
 
 import { ContainerModule, interfaces } from "inversify";
 import {  udcServicePath } from '../common/udc-service';
@@ -29,6 +30,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
 
     bind(CommandContribution).to(UdcExtensionCommandContribution);
     bind(MenuContribution).to(UdcExtensionMenuContribution);
+    bind(LanguageGrammarDefinitionContribution).to(UdcExtensionHighlightContribution);
 
     bind(UdcService).toDynamicValue(ctx => {
         const provider = ctx.container.get(WebSocketConnectionProvider);
