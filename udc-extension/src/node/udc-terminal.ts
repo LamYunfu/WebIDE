@@ -474,14 +474,14 @@ export class UdcTerminal {
             resolve('scc')
         })
     }
-    getHexNmame(fn :string){
-        let x='B'
-        for (let i=0;i<fn.length;i++){
-            x+=fn.charCodeAt(i).toString(16)
+    getHexNmame(fn: string) {
+        let x = 'B'
+        for (let i = 0; i < fn.length; i++) {
+            x += fn.charCodeAt(i).toString(16)
         }
-        console.log("16>>>>>>>>>>>>>>>>>>"+x)
+        console.log("16>>>>>>>>>>>>>>>>>>" + x)
         return x
-       
+
     }
     extractHex(fn: string): Promise<string> {
         this.getHexNmame(fn)
@@ -493,7 +493,7 @@ export class UdcTerminal {
                 .on('entry', function (entry) {
                     var fileName = entry.path;
                     if (fileName == "Install/sketch.ino.hex") {
-                        let fss = fs.createWriteStream(path.join(rootDir,  _this.getHexNmame(fn)+'sketch.ino.hex'))
+                        let fss = fs.createWriteStream(path.join(rootDir, _this.getHexNmame(fn) + 'sketch.ino.hex'))
                         entry.pipe(fss);
                         fss.on("close", () => {
                             console.log("programming------------------------")
@@ -505,7 +505,7 @@ export class UdcTerminal {
                                 break;
                             }
                             console.log("-----------------devstr is :" + devstr)
-                            _this.program_device(path.join(rootDir, _this.getHexNmame(fn)+'sketch.ino.hex'), '0', devstr)
+                            _this.program_device(path.join(rootDir, _this.getHexNmame(fn) + 'sketch.ino.hex'), '0', devstr)
                             console.log("find")
                             resolve("scc")
                         })
@@ -535,10 +535,18 @@ export class UdcTerminal {
                     if (res == null || res == undefined || res == '')
                         console.log("no return in getIssuesData")
                     let tmp = JSON.parse(res)
+                    let data = JSON.parse(tmp.data)
+                    console.log(data)
                     console.log("<<<<<<<<<compile result:" + JSON.stringify(tmp))
-                    console.log("<<<<<<<<<<<<<<<<<<<<"+tmp["data"]["systemState"])
-                    if (tmp["data"]["systemState"] == '1')
+                    console.log("<<<<<<<<<<<<<<<<<<<<" + tmp["data"]["systemState"])
+                    if (data.verbose == 'Cross Compiling Error.') {
+                        this.udcClient != undefined && this.udcClient.OnDeviceLog("::online compile failure,check your src file please")
                         reject("srcFile Post failed")
+                    }
+                    else if (data.verbose != '') {
+                        reject("online compiler error")
+                        this.udcClient != undefined && this.udcClient.OnDeviceLog(`::the online compiler has some troubles,try later please`)
+                    }
                     else {
                         let downloadFd = http.request({
                             method: "GET",
@@ -549,7 +557,7 @@ export class UdcTerminal {
                                 Cookie: this.cookie
                             }
                         }, (mesg) => {
-                            fs.exists(path.join(this.rootDir, fn + 'Install.zip'), (tag) => {if(tag==true) fs.remove(path.join(this.rootDir, fn + 'Install.zip')) })
+                            fs.exists(path.join(this.rootDir, fn + 'Install.zip'), (tag) => { if (tag == true) fs.remove(path.join(this.rootDir, fn + 'Install.zip')) })
                             let ws = fs.createWriteStream(path.join(this.rootDir, fn + 'Install.zip'))
                             mesg.on("data", (b: Buffer) => {
                                 console.log("downloading")
@@ -568,7 +576,7 @@ export class UdcTerminal {
                                     // }
                                     fs.remove(path.join(this.rootDir, fn + 'Install.zip'))
                                     resolve("scc")
-                                },()=>{
+                                }, () => {
                                     if (_this.udcClient) {
                                         _this.udcClient.OnDeviceLog('::extract failure')
                                     }
