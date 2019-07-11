@@ -18,6 +18,7 @@
     "@theia/messages": "latest",
     "@theia/mini-browser":"latest",
     "@theia/plugin-ext": "latest",
+     "@theia/mini-browser":"latest",
     "udc-extension": "0.0.0"    
   },
   "devDependencies": {
