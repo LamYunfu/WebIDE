@@ -306,7 +306,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0021: 'red',
         0x0022: 'grey'
     }
-    videoNames: string[] = ["宣讲视频1", "宣讲视频2"]
+    videoNames: string[] = ["教学-串口打印", "教学-MQTT基础"]
     uris: string[] = [`http://linklab.tinylink.cn/video1.mp4`, `http://linklab.tinylink.cn/video2.mp4`]
     pids: string[] = []
     addSubmitedCodingIssue = (issueIndex: string) => {
@@ -526,9 +526,9 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
             }
         )
         $(document).ready(
-            () => $(".videoName").map((_this, ht) => {
+            () => $(".videoItem").map((_this, ht) => {
                 $(ht).click((e) => {
-                    let index = $(e.currentTarget).attr("title")
+                    let index = $(e.currentTarget).children(".videoName").attr("title")
                     index != undefined && this.props.gotoVideo(this.uris[parseInt(index)], this.videoNames[parseInt(index)])
                 })
             })
