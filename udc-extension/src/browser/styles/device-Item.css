@@ -164,13 +164,13 @@
     height: 600px;
 }
 .option_items.list-group {
-    display: none;
+    /* display: none; */
 }
 .coding_items.list-group{
-    display: none;
+    /* display: none; */
 }
 .video_items.list-group{
-    display: none;
+    /* display: none; */
 }
 
 .contentsAndInfos {

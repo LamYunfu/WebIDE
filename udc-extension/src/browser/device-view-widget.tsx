@@ -9,6 +9,7 @@ import * as path from 'path'
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager } from "@theia/editor/lib/browser";
 import * as $ from "jquery"
+import { find } from "@phosphor/algorithm";
 // import {ButtonProps} from 'react-bootstrap/Button'
 // import { Button } from "react-bootstrap";
 
@@ -129,6 +130,7 @@ class CodeItem extends React.Component<CodeItem.Props>{
                             // console.log("this.props.codingTitles[tmp]" + this.props.codingTitles[tmp])
                             // console.log("this.props.codinginfos[tmp]" + this.props.codingInfos[tmp])
                             // console.log("<<<<<<<<<<<<<<<<" + path.join(this.rootDir, `${this.props.codingTitles[tmp]}.cpp`))
+                            
                             this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${this.props.codingTitles[tmp]}.cpp`)))
                             $(".optionInfos").hide()
                             $(".codingInfos").show()
@@ -226,6 +228,7 @@ namespace CodingInfo {
         issueStatusStrs: { [key: string]: string }
         coding_titles: { [key: string]: string },
         postSrcFile: (fn: string) => void
+        addCodingSubmitedIssue:(index:string)=>void
     }
 }
 class CodingInfo extends React.Component<CodingInfo.Props>{
@@ -234,8 +237,10 @@ class CodingInfo extends React.Component<CodingInfo.Props>{
             () => {
                 $("#submitSrcButton").click(
                     () => {
+                        
                         let index = $("#codingInfoArea").attr("title")
                         index != undefined && this.props.postSrcFile(this.props.coding_titles[index])
+                        index != undefined && this.props.addCodingSubmitedIssue(index)
                     }
                 )
             }
@@ -282,6 +287,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
     codingIssues: { [key: string]: string } = {}
     codingInfos: { [key: string]: string } = {}
     codingStatus: { [key: string]: string } = {}
+    submitedCodingIssue: string[] = []
     statusCode: { [key: number]: string } = {
         0x0000: 'NO_GEN',
         0x0001: 'GEN_FAIL',
@@ -302,9 +308,12 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0021: 'red',
         0x0022: 'grey'
     }
-    videoNames:string[]=["宣讲视频"]    
-    uris:string[]=[`http://linklab.tinylink.cn/java1-1.mp4`]
+    videoNames: string[] = ["宣讲视频"]
+    uris: string[] = [`http://linklab.tinylink.cn/java1-1.mp4`]
     pids: string[] = []
+    addSubmitedCodingIssue = (issueIndex: string) => {
+        this.submitedCodingIssue.push(issueIndex)
+    }
     componentWillMount() {
         let tmp = { "qzid": "1" }
         let _this = this
@@ -350,68 +359,68 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         //         url: "http://api.tinylink.cn/user/login",
         //         dataType: 'json',
         //         data: form,
-        //         success: 
-        //         function (data) {
-        //             // alert(JSON.stringify(data))
-        //             console.log(JSON.stringify(data))
-                    $.ajax(
-                        {
-                            headers: {
-                                "accept": "application/json",
-                            },
-                            crossDomain: true,
-                            xhrFields: {
-                                withCredentials: true
-                            },
-                            method: "POST",
-                            url: "http://api.tinylink.cn/problem/query",
+        //         success:
+        //             function (data) {
+        //                 // alert(JSON.stringify(data))
+        //                 console.log(JSON.stringify(data))
+                        $.ajax(
+                            {
+                                headers: {
+                                    "accept": "application/json",
+                                },
+                                crossDomain: true,
+                                xhrFields: {
+                                    withCredentials: true
+                                },
+                                method: "POST",
+                                url: "http://api.tinylink.cn/problem/query",
 
-                            dataType: 'json',
-                            contentType: "text/plain",
-                            data: "", // serializes the form's elements.
-                            success: function (data) {
-                                // alert(JSON.stringify(data))
-                                let x = data.data; // show response from the php script.
-                                let fns = []
-                                for (let item of x) {
-                                    _this.codingIssues[item.pid] = item.title
-                                    fns.push(item.title)
-                                    _this.codingInfos[item.pid] = item.content
-                                    _this.pids.push(item.pid)
+                                dataType: 'json',
+                                contentType: "text/plain",
+                                data: "", // serializes the form's elements.
+                                success: function (data) {
+                                    // alert(JSON.stringify(data))
+                                    let x = data.data; // show response from the php script.
+                                    let fns = []
+                                    for (let item of x) {
+                                        _this.codingIssues[item.pid] = item.title
+                                        fns.push(item.title)
+                                        _this.codingInfos[item.pid] = item.content
+                                        _this.pids.push(item.pid)
+                                    }
+                                    _this.props.creatSrcFile(fns)
+                                    _this.props.callUpdata()
+
                                 }
-                                _this.props.creatSrcFile(fns)
-                                _this.props.callUpdata()
-
                             }
-                        }
-                    )
-                    $.ajax(
-                        {
-                            headers: {
-                                "accept": "application/json",
-                            },
-                            crossDomain: true,
-                            xhrFields: {
-                                withCredentials: true
-                            },
-                            method: "GET",
-                            url: "http://api.tinylink.cn/user/info",
-                            // processData: false,
-                            dataType: 'json',
-                            contentType: "text/plain",
-                            data: "", // serializes the form's elements.
-                            success: function (data) {
-                                $(".userName").text(data.data.uname)
-                                //alert(data.data.JSESSIONID)
-                                _this.props.setCookie(data.data.JSESSIONID)
+                        )
+                        $.ajax(
+                            {
+                                headers: {
+                                    "accept": "application/json",
+                                },
+                                crossDomain: true,
+                                xhrFields: {
+                                    withCredentials: true
+                                },
+                                method: "GET",
+                                url: "http://api.tinylink.cn/user/info",
+                                // processData: false,
+                                dataType: 'json',
+                                contentType: "text/plain",
+                                data: "", // serializes the form's elements.
+                                success: function (data) {
+                                    $(".userName").text(data.data.uname)
+                                    //alert(data.data.JSESSIONID)
+                                    _this.props.setCookie(data.data.JSESSIONID)
+                                }
                             }
-                        }
-                    )
-                    _this.props.callUpdata()
-                }
-    //         }
-    //     )
-    // }
+                        )
+                        _this.props.callUpdata()
+        //             }
+        //     }
+        // )
+    }
     componentDidMount() {
         let _this = this
         setInterval(() => {
@@ -436,11 +445,11 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         let tmp = data.problem
                         for (let x of tmp) {
                             _this.codingStatus[x.pid] = x.status
+                            if (find(_this.submitedCodingIssue, (value,index )=>x.pid==value) == undefined)
+                                continue
                             // alert( _this.codingStatus[x.pid])
                             // $(`.codeItem a[title=${x.pid}]`).next().css("color","red")
                             //$(`.codeItem a[title=${x.pid}]`).next().css("color", _this.statusColors[parseInt(x.status)])
-                            // console.log(">>>>>>>>>>")
-                            // console.log(JSON.stringify($(`.codeItem a[title=${x.pid}]`)))
                             let status = _this.statusCode[parseInt(x.status)];
                             if (status == 'JUDGING') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
@@ -527,7 +536,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         for (let entry in this.codingIssues)
             codingItems.push(<CodeItem akey={entry} key={entry}
                 codingInfos={this.codingInfos} codingTitles={this.codingIssues}
-                codingStatus={this.codingStatus} openSrcFile={this.props.openSrcFile} />)
+                codingStatus={this.codingStatus} openSrcFile={this.props.openSrcFile}/>)
 
         return (
             <div className="contentsAndInfos container">
@@ -536,31 +545,32 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 <div className="row">
                     <div className="contents col-5">
                         <div className="row">
-                            <div className="option col-12">
-                                <h5 className="unfoldOptionSwitch"><span className="unfoldOptionItems">+</span> 选择题</h5>
-                                <ul className="option_items list-group">{optionItems}</ul>
-                            </div>
-                        </div>
-                        <hr />
-                        <div className="row">
                             <div className="coding col-12">
-                                <h5 className="unfoldCodingSwitch"><span className="unfoldCodingItems">+</span> 编程题</h5>
-                                <ul className="coding_items list-group">{codingItems}</ul>
-                            </div>
-                        </div>
-                        <hr />
-                        <div className="row">
-                            <div className="coding col-12">
-                                <h5 className="unfoldVideoSwitch"><span className="unfoldVideoItems">+</span> 视频</h5>
+                                {/* <h5 className="unfoldVideoSwitch"><span className="unfoldVideoItems">+</span> 第一章节</h5> */}
                                 <ul className="video_items list-group">
                                     <VideoItem title='0' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                 </ul>
                             </div>
                         </div>
+                        <div className="row">
+                            <div className="option col-12">
+                                {/* <h5 className="unfoldOptionSwitch"><span className="unfoldOptionItems">+</span>第一章节</h5> */}
+                                <ul className="option_items list-group">{optionItems}</ul>
+                            </div>
+                        </div>
+                        {/* <hr /> */}
+                        <div className="row">
+                            <div className="coding col-12">
+                                {/* <h5 className="unfoldCodingSwitch"><span className="unfoldCodingItems">+</span> 编程题</h5> */}
+                                <ul className="coding_items list-group">{codingItems}</ul>
+                            </div>
+                        </div>
+                        <hr />
+
                     </div>
                     <div className="codingInfos col-7" >
                         <CodingInfo issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
-                            postSrcFile={this.props.postSrcFile} />
+                            postSrcFile={this.props.postSrcFile} addCodingSubmitedIssue={this.addSubmitedCodingIssue} />
                     </div>
                     <div className="optionInfos col-7" >
                         <OptionInfo answers={this.answers} />
