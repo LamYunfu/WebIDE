@@ -308,8 +308,8 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0021: 'red',
         0x0022: 'grey'
     }
-    videoNames: string[] = ["宣讲视频"]
-    uris: string[] = [`http://linklab.tinylink.cn/java1-1.mp4`]
+    videoNames: string[] = ["宣讲视频1", "宣讲视频2"]
+    uris: string[] = [`http://linklab.tinylink.cn/video1.mp4`,`http://linklab.tinylink.cn/video2.mp4`]
     pids: string[] = []
     addSubmitedCodingIssue = (issueIndex: string) => {
         this.submitedCodingIssue.push(issueIndex)
@@ -331,7 +331,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 contentType: "text/plain",
                 data: JSON.stringify(tmp),
                 success: function (data) {
-                    let x = data.question.slice(0, 10);
+                    let x = data.question.slice(0, 3);
 
                     for (let item of x) {
                         _this.optionIssues[item.order] = item.description
@@ -549,6 +549,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                                 {/* <h5 className="unfoldVideoSwitch"><span className="unfoldVideoItems">+</span> 第一章节</h5> */}
                                 <ul className="video_items list-group">
                                     <VideoItem title='0' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
+                                    <VideoItem title='1' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                 </ul>
                             </div>
                         </div>

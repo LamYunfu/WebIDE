@@ -2,7 +2,8 @@
 require('reflect-metadata');
 const path = require('path');
 const express = require('express');
-const { Container } = require('inversify');
+const { Container, injectable } = require('inversify');
+
 const { BackendApplication, CliManager } = require('@theia/core/lib/node');
 const { backendApplicationModule } = require('@theia/core/lib/node/backend-application-module');
 const { messagingBackendModule } = require('@theia/core/lib/node/messaging/messaging-backend-module');
@@ -27,8 +28,9 @@ function start(port, host, argv) {
     const cliManager = container.get(CliManager);
     return cliManager.initializeCli(argv).then(function () {
         const application = container.get(BackendApplication);
-        application.use(express.static(path.join(__dirname, '../../lib')));
-        application.use(express.static(path.join(__dirname, '../../lib/index.html')));
+        application.use(express.static(path.join(__dirname, '../../lib'), {
+            index: 'index.html'
+        }));
         return application.start(port, host);
     });
 }
@@ -42,7 +44,6 @@ module.exports = (port, host, argv) => Promise.resolve()
     .then(function () { return Promise.resolve(require('@theia/json/lib/node/json-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('@theia/terminal/lib/node/terminal-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('@theia/typescript/lib/node/typescript-backend-module')).then(load) })
-    .then(function () { return Promise.resolve(require('@theia/mini-browser/lib/node/mini-browser-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('@theia/debug/lib/node/debug-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('@theia/file-search/lib/node/file-search-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('@theia/search-in-workspace/lib/node/search-in-workspace-backend-module')).then(load) })
