@@ -263,21 +263,6 @@
     ws "^5.2.2"
     yargs "^11.1.0"
 
-"@theia/cpp@latest":
-  version "0.8.0"
-  resolved "https://registry.npm.taobao.org/@theia/cpp/download/@theia/cpp-0.8.0.tgz#cec62e7b5f4483e828c425011b5525bfed4d2a1a"
-  integrity sha1-zsYue19Eg+goxCUBG1Ulv+1NKho=
-  dependencies:
-    "@theia/core" "^0.8.0"
-    "@theia/editor" "^0.8.0"
-    "@theia/filesystem" "^0.8.0"
-    "@theia/languages" "^0.8.0"
-    "@theia/monaco" "^0.8.0"
-    "@theia/preferences" "^0.8.0"
-    "@theia/process" "^0.8.0"
-    "@theia/task" "^0.8.0"
-    string-argv "^0.1.1"
-
 "@theia/debug@^0.8.0":
   version "0.8.0"
   resolved "https://registry.npm.taobao.org/@theia/debug/download/@theia/debug-0.8.0.tgz#d012e98e719807eadd9c453035c3c4935afdc9f6"

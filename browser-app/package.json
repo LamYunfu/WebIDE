@@ -16,6 +16,7 @@
     "@theia/monaco": "latest",
     "@theia/typescript": "latest",
     "@theia/messages": "latest",
+    "@theia/mini-browser":"latest",
     "@theia/plugin-ext": "latest",
     "udc-extension": "0.0.0"    
   },
