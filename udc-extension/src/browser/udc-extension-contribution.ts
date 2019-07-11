@@ -189,8 +189,9 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
             }
         })
         registry.registerCommand(UdcCommands.openViewPanel, {
-            execute: async (uri:string) => {
-                registry.executeCommand("iot.plugin.tinylink.compile",uri)
+            execute: async (uri:string,videoName:string) => {
+                console.log("<<<<<<<<<<<<<<<<<<<<=video name"+videoName)
+                registry.executeCommand("iot.plugin.tinylink.compile",uri,videoName)
             }
         })
         registry.registerCommand(UdcCommands.JudgeButton, {

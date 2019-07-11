@@ -48,6 +48,7 @@ class OptionItem extends React.Component<OptionItem.Props> {
 
     }
     componentDidMount() {
+
         $(document).ready(
             () => {
                 $(".optionItem").click(
@@ -84,15 +85,12 @@ namespace VideoItem {
         title: string
         videoNames: string[]
         uris: string[]
-        gotoVideo: (uri: string) => void
+        gotoVideo: (uri: string, videoName: string) => void
     }
 }
 class VideoItem extends React.Component<VideoItem.Props>{
     componentDidMount() {
-        $(".videoName").click((e) => {
-            let index = $(e.currentTarget).attr("title")
-            index != undefined && this.props.gotoVideo(this.props.uris[parseInt(index)])
-        })
+
     }
     render(): JSX.Element {
         return (
@@ -130,7 +128,7 @@ class CodeItem extends React.Component<CodeItem.Props>{
                             // console.log("this.props.codingTitles[tmp]" + this.props.codingTitles[tmp])
                             // console.log("this.props.codinginfos[tmp]" + this.props.codingInfos[tmp])
                             // console.log("<<<<<<<<<<<<<<<<" + path.join(this.rootDir, `${this.props.codingTitles[tmp]}.cpp`))
-                            
+
                             this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${this.props.codingTitles[tmp]}.cpp`)))
                             $(".optionInfos").hide()
                             $(".codingInfos").show()
@@ -228,7 +226,7 @@ namespace CodingInfo {
         issueStatusStrs: { [key: string]: string }
         coding_titles: { [key: string]: string },
         postSrcFile: (fn: string) => void
-        addCodingSubmitedIssue:(index:string)=>void
+        addCodingSubmitedIssue: (index: string) => void
     }
 }
 class CodingInfo extends React.Component<CodingInfo.Props>{
@@ -237,7 +235,7 @@ class CodingInfo extends React.Component<CodingInfo.Props>{
             () => {
                 $("#submitSrcButton").click(
                     () => {
-                        
+
                         let index = $("#codingInfoArea").attr("title")
                         index != undefined && this.props.postSrcFile(this.props.coding_titles[index])
                         index != undefined && this.props.addCodingSubmitedIssue(index)
@@ -274,7 +272,7 @@ namespace NewIssueUi {
         postSrcFile: (fn: string) => void
         creatSrcFile: (fns: string[]) => void
         setCookie: (cookie: string) => void
-        gotoVideo: (uri: string) => void
+        gotoVideo: (uri: string, videoName: string) => void
     }
 }
 
@@ -309,7 +307,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0022: 'grey'
     }
     videoNames: string[] = ["宣讲视频1", "宣讲视频2"]
-    uris: string[] = [`http://linklab.tinylink.cn/video1.mp4`,`http://linklab.tinylink.cn/video2.mp4`]
+    uris: string[] = [`http://linklab.tinylink.cn/video1.mp4`, `http://linklab.tinylink.cn/video2.mp4`]
     pids: string[] = []
     addSubmitedCodingIssue = (issueIndex: string) => {
         this.submitedCodingIssue.push(issueIndex)
@@ -445,7 +443,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         let tmp = data.problem
                         for (let x of tmp) {
                             _this.codingStatus[x.pid] = x.status
-                            if (find(_this.submitedCodingIssue, (value,index )=>x.pid==value) == undefined)
+                            if (find(_this.submitedCodingIssue, (value, index) => x.pid == value) == undefined)
                                 continue
                             // alert( _this.codingStatus[x.pid])
                             // $(`.codeItem a[title=${x.pid}]`).next().css("color","red")
@@ -468,6 +466,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
             )
 
         }, 5000)
+
         $(document).ready(
             () => {
                 $("#connectButton").click(
@@ -526,6 +525,14 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
 
             }
         )
+        $(document).ready(
+            () => $(".videoName").map((_this, ht) => {
+                $(ht).click((e) => {
+                    let index = $(e.currentTarget).attr("title")
+                    index != undefined && this.props.gotoVideo(this.uris[parseInt(index)], this.videoNames[parseInt(index)])
+                })
+            })
+        )
     }
     render(): JSX.Element {
         let optionItems = []
@@ -536,7 +543,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         for (let entry in this.codingIssues)
             codingItems.push(<CodeItem akey={entry} key={entry}
                 codingInfos={this.codingInfos} codingTitles={this.codingIssues}
-                codingStatus={this.codingStatus} openSrcFile={this.props.openSrcFile}/>)
+                codingStatus={this.codingStatus} openSrcFile={this.props.openSrcFile} />)
 
         return (
             <div className="contentsAndInfos container">
@@ -642,7 +649,7 @@ export class DeviceViewWidget extends TreeWidget {
         this.udcService.createSrcFile(JSON.stringify(fn))
 
     }
-    gotoVideo = (uri: string) => {
-        this.commandRegistry.executeCommand(UdcCommands.openViewPanel.id, uri)
+    gotoVideo = (uri: string, videoName: string) => {
+        this.commandRegistry.executeCommand(UdcCommands.openViewPanel.id, uri, videoName)
     }
 }

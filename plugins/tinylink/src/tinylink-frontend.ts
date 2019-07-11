@@ -13,7 +13,8 @@ namespace IoTCommands {
     };
 }
 namespace IoTWebview {
-    export function generateHTML(url: string="http://linklab.tinylink.cn/java1-1.mp4") {
+    // export function generateHTML(url: string="http://linklab.tinylink.cn/java1-1.mp4") {
+        export function generateHTML(url: string) {
         return `
         <html>
         <iframe id="iframe" src="${url}" frameborder="0" style="display: block; margin: 0px; 
@@ -32,7 +33,7 @@ export function start(context: theia.PluginContext) {
             async (...args: any[]) => {
                 const panel = theia.window.createWebviewPanel(
                     "TinyLink",
-                    "宣讲视屏",
+                    args[1],
                     theia.ViewColumn.Active,
                     {
                         enableScripts:true
