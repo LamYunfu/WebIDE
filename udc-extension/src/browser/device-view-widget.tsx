@@ -341,28 +341,28 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 }
             }
         )
-        // let form = {
-        //     username: "emmtest",
-        //     password: "123456"
-        // }
-        // $.ajax(
-        //     {
-        //         headers: {
-        //             "accept": "application/json",
-        //         },
-        //         crossDomain: true,
-        //         xhrFields: {
-        //             withCredentials: true
-        //         },
-        //         method: "POST",
-        //         type: 'POST',
-        //         url: "http://api.tinylink.cn/user/login",
-        //         dataType: 'json',
-        //         data: form,
-        //         success:
-        //             function (data) {
-        //                 // alert(JSON.stringify(data))
-        //                 console.log(JSON.stringify(data))
+        let form = {
+            username: "emmtest",
+            password: "123456"
+        }
+        $.ajax(
+            {
+                headers: {
+                    "accept": "application/json",
+                },
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: true
+                },
+                method: "POST",
+                type: 'POST',
+                url: "http://api.tinylink.cn/user/login",
+                dataType: 'json',
+                data: form,
+                success:
+                    function (data) {
+                        // alert(JSON.stringify(data))
+                        console.log(JSON.stringify(data))
                         $.ajax(
                             {
                                 headers: {
@@ -417,9 +417,9 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             }
                         )
                         _this.props.callUpdata()
-        //             }
-        //     }
-        // )
+                    }
+            }
+        )
     }
     componentDidMount() {
         let _this = this
