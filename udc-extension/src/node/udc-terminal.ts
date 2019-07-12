@@ -668,5 +668,8 @@ export class UdcTerminal {
         console.log(" null cookie")
         return true
     }
+    outputResult(res: string) {
+        this.udcClient && this.udcClient.OnDeviceLog(res)
+    }
 
 }

@@ -1,9 +1,10 @@
 // @ts-check
 const { BackendApplicationConfigProvider } = require('@theia/core/lib/node/backend-application-config-provider');
+const main = require('@theia/core/lib/node/main');
 BackendApplicationConfigProvider.set({});
 
-const serverPath = require('path').resolve(__dirname, 'server');
-const address = require('@theia/core/lib/node/cluster/main').default(serverPath);
+const serverModule = require('./server');
+const address = main.start(serverModule());
 address.then(function (address) {
     if (process && process.send) {
         process.send(address.port.toString());

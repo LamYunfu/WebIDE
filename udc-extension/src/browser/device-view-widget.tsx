@@ -281,11 +281,12 @@ namespace NewIssueUi {
         setCookie: (cookie: string) => void
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
+        outputResult: (res: string) => void
     }
 }
 
 export class NewIssueUi extends React.Component<NewIssueUi.Props>{
-    currentFocusCodingIndex: string[]=['00000']
+    currentFocusCodingIndex: string[] = ['00000']
     optionIssues: { [key: string]: string } = {}
     optionStatus: { [key: string]: string } = {}
     choices: { [key: string]: string[] } = {}
@@ -451,8 +452,10 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         let tmp = data.problem
                         for (let x of tmp) {
                             _this.codingStatus[x.pid] = x.status
-                            if (find(_this.submitedCodingIssue, (value, index) => x.pid == value) == undefined)
+                            if (find(_this.submitedCodingIssue, (value, index) => x.pid == value) == undefined) {
+
                                 continue
+                            }
                             // alert( _this.codingStatus[x.pid])
                             // $(`.codeItem a[title=${x.pid}]`).next().css("color","red")
                             //$(`.codeItem a[title=${x.pid}]`).next().css("color", _this.statusColors[parseInt(x.status)])
@@ -461,14 +464,19 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
                             } else if (status == 'ACCEPT') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
+                                _this.props.outputResult("::ACCEPT")
+                                _this.submitedCodingIssue.splice(_this.submitedCodingIssue.indexOf(x.pid))
                             } else if (status == 'WRONG_ANSWER') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
+                                _this.props.outputResult("::WRONG_ANSWER")
+                                _this.submitedCodingIssue.splice(_this.submitedCodingIssue.indexOf(x.pid))
                             } else if (status == 'TIMEOUT') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                             } else {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
                             }
                         }
+
                     }
                 }
             )
@@ -488,7 +496,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             let val = $("#codingInfoArea").attr("title")
                             // alert(val)
                             val != undefined && (_this.currentFocusCodingIndex[0] = val)
-                            console.log("<<<<<<<<<set current coding index:"+_this.currentFocusCodingIndex[0])
+                            console.log("<<<<<<<<<set current coding index:" + _this.currentFocusCodingIndex[0])
                             val != undefined && this.props.connect(val)
                             $(e.currentTarget).text("断开")
                         }
@@ -628,6 +636,7 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <NewIssueUi
+                outputResult={this.outputResult}
                 say={this.say}
                 gotoVideo={this.gotoVideo}
                 setCookie={this.setCookie}
@@ -637,6 +646,9 @@ export class DeviceViewWidget extends TreeWidget {
                 openSrcFile={this.openSrcFile}
                 postSrcFile={this.postSrcFile} />
         )
+    }
+    outputResult = (res: string) => {
+        this.udcService.outputResult(res)
     }
     say = (verbose: string) => {
         this.messageService.info(verbose)

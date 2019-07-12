@@ -20,9 +20,9 @@ export class UdcServiceImpl implements UdcService {
         });
     }
 
-    async connect(login_type: LOGINTYPE, model: string ,pid:string): Promise<string> {
+    async connect(login_type: LOGINTYPE, model: string, pid: string): Promise<string> {
         try {
-            let result = await this.udcTerminal.connect(login_type, model,pid);
+            let result = await this.udcTerminal.connect(login_type, model, pid);
             if (result === true) {
                 return "连接成功"
             } else {
@@ -92,10 +92,13 @@ export class UdcServiceImpl implements UdcService {
         this.udcTerminal.createSrcFile(filnames)
 
     }
-    postSrcFile(fn:string):void{
+    postSrcFile(fn: string): void {
         this.udcTerminal.postSrcFile(fn)
     }
-    setCookie(cookie:string) :boolean{
+    setCookie(cookie: string): boolean {
         return this.udcTerminal.setCookie(cookie)
+    }
+    outputResult(res: string) {
+        this.udcTerminal.outputResult(res)
     }
 }
