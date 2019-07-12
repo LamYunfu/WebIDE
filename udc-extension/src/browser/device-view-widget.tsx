@@ -41,6 +41,8 @@ namespace OptionItem {
         titles: { [key: string]: string }
         choices: { [key: string]: string[] }
         optionStatus: { [key: string]: string }
+        // addOptionStatus: (pid: string, selected: string) => void
+        submitedOptionStatus: { [key: string]: string }
     }
 }
 class OptionItem extends React.Component<OptionItem.Props> {
@@ -62,6 +64,13 @@ class OptionItem extends React.Component<OptionItem.Props> {
                             for (let index in this.props.choices[x]) {
                                 let op = $(`.optionContent:eq(${index})`)
                                 op.text(this.props.choices[x][index])
+                            }
+                            if (this.props.submitedOptionStatus[x] == undefined) {
+                                $(".custom-control-label").prop("checked", false)
+                            }
+                            else {
+                                $(`#optionRadio${this.props.submitedOptionStatus[x]}`).prop("checked", true)
+
                             }
                         }
                     }
@@ -154,6 +163,9 @@ class CodeItem extends React.Component<CodeItem.Props>{
 namespace OptionInfo {
     export interface Props {
         answers: { [key: string]: string }
+        addOptionStatus: (pid: string, selected: string) => void
+        submitedOptionStatus: { [key: string]: string }
+        say: (thing: string) => void
     }
 }
 class OptionInfo extends React.Component<OptionInfo.Props>{
@@ -164,10 +176,18 @@ class OptionInfo extends React.Component<OptionInfo.Props>{
                     (e) => {
                         e.preventDefault()
                         let idv = $(".options").attr("id")
+                        let checked = $("input:radio:checked").val()
+                        if (idv != undefined && this.props.submitedOptionStatus[idv] != undefined && this.props.submitedOptionStatus[idv] != checked) {
+                            this.props.say("题目已提交,勿重复操作")
+                            return
+                        }
+                        idv != undefined && checked != undefined && (this.props.addOptionStatus(idv, checked.toString()))
                         // idv != undefined && alert($("input:radio:checked").val() + "right" + this.props.answers[idv])
+
                         if (idv != undefined && $("input:radio:checked").val() == this.props.answers[idv]) {
                             //$(`.optionItem a[id=${idv}]`).next().css("color", "green")
                             $(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-success")
+
                         }
                         else {
                             //$(`.optionItem a[id=${idv}]`).next().css("color", "red")
@@ -294,7 +314,9 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
     codingIssues: { [key: string]: string } = {}
     codingInfos: { [key: string]: string } = {}
     codingStatus: { [key: string]: string } = {}
+    judgeStatus: string[] = []
     submitedCodingIssue: string[] = []
+    submitedOptionIssue: { [key: string]: string } = {}
     statusCode: { [key: number]: string } = {
         0x0000: 'NO_GEN',
         0x0001: 'GEN_FAIL',
@@ -318,6 +340,9 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
     videoNames: string[] = ["宣讲视频1", "宣讲视频2"]
     uris: string[] = [`http://linklab.tinylink.cn/video1.mp4`, `http://linklab.tinylink.cn/video2.mp4`]
     pids: string[] = []
+    addOptionStatus = (pid: string, selected: string) => {
+        this.submitedOptionIssue[pid] = selected
+    }
     addSubmitedCodingIssue = (issueIndex: string) => {
         this.submitedCodingIssue.push(issueIndex)
     }
@@ -462,14 +487,23 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             let status = _this.statusCode[parseInt(x.status)];
                             if (status == 'JUDGING') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
+                                _this.judgeStatus[x.pid] = '1'
                             } else if (status == 'ACCEPT') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
-                                _this.props.outputResult("::ACCEPT")
-                                _this.submitedCodingIssue.splice(_this.submitedCodingIssue.indexOf(x.pid))
+                                if (_this.judgeStatus[x.pid] == '1') {
+                                    _this.props.outputResult("::ACCEPT")
+                                    _this.submitedCodingIssue.splice(_this.submitedCodingIssue.indexOf(x.pid))
+                                    _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
+                                }
                             } else if (status == 'WRONG_ANSWER') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
-                                _this.props.outputResult("::WRONG_ANSWER")
-                                _this.submitedCodingIssue.splice(_this.submitedCodingIssue.indexOf(x.pid))
+                                // alert(_this.judgeStatus[x.pid])
+                                if (_this.judgeStatus[x.pid] == '1') {
+                                    
+                                    _this.props.outputResult("::WRONG_ANSWER")
+                                    _this.submitedCodingIssue.splice(_this.submitedCodingIssue.indexOf(x.pid))
+                                    _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
+                                }
                             } else if (status == 'TIMEOUT') {
                                 $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                             } else {
@@ -481,7 +515,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 }
             )
 
-        }, 5000)
+        }, 2000)
 
         $(document).ready(
             () => {
@@ -558,7 +592,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         let codingItems = []
         for (let index in this.optionIssues)
             optionItems.push(<OptionItem akey={index} key={index} choices={this.choices}
-                optionStatus={this.optionStatus} titles={this.optionIssues} />)
+                optionStatus={this.optionStatus} titles={this.optionIssues} submitedOptionStatus={this.submitedOptionIssue} />)
         for (let entry in this.codingIssues)
             codingItems.push(<CodeItem akey={entry} key={entry}
                 codingInfos={this.codingInfos} codingTitles={this.codingIssues}
@@ -600,7 +634,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             postSrcFile={this.props.postSrcFile} addCodingSubmitedIssue={this.addSubmitedCodingIssue} />
                     </div>
                     <div className="optionInfos col-7" >
-                        <OptionInfo answers={this.answers} />
+                        <OptionInfo say={this.props.say} addOptionStatus={this.addOptionStatus} answers={this.answers} submitedOptionStatus={this.submitedOptionIssue} />
                     </div>
                 </div>
 
