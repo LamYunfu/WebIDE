@@ -223,20 +223,27 @@ class OptionInfo extends React.Component<OptionInfo.Props>{
 }
 namespace CodingInfo {
     export interface Props {
+        currentFocusCodingIndex: string[]
         issueStatusStrs: { [key: string]: string }
         coding_titles: { [key: string]: string },
         postSrcFile: (fn: string) => void
         addCodingSubmitedIssue: (index: string) => void
+        say: (verbose: string) => void
     }
 }
 class CodingInfo extends React.Component<CodingInfo.Props>{
     componentDidMount() {
         $(document).ready(
             () => {
+                let _this = this
                 $("#submitSrcButton").click(
                     () => {
 
                         let index = $("#codingInfoArea").attr("title")
+                        if (_this.props.currentFocusCodingIndex[0] != index) {
+                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                            return
+                        }
                         index != undefined && this.props.postSrcFile(this.props.coding_titles[index])
                         index != undefined && this.props.addCodingSubmitedIssue(index)
                     }
@@ -273,11 +280,12 @@ namespace NewIssueUi {
         creatSrcFile: (fns: string[]) => void
         setCookie: (cookie: string) => void
         gotoVideo: (uri: string, videoName: string) => void
+        say: (verbose: string) => void
     }
 }
 
 export class NewIssueUi extends React.Component<NewIssueUi.Props>{
-
+    currentFocusCodingIndex: string[]=['00000']
     optionIssues: { [key: string]: string } = {}
     optionStatus: { [key: string]: string } = {}
     choices: { [key: string]: string[] } = {}
@@ -306,7 +314,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0021: 'red',
         0x0022: 'grey'
     }
-    videoNames: string[] = ["教学-串口打印", "教学-MQTT基础"]
+    videoNames: string[] = ["宣讲视频1", "宣讲视频2"]
     uris: string[] = [`http://linklab.tinylink.cn/video1.mp4`, `http://linklab.tinylink.cn/video2.mp4`]
     pids: string[] = []
     addSubmitedCodingIssue = (issueIndex: string) => {
@@ -339,10 +347,28 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                 }
             }
         )
-        let form = {
-            username: "emmtest",
-            password: "123456"
-        }
+        // let form = {
+        //     username: "emmtest",
+        //     password: "123456"
+        // }
+        // $.ajax(
+        //     {
+        //         headers: {
+        //             "accept": "application/json",
+        //         },
+        //         crossDomain: true,
+        //         xhrFields: {
+        //             withCredentials: true
+        //         },
+        //         method: "POST",
+        //         type: 'POST',
+        //         url: "http://api.tinylink.cn/user/login",
+        //         dataType: 'json',
+        //         data: form,
+        //         success:
+        //             function (data) {
+        //                 // alert(JSON.stringify(data))
+        //                 console.log(JSON.stringify(data))
         $.ajax(
             {
                 headers: {
@@ -353,72 +379,54 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                     withCredentials: true
                 },
                 method: "POST",
-                type: 'POST',
-                url: "http://api.tinylink.cn/user/login",
+                url: "http://api.tinylink.cn/problem/query",
+
                 dataType: 'json',
-                data: form,
-                success:
-                    function (data) {
-                        // alert(JSON.stringify(data))
-                        console.log(JSON.stringify(data))
-                        $.ajax(
-                            {
-                                headers: {
-                                    "accept": "application/json",
-                                },
-                                crossDomain: true,
-                                xhrFields: {
-                                    withCredentials: true
-                                },
-                                method: "POST",
-                                url: "http://api.tinylink.cn/problem/query",
-
-                                dataType: 'json',
-                                contentType: "text/plain",
-                                data: "", // serializes the form's elements.
-                                success: function (data) {
-                                    // alert(JSON.stringify(data))
-                                    let x = data.data; // show response from the php script.
-                                    let fns = []
-                                    for (let item of x) {
-                                        _this.codingIssues[item.pid] = item.title
-                                        fns.push(item.title)
-                                        _this.codingInfos[item.pid] = item.content
-                                        _this.pids.push(item.pid)
-                                    }
-                                    _this.props.creatSrcFile(fns)
-                                    _this.props.callUpdata()
-
-                                }
-                            }
-                        )
-                        $.ajax(
-                            {
-                                headers: {
-                                    "accept": "application/json",
-                                },
-                                crossDomain: true,
-                                xhrFields: {
-                                    withCredentials: true
-                                },
-                                method: "GET",
-                                url: "http://api.tinylink.cn/user/info",
-                                // processData: false,
-                                dataType: 'json',
-                                contentType: "text/plain",
-                                data: "", // serializes the form's elements.
-                                success: function (data) {
-                                    $(".userName").text(data.data.uname)
-                                    //alert(data.data.JSESSIONID)
-                                    _this.props.setCookie(data.data.JSESSIONID)
-                                }
-                            }
-                        )
-                        _this.props.callUpdata()
+                contentType: "text/plain",
+                data: "", // serializes the form's elements.
+                success: function (data) {
+                    // alert(JSON.stringify(data))
+                    let x = data.data; // show response from the php script.
+                    let fns = []
+                    for (let item of x) {
+                        _this.codingIssues[item.pid] = item.title
+                        fns.push(item.title)
+                        _this.codingInfos[item.pid] = item.content
+                        _this.pids.push(item.pid)
                     }
+                    _this.props.creatSrcFile(fns)
+                    _this.props.callUpdata()
+
+                }
             }
         )
+        $.ajax(
+            {
+                headers: {
+                    "accept": "application/json",
+                },
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: true
+                },
+                method: "GET",
+                url: "http://api.tinylink.cn/user/info",
+                // processData: false,
+                dataType: 'json',
+                contentType: "text/plain",
+                data: "", // serializes the form's elements.
+                success: function (data) {
+                    $(".userName").text(data.data.uname)
+                    //alert(data.data.JSESSIONID)
+                    _this.props.setCookie(data.data.JSESSIONID)
+                }
+            }
+        )
+        _this.props.callUpdata()
     }
+    //         }
+    //     )
+    // }
     componentDidMount() {
         let _this = this
         setInterval(() => {
@@ -469,6 +477,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
 
         $(document).ready(
             () => {
+                let _this = this
                 $("#connectButton").click(
                     (e) => {
                         if ($(e.currentTarget).text() == "断开") {
@@ -478,6 +487,8 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         else {
                             let val = $("#codingInfoArea").attr("title")
                             // alert(val)
+                            val != undefined && (_this.currentFocusCodingIndex[0] = val)
+                            console.log("<<<<<<<<<set current coding index:"+_this.currentFocusCodingIndex[0])
                             val != undefined && this.props.connect(val)
                             $(e.currentTarget).text("断开")
                         }
@@ -526,9 +537,9 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
             }
         )
         $(document).ready(
-            () => $(".videoItem").map((_this, ht) => {
+            () => $(".videoName").map((_this, ht) => {
                 $(ht).click((e) => {
-                    let index = $(e.currentTarget).children(".videoName").attr("title")
+                    let index = $(e.currentTarget).attr("title")
                     index != undefined && this.props.gotoVideo(this.uris[parseInt(index)], this.videoNames[parseInt(index)])
                 })
             })
@@ -577,7 +588,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
 
                     </div>
                     <div className="codingInfos col-7" >
-                        <CodingInfo issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                        <CodingInfo say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                             postSrcFile={this.props.postSrcFile} addCodingSubmitedIssue={this.addSubmitedCodingIssue} />
                     </div>
                     <div className="optionInfos col-7" >
@@ -617,6 +628,7 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <NewIssueUi
+                say={this.say}
                 gotoVideo={this.gotoVideo}
                 setCookie={this.setCookie}
                 disconnect={this.disconnect} connect={this.connect}
@@ -625,6 +637,9 @@ export class DeviceViewWidget extends TreeWidget {
                 openSrcFile={this.openSrcFile}
                 postSrcFile={this.postSrcFile} />
         )
+    }
+    say = (verbose: string) => {
+        this.messageService.info(verbose)
     }
     connect = (pid: string) => {
         this.commandRegistry.executeCommand(UdcCommands.Connect.id, pid);
