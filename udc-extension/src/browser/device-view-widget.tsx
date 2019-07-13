@@ -554,9 +554,9 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         }
                     }
                 )
-                $(".welcomeBanner").click(
-                    () => $(".welcomeBanner").fadeOut("slow")
-                )
+               // $(".welcomeBanner").click(
+                //    () => $(".welcomeBanner").fadeOut("slow")
+             //   )
                 $(".unfoldOptionSwitch").click(
                     (e) => {
                         if ($("span.unfoldOptionItems").text() == "-") {
