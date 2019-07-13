@@ -554,45 +554,58 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                         }
                     }
                 )
+                $(document).on("click", ".list-group-item", (e)=>{
+                    $(".list-group-item").each((i, _this)=>{
+                        $(_this).removeClass("list-group-item-primary")
+                    })
+                    $(e.currentTarget).addClass("list-group-item-primary")
+                })
+                // $(".list-group-item").click((e)=>{
+                //     console.log("list-group-item click！")
+                //     $(".list-group-item").each((i, _this)=>{
+                //         $(_this).removeClass("list-group-item-primary")
+                //     })
+                //     $(e.currentTarget).addClass("list-group-item-primary")
+                // })
                // $(".welcomeBanner").click(
                 //    () => $(".welcomeBanner").fadeOut("slow")
              //   )
-                $(".unfoldOptionSwitch").click(
-                    (e) => {
-                        if ($("span.unfoldOptionItems").text() == "-") {
-                            $(".option_items").hide()
-                            $("span.unfoldOptionItems").text("+")
-                        }
-                        else {
-                            $(".option_items").show()
-                            $("span.unfoldOptionItems").text("-")
-                        }
-                    }
-                )
-                $(".unfoldCodingSwitch").click(
-                    (e) => {
-                        if ($("span.unfoldCodingItems").text() == "-") {
-                            $(".coding_items").hide()
-                            $("span.unfoldCodingItems").text("+")
-                        }
-                        else {
-                            $(".coding_items").show()
-                            $("span.unfoldCodingItems").text("-")
-                        }
-                    }
-                )
-                $(".unfoldVideoSwitch").click(
-                    (e) => {
-                        if ($("span.unfoldVideoItems").text() == "-") {
-                            $(".video_items").hide()
-                            $("span.unfoldVideoItems").text("+")
-                        }
-                        else {
-                            $(".video_items").show()
-                            $("span.unfoldVideoItems").text("-")
-                        }
-                    }
-                )
+                // $(".unfoldOptionSwitch").click(
+                //     (e) => {
+                //         if ($("span.unfoldOptionItems").text() == "-") {
+                //             $(".option_items").hide()
+                //             $("span.unfoldOptionItems").text("+")
+                //         }
+                //         else {
+                //             $(".option_items").show()
+                //             $("span.unfoldOptionItems").text("-")
+                //         }
+                //     }
+                // )
+                // $(".unfoldCodingSwitch").click(
+                //     (e) => {
+                //         if ($("span.unfoldCodingItems").text() == "-") {
+                //             $(".coding_items").hide()
+                //             $("span.unfoldCodingItems").text("+")
+                //         }
+                //         else {
+                //             $(".coding_items").show()
+                //             $("span.unfoldCodingItems").text("-")
+                //         }
+                //     }
+                // )
+                // $(".unfoldVideoSwitch").click(
+                //     (e) => {
+                //         if ($("span.unfoldVideoItems").text() == "-") {
+                //             $(".video_items").hide()
+                //             $("span.unfoldVideoItems").text("+")
+                //         }
+                //         else {
+                //             $(".video_items").show()
+                //             $("span.unfoldVideoItems").text("-")
+                //         }
+                //     }
+                // )
 
             }
         )
@@ -602,15 +615,6 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                     $(ht).click((e) => {
                         let index = $(e.currentTarget).children('.videoName').attr("title")
                         index != undefined && this.props.gotoVideo(this.uris[parseInt(index)], this.videoNames[parseInt(index)])
-                    })
-                })
-
-                $(".list-group-item").map((_this, ht) => {
-                    $(ht).click((e) => {
-                        $(".list-group-item").each((i, _this)=>{
-                            $(_this).removeClass("list-group-item-primary")
-                        })
-                        $(e.currentTarget).addClass("list-group-item-primary")
                     })
                 })
             }
@@ -635,27 +639,32 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                     <div className="contents col-5">
                         <div className="row">
                             <div className="coding col-12">
-                                {/* <h5 className="unfoldVideoSwitch"><span className="unfoldVideoItems">+</span> 第一章节</h5> */}
+                                {/* <h5 className="unfoldVideoSwitch"><span className="unfoldVideoItems">+</span> 第一章节</h5>
                                 <ul className="video_items list-group">
                                     <VideoItem title='0' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                     <VideoItem title='1' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
+                                </ul> */}
+                                <ul className="list-group">
+                                    <VideoItem title='0' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
+                                    <VideoItem title='1' videoNames={this.videoNames} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
+                                    {optionItems}
+                                    {codingItems}
                                 </ul>
                             </div>
                         </div>
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="option col-12">
-                                {/* <h5 className="unfoldOptionSwitch"><span className="unfoldOptionItems">+</span>第一章节</h5> */}
+                                <h5 className="unfoldOptionSwitch"><span className="unfoldOptionItems">+</span>第一章节</h5>
                                 <ul className="option_items list-group">{optionItems}</ul>
                             </div>
                         </div>
-                        {/* <hr /> */}
+                        <hr />
                         <div className="row">
                             <div className="coding col-12">
-                                {/* <h5 className="unfoldCodingSwitch"><span className="unfoldCodingItems">+</span> 编程题</h5> */}
+                                <h5 className="unfoldCodingSwitch"><span className="unfoldCodingItems">+</span> 编程题</h5>
                                 <ul className="coding_items list-group">{codingItems}</ul>
                             </div>
-                        </div>
-                        <hr />
+                        </div> */}
 
                     </div>
                     <div className="codingInfos col-7" >

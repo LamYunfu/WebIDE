@@ -62,7 +62,6 @@ module.exports = Promise.resolve()
     .then(function () { return import('@theia/search-in-workspace/lib/browser/search-in-workspace-frontend-module').then(load) })
     .then(function () { return import('@theia/task/lib/browser/task-frontend-module').then(load) })
     .then(function () { return import('@theia/plugin-ext/lib/plugin-ext-frontend-module').then(load) })
-    .then(function () { return import('@theia/mini-browser/lib/browser/mini-browser-frontend-module').then(load) })
     .then(function () { return import('udc-extension/lib/browser/udc-extension-frontend-module').then(load) })
     .then(start).catch(reason => {
         console.error('Failed to start the frontend application.');
