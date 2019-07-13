@@ -82,7 +82,9 @@ class OptionItem extends React.Component<OptionItem.Props> {
     public render(): JSX.Element {
         return (
             <li className='optionItem list-group-item'>
-                <a id={this.props.akey} ><h6>>选择题{this.props.akey}</h6></a>
+                <span className="oi oi-pencil" aria-hidden="true"></span>
+                <a id={this.props.akey} >选择题{this.props.akey}</a>&nbsp;
+                <span className="oi" aria-hidden="true" style={{display:"none"}}></span>
                 {/* <a className="issue_status">●</a><br /> */}
             </li>
 
@@ -104,6 +106,7 @@ class VideoItem extends React.Component<VideoItem.Props>{
     render(): JSX.Element {
         return (
             <li className='videoItem list-group-item'>
+                <span className="oi oi-video" aria-hidden="true"></span>
                 <a className="videoName" title={this.props.title}>{this.props.videoNames[parseInt(this.props.title)]}</a>
             </li>
         )
@@ -154,7 +157,9 @@ class CodeItem extends React.Component<CodeItem.Props>{
     public render(): JSX.Element {
         return (
             <li className="codeItem list-group-item" >
-                <a title={this.props.akey}><h6>{this.props.codingTitles[this.props.akey]}</h6></a>
+                <span className="oi oi-terminal" aria-hidden="true"></span>
+                <a title={this.props.akey}>{this.props.codingTitles[this.props.akey]}</a>&nbsp;
+                <span className="oi" aria-hidden="true" style={{display:"none"}}></span>
                 {/* <a className="issue_status">●</a><br /> */}
             </li>
         )
@@ -186,12 +191,18 @@ class OptionInfo extends React.Component<OptionInfo.Props>{
 
                         if (idv != undefined && $("input:radio:checked").val() == this.props.answers[idv]) {
                             //$(`.optionItem a[id=${idv}]`).next().css("color", "green")
-                            $(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-success")
+                            //$(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-success")
+                            let sp = $(`.optionItem a[id=${idv}]`).next()
+                            sp.attr("class", "oi oi-check")
+                            sp.show()
 
                         }
                         else {
                             //$(`.optionItem a[id=${idv}]`).next().css("color", "red")
-                            $(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-danger")
+                            //$(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-danger")
+                            let sp = $(`.optionItem a[id=${idv}]`).next()
+                            sp.attr("class", "oi oi-x")
+                            sp.show()
                         }
                     }
                 )
@@ -337,7 +348,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
         0x0021: 'red',
         0x0022: 'grey'
     }
-    videoNames: string[] = ["宣讲视频1", "宣讲视频2"]
+    videoNames: string[] = ["教学-串口打印", "教学-MQTT基础"]
     uris: string[] = [`http://linklab.tinylink.cn/video1.mp4`, `http://linklab.tinylink.cn/video2.mp4`]
     pids: string[] = []
     addOptionStatus = (pid: string, selected: string) => {
@@ -486,17 +497,22 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                             //$(`.codeItem a[title=${x.pid}]`).next().css("color", _this.statusColors[parseInt(x.status)])
                             let status = _this.statusCode[parseInt(x.status)];
                             if (status == 'JUDGING') {
-                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
+                                //$(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
+                                let sp = $(`.codeItem a[title=${x.pid}]`).next()
+                                sp.attr("class", "oi oi-ellipses")
+                                sp.show()
                                 _this.judgeStatus[x.pid] = '1'
                             } else if (status == 'ACCEPT') {
-                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
+                                //$(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
+                                $(`.codeItem a[title=${x.pid}]`).next().attr("class", "oi oi-check")
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     _this.props.outputResult("::ACCEPT")
                                     _this.submitedCodingIssue.splice(_this.submitedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
                             } else if (status == 'WRONG_ANSWER') {
-                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
+                                //$(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
+                                $(`.codeItem a[title=${x.pid}]`).next().attr("class", "oi oi-x")
                                 // alert(_this.judgeStatus[x.pid])
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     
@@ -505,9 +521,11 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
                             } else if (status == 'TIMEOUT') {
-                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
+                                //$(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
+                                $(`.codeItem a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
                             } else {
-                                $(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
+                                //$(`.codeItem a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
+                                $(`.codeItem a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
                             }
                         }
 
@@ -579,12 +597,23 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
             }
         )
         $(document).ready(
-            () => $(".videoName").map((_this, ht) => {
-                $(ht).click((e) => {
-                    let index = $(e.currentTarget).attr("title")
-                    index != undefined && this.props.gotoVideo(this.uris[parseInt(index)], this.videoNames[parseInt(index)])
+            () => {
+                $(".videoItem").map((_this, ht) => {
+                    $(ht).click((e) => {
+                        let index = $(e.currentTarget).children('.videoName').attr("title")
+                        index != undefined && this.props.gotoVideo(this.uris[parseInt(index)], this.videoNames[parseInt(index)])
+                    })
                 })
-            })
+
+                $(".list-group-item").map((_this, ht) => {
+                    $(ht).click((e) => {
+                        $(".list-group-item").each((i, _this)=>{
+                            $(_this).removeClass("list-group-item-primary")
+                        })
+                        $(e.currentTarget).addClass("list-group-item-primary")
+                    })
+                })
+            }
         )
     }
     render(): JSX.Element {
