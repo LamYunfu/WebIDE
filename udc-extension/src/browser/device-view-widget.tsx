@@ -629,7 +629,7 @@ export class NewIssueUi extends React.Component<NewIssueUi.Props>{
 
         return (
             <div className="contentsAndInfos container">
-                <div className="row"><div className="welcomeBanner col"><h5>linklab远程实验室欢迎您<br /></h5></div></div>
+                <div className="row"><div className="welcomeBanner col"><h5>LinkLab物联网远程实验室欢迎您<br /></h5></div></div>
                 <hr />
                 <div className="row">
                     <div className="contents col-5">
