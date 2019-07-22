@@ -1,3 +1,4 @@
+import { HalfPackProcess } from './half-pkt-process';
 // import { certificate } from './../common/udc-config';
 import { UdcClient } from '../common/udc-watcher';
 import { injectable, inject } from "inversify";
@@ -65,10 +66,12 @@ export class UdcTerminal {
         issueInfoPath: "/problem/description"
         // cookie: "",
     }
+    hpp: HalfPackProcess
     constructor(
         @inject(Packet) protected readonly pkt: Packet,
     ) {
         this.event = new events.EventEmitter();
+        this.hpp = new HalfPackProcess()
         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!" + process.cwd())
         fs.createFile("abc.ts")
     }
@@ -170,7 +173,15 @@ export class UdcTerminal {
                 console.log('Connection to Udc Server Closed!');
             });
             console.log("server:pid<<<<<<<<<<<<<<<<<<<" + pid)
-            _this.udcServerClient.on('data', (data: Buffer) => _this.onUdcServerData(data, pid));
+            // _this.udcServerClient.on('data', (data: Buffer) => _this.onUdcServerData(data, pid));
+            _this.udcServerClient.on('data', (data: Buffer) => {
+                console.log("a fire <<<<<<<<<<<:" + data.toString('ascii'))
+                _this.hpp.puttingData(data)
+            });
+            _this.hpp.on("data", (data) => {
+                console.log("a fire +++++++++++++++++:" + data.toString('ascii'))
+                _this.onUdcServerData(data, pid)
+            })
 
             _this.udcServerClient.setTimeout(10000);
             _this.udcServerClient.on('timeout', () => {
@@ -275,6 +286,7 @@ export class UdcTerminal {
         if (this.udcServerClient === null) {
             return true;
         }
+        this.hpp.removeAllListeners("data")
         this.udcServerClient.destroy();
         this.udcServerClient = null;
         this.dev_list = undefined

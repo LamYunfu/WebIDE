@@ -47,6 +47,7 @@ module.exports = (port, host, argv) => Promise.resolve()
     .then(function () { return Promise.resolve(require('@theia/search-in-workspace/lib/node/search-in-workspace-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('@theia/task/lib/node/task-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('@theia/plugin-ext/lib/plugin-ext-backend-module')).then(load) })
+    .then(function () { return Promise.resolve(require('@theia/mini-browser/lib/node/mini-browser-backend-module')).then(load) })
     .then(function () { return Promise.resolve(require('udc-extension/lib/node/index')).then(load) })
     .then(() => start(port, host, argv)).catch(reason => {
         console.error('Failed to start the backend application.');

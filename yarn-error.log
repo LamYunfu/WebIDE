@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: ENOSPC: no space left on device, copyfile '/home/liang/.cache/yarn/v4/npm-@theia-debug-0.8.0-d012e98e719807eadd9c453035c3c4935afdc9f6/node_modules/@theia/debug/src/browser/debug-session-connection.ts' -> '/home/liang/load/webide 增加提示/node_modules/@theia/debug/src/browser/debug-session-connection.ts'
+  Error: ENOSPC: no space left on device, mkdir '/home/liang/load/half-pkt/node_modules/@theia/markers/src/browser/style'
 
 npm manifest: 
   {
