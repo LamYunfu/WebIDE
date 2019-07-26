@@ -67,7 +67,7 @@ export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleW
         bind(InUdcReplContextKey).toDynamicValue(({ container }) =>
             container.get(ContextKeyService).createKey('inUdcRepl', false)
         ).inSingletonScope();
-        bind(UdcConsoleWidget).toSelf().inSingletonScope();
+        bind(UdcConsoleWidget).toSelf();
         bind(UdcConsoleSession).toSelf().inSingletonScope();
         bindViewContribution(bind, UdcConsoleContribution).onActivation((context, _) => {
             // eagerly initialize the debug console session
