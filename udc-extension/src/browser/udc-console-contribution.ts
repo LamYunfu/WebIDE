@@ -8,11 +8,11 @@ export type InUdcReplContextKey = ContextKey<boolean>;
 export const InUdcReplContextKey = Symbol('inUdcReplContextKey');
 
 @injectable()
-export class UdcConsoleWidget extends ConsoleWidget{
-    constructor(){
+export class UdcConsoleWidget extends ConsoleWidget {
+    constructor() {
         super();
     }
-    upupup():void {
+    upupup(): void {
         if (this.session) {
             const listener = this.content.model.onNodeRefreshed(() => {
                 listener.dispose();
@@ -64,14 +64,20 @@ export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleW
     }
 
     static bindContribution(bind: interfaces.Bind): void {
+        // bind(InUdcReplContextKey).toDynamicValue(({ container }) =>
+        //     container.get(ContextKeyService).createKey('inUdcRepl', false)
+        // ).inSingletonScope();
+
+        // bind(UdcConsoleWidget).toSelf().inSingletonScope();
+        // bind(UdcConsoleSession).toSelf().inSingletonScope();
         bind(InUdcReplContextKey).toDynamicValue(({ container }) =>
             container.get(ContextKeyService).createKey('inUdcRepl', false)
-        ).inSingletonScope();
-        bind(UdcConsoleWidget).toSelf();
-        bind(UdcConsoleSession).toSelf().inSingletonScope();
+        ).inSingletonScope()
+        bind(UdcConsoleWidget).toSelf()
+        bind(UdcConsoleSession).toSelf().inSingletonScope()
         bindViewContribution(bind, UdcConsoleContribution).onActivation((context, _) => {
             // eagerly initialize the debug console session
-            context.container.get(UdcConsoleSession).setWidget(_.widget);
+            context.container.get(UdcConsoleSession)
             return _;
         });
         bind(WidgetFactory).toDynamicValue(({ container }) => ({

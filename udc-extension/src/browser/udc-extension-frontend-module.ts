@@ -47,7 +47,6 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(WidgetFactory).toService(DeviceViewService);
     bindViewContribution(bind,DeviceViewContribution);
     bind(FrontendApplicationContribution).toService(DeviceViewContribution);
-
     UdcConsoleContribution.bindContribution(bind);
 
 });

@@ -7,7 +7,7 @@ export class HalfPackProcess extends EventEmitor {
         this.cursorEnd = 0
         this.currentDataSize = 0
     }
-    maxSize: number = 1024
+    maxSize: number =205
     dataBuffer: Buffer
     cursorStart: number
     cursorEnd: number
@@ -32,7 +32,10 @@ export class HalfPackProcess extends EventEmitor {
             console.log("exit1:" + this.currentDataSize)
             return
         }
-        let ctlen = parseInt(this.dataBuffer.subarray((this.cursorStart + 6) % this.maxSize, (this.cursorStart + 11) % this.maxSize).toString("ascii"))
+        let ctlen =
+        (this.cursorStart + 6) % this.maxSize<=(this.cursorStart + 11) % this.maxSize?
+        parseInt(this.dataBuffer.subarray((this.cursorStart + 6) % this.maxSize, (this.cursorStart + 11) % this.maxSize).toString("ascii"))
+        :parseInt(this.dataBuffer.subarray(this.cursorStart + 6, this.maxSize).toString("ascii")+this.dataBuffer.subarray(0, 11+this.cursorStart-this.maxSize).toString("ascii"))
         console.log(`ctlen:${ctlen}:size${this.currentDataSize}`)
         if (ctlen + 13 > this.currentDataSize) {
             console.log(`exit2:${ctlen}:${this.currentDataSize}`)
