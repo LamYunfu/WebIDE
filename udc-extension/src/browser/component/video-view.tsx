@@ -10,8 +10,11 @@ export namespace VideoItem {
 }
 export class VideoItem extends React.Component<VideoItem.Props>{
     componentDidMount() {
+        console.log("video names is :"+JSON.stringify(this .props.videoNames))
 
     }
+
+
     render(): JSX.Element {
         return (
             <li className={`videoItem${this.props.sid} list-group-item`}>

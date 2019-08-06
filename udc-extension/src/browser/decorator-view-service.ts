@@ -1,7 +1,6 @@
 import { injectable, named, inject } from "inversify";
 import { AbstractTreeDecoratorService, TreeDecorator } from "@theia/core/lib/browser";
 import { ContributionProvider } from "@theia/core";
-
 export const DeviceTreeDecorator = Symbol('DeviceTreeDecorator');
 
 @injectable()

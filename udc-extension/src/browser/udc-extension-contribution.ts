@@ -1,7 +1,7 @@
 import { CommandRegistry, InMemoryResources } from '@theia/core';
 import { UdcWatcher } from './../common/udc-watcher';
 import { AboutDialog } from './about-dailog';
-import { UdcService, LOGINTYPE } from '../common/udc-service';
+import { UdcService} from '../common/udc-service';
 import { injectable, inject } from "inversify";
 import { CommandContribution, MenuContribution, MenuModelRegistry, MessageService, MAIN_MENU_BAR, Command } from "@theia/core/lib/common";
 import { LanguageGrammarDefinitionContribution, TextmateRegistry } from '@theia/monaco/lib/browser/textmate';
@@ -165,12 +165,13 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         )
 
         registry.registerCommand(UdcCommands.Connect, {
-            execute: async (pid :string) => {
+            execute: async (loginType: string, model: string, pid: string) => {
+                console.log("pid in front end :"+pid)
                 let connected = await this.udcService.is_connected();
                 if (connected === true) {
                     this.messageService.info('Already Connected');
                 } else {
-                    this.udcService.connect(LOGINTYPE.ADHOC, this.selectDeviceModel,pid).then(async re => {
+                    this.udcService.connect(loginType, model, pid).then(async re => {
                         this.messageService.info(re)
                     }).catch(err => {
                         this.messageService.error(err)
@@ -189,9 +190,9 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
             }
         })
         registry.registerCommand(UdcCommands.openViewPanel, {
-            execute: async (uri:string,videoName:string) => {
-                console.log("<<<<<<<<<<<<<<<<<<<<=video name"+videoName)
-                registry.executeCommand("iot.plugin.tinylink.compile",uri,videoName)
+            execute: async (uri: string, videoName: string) => {
+                console.log("<<<<<<<<<<<<<<<<<<<<=video name" + videoName)
+                registry.executeCommand("iot.plugin.tinylink.compile", uri, videoName)
             }
         })
         registry.registerCommand(UdcCommands.JudgeButton, {
@@ -282,11 +283,15 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
     }
 }
 
+
+
 @injectable()
 export class UdcExtensionMenuContribution implements MenuContribution {
     registerMenus(menus: MenuModelRegistry): void {
     }
 }
+
+
 
 @injectable()
 export class UdcExtensionHighlightContribution implements LanguageGrammarDefinitionContribution {
@@ -325,8 +330,9 @@ export class UdcExtensionHighlightContribution implements LanguageGrammarDefinit
         }
     };
 
-    registerTextmateLanguage(registry: TextmateRegistry) {
 
+
+    registerTextmateLanguage(registry: TextmateRegistry) {
         monaco.languages.register({
             id: this.id,
             extensions: ['.cpp', '.cc', '.cxx', '.hpp', '.hh', '.hxx', '.h', '.ino', '.inl', '.ipp', 'cl'],

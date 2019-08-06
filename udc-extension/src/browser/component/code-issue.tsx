@@ -2,10 +2,17 @@ import React = require("react");
 import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import * as path from 'path'
+
+
 export namespace CodeItem {
+
+
     export interface Props {
         sid: string
         akey: string,
+        loginType: string
+        model: string
+        role: string[]
         codingTitles: { [key: string]: string }
         codingInfos: { [key: string]: string }
         codingStatus: { [key: string]: string }
@@ -13,8 +20,12 @@ export namespace CodeItem {
     }
 }
 
+
+
 export class CodeItem extends React.Component<CodeItem.Props>{
     rootDir: string = "/home/project"
+
+
     componentDidMount() {
         let _this = this
         for (let index in _this.props.codingStatus) {
@@ -26,7 +37,13 @@ export class CodeItem extends React.Component<CodeItem.Props>{
                     (e) => {
                         let tmp = $(e.currentTarget).children("a").attr("title")
                         if (tmp != undefined) {
-                            _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${_this.props.codingTitles[tmp]}.cpp`)))
+                            if (_this.props.role == undefined)
+                                _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${_this.props.codingTitles[tmp]}.cpp`)))
+                            else {
+                                for (let mem of _this.props.role) {
+                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${_this.props.codingTitles[tmp] + mem}.cpp`)))
+                                }
+                            }
                             $(".optionInfos." + _this.props.sid).hide()
                             $(".codingInfos." + _this.props.sid).show()
                             $("#coding_title" + _this.props.sid).html(_this.props.codingTitles[tmp])
@@ -39,6 +56,8 @@ export class CodeItem extends React.Component<CodeItem.Props>{
             }
         )
     }
+
+
     public render(): JSX.Element {
         return (
             <li className={`codeItem${this.props.sid} list-group-item`} >
@@ -52,8 +71,11 @@ export class CodeItem extends React.Component<CodeItem.Props>{
 }
 
 export namespace CodingInfo {
+
+
     export interface Props {
         sid: string
+        roles: { [key: string]: string[] }
         currentFocusCodingIndex: string[]
         issueStatusStrs: { [key: string]: string }
         coding_titles: { [key: string]: string },
@@ -62,6 +84,8 @@ export namespace CodingInfo {
         say: (verbose: string) => void
     }
 }
+
+
 export class CodingInfo extends React.Component<CodingInfo.Props>{
     componentDidMount() {
         let _this = this
@@ -74,13 +98,23 @@ export class CodingInfo extends React.Component<CodingInfo.Props>{
                             _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
                             return
                         }
-                        index != undefined && _this.props.postSrcFile(_this.props.coding_titles[index])
+                        if (_this.props.roles[index] == undefined)
+                            index != undefined && _this.props.postSrcFile(JSON.stringify([_this.props.coding_titles[index]]))
+                        else {
+                            let tmp = []
+                            for (let r of _this.props.roles[index]) {
+                                tmp.push(_this.props.coding_titles[index] + r)
+                            }
+                            index != undefined && _this.props.postSrcFile(JSON.stringify(tmp))
+                        }
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
                 )
             }
         )
     }
+
+
     public render() {
         return (
             <div className="card text-white bg-secondary">

@@ -9,45 +9,33 @@ export namespace OptionItem {
         optionStatus: { [key: string]: string }
         optionIssues: { [key: string]: string }
         // addOptionStatus: (pid: string, selected: string) => void
-        submittedOptionStatus: { [key: string]: string }
+        submittedOptionAnswers: { [key: string]: { answer: string, isRight: boolean } }
     }
 }
 export class OptionItem extends React.Component<OptionItem.Props> {
     componentWillMount() {
 
     }
+
+
     componentDidMount() {
-        // let _this=this
-        // $(document).ready(
-        //     () => {
-        //         // $(".optionItem").on('click',
-        //         $(document).on('click', ".optionItem." + _this.props.sid,
-        //             (e) => {
-        //                 console.log("option item click.............................")
-        //                 $(".codingInfos." + _this.props.sid).hide()
-        //                 $(".optionInfos." + _this.props.sid).show()
-        //                 let x = $(e.currentTarget).children("a").attr("id")
-        //                 if (x != undefined) {
-        //                     $(".optionIssueTitle" + _this.props.sid).text(this.props.optionIssues[x])
-        //                     $("form.options" + _this.props.sid).attr("id", x)
-        //                     for (let index in this.props.choices[x]) {
-        //                         let op = $(`.optionContent${_this.props.sid}:eq(${index})`)
-        //                         op.text(this.props.choices[x][index])
-        //                     }
-        //                     if (this.props.submittedOptionStatus[x] == undefined) {
-        //                         $("form.options" + _this.props.sid + ".opinput:radio").attr("checked", "false");
-        //                     }
-        //                     else {
-        //                         $(`#optionRadio${_this.props.sid}${_this.props.submittedOptionStatus[x]}`).prop("checked", true)
+        let tmp = this.props.submittedOptionAnswers[this.props.akey]
+        if (tmp != undefined) {
+            let sp = $(`.optionItem.${this.props.sid}  a[id=${this.props.akey}]`).next()
+            if (tmp.isRight) {
+                sp.attr("class", "oi oi-check")
+                sp.show()
+            }
+            else {
 
-        //                     }
-        //                 }
-        //             }
-        //         )
+                sp.attr("class", "oi oi-x")
+                sp.show()
+            }
 
-        //     })
-
+        }
     }
+
+
     public render(): JSX.Element {
         return (
             <li className={`optionItem ${this.props.sid} list-group-item`} >
@@ -61,15 +49,18 @@ export class OptionItem extends React.Component<OptionItem.Props> {
     }
 }
 
+
 export namespace OptionInfo {
     export interface Props {
         sid: string
         answers: { [key: string]: string }
-        addOptionStatus: (pid: string, selected: string) => void
-        submittedOptionStatus: { [key: string]: string }
+        submittedOptionAnswers: { [pid: string]: { answer: string, isRight: boolean } }
+        setSubmittedOptionAnswer: (pid: string, answer: string, isRight: boolean) => void
         say: (thing: string) => void
     }
 }
+
+
 export class OptionInfo extends React.Component<OptionInfo.Props>{
     componentDidMount() {
         let _this = this
@@ -79,20 +70,33 @@ export class OptionInfo extends React.Component<OptionInfo.Props>{
                     (e) => {
                         e.preventDefault()
                         let idv = $(".options" + _this.props.sid).attr("id")
-                        let checked = $(".options" + _this.props.sid + " input:radio:checked").val()
-                        if (idv != undefined && _this.props.submittedOptionStatus[idv] != undefined && _this.props.submittedOptionStatus[idv] != checked) {
-                            _this.props.say("题目已提交,勿重复操作")
+                        if (idv == undefined) {
+                            alert("ERR:NO ISSUE ID ")
                             return
                         }
-                        idv != undefined && checked != undefined && (_this.props.addOptionStatus(idv, checked.toString()))
-                        // idv != undefined && alert($("input:radio:checked").val() + "right" + _this.props.answers[idv])
+                        // let checked = $(".options" + _this.props.sid + " input:radio:checked").val()
+                        if (_this.props.submittedOptionAnswers[idv] != undefined) {
+                            _this.props.say("题目已提交,勿重复操作" + `,当前答案:${_this.props.submittedOptionAnswers[idv].answer}`)
+                            return
 
-                        if (idv != undefined && $(".options" + _this.props.sid + " input:radio:checked").val() == _this.props.answers[idv]) {
+                        }
+                        // if (idv != undefined && _this.props.submittedOptionStatus[idv] != undefined && _this.props.submittedOptionStatus[idv] != checked) {
+                        //     _this.props.say("题目已提交,勿重复操作")
+                        //     return
+                        // }
+                        // idv != undefined && checked != undefined && (_this.props.addOptionStatus(idv, checked.toString()))
+                        let ans = $(".options" + _this.props.sid + " input:radio:checked").val()
+                        if (ans == undefined) {
+                            alert("no answer selected ")
+                            return
+                        }
+                        if (ans == _this.props.answers[idv]) {
                             //$(`.optionItem a[id=${idv}]`).next().css("color", "green")
                             //$(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-success")
                             let sp = $(`.optionItem.${_this.props.sid} a[id=${idv}]`).next()
                             sp.attr("class", "oi oi-check")
                             sp.show()
+                            this.props.setSubmittedOptionAnswer(idv, ans.toString(), true)
 
                         }
                         else {
@@ -101,12 +105,15 @@ export class OptionInfo extends React.Component<OptionInfo.Props>{
                             let sp = $(`.optionItem.${_this.props.sid}  a[id=${idv}]`).next()
                             sp.attr("class", "oi oi-x")
                             sp.show()
+                            this.props.setSubmittedOptionAnswer(idv, ans.toString(), false)
                         }
                     }
                 )
             }
         )
     }
+
+
     public render() {
         return (
             <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>

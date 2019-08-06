@@ -14,11 +14,13 @@ export class UdcServiceImpl implements UdcService {
     ) {
     }
 
+
     is_connected(): Promise<Boolean> {
         return new Promise<Boolean>((resolve, rejects) => {
             resolve(this.udcTerminal.is_connected);
         });
     }
+
 
     async connect(login_type: LOGINTYPE, model: string, pid: string): Promise<string> {
         try {
@@ -33,6 +35,7 @@ export class UdcServiceImpl implements UdcService {
         }
     }
 
+
     async disconnect(): Promise<string> {
         let result = await this.udcTerminal.disconnect();
         return (result === true ? 'Disconnect succeed' : 'Disconnect failed')
@@ -46,12 +49,14 @@ export class UdcServiceImpl implements UdcService {
         });
     }
 
+
     get_devices(): Promise<{ [key: string]: number } | undefined> {
         let re = this.udcTerminal.get_devlist();
         return new Promise((resolve, reject) => {
             resolve(re)
         })
     }
+
 
     program(filepath: string, address: string, devstr: string): Promise<Boolean> {
         return new Promise<Boolean>((resolve, rejects) => {
@@ -60,6 +65,8 @@ export class UdcServiceImpl implements UdcService {
             resolve(result);
         });
     }
+
+
     rumcmd(devstr: string, cmdstr: string): Promise<Boolean> {
         return new Promise<Boolean>((resolve, rejects) => {
             let result = this.udcTerminal.run_command(devstr, cmdstr);
@@ -73,14 +80,19 @@ export class UdcServiceImpl implements UdcService {
             resolve(result);
         });
     }
+
+
     setClient(client: UdcClient) {
         this.udcTerminal.setClient(client);
     }
     // get_issues(): Promise<{ [key: string]: {} }> {
 
+
     async quizJudge(host: string, port: string, pid: string): Promise<string> {
         return 'success'
     }
+
+
     setLdcHostandPort(ldcHost: string, ldcPort: string) {
         this.setLdcHostandPort(ldcHost, ldcPort)
     }
@@ -88,17 +100,31 @@ export class UdcServiceImpl implements UdcService {
     //     this.udcTerminal.createSrcFile(filnames)
 
     // }
+
+
     createSrcFile(filnames: string): void {
         this.udcTerminal.createSrcFile(filnames)
 
     }
+
+
     postSrcFile(fn: string): void {
         this.udcTerminal.postSrcFile(fn)
     }
+
+
     setCookie(cookie: string): boolean {
         return this.udcTerminal.setCookie(cookie)
     }
+
+
     outputResult(res: string) {
         this.udcTerminal.outputResult(res)
+    }
+    storeState(data: string) {
+        this.udcTerminal.storeState(data)
+    }
+    getState() :Promise<string> {
+        return this.udcTerminal.getState()
     }
 }

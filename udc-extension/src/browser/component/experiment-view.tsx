@@ -6,7 +6,7 @@ import { CodeItem, CodingInfo } from "./code-issue"
 export namespace Experiment {
     export interface Props {
         section: { [key: string]: any }
-        connect: (pid: string) => void
+        connect: (loginType: string, model: string, pid: string) => void
         disconnect: () => void
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
@@ -17,11 +17,16 @@ export namespace Experiment {
         outputResult: (res: string) => void
 
     }
+
+    
     export interface State {
         codingItems: JSX.Element[]
     }
 }
 export class Experiment extends React.Component<Experiment.Props, Experiment.State> {
+    model: { [key: string]: string } = {}
+    loginType: { [key: string]: string } = {}
+    role: { [key: string]: string[] } = {}
     currentFocusCodingIndex: string[] = ['00000']
     codingIssues: { [key: string]: string } = {}
     codingInfos: { [key: string]: string } = {}
@@ -59,6 +64,8 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
             codingItems: []
         }
     }
+
+
     componentWillMount() {
         let _this = this
         $.ajax(
@@ -82,14 +89,39 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     let x = data.data; // show response from the php script.
                     let fns = []
                     for (let item of x) {
+                        if (item.deviceRole[0] == 'null') {
+                            _this.loginType[`${item.pid}`] = 'adhoc'
+                            _this.model[`${item.pid}`] = 'any'
+                        }
+                        else
+                            if (item.deviceRole.length == 1) {
+                                // _this.loginType[`${item.pid}`] = 'fixed'
+                                _this.loginType[`${item.pid}`] = 'adhoc'
+                                _this.model[`${item.pid}`] = item.deviceType                                
+                              
+                            }
+                            else if (item.deviceRole.length > 1) {
+                                _this.loginType[`${item.pid}`] = 'group'
+                                _this.role[`${item.pid}`] = item.deviceRole
+                                _this.model[`${item.pid}`] = item.deviceType
+                            }
+                        console.log("login type is :" + _this.loginType[`${item.pid}`])
                         _this.codingIssues[item.pid] = item.title
-                        fns.push(item.title)
+                        if (_this.role[`${item.pid}`] == undefined)
+                            fns.push(item.title)
+                        else {
+                            for (let r of _this.role[`${item.pid}`]) {
+                                fns.push(item.title + r)
+                                console.log(`fileName is............................${item.title + r}`)
+                            }
+                        }
                         _this.codingInfos[item.pid] = item.content
                         _this.pids.push(item.pid)
                     }
                     _this.props.createSrcFile(fns)
                     for (let entry in _this.codingIssues)
-                        _this.codingItems.push(<CodeItem sid={_this.props.section.sid} akey={entry} key={entry}
+                        _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
+                            role={_this.role[entry]} sid={_this.props.section.sid} akey={entry} key={entry}
                             codingInfos={_this.codingInfos} codingTitles={_this.codingIssues}
                             codingStatus={_this.codingStatus} openSrcFile={_this.props.openSrcFile} />)
                     _this.setState((state) => ({
@@ -102,6 +134,8 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
             }
         )
     }
+
+
     componentDidMount() {
         let _this = this
         $(document).ready(
@@ -125,7 +159,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             // alert(val)
                             val != undefined && (_this.currentFocusCodingIndex[0] = val)
                             console.log("<<<<<<<<<set current coding index:" + _this.currentFocusCodingIndex[0])
-                            val != undefined && _this.props.connect(val)
+                            val != undefined && _this.props.connect(_this.loginType[val], _this.model[val], val)
                             $(e.currentTarget).text("断开")
                         }
                     }
@@ -203,6 +237,8 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
         }, 2000)
     }
+
+
     render(): JSX.Element {
         return (
             <div>
@@ -219,13 +255,12 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             </div>
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
-                            <CodingInfo sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                            <CodingInfo roles={this.role} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                     </div>
                 </div>
             </div>
         )
-
     }
 }

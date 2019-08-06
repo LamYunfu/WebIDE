@@ -1,12 +1,11 @@
 export const udcServicePath = "/services/udcserver";
 export const UdcService = Symbol('UdcService');
+export enum LOGINTYPE { ADHOC = 'adhoc', FIXED = 'fixed', GROUP = 'group' }
 
-export enum LOGINTYPE { ADHOC = 'adhoc', FIXED = 'fixed' }
 
 export interface UdcService {
-
     is_connected(): Promise<Boolean>;
-    connect(type: LOGINTYPE, model: string, pid: string): Promise<string>;
+    connect(type: string, model: string, pid: string): Promise<string>;
     disconnect(): Promise<string>;
     list_models(): Promise<Array<string>>;
     get_devices(): Promise<{ [key: string]: number } | undefined>;
@@ -17,6 +16,8 @@ export interface UdcService {
     postSrcFile(fn: string): void
     setCookie(cookie: string): boolean
     outputResult(res: string): void
+    storeState(stat: string): void
+    getState():Promise<string>
 
 }
 

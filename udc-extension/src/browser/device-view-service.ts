@@ -8,16 +8,17 @@ import { Emitter } from "@theia/core/lib/common/event";
 @injectable()
 export class DeviceViewService implements WidgetFactory{
     id: string = 'device-view';
-
     protected readonly onDidChangeDeviceEmitter = new Emitter<DeviceViewSymbolInformationNode[]>();
     protected readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
     protected readonly onDidOpenEmitter = new Emitter<DeviceViewSymbolInformationNode>();
     protected readonly onDidSelectEmitter = new Emitter<DeviceViewSymbolInformationNode>();
     protected widget?: DeviceViewWidget;
 
+
     constructor(
         @inject(DeviceViewWidgetFactory) protected factory: DeviceViewWidgetFactory
     ){}
+
 
     createWidget():Promise<Widget> {
         this.widget = this.factory();
@@ -33,9 +34,11 @@ export class DeviceViewService implements WidgetFactory{
         return Promise.resolve(this.widget);
     }
 
+
     push(devices:{[key:string]:number}):void{
     }
 
+    
     public clearDevices():void{
     }
 

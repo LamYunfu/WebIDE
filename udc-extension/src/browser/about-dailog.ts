@@ -19,6 +19,7 @@ export class AboutDialog extends AbstractDialog<void>{
         });
     }
 
+
     @postConstruct()
     protected async init(): Promise<void> {
         const messageNode = document.createElement("div");
@@ -28,6 +29,7 @@ export class AboutDialog extends AbstractDialog<void>{
         this.appendAcceptButton("ok");
     }
 
+    
     get value(): undefined {
         return undefined;
     }

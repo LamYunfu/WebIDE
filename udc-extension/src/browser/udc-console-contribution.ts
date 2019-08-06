@@ -3,9 +3,9 @@ import { injectable, interfaces } from "inversify";
 import { ConsoleWidget, ConsoleOptions } from '@theia/console/lib/browser/console-widget';
 import { ContextKey, ContextKeyService } from '@theia/core/lib/browser/context-key-service';
 import { UdcConsoleSession } from './udc-console-session';
-
 export type InUdcReplContextKey = ContextKey<boolean>;
 export const InUdcReplContextKey = Symbol('inUdcReplContextKey');
+
 
 @injectable()
 export class UdcConsoleWidget extends ConsoleWidget {
@@ -22,6 +22,7 @@ export class UdcConsoleWidget extends ConsoleWidget {
     }
 }
 
+
 @injectable()
 export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleWidget>{
     constructor() {
@@ -35,6 +36,8 @@ export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleW
             toggleKeybinding: 'ctrlcmd+shift+c'
         });
     }
+
+
     static options: ConsoleOptions = {
         id: 'udc-shell',
         title: {
@@ -51,6 +54,7 @@ export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleW
         }
     };
 
+
     static create(parent: interfaces.Container): ConsoleWidget {
         const inputFocusContextKey = parent.get<InUdcReplContextKey>(InUdcReplContextKey);
         const child = UdcConsoleWidget.createContainer(parent, {
@@ -63,6 +67,7 @@ export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleW
         return widget;
     }
 
+    
     static bindContribution(bind: interfaces.Bind): void {
         // bind(InUdcReplContextKey).toDynamicValue(({ container }) =>
         //     container.get(ContextKeyService).createKey('inUdcRepl', false)

@@ -55,15 +55,9 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(ttf|eot|otf|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.(ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                 loader: 'url-loader?limit=10000&mimetype=image/svg+xml'
-                //loader: "file-loader"
             },
-            // {    
-            //     test: /\.(otf)$/,
-            //     use: 'file?name=fonts/[name].[ext]!static'
-            //     //loader: "file-loader"
-            // },
             {
                 test: /\.(jpg|png|gif)$/,
                 loader: 'file-loader',

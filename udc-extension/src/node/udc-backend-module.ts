@@ -10,9 +10,7 @@ import { UdcClient } from '../common/udc-watcher';
 
 
 export default new ContainerModule(bind => {
-
     bind(UdcService).to(UdcServiceImpl).inSingletonScope();
-
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new JsonRpcConnectionHandler<UdcClient>(udcServicePath, client => {
             const udcServer= ctx.container.get<UdcServiceImpl>(UdcService);
@@ -20,11 +18,7 @@ export default new ContainerModule(bind => {
             return udcServer;
         })
     ).inSingletonScope();
-
     createCommonBindings(bind);
-
     bind(Packet).toSelf().inSingletonScope();
     bind(UdcTerminal).toSelf().inSingletonScope();
-
-
 });

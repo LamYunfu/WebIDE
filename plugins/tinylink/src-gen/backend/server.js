@@ -2,7 +2,8 @@
 require('reflect-metadata');
 const path = require('path');
 const express = require('express');
-const { Container } = require('inversify');
+const { Container, injectable } = require('inversify');
+
 const { BackendApplication, CliManager } = require('@theia/core/lib/node');
 const { backendApplicationModule } = require('@theia/core/lib/node/backend-application-module');
 const { messagingBackendModule } = require('@theia/core/lib/node/messaging/messaging-backend-module');
@@ -27,8 +28,9 @@ function start(port, host, argv) {
     const cliManager = container.get(CliManager);
     return cliManager.initializeCli(argv).then(function () {
         const application = container.get(BackendApplication);
-        application.use(express.static(path.join(__dirname, '../../lib')));
-        application.use(express.static(path.join(__dirname, '../../lib/index.html')));
+        application.use(express.static(path.join(__dirname, '../../lib'), {
+            index: 'index.html'
+        }));
         return application.start(port, host);
     });
 }

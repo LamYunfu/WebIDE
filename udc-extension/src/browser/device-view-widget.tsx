@@ -18,6 +18,7 @@ export namespace DeviceViewSymbolInformationNode {
     }
 }
 
+
 export class Loading extends React.Component {
     render(): JSX.Element {
         return <div> Loading</div >
@@ -25,12 +26,16 @@ export class Loading extends React.Component {
 
 
 }
+
+
 export type DeviceViewWidgetFactory = () => DeviceViewWidget;
 export const DeviceViewWidgetFactory = Symbol('DeviceViewWidgetFactory')
 @injectable()
 export class DeviceViewWidget extends TreeWidget {
     readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
     device_list?: { [key: string]: number }
+
+
     constructor(
         @inject(TreeProps) protected readonly treePros: TreeProps,
         @inject(TreeModel) model: TreeModel,
@@ -45,14 +50,18 @@ export class DeviceViewWidget extends TreeWidget {
         // this.title.label = "题目目录";
         this.title.caption = "Device";
         this.title.closable = true;
-        this.title.iconClass = 'fa outline-view-tab-icon';
+        this.title.iconClass = 'fa fa-gg';
         this.addClass('theia-udcdevice-view');
     }
+
+
     rootdir: string = "/home/project"
     protected renderTree(): React.ReactNode {
         return (
-          
+
             <View
+                storeData={this.storeData}
+                getData={this.getData}
                 outputResult={this.outputResult}
                 say={this.say}
                 gotoVideo={this.gotoVideo}
@@ -66,36 +75,61 @@ export class DeviceViewWidget extends TreeWidget {
         )
     }
 
+
     outputResult = (res: string) => {
         this.udcService.outputResult(res)
     }
+
+
     say = (verbose: string) => {
         this.messageService.info(verbose)
     }
-    connect = (pid: string) => {
-        this.commandRegistry.executeCommand(UdcCommands.Connect.id, pid);
+
+
+    connect = (loginType: string, model: string, pid: string) => {
+        this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid);
     }
+
+
     disconnect = () => {
         this.commandRegistry.executeCommand(UdcCommands.DisConnect.id)
     }
+
+
     callUpdate = () => {
         this.update()
     }
+
+
     setCookie = (cookie: string) => {
         this.udcService.setCookie(`JSESSIONID=${cookie}; Path=/; HttpOnly`);
         // this.udcService.setCookie(cookie);
     }
+
+
     postSrcFile = (fn: string) => {
         this.udcService.postSrcFile(fn)
     }
+
+
     openSrcFile = (uri: URI) => {
         this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
     }
+
+
     createSrcFile = (fn: string[]) => {
         this.udcService.createSrcFile(JSON.stringify(fn))
 
     }
+
+
     gotoVideo = (uri: string, videoName: string) => {
         this.commandRegistry.executeCommand(UdcCommands.openViewPanel.id, uri, videoName)
+    }
+    storeData = (data: string) => {
+        this.udcService.storeState(data)
+    }
+    getData = () => {
+        return this.udcService.getState()
     }
 }

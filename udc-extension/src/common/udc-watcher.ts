@@ -5,18 +5,19 @@ import { Emitter, Event } from "@theia/core/lib/common/event";
 export const UdcClient = Symbol("UdcClient");
 
 
-
 export interface UdcClient {
     OnDeviceLog(data: string): void,
     onDeviceList(data:{[key:string]:number}):void
 }
 
+
 @injectable()
 export class UdcWatcher {
-
     protected onDeviceLogEmitter = new Emitter<string>();
     protected onDeviceListEmitter = new Emitter<{[key:string]:number}>();
     protected onIssueListEmitter = new Emitter<string[]>();
+
+
     getUdcWatcherClient(): UdcClient {
         const logEmitter = this.onDeviceLogEmitter;
         const devsEmitter= this.onDeviceListEmitter;
@@ -29,13 +30,18 @@ export class UdcWatcher {
             }
         }
     }
+
     
     get onDeviceLog(): Event<string> {
         return this.onDeviceLogEmitter.event;
     }
+
+
     get onDeviceList():Event<{[key:string]:number}>{
         return this.onDeviceListEmitter.event
     }
+
+
     get onIssueList():Event<string[]>{
         return this.onIssueListEmitter.event
     }

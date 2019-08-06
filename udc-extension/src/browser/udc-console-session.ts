@@ -14,6 +14,7 @@ export class UdcConsoleSession extends ConsoleSession {
     protected items: ConsoleItem[] = [];
     protected consoleWidget: Promise<UdcConsoleWidget> | undefined = undefined
 
+
     constructor(
         @inject(Languages) protected readonly languages: Languages,
         @inject(Workspace) protected readonly workspace: Workspace,
@@ -22,9 +23,11 @@ export class UdcConsoleSession extends ConsoleSession {
         super();
     }
 
+
     getElements(): IterableIterator<ConsoleItem> {
         return this.items[Symbol.iterator]();
     }
+
 
     async execute(cmd: string): Promise<void> {
 
@@ -46,6 +49,7 @@ export class UdcConsoleSession extends ConsoleSession {
         }).catch(errorHandler)
     }
 
+
     async appendLine(value: string): Promise<void> {
         this.items.push(new AnsiConsoleItem(value, MessageType.Log))
         this.fireDidChange()
@@ -60,15 +64,18 @@ export class UdcConsoleSession extends ConsoleSession {
         }
     }
 
+
     clear(): void {
         this.items = []
         this.fireDidChange();
     }
 
+
     protected fireDidChange(): void {
         this.onDidChangeEmitter.fire(undefined);
     }
 
+    
     public setWidget(widget: Promise<UdcConsoleWidget>) {
         this.consoleWidget = widget
     }
