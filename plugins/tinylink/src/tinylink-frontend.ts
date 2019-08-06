@@ -27,7 +27,7 @@ namespace IoTWebview {
         return `<html>
 
  <head>
-  <link href="http://linklab.tinylink.cn/video-js.css" rel="stylesheet">
+  <link href="http://cdn.staticfile.org/video.js/7.6.0/alt/video-js-cdn.css" rel="stylesheet">
 
   <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
   
@@ -41,7 +41,7 @@ namespace IoTWebview {
     <source src="${url}" type="video/mp4">
 
   </video>
-  <script src="http://linklab.tinylink.cn/video.js"></script>
+  <script src="http://cdn.staticfile.org/video.js/7.6.0/alt/video.core.js"></script>
   <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
   <script type="text/javascript">
     function myDoubleClickHandler(event) {
