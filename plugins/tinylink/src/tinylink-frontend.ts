@@ -24,48 +24,10 @@ namespace IoTWebview {
         //              </html>
         // `;
 
-//         return `<html>
-
-//  <head>
-//   <link href="http://localhost:3002/video-js.css" rel="stylesheet">
-
-//   <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
-  
-// </head> 
-
-// <body>
-//   <video id='my-video' class='video-js' controls preload='auto' autoplay="autoplay" style="display: block; margin: 0px;
-//           overflow: hidden; position: absolute; width: 98%; height: 98%; visibility: visible;
-//           " 
-//     data-setup='{"controls": true, "autoplay": true, "preload": "auto"}'>
-//     <source src="${url}" type="video/mp4">
-
-//   </video>
-//   <script src="http://localhost:3002/video.js"></script>
-//   <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
-//   <script type="text/javascript">
-//     function myDoubleClickHandler(event) {
-//     // alert("you doublle click")
-//         $(".vjs-control-bar").toggle()
-//     };
-//     videojs(document.querySelector('.video-js'), {
-//         userActions: {
-//             doubleClick: myDoubleClickHandler
-//           },
-//          playbackRates: [0.5, 1, 1.5, 2],
-//         // autoplay:'any'
-//     });
-//       </script>
-// </body>
-
-// </html>
-// `
-
-
         return `<html>
 
  <head>
-  <link href="http://vjs.zencdn.net/5.0.2/video-js.css" rel="stylesheet">
+  <link href="http://linklab.tinylink.cn/video-js.css" rel="stylesheet">
 
   <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
   
@@ -79,7 +41,7 @@ namespace IoTWebview {
     <source src="${url}" type="video/mp4">
 
   </video>
-  <script src="http://vjs.zencdn.net/5.0.2/video.js"></script>
+  <script src="http://linklab.tinylink.cn/video.js"></script>
   <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
   <script type="text/javascript">
     function myDoubleClickHandler(event) {
@@ -98,6 +60,44 @@ namespace IoTWebview {
 
 </html>
 `
+
+
+//         return `<html>
+
+//  <head>
+//   <link href="http://vjs.zencdn.net/5.0.2/video-js.css" rel="stylesheet">
+
+//   <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+  
+// </head> 
+
+// <body>
+//   <video id='my-video' class='video-js' controls preload='auto' autoplay="autoplay" style="display: block; margin: 0px;
+//           overflow: hidden; position: absolute; width: 98%; height: 98%; visibility: visible;
+//           " 
+//     data-setup='{"controls": true, "autoplay": true, "preload": "auto"}'>
+//     <source src="${url}" type="video/mp4">
+
+//   </video>
+//   <script src="http://vjs.zencdn.net/5.0.2/video.js"></script>
+//   <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+//   <script type="text/javascript">
+//     function myDoubleClickHandler(event) {
+//     // alert("you doublle click")
+//         $(".vjs-control-bar").toggle()
+//     };
+//     videojs(document.querySelector('.video-js'), {
+//         userActions: {
+//             doubleClick: myDoubleClickHandler
+//           },
+//          playbackRates: [0.5, 1, 1.5, 2],
+//         // autoplay:'any'
+//     });
+//       </script>
+// </body>
+
+// </html>
+// `
 
     }
 
