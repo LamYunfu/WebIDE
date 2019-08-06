@@ -129,7 +129,7 @@ export class DeviceViewWidget extends TreeWidget {
     storeData = (data: string) => {
         this.udcService.storeState(data)
     }
-    getData = () => {
-        return this.udcService.getState()
+    getData = (type:string) => {
+        return this.udcService.getState(type)
     }
 }

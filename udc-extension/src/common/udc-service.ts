@@ -17,7 +17,7 @@ export interface UdcService {
     setCookie(cookie: string): boolean
     outputResult(res: string): void
     storeState(stat: string): void
-    getState():Promise<string>
+    getState(type:string):Promise<string>
 
 }
 

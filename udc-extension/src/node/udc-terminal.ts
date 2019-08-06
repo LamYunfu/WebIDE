@@ -221,8 +221,10 @@ export class UdcTerminal {
 
 
     }
-    getState(): Promise<string> {
-        return new Promise(res => res(JSON.stringify(this.dataStorage)))
+    getState(type: string): Promise<string> {
+        let tmp: { [key: string]: {} } = {}
+        tmp[type] = this.dataStorage[type]
+        return new Promise(res => res(JSON.stringify(tmp)))
     }
     async connect(loginType: string, model: string, pid: string): Promise<Boolean | string> {
         let login_type = LOGINTYPE.FIXED

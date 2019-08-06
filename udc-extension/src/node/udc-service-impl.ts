@@ -124,7 +124,7 @@ export class UdcServiceImpl implements UdcService {
     storeState(data: string) {
         this.udcTerminal.storeState(data)
     }
-    getState() :Promise<string> {
-        return this.udcTerminal.getState()
+    getState(type: string): Promise<string> {
+        return this.udcTerminal.getState(type)
     }
 }

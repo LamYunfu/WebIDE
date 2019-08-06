@@ -22,7 +22,7 @@
 11 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 11 error
 11 error npm ERR! A complete log of this run can be found in:
-11 error npm ERR!     /home/liang/.npm/_logs/2019-08-06T03_39_45_781Z-debug.log
+11 error npm ERR!     /home/liang/.npm/_logs/2019-08-06T08_13_43_374Z-debug.log
 11 error
 11 error
 11 error > udc-extension@0.0.0 prepare /home/liang/load/webIDE7.29/udc-extension
@@ -30,9 +30,15 @@
 11 error
 11 error $ rimraf lib
 11 error $ tsc  --jsx react
-11 error src/browser/component/sectionui-view.tsx(386,41): error TS2322: Type '{ [key: string]: { [key: string]: { answer: string; isRight: boolean; }; }; }' is not assignable to type '{ [pid: string]: { answer: string; isRight: boolean; }; }'.
-11 error   Index signatures are incompatible.
-11 error     Type '{ [key: string]: { answer: string; isRight: boolean; }; }' is missing the following properties from type '{ answer: string; isRight: boolean; }': answer, isRight
+11 error src/browser/component/renderView.tsx(184,17): error TS1005: ',' expected.
+11 error src/browser/component/renderView.tsx(185,13): error TS1005: ',' expected.
+11 error src/browser/component/renderView.tsx(188,6): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+11 error src/browser/component/renderView.tsx(192,9): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+11 error src/browser/component/renderView.tsx(197,5): error TS1128: Declaration or statement expected.
+11 error src/browser/component/renderView.tsx(198,21): error TS1005: ';' expected.
+11 error src/browser/component/renderView.tsx(204,9): error TS1005: ';' expected.
+11 error src/browser/component/renderView.tsx(204,23): error TS1005: ';' expected.
+11 error src/browser/component/renderView.tsx(207,1): error TS1128: Declaration or statement expected.
 11 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 11 error
 11 error     at Promise.all.then.arr (/home/liang/load/webIDE7.29/node_modules/lerna/node_modules/execa/index.js:236:11)
