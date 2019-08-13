@@ -8,7 +8,7 @@ export namespace Chapter {
         vid: string
         chapterData: { [key: string]: {} }
         sections: [{ [key: string]: string }]
-        connect: (loginType: string, model: string, pid: string) => void
+        connect: (loginType: string, model: string, pid: string,timeout:string) => void
         disconnect: () => void
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
@@ -18,6 +18,7 @@ export namespace Chapter {
         say: (verbose: string) => void
         outputResult: (res: string) => void
         setChapterData: (vid: string, data: {}) => void
+        setQueue: () => void
     }
 }
 export class Chapter extends React.Component<Chapter.Props>{
@@ -34,6 +35,7 @@ export class Chapter extends React.Component<Chapter.Props>{
         for (let x of this.props.sections) {
             this.sectionsDataPool[x.sid] == undefined && this.setSectionsDataPool(x.sid, {})
             uiArray.push(<SectionUI
+                setQueue={this.props.setQueue}
                 setSectionDataPool={this.setSectionsDataPool}
                 sectionData={this.sectionsDataPool[x.sid]}
                 sid={x.sid}

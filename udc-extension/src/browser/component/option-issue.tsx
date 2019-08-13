@@ -40,8 +40,8 @@ export class OptionItem extends React.Component<OptionItem.Props> {
         return (
             <li className={`optionItem ${this.props.sid} list-group-item`} >
                 <span className="oi oi-pencil" aria-hidden="true"></span>
-                <a id={this.props.akey} >选择题{this.props.akey}</a>&nbsp;
-                <span className="oi" aria-hidden="true" style={{ display: "none" }}></span>
+                <a id={this.props.akey} style={{ textAlign: "center" }} >选择题{this.props.akey} </a>&nbsp;
+                <span className="oi" aria-hidden="true" style={{ display: "none", float: "right" }}></span>
                 {/* <a className="issue_status">●</a><br /> */}
             </li>
 

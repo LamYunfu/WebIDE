@@ -1,9 +1,32 @@
 .container {
     display: none
 }
-.codingInfos{
+
+.codingInfos {
     display: none;
+    position: sticky;
+    top: 0;
 }
-.optionInfos{
+
+.optionInfos {
     display: none;
+    position: sticky;
+    top: 0;
+    padding: 5px;
+}
+
+.list-group-item {
+    padding-left: 25px;
+    padding-right: 35px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+}
+
+pre {
+
+    white-space: pre-wrap;
+
+    word-wrap: break-word;
+
 }

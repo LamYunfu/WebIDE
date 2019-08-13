@@ -7,7 +7,7 @@ export namespace View {
     export interface Props {
         getData: (type: string) => Promise<string>
         storeData: (data: string) => void
-        connect: (loginType: string, model: string, pid: string) => void
+        connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
@@ -17,6 +17,8 @@ export namespace View {
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
+        setSize: () => void
+        setQueue: () => void
     }
     export interface State {
         ajaxNotFinish: boolean
@@ -28,7 +30,7 @@ export class View extends React.Component<View.Props, View.State>{
     title: string = ""
     ppid: string = ""
     sections: [{ [key: string]: string }] = [{}]
-    renderView: JSX.Element = <div>loading</div>
+    renderView: JSX.Element = <div>**</div>
     typeDataPool: { [key: string]: { [key: string]: {} } } = {}   /* 
     {
        type:
@@ -133,6 +135,7 @@ export class View extends React.Component<View.Props, View.State>{
                                         <h4> {_this.title} </h4>
                                         <hr />
                                         <Chapter
+                                            setQueue={_this.props.setQueue}
                                             vid={_this.vid}
                                             chapterData={_this.typeDataPool[_this.type][_this.vid]}
                                             setChapterData={_this.setChapterData}
@@ -160,6 +163,7 @@ export class View extends React.Component<View.Props, View.State>{
                                         <h4> {_this.title} </h4>
                                         <hr />
                                         <Experiment
+                                            setQueue={_this.props.setQueue}
                                             section={{ ppid: [_this.ppid], sid: "experiment" }}
                                             outputResult={_this.props.outputResult}
                                             say={_this.props.say}
@@ -194,7 +198,7 @@ export class View extends React.Component<View.Props, View.State>{
 
     }
     componentDidMount() {
-
+        this.props.setSize()
 
     }
 

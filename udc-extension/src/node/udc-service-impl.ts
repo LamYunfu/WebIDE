@@ -22,9 +22,9 @@ export class UdcServiceImpl implements UdcService {
     }
 
 
-    async connect(login_type: LOGINTYPE, model: string, pid: string): Promise<string> {
+    async connect(login_type: LOGINTYPE, model: string, pid: string,timeout:string): Promise<string> {
         try {
-            let result = await this.udcTerminal.connect(login_type, model, pid);
+            let result = await this.udcTerminal.connect(login_type, model, pid,timeout);
             if (result === true) {
                 return "连接成功"
             } else {
@@ -126,5 +126,8 @@ export class UdcServiceImpl implements UdcService {
     }
     getState(type: string): Promise<string> {
         return this.udcTerminal.getState(type)
+    }
+    setQueue() {
+        this.udcTerminal.setQueue()
     }
 }

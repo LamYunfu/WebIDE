@@ -31,6 +31,9 @@ export class UdcTerminal {
     event: any
     hpp: HalfPackProcess
     dataStorage: { [key: string]: {} } = {}
+    programState: { [key: string]: { [key: string]: string } } = {}
+    pidQueueInfo: { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string } } = {}
+    cuurentPid: string = ``
 
 
     constructor(
@@ -39,7 +42,6 @@ export class UdcTerminal {
         this.event = new events.EventEmitter();
         this.hpp = new HalfPackProcess()
         Logger.val("current path:" + process.cwd())
-        fs.createFile("abc.ts")
     }
 
 
@@ -172,7 +174,7 @@ export class UdcTerminal {
                 }
             }
             this.dev_list = new_dev_list;
-            this.outputResult(`allocated devs ${JSON.stringify(this.dev_list)}`)
+            // this.outputResult(`allocated devs ${JSON.stringify(this.dev_list)}`)
             if (this.udcClient) {
                 this.udcClient.onDeviceList(new_dev_list)
             }
@@ -191,6 +193,26 @@ export class UdcTerminal {
             this.events.emit('cmd-response');
         } else if (type == Packet.DEVICE_LOG) {
             this.outputResult(value.toString().split(':')[2])
+        } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
+            Logger.val(value, 'DPBN')
+            let tmp = value.split(":")
+            Logger.info(`${tmp[0]}::${tmp[1]}::${tmp[2]}`)
+            this.programState[tmp[0]] = {}
+            this.programState[tmp[0]]["waitState"] = `waitting`
+            this.programState[tmp[0]]['programable'] = `true`
+            this.programState[tmp[0]]['clientID'] = tmp[1]
+            this.programState[tmp[0]]["devicePort"] = tmp[2]
+            this.events.emit('enterQueue')
+        } else if (type == Packet.DEVICE_PROGRAM_QUEUE) {
+            Logger.val(value, 'DPGQ')
+            // let tmp = value.split(",")
+            // Logger.info(`${tmp[0]}::${tmp[1]}::${tmp[2]}`)
+            // this.programState[tmp[0]] = {}
+            // this.programState[tmp[0]]["waitState"] = `waitting`
+            // this.programState[tmp[0]]['programable'] = `true`
+            // this.programState[tmp[0]]['clientID'] = tmp[1]
+            // this.programState[tmp[0]]["devicePort"] = tmp[2]
+            // this.events.emit('enterQueue')
         }
         this.udcServerClient.write(this.pkt.construct(Packet.HEARTBEAT, ""));
     }
@@ -213,6 +235,20 @@ export class UdcTerminal {
     get is_connected(): Boolean {
         return (this.udcServerClient != null);
     }
+    setQueue() {
+        let _this = this
+        if (this.cuurentPid == '') {
+            this.outputResult("please connect dev,there is no pid!")
+            return
+        }
+        if (this.is_connected) {
+            this.disconnect().then(() => {
+                _this.connect("queue", this.pidQueueInfo[this.cuurentPid].model, this.cuurentPid, this.pidQueueInfo[this.cuurentPid].timeout)
+            })
+        }
+        else
+            this.connect("queue", this.pidQueueInfo[this.cuurentPid].model, this.cuurentPid, this.pidQueueInfo[this.cuurentPid].timeout)
+    }
     storeState(data: string) {
         Logger.info(`data:${data}`)
         let tmp = JSON.parse(data)
@@ -226,14 +262,28 @@ export class UdcTerminal {
         tmp[type] = this.dataStorage[type]
         return new Promise(res => res(JSON.stringify(tmp)))
     }
-    async connect(loginType: string, model: string, pid: string): Promise<Boolean | string> {
-        let login_type = LOGINTYPE.FIXED
+    async connect(loginType: string, model: string, pid: string, timeout: string = `20`): Promise<Boolean | string> {
+        // loginType = LOGINTYPE.QUEUE
+        Logger.val(`timeout: ${timeout}`)
+        this.pidQueueInfo[pid] = {
+            loginType: loginType,
+            timeout: timeout,
+            model: model,
+            waitID: (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString()
+        }
+        this.cuurentPid = pid
+        let login_type = LOGINTYPE.QUEUE
+        // model = `tinylink_lora`
+        // model = `tinylink_platform_1`
         switch (loginType) {
             case "fixed": login_type = LOGINTYPE.FIXED; break
             case "adhoc": login_type = LOGINTYPE.ADHOC; break
             case "group": login_type = LOGINTYPE.GROUP; break
+            case "queue": login_type = LOGINTYPE.QUEUE; break
+
             default: Logger.err(`Error loginType:${loginType}`)
         }
+        this.login_type = login_type
         Logger.val(`>>>>>>>>>login type :${login_type} model :${model}`)
         Logger.val(">>>>>>>>>pid" + pid)
         let rets = await this.login_and_get_server(login_type, model);
@@ -268,7 +318,50 @@ export class UdcTerminal {
         return (this.cmd_excute_state === 'done' ? true : false);
     }
 
-
+    async wait_response(waitID: string, timeout: number) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.events.removeAllListeners('enterQueue');
+                Logger.info("wait for queue system timeOut")
+                this.programState[waitID] = {}
+                this.programState[waitID]["programable"] = "false"
+                resolve();
+            }, timeout);
+            this.events.once('enterQueue', () => {
+                this.programState[waitID]["waitState"] = "true"
+                this.programState[waitID]["programable"] = "true"
+                this.events.removeAllListeners('enterQueue');
+                resolve();
+            });
+        });
+    }
+    // async program_device_queue(filepath: string, address: string, devstr: string, model: string = "tinylink_platform_1", waitID: string = "1234567890123456", timeout: string = "20"): Promise<Boolean> {
+    async program_device_queue(filepath: string, address: string, devstr: string): Promise<Boolean> {
+        // let content =this.pkt.construct(Packet.DEVICE_WAIT, `${model}:${waitID}:${timeout}`)
+        let pid = this.cuurentPid
+        let model = this.pidQueueInfo[pid].model
+        let waitID = this.pidQueueInfo[pid].waitID
+        let timeout = this.pidQueueInfo[pid].timeout
+        this.send_packet(Packet.DEVICE_WAIT, `${model}:${waitID}:${timeout}`)
+        await this.wait_response(waitID, 20000)
+        // await this.wait_cmd_excute_done(270000);
+        if (this.programState[waitID]['programable'] == 'true') {
+            Logger.info("enter in queue scc", ' ^.^> ')
+            let result = await this.send_file_to_client(filepath, `${this.programState[waitID].clientID},${this.programState[waitID].devicePort}`)
+            if (result == false) {
+                Logger.err("sending file err")
+                return false
+            }
+            let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0,${await this.pkt.hash_of_file(filepath)},${waitID}`
+            this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content)
+            await this.wait_cmd_excute_done(270000);
+        }
+        else {
+            Logger.info('enter in queue failed', ' T.T ')
+            return false
+        }
+        return true
+    }
     async program_device(filepath: string, address: string, devstr: string): Promise<Boolean> {
         let send_result = await this.send_file_to_client(filepath, devstr);
         if (send_result === false) {

@@ -6,7 +6,7 @@ import { DisposableCollection } from "@theia/core/lib/common/disposable";
 import { Emitter } from "@theia/core/lib/common/event";
 
 @injectable()
-export class DeviceViewService implements WidgetFactory{
+export class DeviceViewService implements WidgetFactory {
     id: string = 'device-view';
     protected readonly onDidChangeDeviceEmitter = new Emitter<DeviceViewSymbolInformationNode[]>();
     protected readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
@@ -16,18 +16,20 @@ export class DeviceViewService implements WidgetFactory{
 
 
     constructor(
-        @inject(DeviceViewWidgetFactory) protected factory: DeviceViewWidgetFactory
-    ){}
+        @inject(DeviceViewWidgetFactory) protected factory: DeviceViewWidgetFactory,
+
+    ) { }
 
 
-    createWidget():Promise<Widget> {
+    createWidget(): Promise<Widget> {
+     
         this.widget = this.factory();
         const disposables = new DisposableCollection();
         disposables.push(this.widget.onDidChangeOpenStateEmitter.event(open => this.onDidChangeOpenStateEmitter.fire(open)));
         disposables.push(this.widget.model.onOpenNode(node => this.onDidOpenEmitter.fire(node as DeviceViewSymbolInformationNode)));
         disposables.push(this.widget.model.onSelectionChanged(selection => this.onDidSelectEmitter.fire(selection[0] as DeviceViewSymbolInformationNode)))
 
-        this.widget.disposed.connect(()=>{
+        this.widget.disposed.connect(() => {
             this.widget = undefined;
             disposables.dispose();
         })
@@ -35,11 +37,11 @@ export class DeviceViewService implements WidgetFactory{
     }
 
 
-    push(devices:{[key:string]:number}):void{
+    push(devices: { [key: string]: number }): void {
     }
 
-    
-    public clearDevices():void{
+
+    public clearDevices(): void {
     }
 
 }

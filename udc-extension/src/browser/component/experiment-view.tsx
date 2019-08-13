@@ -6,7 +6,7 @@ import { CodeItem, CodingInfo } from "./code-issue"
 export namespace Experiment {
     export interface Props {
         section: { [key: string]: any }
-        connect: (loginType: string, model: string, pid: string) => void
+        connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
@@ -15,15 +15,17 @@ export namespace Experiment {
         setCookie: (cookie: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
+        setQueue: () => void
 
     }
 
-    
+
     export interface State {
         codingItems: JSX.Element[]
     }
 }
 export class Experiment extends React.Component<Experiment.Props, Experiment.State> {
+    timeout: { [pid: string]: string } = {}
     model: { [key: string]: string } = {}
     loginType: { [key: string]: string } = {}
     role: { [key: string]: string[] } = {}
@@ -68,7 +70,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
     componentWillMount() {
         let _this = this
-        $.ajax(
+        _this.props.section.ppid != 'null' && $.ajax(
             {
                 headers: {
                     "accept": "application/json",
@@ -97,8 +99,8 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             if (item.deviceRole.length == 1) {
                                 // _this.loginType[`${item.pid}`] = 'fixed'
                                 _this.loginType[`${item.pid}`] = 'adhoc'
-                                _this.model[`${item.pid}`] = item.deviceType                                
-                              
+                                _this.model[`${item.pid}`] = item.deviceType
+
                             }
                             else if (item.deviceRole.length > 1) {
                                 _this.loginType[`${item.pid}`] = 'group'
@@ -106,6 +108,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 _this.model[`${item.pid}`] = item.deviceType
                             }
                         console.log("login type is :" + _this.loginType[`${item.pid}`])
+                        _this.timeout[item.pid] = item.timeout
                         _this.codingIssues[item.pid] = item.title
                         if (_this.role[`${item.pid}`] == undefined)
                             fns.push(item.title)
@@ -153,15 +156,28 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         if ($(e.currentTarget).text() == "断开") {
                             _this.props.disconnect()
                             $(e.currentTarget).text("连接")
+                            $("#setQueue" + this.props.section.sid).show()
                         }
                         else {
                             let val = $("#codingInfoArea" + _this.props.section.sid).attr("title")
                             // alert(val)
                             val != undefined && (_this.currentFocusCodingIndex[0] = val)
                             console.log("<<<<<<<<<set current coding index:" + _this.currentFocusCodingIndex[0])
-                            val != undefined && _this.props.connect(_this.loginType[val], _this.model[val], val)
+                            val != undefined && _this.props.connect(_this.loginType[val], _this.model[val], val, _this.timeout[val])
                             $(e.currentTarget).text("断开")
                         }
+                    }
+                )
+                $("#setQueue" + this.props.section.sid).click(
+                    () => {
+                        let index = $("#codingInfoArea" + this.props.section.sid).attr("title")
+                        if (_this.currentFocusCodingIndex[0] != index) {
+                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                            return
+                        }
+                        _this.props.setQueue()
+                        _this.props.say("已设为排队模式")
+                        $("#setQueue" + this.props.section.sid).hide()
                     }
                 )
                 $(document).on("click", ".list-group-item", (e) => {
@@ -173,7 +189,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
             }
         )
         setInterval(() => {
-            $.ajax(
+            _this.pids.length != 0 && $.ajax(
                 {
                     headers: {
                         "accept": "application/json",
@@ -235,7 +251,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                 }
             )
 
-        }, 2000)
+        }, 5000)
     }
 
 
@@ -249,7 +265,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             <div className="row">
                                 <div className={`coding${this.props.section.sid} col-12`}>
                                     <ul className="list-group">
-                                        {this.state.codingItems.length == 0 ? "loading" : this.codingItems}
+                                        {this.state.codingItems.length == 0 ? "" : this.codingItems}
                                     </ul>
                                 </div>
                             </div>

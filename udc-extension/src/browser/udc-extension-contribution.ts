@@ -1,7 +1,7 @@
 import { CommandRegistry, InMemoryResources } from '@theia/core';
 import { UdcWatcher } from './../common/udc-watcher';
 import { AboutDialog } from './about-dailog';
-import { UdcService} from '../common/udc-service';
+import { UdcService } from '../common/udc-service';
 import { injectable, inject } from "inversify";
 import { CommandContribution, MenuContribution, MenuModelRegistry, MessageService, MAIN_MENU_BAR, Command } from "@theia/core/lib/common";
 import { LanguageGrammarDefinitionContribution, TextmateRegistry } from '@theia/monaco/lib/browser/textmate';
@@ -165,13 +165,13 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         )
 
         registry.registerCommand(UdcCommands.Connect, {
-            execute: async (loginType: string, model: string, pid: string) => {
-                console.log("pid in front end :"+pid)
+            execute: async (loginType: string, model: string, pid: string, timeout: string) => {
+                console.log("pid in front end :" + pid)
                 let connected = await this.udcService.is_connected();
                 if (connected === true) {
                     this.messageService.info('Already Connected');
                 } else {
-                    this.udcService.connect(loginType, model, pid).then(async re => {
+                    this.udcService.connect(loginType, model, pid, timeout).then(async re => {
                         this.messageService.info(re)
                     }).catch(err => {
                         this.messageService.error(err)

@@ -10,7 +10,7 @@ export class HalfPackProcess extends EventEmitor {
         this.cursorEnd = 0
         this.currentDataSize = 0
     }
-    maxSize: number = 2048
+    maxSize: number = 10240
     dataBuffer: Buffer
     cursorStart: number
     cursorEnd: number

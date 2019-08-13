@@ -63,13 +63,12 @@ export class CodeItem extends React.Component<CodeItem.Props>{
             <li className={`codeItem${this.props.sid} list-group-item`} >
                 <span className="oi oi-terminal" aria-hidden="true"></span>
                 <a title={this.props.akey}>{this.props.codingTitles[this.props.akey]}</a>&nbsp;
-                <span className="oi" aria-hidden="true" style={{ display: "none" }}></span>
+                <span className="oi" aria-hidden="true" style={{ display: "none", float: "right" }}></span>
                 {/* <a className="issue_status">●</a><br /> */}
             </li>
         )
     }
 }
-
 export namespace CodingInfo {
 
 
@@ -102,6 +101,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props>{
                             index != undefined && _this.props.postSrcFile(JSON.stringify([_this.props.coding_titles[index]]))
                         else {
                             let tmp = []
+                        
                             for (let r of _this.props.roles[index]) {
                                 tmp.push(_this.props.coding_titles[index] + r)
                             }
@@ -110,6 +110,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props>{
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
                 )
+
             }
         )
     }
@@ -117,18 +118,20 @@ export class CodingInfo extends React.Component<CodingInfo.Props>{
 
     public render() {
         return (
-            <div className="card text-white bg-secondary">
-                <div className={`codingInfos ${this.props.sid} Container card-body`}>
+            <div className={`codingInfos ${this.props.sid} card text-white bg-secondary`}>
+                <div className={` Container card-body`}>
                     <h5 id="titleAndStatus" className="card-title">
                         <span id={"coding_title" + this.props.sid}>关于mqtt的一道题</span>
                     </h5>
                     <div id="codingInfoAreaContainer">
                         {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
-                        <p className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</p>
+                        <pre className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</pre>
                     </div>
-                    <div><button className="btn btn-info" id={"connectButton" + this.props.sid}>需要连接设备?</button></div>
+                    <span><button className="btn btn-info" id={"connectButton" + this.props.sid}>连接</button></span><span><button className="btn btn-info" id={"setQueue" + this.props.sid}>排队</button></span>
+
                     <br />
-                    <div><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></div>
+                    <div>
+                        <button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></div>
                 </div>
             </div>
         )

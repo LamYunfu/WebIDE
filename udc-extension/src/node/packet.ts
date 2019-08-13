@@ -17,7 +17,7 @@ export class Packet {
         }
     }
 
-    
+
     construct(type: string, value: string): string {
         if (!this.is_valid_type(type)) {
             return ''
@@ -79,7 +79,7 @@ export class Packet {
         }
     }
 
-    
+
     async hash_of_file(filename: string) {
         crypto.createHash('sha1');
         let h = crypto.createHash('sha1');
@@ -91,9 +91,12 @@ export class Packet {
 
 
 export namespace Packet {
+    export const DEVICE_PROGRAM_QUEUE = 'DPGQ'
+    export const DEVICE_PROGRAM_BEGIN = 'DPBG'
     export const TYPE_NONE = 'NONE'
     export const CLIENT_DEV = 'CDEV'
     export const ALL_DEV = 'ADEV'
+    export const DEVICE_WAIT = 'DPWT'
     export const DEVICE_LOG = 'DLOG'
     export const DEVICE_STATUS = 'DSTU'
     export const DEVICE_CMD = 'DCMD'
@@ -133,6 +136,7 @@ export namespace Packet {
 
 
     export const packet_type: { [key: string]: string } = {
+        DEVICE_WAIT: 'DPWT',
         TYPE_NONE: 'NONE',
         CLIENT_DEV: 'CDEV',
         ALL_DEV: 'ADEV',

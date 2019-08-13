@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { TreeWidget, TreeProps, TreeModel, ContextMenuRenderer, CompositeTreeNode, SelectableTreeNode, TreeNode } from "@theia/core/lib/browser";
+import { TreeWidget, TreeProps, TreeModel, ContextMenuRenderer, CompositeTreeNode, SelectableTreeNode, TreeNode, ApplicationShell } from "@theia/core/lib/browser";
 import React = require("react");
 import { Emitter } from "vscode-jsonrpc";
 import { UdcService } from "../common/udc-service";
@@ -43,6 +43,7 @@ export class DeviceViewWidget extends TreeWidget {
         @inject(UdcService) protected readonly udcService: UdcService,
         @inject(MessageService) protected readonly messageService: MessageService,
         @inject(CommandRegistry) protected readonly commandRegistry: CommandRegistry,
+        @inject(ApplicationShell) protected applicationShell: ApplicationShell,
         @inject(EditorManager) protected em: EditorManager
     ) {
         super(treePros, model, contextMenuRenderer);
@@ -52,14 +53,28 @@ export class DeviceViewWidget extends TreeWidget {
         this.title.closable = true;
         this.title.iconClass = 'fa fa-gg';
         this.addClass('theia-udcdevice-view');
+
+
     }
-
-
     rootdir: string = "/home/project"
+    setSize = () => {
+        console.log("rendering")
+        this.applicationShell.activateWidget(this.id)
+        this.applicationShell.setLayoutData({
+            version: this.applicationShell.getLayoutData().version,
+            activeWidgetId: this.id,
+            leftPanel: {
+                type: 'sidepanel',
+                size: 520
+            }
+        })
+    }
     protected renderTree(): React.ReactNode {
-        return (
 
+        return (
             <View
+                setQueue={this.setQueue}
+                setSize={this.setSize}
                 storeData={this.storeData}
                 getData={this.getData}
                 outputResult={this.outputResult}
@@ -75,7 +90,6 @@ export class DeviceViewWidget extends TreeWidget {
         )
     }
 
-
     outputResult = (res: string) => {
         this.udcService.outputResult(res)
     }
@@ -86,8 +100,8 @@ export class DeviceViewWidget extends TreeWidget {
     }
 
 
-    connect = (loginType: string, model: string, pid: string) => {
-        this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid);
+    connect = (loginType: string, model: string, pid: string, timeout: string) => {
+        this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
     }
 
 
@@ -129,7 +143,10 @@ export class DeviceViewWidget extends TreeWidget {
     storeData = (data: string) => {
         this.udcService.storeState(data)
     }
-    getData = (type:string) => {
+    getData = (type: string) => {
         return this.udcService.getState(type)
+    }
+    setQueue = () => {
+        this.udcService.setQueue()
     }
 }

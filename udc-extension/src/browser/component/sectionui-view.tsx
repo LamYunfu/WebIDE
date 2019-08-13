@@ -11,7 +11,7 @@ export namespace SectionUI {
         sectionData: { [key: string]: { answer: string, isRight: boolean } }
         setSectionDataPool: (sid: string, data: {}) => void
         section: { [key: string]: string }
-        connect: (loginType: string, model: string, pid: string) => void
+        connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
@@ -20,6 +20,7 @@ export namespace SectionUI {
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
+        setQueue: () => void
     }
 
 
@@ -31,6 +32,7 @@ export namespace SectionUI {
 export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>{
     // submittedOptionAnswers: { [pid: string]: { answer: string, isRight: boolean } }
     // setSubmittedOptionAnswer: (section: string, pid: string, answer: string, isRight: boolean) => void
+    timeout: { [key: string]: string } = {}
     model: { [key: string]: string } = {}
     loginType: { [key: string]: string } = {}
     role: { [key: string]: string[] } = {}
@@ -139,8 +141,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 }
             }
         )
-        //TODO get codeInfo
-        $.ajax(
+
+        _this.props.section.ppid != 'null' && $.ajax(
             {
                 headers: {
                     "accept": "application/json",
@@ -183,7 +185,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             _this.model[`${item.pid}`] = item.deviceType
                             _this.role[`${item.pid}`] = item.deviceRole
                         }
-
+                        alert(item.timeout)
+                        _this.timeout[item.pid] = item.timeout
                         _this.codingIssues[item.pid] = item.title
                         if (_this.role[`${item.pid}`] == undefined)
                             fns.push(item.title)
@@ -258,7 +261,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
             })
 
         setInterval(() => {
-            $.ajax(
+            _this.pids.length != 0 && $.ajax(
                 {
                     headers: {
                         "accept": "application/json",
@@ -273,7 +276,9 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     // contentType: "text/plain",
                     data: JSON.stringify({ pid: _this.pids }),
                     success: function (data) {
-                        // alert(JSON.stringify(data))
+                        for (let x of _this.pids) {
+                            console.log("pid:" + x + "!")
+                        }
                         let tmp = data.problem
                         for (let x of tmp) {
                             _this.codingStatus[x.pid] = x.status
@@ -285,7 +290,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             if (status == 'JUDGING') {
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
                                 let sp = $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next()
-                                console.log("judging.....................................")
+                                // console.log("judging.....................................")
                                 sp.attr("class", "oi oi-ellipses")
                                 sp.show()
                                 _this.judgeStatus[x.pid] = '1'
@@ -320,7 +325,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 }
             )
 
-        }, 2000)
+        }, 5000)
 
         $(document).ready(
             () => {
@@ -329,6 +334,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         if ($(e.currentTarget).text() == "断开") {
                             _this.props.disconnect()
                             $(e.currentTarget).text("连接")
+                            $("#setQueue" + this.props.sid).show()
+
                         }
                         else {
                             let val = $("#codingInfoArea" + _this.props.sid).attr("title")
@@ -336,11 +343,24 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             val != undefined && (_this.currentFocusCodingIndex[0] = val)
                             console.log("<<<<<<<<<set current coding indexs:" + _this.currentFocusCodingIndex[0])
                             console.log("<<<<<<<<funny:")
-                            console.log("something "+this.loginType[val!]+":"+_this.model[val!])
-                            val != undefined && _this.props.connect(_this.loginType[val], _this.model[val], val)
-                     
+                            console.log("something " + this.loginType[val!] + ":" + _this.model[val!])
+                            val != undefined && _this.props.connect(_this.loginType[val], _this.model[val], val, _this.timeout[val])
+
                             $(e.currentTarget).text("断开")
                         }
+                    }
+                )
+                $("#setQueue" + this.props.sid).click(
+                    () => {
+                        console.log("click queue")
+                        let index = $("#codingInfoArea" + this.props.sid).attr("title")
+                        if (_this.currentFocusCodingIndex[0] != index) {
+                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                            return
+                        }
+                        _this.props.setQueue()
+                        _this.props.say("已设为排队模式")
+                        $("#setQueue" + this.props.sid).hide()
                     }
                 )
                 $(document).on("click", ".list-group-item", (e) => {
@@ -370,16 +390,16 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 <h5 className={`section${this.props.sid}`}> {this.props.sid}. {this.props.section.title}</h5>
                 <div className={`contentsAndInfos${this.props.sid} container`}>
                     <div className="row">
-                        <div className="contents col-5">
-                            <div className="row">
-                                <div className={`coding${this.props.sid} col-12`}>
-                                    <ul className="list-group">
-                                        <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
-                                        {this.state.optionItems.length == 0 ? "loading" : this.optionItems}
-                                        {this.state.codingItems.length == 0 ? "loading" : this.codingItems}
-                                    </ul>
-                                </div>
-                            </div>
+                        <div className="contents col-5" style={{ "padding": "0px" }}>
+
+                            {/* <div className={`coding${this.props.sid} col-12`} > */}
+                            <ul className="list-group">
+                                <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
+                                {this.state.optionItems.length == 0 ? "" : this.optionItems}
+                                {this.state.codingItems.length == 0 ? "" : this.codingItems}
+                            </ul>
+                            {/* </div> */}
+
                         </div>
                         <div className={`codingInfos ${this.props.sid} col-7`} >
                             <CodingInfo roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
