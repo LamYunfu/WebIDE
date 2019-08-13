@@ -185,7 +185,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             _this.model[`${item.pid}`] = item.deviceType
                             _this.role[`${item.pid}`] = item.deviceRole
                         }
-                        alert(item.timeout)
+                        // alert(item.timeout)
                         _this.timeout[item.pid] = item.timeout
                         _this.codingIssues[item.pid] = item.title
                         if (_this.role[`${item.pid}`] == undefined)
