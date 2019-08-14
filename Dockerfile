@@ -1,4 +1,4 @@
-ARG NODE_VERSION=8.16.0
+ARG NODE_VERSION=11.15.0
 FROM node:${NODE_VERSION}-alpine
 #RUN apk add --no-cache make gcc g++ python bash
 #RUN apk add  make gcc g++ python bash

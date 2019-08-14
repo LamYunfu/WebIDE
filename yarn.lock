@@ -692,10 +692,10 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/jquery@^3.3.30":
-  version "3.3.30"
-  resolved "https://registry.npm.taobao.org/@types/jquery/download/@types/jquery-3.3.30.tgz#af4ad612d86d954d74664b2b0ec337a251fddb5b"
-  integrity sha1-r0rWEthtlU10ZksrDsM3olH921s=
+"@types/jquery@^3.3.31":
+  version "3.3.31"
+  resolved "https://registry.npm.taobao.org/@types/jquery/download/@types/jquery-3.3.31.tgz#27c706e4bf488474e1cb54a71d8303f37c93451b"
+  integrity sha1-J8cG5L9IhHThy1SnHYMD83yTRRs=
   dependencies:
     "@types/sizzle" "*"
 
