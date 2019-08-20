@@ -11,11 +11,14 @@ export namespace Experiment {
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
-        createSrcFile: (fns: string[]) => void
+
         setCookie: (cookie: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
         setQueue: () => void
+        closeTabs: () => void
+        initPidQueueInfo(infos: string): Promise<string>
+        openShell: () => void
 
     }
 
@@ -35,6 +38,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
     codingStatus: { [key: string]: string } = {}
     judgeStatus: string[] = []
     submittedCodingIssue: string[] = []
+    pidQueueInfo: { [pid: string]: {} } = {};
     statusCode: { [key: number]: string } = {
         0x0000: 'NO_GEN',
         0x0001: 'GEN_FAIL',
@@ -91,39 +95,54 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     let x = data.data; // show response from the php script.
                     let fns = []
                     for (let item of x) {
+                        _this.pidQueueInfo[item.pid] = {}
+                        let tmp = {}
                         if (item.deviceRole[0] == 'null') {
                             _this.loginType[`${item.pid}`] = 'adhoc'
                             _this.model[`${item.pid}`] = 'any'
+                            tmp = { ...tmp, loginType: 'adhoc', model: 'any' }
                         }
                         else
                             if (item.deviceRole.length == 1) {
                                 // _this.loginType[`${item.pid}`] = 'fixed'
                                 _this.loginType[`${item.pid}`] = 'adhoc'
                                 _this.model[`${item.pid}`] = item.deviceType
+                                tmp = { ...tmp, loginType: 'adhoc', model: item.deviceType }
 
                             }
                             else if (item.deviceRole.length > 1) {
                                 _this.loginType[`${item.pid}`] = 'group'
                                 _this.role[`${item.pid}`] = item.deviceRole
                                 _this.model[`${item.pid}`] = item.deviceType
+                                tmp = { ...tmp, loginType: 'group', model: item.deviceType }
                             }
                         console.log("login type is :" + _this.loginType[`${item.pid}`])
                         _this.timeout[item.pid] = item.timeout
                         _this.codingIssues[item.pid] = item.title
                         if (_this.role[`${item.pid}`] == undefined)
-                            fns.push(item.title)
+                            fns.push("helloworld")
                         else {
                             for (let r of _this.role[`${item.pid}`]) {
-                                fns.push(item.title + r)
-                                console.log(`fileName is............................${item.title + r}`)
+                                fns.push("helloworld" + "_" + r)
+
                             }
                         }
+                        if (item.deviceType.split("-")[0] == "alios") {
+                            fns.push("helloworld" + ".mk")
+                            fns.push("ucube.py")
+                            fns.push("README.md")
+                        }
+                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title }
+                        _this.pidQueueInfo[item.pid] = tmp
+                        _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
+                            console.log("initpidqueue scc")
+                        })
                         _this.codingInfos[item.pid] = item.content
                         _this.pids.push(item.pid)
                     }
-                    _this.props.createSrcFile(fns)
+
                     for (let entry in _this.codingIssues)
-                        _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
+                        _this.codingItems.push(<CodeItem openShell={_this.props.openShell} loginType={_this.loginType[entry]} model={_this.model[entry]}
                             role={_this.role[entry]} sid={_this.props.section.sid} akey={entry} key={entry}
                             codingInfos={_this.codingInfos} codingTitles={_this.codingIssues}
                             codingStatus={_this.codingStatus} openSrcFile={_this.props.openSrcFile} />)
@@ -145,6 +164,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
             () => {
                 $(document).on("click", ".section." + _this.props.section.sid, (e) => {
                     console.log("section click...................")
+                    _this.props.closeTabs()
                     $(".contentsAndInfos." + _this.props.section.sid).toggle()
                 })
             }
@@ -258,7 +278,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
     render(): JSX.Element {
         return (
             <div>
-                <h5 className={`section experiment`}> 实验题</h5>
+                <div className="title_timer"><h4 className={`section experiment`}>编程测试</h4><span id='timer'></span></div>
                 <div className={`contentsAndInfos ${this.props.section.sid} container`}>
                     <div className="row">
                         <div className="contents col-5">

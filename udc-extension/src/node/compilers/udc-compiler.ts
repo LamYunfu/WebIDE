@@ -1,46 +1,35 @@
+import { Controller } from './../controller';
 import * as path from 'path'
 import * as unzip from "unzip"
 import * as FormData from "form-data"
 import * as fs from 'fs-extra';
-import { UdcTerminal } from './udc-terminal'
+import { UdcTerminal } from '../udc-terminal'
 import * as http from 'http'
-import { Logger } from './logger'
+import { Logger } from '../logger'
+import { injectable, inject, LazyServiceIdentifer } from 'inversify';
+@injectable()
 export class UdcCompiler {
-    constructor(udc: UdcTerminal) {
-        this.udc = udc
+    constructor(
+        @inject(new LazyServiceIdentifer(() => UdcTerminal)) protected readonly udc: UdcTerminal,
+        @inject(new LazyServiceIdentifer(() => Controller)) protected readonly controller: Controller
+    ) {
+
     }
     DEBUG: boolean = false
-    udc: UdcTerminal
     rootDir: string = "/home/project"
-    cookie: string = ""
+
     tinyLinkAPIs: { [key: string]: string } = {
         hostname: "api.tinylink.cn",
         port: "80",
         srcPostPath: "/tinylink/withFile",//post file data return download uri
         downloadHexPath: "/tinylink/downloadHex",
     }
-
-
-    createSrcFile(fnJSON: string) {
-        let fn = JSON.parse(fnJSON)
-        let rootdir = this.rootDir
-        for (let i of fn) {
-            let tmpPath = path.join(rootdir, i + ".cpp")
-            fs.exists(tmpPath, (res) => {
-                if (!res)
-                    fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
-            })
-        }
+    get cookie() {
+        return this.udc.cookie
     }
-
-
-    downloadZip(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            resolve('scc')
-        })
+    set cookie(cookie) {
+        this.udc.setCookie(cookie)
     }
-
-
     getHexNmame(fn: string) {
         let x = 'B'
         for (let i = 0; i < fn.length; i++) {
@@ -54,7 +43,7 @@ export class UdcCompiler {
 
 
     devs: string[] = []
-    extractHex(fn: string, index: number, useQueue: boolean): Promise<string> {
+    extractHex(fn: string, index: number, useQueue: boolean, dirName: string, pid: string): Promise<string> {
         this.outputResult(`dev index:${index}`)
         if (index == 0) {
             for (let k in this.udc.get_devlist()) {
@@ -72,13 +61,13 @@ export class UdcCompiler {
         let rootDir = this.rootDir
         let _this = this
         return new Promise((resolve, reject) => {
-            fs.createReadStream(path.join(rootDir, fn + 'Install.zip'))
+            fs.createReadStream(path.join(rootDir, dirName, fn + 'Install.zip'))
                 .pipe(unzip.Parse())
                 .on('entry', function (entry) {
                     var fileName = entry.path;
                     if (fileName == "Install/sketch.ino.hex") {
                         Logger.info("find")
-                        let fss = fs.createWriteStream(path.join(rootDir, _this.getHexNmame(fn) + 'sketch.ino.hex'))
+                        let fss = fs.createWriteStream(path.join(rootDir, dirName, _this.getHexNmame(fn) + 'sketch.ino.hex'))
                         entry.pipe(fss);
                         fss.on("close", () => {
                             Logger.info("programming")
@@ -92,7 +81,7 @@ export class UdcCompiler {
                             // Logger.log("-----------------devstr is :" + devstr)
                             if (useQueue) {
                                 _this.outputResult(`program with queue`)
-                                _this.udc.program_device_queue(path.join(rootDir, _this.getHexNmame(fn) + 'sketch.ino.hex'), "0", _this.devs[index]).then(
+                                _this.udc.program_device_queue(path.join(rootDir, dirName, _this.getHexNmame(fn) + 'sketch.ino.hex'), "0", _this.devs[index]).then(
                                     (res) => {
                                         if (res) {
                                             _this.outputResult("program scc")
@@ -107,7 +96,7 @@ export class UdcCompiler {
                             }
                             else {
                                 _this.outputResult(`program without queue`)
-                                _this.udc.program_device(path.join(rootDir, _this.getHexNmame(fn) + 'sketch.ino.hex'), "0", _this.devs[index]).then(
+                                _this.udc.program_device(path.join(rootDir, dirName, _this.getHexNmame(fn) + 'sketch.ino.hex'), "0", _this.devs[index], pid).then(
                                     (res) => {
                                         if (res) {
                                             _this.outputResult("program scc")
@@ -133,7 +122,7 @@ export class UdcCompiler {
 
 
     fns: string[] = []
-    postSrcFile(fns: string, setTag: boolean, dev: number): Promise<string> {
+    postSrcFile(fns: string, setTag: boolean, dev: number, dirName: string = ''): Promise<string> {
         let pid = this.udc.cuurentPid
         let useQueue = false
         if (this.udc.pidQueueInfo[pid].loginType == "queue")
@@ -142,13 +131,15 @@ export class UdcCompiler {
         if (setTag) {
             this.fns = JSON.parse(fns)
             this.devs = []
+            // dirName = this.fns[0]
         }
         let fn = this.fns.shift()
         Logger.val("post file name " + fn)
         if (fn == undefined)
             return new Promise((resolve) => resolve('postfile finish'))
         let rootDir = this.rootDir
-        let tmpPath = path.join(rootDir, fn + ".cpp")
+        let tmpPath = path.join(rootDir, dirName, fn + ".cpp")
+        Logger.val(`tmpPath:${tmpPath}`)
         let b = fs.readFileSync(tmpPath)
         let fm = new FormData()
         fm.append("file", b, fn + '.cpp')
@@ -169,6 +160,12 @@ export class UdcCompiler {
                         return
                     }
                     let tmp = JSON.parse(res)
+                    // if (tmp.status != '200') {
+                    //     this.outputResult(`${tmp.error}`)
+                    //     this.outputResult(`${tmp.message}`)
+                    //     return
+                    // }
+                    Logger.info(`compile data back:${res}`)
                     let data = JSON.parse(tmp.data)
                     Logger.val("compiler return data :" + data)
                     Logger.val("compile result:" + tmp.data)
@@ -180,7 +177,8 @@ export class UdcCompiler {
                     }
                     else if (data.verbose != '') {
                         reject("online compiler error")
-                        this.udc.udcClient != undefined && this.outputResult(`the online compiler has some troubles,try later please`)
+                        this.udc.udcClient != undefined && this.outputResult(`${data.verbose}`)
+                        return
                     }
                     else {
                         let downloadFd = http.request({
@@ -192,9 +190,9 @@ export class UdcCompiler {
                                 Cookie: this.cookie
                             }
                         }, (mesg) => {
-                            fs.exists(path.join(this.rootDir, fn + 'Install.zip'), (tag) => {
+                            fs.exists(path.join(this.rootDir, dirName, fn + 'Install.zip', dirName), (tag) => {
                                 // if (tag == true) fs.remove(path.join(this.rootDir, fn + 'Install.zip'))
-                                let ws = fs.createWriteStream(path.join(this.rootDir, fn + 'Install.zip'))
+                                let ws = fs.createWriteStream(path.join(this.rootDir, dirName, fn + 'Install.zip'))
                                 mesg.on("data", (b: Buffer) => {
                                     Logger.info("downloading")
                                     ws.write(b)
@@ -203,9 +201,9 @@ export class UdcCompiler {
                                     ws.close()
                                     _this.outputResult('download hex.zip completed ,extracting hex file')
                                     Logger.info("download scc")
-                                    _this.extractHex(fn!, dev, useQueue).then(() => {
+                                    _this.extractHex(fn!, dev, useQueue, dirName, pid).then(() => {
                                         try {
-                                            _this.postSrcFile(fns, false, dev + 1)
+                                            _this.postSrcFile(fns, false, dev + 1, dirName)
                                         }
                                         catch (e) {
                                         }
@@ -286,13 +284,7 @@ export class UdcCompiler {
 
 
     setCookie(cookie: string): boolean {
-        if (cookie != null && cookie != undefined && cookie != "") {
-            this.cookie = cookie
-            Logger.val('cookie is :' + this.cookie)
-            return false
-        }
-        Logger.info(" null cookie")
-        return true
+        return this.udc.setCookie(cookie)
     }
 
 

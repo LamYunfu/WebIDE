@@ -1,4 +1,4 @@
-import { UdcCompiler } from './udc-compiler';
+import { Controller } from './controller';
 import { HalfPackProcess } from './half-pkt-process';
 // import { certificate } from './../common/udc-config';
 import { UdcClient } from '../common/udc-watcher';
@@ -8,13 +8,16 @@ import * as net from 'net'
 import * as fs from 'fs-extra';
 import { Packet } from "./packet";
 import * as events from "events";
-import { networkInterfaces } from 'os';
+// import { networkInterfaces } from 'os';
 import { LOGINTYPE } from '../common/udc-service';
-import * as FormData from "form-data"
 import { Logger } from './logger'
+// import { networkInterfaces } from 'os';
 @injectable()
+/*
+存储一些数据，以及ldc相关指令操作
+*/
 export class UdcTerminal {
-    UC: UdcCompiler = new UdcCompiler(this)
+    cookie: string = ""
     DEBUG: boolean = false
     udcserver: any;
     DEFAULT_SERVER: string = "118.31.76.36";
@@ -32,38 +35,62 @@ export class UdcTerminal {
     hpp: HalfPackProcess
     dataStorage: { [key: string]: {} } = {}
     programState: { [key: string]: { [key: string]: string } } = {}
-    pidQueueInfo: { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string } } = {}
+    pidQueueInfo: { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string } } = {}
     cuurentPid: string = ``
 
 
     constructor(
         @inject(Packet) protected readonly pkt: Packet,
+        @inject(Controller) protected readonly controller: Controller
     ) {
         this.event = new events.EventEmitter();
         this.hpp = new HalfPackProcess()
         Logger.val("current path:" + process.cwd())
     }
+    initPidQueueInfo(infos: string): Promise<string> {
+        Logger.info(infos, 'info')
+        this.pidQueueInfo = JSON.parse(infos)
+        for (let index in this.pidQueueInfo) {
+            let { dirName, fns } = this.pidQueueInfo[index]
+            this.controller.creatSrcFile(fns, dirName)
 
-
+        }
+        return new Promise((res) => {
+            res("scc")
+        })
+    }
+    setPidInfos(pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string }) {
+        this.pidQueueInfo[pid] = content
+    }
+    getPidInfos(pid: string) {
+        Logger.info(JSON.stringify(this.pidQueueInfo[pid]), 'pidq')
+        return this.pidQueueInfo[pid]
+    }
     setClient(client: UdcClient) {
         this.udcClient = client;
     }
 
-
+    //74dfbfad34520000
+    //901DE50A2D2E055C
+    //901DE50A2D2E0000
+    // get uuid(): string {
+    //     let uuid: string = '';
+    //     let interfaces = networkInterfaces();
+    //     for (let intf in interfaces) {
+    //         for (let i in interfaces[intf]) {
+    //             if (interfaces[intf][i].family === 'IPv6') { continue; }
+    //             if (interfaces[intf][i].address === '127.0.0.1') { break; }
+    //             uuid = interfaces[intf][i].mac.replace(/:/g, '') + '0000'
+    //             break;
+    //         }
+    //     }
+    //     Logger.info(`uuid:${uuid}`)
+    //     return uuid;
+    // }
     get uuid(): string {
-        let uuid: string = '';
-        let interfaces = networkInterfaces();
-        for (let intf in interfaces) {
-            for (let i in interfaces[intf]) {
-                if (interfaces[intf][i].family === 'IPv6') { continue; }
-                if (interfaces[intf][i].address === '127.0.0.1') { break; }
-                uuid = interfaces[intf][i].mac.replace(/:/g, '') + '0000'
-                break;
-            }
-        }
-        return uuid;
+        Logger.info(`uuid:${(this.cookie.slice(20, 32) + '0000').toLowerCase()}`)
+        return (this.cookie.slice(20, 36)).toLowerCase()
     }
-
 
     login_and_get_server(login_type: LOGINTYPE, model: string): Promise<Array<any>> {
         // let options = {
@@ -139,7 +166,7 @@ export class UdcTerminal {
             // _this.udcServerClient.on('data', (data: Buffer) => _this.onUdcServerData(data, pid));
             _this.udcServerClient.on('data', (data: Buffer) => {
                 Logger.info("hpp recived <<<<<<<<<<:" + data.toString('ascii'))
-                _this.hpp.puttingData(data)
+                _this.hpp.putData(data)
             });
             _this.hpp.on("data", (data) => {
                 Logger.info("hpp  processed >>>>>>>>>>:" + data.toString('ascii'))
@@ -160,6 +187,7 @@ export class UdcTerminal {
         // Logger.log(`Received: type=${type} length=${length} value= ${value} msg=${msg}`);
 
         if (type === Packet.ALL_DEV) {
+
             let new_dev_list: { [key: string]: number } = {}
             let clients = value.split(':');
             for (let c of clients) {
@@ -174,7 +202,7 @@ export class UdcTerminal {
                 }
             }
             this.dev_list = new_dev_list;
-            // this.outputResult(`allocated devs ${JSON.stringify(this.dev_list)}`)
+            this.outputResult(`allocated devs ${JSON.stringify(this.dev_list)}`)
             if (this.udcClient) {
                 this.udcClient.onDeviceList(new_dev_list)
             }
@@ -264,17 +292,19 @@ export class UdcTerminal {
     }
     async connect(loginType: string, model: string, pid: string, timeout: string = `20`): Promise<Boolean | string> {
         // loginType = LOGINTYPE.QUEUE
+        // model = `alios-esp32`
         Logger.val(`timeout: ${timeout}`)
         this.pidQueueInfo[pid] = {
-            loginType: loginType,
-            timeout: timeout,
-            model: model,
+            ...  this.pidQueueInfo[pid],
+            // fns: JSON.stringify(["helloworld", "helloworld", 'README.md', 'ucube.py']),
+            // dirName: "helloworld",
+            // model: model,
             waitID: (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString()
         }
         this.cuurentPid = pid
         let login_type = LOGINTYPE.QUEUE
         // model = `tinylink_lora`
-        // model = `tinylink_platform_1`
+
         switch (loginType) {
             case "fixed": login_type = LOGINTYPE.FIXED; break
             case "adhoc": login_type = LOGINTYPE.ADHOC; break
@@ -296,7 +326,9 @@ export class UdcTerminal {
         if (result !== 'success') return false;
         this.outputResult('connect to server success')
         await this.send_packet(Packet.packet_type.TERMINAL_LOGIN, `${this.uuid},${token},${pid}`)//modifiy,timeout/
+        // await this.AC.postNameAndType("helloworld", "esp32devkitc")
         return true;
+
     }
 
 
@@ -362,13 +394,13 @@ export class UdcTerminal {
         }
         return true
     }
-    async program_device(filepath: string, address: string, devstr: string): Promise<Boolean> {
+    async program_device(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         let send_result = await this.send_file_to_client(filepath, devstr);
         if (send_result === false) {
             return false;
         }
         this.outputResult('send hex file to LDC success')
-        let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)}`
+        let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
         this.send_packet(Packet.DEVICE_PROGRAM, content);
         await this.wait_cmd_excute_done(270000);
         if (this.cmd_excute_state === 'done') {
@@ -517,39 +549,17 @@ export class UdcTerminal {
         return this.dev_list;
     }
 
-
-    createSrcFile(fnJSON: string) {
-        return this.UC.createSrcFile(fnJSON)
-    }
-
-
-    downloadZip(): Promise<string> {
-        return this.UC.downloadZip()
-    }
-
-
-    getHexNmame(fn: string) {
-        return this.UC.getHexNmame(fn)
-
-    }
-
-
-    postSrcFile(fns: string): Promise<string> {
-        return this.UC.postSrcFile(fns, true, 0)
-    }
-
-
-    submitForm(fm: FormData, hostname: string, port: string, path: string, method: string): Promise<string> {
-        return this.UC.submitForm(fm, hostname, port, path, method)
-    }
-
-
     setCookie(cookie: string): boolean {
-        return this.UC.setCookie(cookie)
+        if (cookie != null && cookie != undefined && cookie != "") {
+            this.cookie = cookie
+            Logger.val('cookie is :' + this.cookie)
+            return false
+        }
+        Logger.info(" null cookie")
+        return true
     }
-
-
     outputResult(res: string) {
-        return this.UC.outputResult(res)
+        this.udcClient && this.udcClient.OnDeviceLog("::" + res)
     }
+
 }

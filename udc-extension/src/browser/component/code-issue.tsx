@@ -17,6 +17,7 @@ export namespace CodeItem {
         codingInfos: { [key: string]: string }
         codingStatus: { [key: string]: string }
         openSrcFile: (uri: URI) => void
+        openShell: () => void
     }
 }
 
@@ -35,13 +36,14 @@ export class CodeItem extends React.Component<CodeItem.Props>{
             (e) => {
                 $(".codeItem" + _this.props.sid).click(
                     (e) => {
+                        _this.props.openShell()
                         let tmp = $(e.currentTarget).children("a").attr("title")
                         if (tmp != undefined) {
                             if (_this.props.role == undefined)
-                                _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${_this.props.codingTitles[tmp]}.cpp`)))
+                                _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.codingTitles[tmp]}`, `helloworld.cpp`)))
                             else {
                                 for (let mem of _this.props.role) {
-                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}`, `${_this.props.codingTitles[tmp] + mem}.cpp`)))
+                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.codingTitles[tmp]}`, `${"helloworld" +"_"+ mem}.cpp`)))
                                 }
                             }
                             $(".optionInfos." + _this.props.sid).hide()
@@ -97,16 +99,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props>{
                             _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
                             return
                         }
-                        if (_this.props.roles[index] == undefined)
-                            index != undefined && _this.props.postSrcFile(JSON.stringify([_this.props.coding_titles[index]]))
-                        else {
-                            let tmp = []
-                        
-                            for (let r of _this.props.roles[index]) {
-                                tmp.push(_this.props.coding_titles[index] + r)
-                            }
-                            index != undefined && _this.props.postSrcFile(JSON.stringify(tmp))
-                        }
+                        index != undefined && _this.props.postSrcFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
                 )

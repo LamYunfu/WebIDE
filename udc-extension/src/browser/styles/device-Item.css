@@ -1,5 +1,5 @@
 .container {
-    display: none
+    display: inline
 }
 
 .codingInfos {
@@ -7,7 +7,6 @@
     position: sticky;
     top: 0;
 }
-
 .optionInfos {
     display: none;
     position: sticky;
@@ -29,4 +28,12 @@ pre {
 
     word-wrap: break-word;
 
+}
+
+h4 {
+    text-align: center;
+}
+
+.title_timer {
+    text-align: center;
 }

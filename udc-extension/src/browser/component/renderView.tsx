@@ -12,13 +12,15 @@ export namespace View {
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
-        createSrcFile: (fns: string[]) => void
         setCookie: (cookie: string) => void
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
-        setSize: () => void
+        setSize: (size: number) => void
         setQueue: () => void
+        closeTabs: () => void
+        initPidQueueInfo(infos: string): Promise<string>
+        openShell: () => void
     }
     export interface State {
         ajaxNotFinish: boolean
@@ -132,9 +134,13 @@ export class View extends React.Component<View.Props, View.State>{
                                 _this.title = data.data.title
                                 _this.renderView = <div>
                                     <div>
-                                        <h4> {_this.title} </h4>
-                                        <hr />
+                                        <div className="title_timer"><h4> {_this.title}</h4><span id='timer'></span></div>
+
+                                        {/* <hr /> */}
                                         <Chapter
+                                            openShell={_this.props.openShell}
+                                            closeTables={_this.props.closeTabs}
+                                            initPidQueueInfo={_this.props.initPidQueueInfo}
                                             setQueue={_this.props.setQueue}
                                             vid={_this.vid}
                                             chapterData={_this.typeDataPool[_this.type][_this.vid]}
@@ -146,7 +152,6 @@ export class View extends React.Component<View.Props, View.State>{
                                             disconnect={_this.props.disconnect}
                                             connect={_this.props.connect}
                                             callUpdate={_this.props.callUpdate}
-                                            createSrcFile={_this.props.createSrcFile}
                                             openSrcFile={_this.props.openSrcFile}
                                             postSrcFile={_this.props.postSrcFile}
                                         />
@@ -160,9 +165,11 @@ export class View extends React.Component<View.Props, View.State>{
                                 console.log(`ppid.......................................${_this.ppid}`)
                                 _this.renderView = <div>
                                     <div>
-                                        <h4> {_this.title} </h4>
-                                        <hr />
+                                        {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
                                         <Experiment
+                                            openShell={_this.props.openShell}
+                                            initPidQueueInfo={_this.props.initPidQueueInfo}
+                                            closeTabs={_this.props.closeTabs}
                                             setQueue={_this.props.setQueue}
                                             section={{ ppid: [_this.ppid], sid: "experiment" }}
                                             outputResult={_this.props.outputResult}
@@ -171,7 +178,7 @@ export class View extends React.Component<View.Props, View.State>{
                                             disconnect={_this.props.disconnect}
                                             connect={_this.props.connect}
                                             callUpdate={_this.props.callUpdate}
-                                            createSrcFile={_this.props.createSrcFile}
+
                                             openSrcFile={_this.props.openSrcFile}
                                             postSrcFile={_this.props.postSrcFile}
                                         />
@@ -189,7 +196,7 @@ export class View extends React.Component<View.Props, View.State>{
                 }
             })
 
-
+        console.log("rendering......................................")
 
         this.setState((state) => ({
             ...state,
@@ -198,7 +205,8 @@ export class View extends React.Component<View.Props, View.State>{
 
     }
     componentDidMount() {
-        this.props.setSize()
+        this.props.setSize(520)
+        setInterval(() => $("#timer").text(new Date().toLocaleString()), 1)
 
     }
 

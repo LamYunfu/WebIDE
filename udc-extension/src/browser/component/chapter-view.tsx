@@ -1,6 +1,6 @@
 import React = require("react");
 import URI from "@theia/core/lib/common/uri";
-import { SectionUI } from "./sectionui-view"
+import { SectionUI } from "./section-view"
 
 
 export namespace Chapter {
@@ -8,17 +8,20 @@ export namespace Chapter {
         vid: string
         chapterData: { [key: string]: {} }
         sections: [{ [key: string]: string }]
-        connect: (loginType: string, model: string, pid: string,timeout:string) => void
+        connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
-        createSrcFile: (fns: string[]) => void
+
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
         setChapterData: (vid: string, data: {}) => void
         setQueue: () => void
+        initPidQueueInfo(infos: string): Promise<string>
+        closeTables: () => void
+        openShell: () => void
     }
 }
 export class Chapter extends React.Component<Chapter.Props>{
@@ -35,6 +38,9 @@ export class Chapter extends React.Component<Chapter.Props>{
         for (let x of this.props.sections) {
             this.sectionsDataPool[x.sid] == undefined && this.setSectionsDataPool(x.sid, {})
             uiArray.push(<SectionUI
+                openShell={this.props.openShell}
+                closeTables={this.props.closeTables}
+                initPidQueueInfo={this.props.initPidQueueInfo}
                 setQueue={this.props.setQueue}
                 setSectionDataPool={this.setSectionsDataPool}
                 sectionData={this.sectionsDataPool[x.sid]}
@@ -46,7 +52,7 @@ export class Chapter extends React.Component<Chapter.Props>{
                 disconnect={this.props.disconnect}
                 connect={this.props.connect}
                 callUpdate={this.props.callUpdate}
-                createSrcFile={this.props.createSrcFile}
+
                 openSrcFile={this.props.openSrcFile}
                 postSrcFile={this.props.postSrcFile} />)
         }

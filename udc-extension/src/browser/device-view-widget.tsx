@@ -57,7 +57,7 @@ export class DeviceViewWidget extends TreeWidget {
 
     }
     rootdir: string = "/home/project"
-    setSize = () => {
+    setSize = (size: number) => {
         console.log("rendering")
         this.applicationShell.activateWidget(this.id)
         this.applicationShell.setLayoutData({
@@ -65,14 +65,16 @@ export class DeviceViewWidget extends TreeWidget {
             activeWidgetId: this.id,
             leftPanel: {
                 type: 'sidepanel',
-                size: 520
+                size: size
             }
         })
     }
     protected renderTree(): React.ReactNode {
-
         return (
             <View
+                openShell={this.openShell}
+                initPidQueueInfo={this.initPidQueueInfo}
+                closeTabs={this.closeTabs}
                 setQueue={this.setQueue}
                 setSize={this.setSize}
                 storeData={this.storeData}
@@ -83,13 +85,24 @@ export class DeviceViewWidget extends TreeWidget {
                 setCookie={this.setCookie}
                 disconnect={this.disconnect} connect={this.connect}
                 callUpdate={this.callUpdate}
-                createSrcFile={this.createSrcFile}
                 openSrcFile={this.openSrcFile}
                 postSrcFile={this.postSrcFile} />
 
         )
     }
-
+    openShell = () => {
+        // if (this.applicationShell.activateWidget("udc-shell")) {
+        //     alert("shell open")
+        // }
+        if (!this.applicationShell.isExpanded("bottom")) {
+            this.commandRegistry.executeCommand("udc:shell:toggle")
+        }
+    }
+    closeTabs = () => {
+        this.applicationShell.closeTabs("main")
+        this.applicationShell.closeTabs("bottom")
+        this.applicationShell.closeTabs("right")
+    }
     outputResult = (res: string) => {
         this.udcService.outputResult(res)
     }
@@ -130,13 +143,6 @@ export class DeviceViewWidget extends TreeWidget {
         this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
     }
 
-
-    createSrcFile = (fn: string[]) => {
-        this.udcService.createSrcFile(JSON.stringify(fn))
-
-    }
-
-
     gotoVideo = (uri: string, videoName: string) => {
         this.commandRegistry.executeCommand(UdcCommands.openViewPanel.id, uri, videoName)
     }
@@ -148,5 +154,12 @@ export class DeviceViewWidget extends TreeWidget {
     }
     setQueue = () => {
         this.udcService.setQueue()
+    }
+    setPidQueueInfo = (pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string }) => {
+        this.udcService.setPidInfos(pid, content)
+    }
+    initPidQueueInfo = (infos: string): Promise<string> => {
+        console.log(infos + "....................................info")
+        return this.udcService.initPidQueueInfo(infos)
     }
 }

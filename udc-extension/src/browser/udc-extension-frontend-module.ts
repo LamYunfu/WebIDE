@@ -1,3 +1,4 @@
+
 import { UdcConsoleContribution } from './udc-console-contribution';
 import { DeviceViewDecoratorService, DeviceTreeDecorator } from './decorator-view-service';
 import { UdcWatcher } from './../common/udc-watcher';
@@ -33,6 +34,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(DeviceViewService).toSelf().inSingletonScope();
     bind(WidgetFactory).toService(DeviceViewService);
     bindViewContribution(bind, DeviceViewContribution);
+    // bind(ApplicationShell).toSelf().inSingletonScope()//
     bind(FrontendApplicationContribution).toService(DeviceViewContribution);
     UdcConsoleContribution.bindContribution(bind);
 });

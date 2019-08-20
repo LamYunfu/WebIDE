@@ -6,9 +6,9 @@ import { injectable, inject } from "inversify";
 import { CommandContribution, MenuContribution, MenuModelRegistry, MessageService, MAIN_MENU_BAR, Command } from "@theia/core/lib/common";
 import { LanguageGrammarDefinitionContribution, TextmateRegistry } from '@theia/monaco/lib/browser/textmate';
 import { WorkspaceService } from "@theia/workspace/lib/browser/"
-import { FileDialogService, OpenFileDialogProps } from "@theia/filesystem/lib/browser"
+import { FileDialogService} from "@theia/filesystem/lib/browser"
 import { FileSystem } from '@theia/filesystem/lib/common';
-import { QuickOpenService, QuickOpenModel, QuickOpenItem, QuickOpenItemOptions, SingleTextInputDialog } from '@theia/core/lib/browser';
+import { QuickOpenService, QuickOpenModel, QuickOpenItem, QuickOpenItemOptions } from '@theia/core/lib/browser';
 import { UdcConsoleSession } from './udc-console-session';
 import { DeviceViewService } from './device-view-service';
 import URI from "@theia/core/lib/common/uri";
@@ -222,48 +222,6 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 })
             }
         })
-
-        registry.registerCommand(UdcCommands.Program, {
-            isEnabled: () => true,
-            execute: async () => {
-                let dev_list = await this.udcService.get_devices();
-                let devstr = "";
-                for (let k in dev_list) {
-                    devstr = k;
-                    break;
-                }
-                const props: OpenFileDialogProps = {
-                    title: "选择烧写二进制文件",
-                    canSelectFiles: true,
-                }
-                const [rootStat] = await this.workspaceService.roots;
-                this.fileDialogService.showOpenDialog(props, rootStat).then(async uri => {
-                    if (uri) {
-                        const dialog = new SingleTextInputDialog({
-                            title: 'address',
-                            initialValue: '0x',
-                            validate: address => address.startsWith('0x')
-                        })
-                        dialog.open().then(address => {
-                            if (address) {
-                                this.udcService.program(decodeURI(uri.toString().substring(7)), address, devstr).then(re => {
-                                    if (re) {
-                                        this.messageService.info("烧写成功");
-                                    } else {
-                                        this.messageService.info("烧写失败");
-                                    }
-                                }).catch(err => {
-                                    console.log(err);
-                                })
-                            }
-                        })
-                    }
-                }).catch(err => {
-                    console.log(err);
-                })
-            }
-        })
-
         registry.registerCommand(UdcCommands.Reset, {
             execute: async () => {
                 let dev_list = await this.udcService.get_devices();
@@ -335,8 +293,8 @@ export class UdcExtensionHighlightContribution implements LanguageGrammarDefinit
     registerTextmateLanguage(registry: TextmateRegistry) {
         monaco.languages.register({
             id: this.id,
-            extensions: ['.cpp', '.cc', '.cxx', '.hpp', '.hh', '.hxx', '.h', '.ino', '.inl', '.ipp', 'cl'],
-            aliases: ['C++', 'Cpp', 'cpp'],
+            extensions: ['.cpp', '.cc', '.cxx', '.hpp', '.hh', '.hxx', '.h', '.ino', '.inl', '.ipp', 'cl','.c'],
+            aliases: ['C++', 'Cpp', 'cpp','c'],
         });
         monaco.languages.setLanguageConfiguration(this.id, this.config);
         registry.registerTextmateGrammarScope(this.scopeName, {

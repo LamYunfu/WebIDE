@@ -5,6 +5,7 @@ import { find } from "@phosphor/algorithm";
 import { VideoItem, } from "./video-view"
 import { OptionItem, OptionInfo, } from './option-issue'
 import { CodeItem, CodingInfo } from './code-issue'
+
 export namespace SectionUI {
     export interface Props {
         sid: string
@@ -16,15 +17,19 @@ export namespace SectionUI {
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
-        createSrcFile: (fns: string[]) => void
+
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
         setQueue: () => void
+        initPidQueueInfo: (infos: string) => Promise<string>
+        closeTables: () => void
+        openShell: () => void
     }
 
 
     export interface State {
+        codeCDM: boolean
         codingItems: JSX.Element[]
         optionItems: JSX.Element[]
     }
@@ -72,6 +77,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     pids: string[] = []
     optionItems: JSX.Element[] = []
     codingItems: JSX.Element[] = []
+    pidQueueInfo: { [pid: string]: {} } = {};
+    types: { [pid: string]: string } = {};
     get submittedOptionAnswers() {
         return this.props.sectionData
     }
@@ -92,6 +99,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     constructor(props: Readonly<SectionUI.Props>) {
         super(props)
         this.state = {
+            codeCDM: false,
             codingItems: [],
             optionItems: []
         }
@@ -128,9 +136,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         _this.optionIssues[item.order] = item.description
                         _this.answers[item.order] = item.answer
                         _this.choices[item.order] = item.choices.split("\n")
+                        _this.types[item.order] = item.type
                     }
                     for (let index in _this.optionIssues)
-                        _this.optionItems.push(<OptionItem submittedOptionAnswers={_this.props.sectionData} optionIssues={_this.optionIssues} sid={_this.props.sid} akey={index} key={index} choices={_this.choices}
+                        _this.optionItems.push(<OptionItem type={_this.types[index]} submittedOptionAnswers={_this.props.sectionData} optionIssues={_this.optionIssues} sid={_this.props.sid} akey={index} key={index} choices={_this.choices}
                             optionStatus={_this.optionStatus} titles={_this.optionIssues} />)
 
                     _this.setState((state) => ({
@@ -170,36 +179,53 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     //     _this.pids.push(item.pid)
                     // }
                     for (let item of x) {
+                        _this.pidQueueInfo[item.pid] = {}
+                        let tmp = {}
+                        // { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string } } = {}
                         if (item.deviceRole[0] == 'null') {
                             _this.loginType[`${item.pid}`] = 'adhoc'
                             _this.model[`${item.pid}`] = 'any'
+                            tmp = { ...tmp, loginType: 'adhoc', model: 'any' }
                         }
                         else if (item.deviceRole.length == 1) {
                             // _this.loginType[`${item.pid}`] = 'fixed'
                             _this.model[`${item.pid}`] = item.deviceType
                             _this.loginType[`${item.pid}`] = 'adhoc'
+                            tmp = { ...tmp, loginType: 'adhoc', model: item.deviceType }
                             // _this.model[`${item.pid}`] = 'any'
                         }
                         else if (item.deviceRole.length > 1) {
                             _this.loginType[`${item.pid}`] = 'group'
                             _this.model[`${item.pid}`] = item.deviceType
                             _this.role[`${item.pid}`] = item.deviceRole
+                            tmp = { ...tmp, loginType: 'group', model: item.deviceType }
                         }
                         // alert(item.timeout)
                         _this.timeout[item.pid] = item.timeout
                         _this.codingIssues[item.pid] = item.title
-                        if (_this.role[`${item.pid}`] == undefined)
-                            fns.push(item.title)
+                        if (_this.role[`${item.pid}`] == undefined) {
+                            fns.push("helloworld")
+                        }
                         else {
                             for (let r of _this.role[`${item.pid}`]) {
-                                fns.push(item.title + r)
-                                console.log(`fileName is............................${item.title + r}`)
+                                fns.push("helloworld"+"_" + r)
                             }
                         }
+                        if (item.deviceType.split("-")[0] == "alios") {
+                            fns.push("helloworld"+ ".mk")
+                            fns.push("ucube.py")
+                            fns.push("README.md")
+                        }
+                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title }
+                        _this.pidQueueInfo[item.pid] = tmp
+                        _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
+                            console.log("initpidqueue scc")
+                        })
                         _this.codingInfos[item.pid] = item.content
                         _this.pids.push(item.pid)
                     }
-                    // _this.props.createSrcFile(fns)
+
+
                     // for (let entry in _this.codingIssues)
                     //     _this.codingItems.push(<CodeItem sid={_this.props.sid} akey={entry} key={entry}
                     //         codingInfos={_this.codingInfos} codingTitles={_this.codingIssues}
@@ -208,15 +234,17 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     //     ...state,
                     //     codingItems: _this.codingItems
                     // }))
-                    _this.props.createSrcFile(fns)
-                    for (let entry in _this.codingIssues)
-                        _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
+
+                    for (let entry in _this.codingIssues) {
+                        _this.codingItems.push(<CodeItem openShell={_this.props.openShell} loginType={_this.loginType[entry]} model={_this.model[entry]}
                             role={_this.role[entry]} sid={_this.props.sid} akey={entry} key={entry}
                             codingInfos={_this.codingInfos} codingTitles={_this.codingIssues}
                             codingStatus={_this.codingStatus} openSrcFile={_this.props.openSrcFile} />)
+                    }
+                    console.log("CDM OK")
                     _this.setState((state) => ({
                         ...state,
-                        codingItems: _this.codingItems
+                        codeCDM: true
                     }))
                 }
             }
@@ -241,6 +269,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 $(document).on('click', ".optionItem." + _this.props.sid,
                     (e) => {
                         console.log("click.............................")
+                        // _this.shell.closeTabs("main")
+                        // _this.shell.closeTabs("bottom")
+                        // _this.shell.closeTabs("right")
+                        _this.props.closeTables()
                         $(".codingInfos." + _this.props.sid).hide()
                         $(".optionInfos." + _this.props.sid).show()
                         let x = $(e.currentTarget).children("a").attr("id")
@@ -376,18 +408,21 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
                 $(document).on("click", ".videoItem" + _this.props.sid, (e) => {
                     let index = $(e.currentTarget).children('.videoName').attr("title")
+                    _this.props.closeTables()
                     console.log("video uri ..........." + index)
-                    index != undefined && _this.props.gotoVideo(_this.uris[parseInt(index)], this.videoNames[parseInt(index)])
+                    index != undefined && _this.props.gotoVideo(_this.uris[parseInt(index)], _this.videoNames[parseInt(index)])
                 })
             }
         )
+
     }
 
     render(): React.ReactNode {
         // if(this.submittedOptionAnswers[this.props.sid]
         return (
             <div >
-                <h5 className={`section${this.props.sid}`}> {this.props.sid}. {this.props.section.title}</h5>
+                <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.sid}、{this.props.section.title}</span>
+
                 <div className={`contentsAndInfos${this.props.sid} container`}>
                     <div className="row">
                         <div className="contents col-5" style={{ "padding": "0px" }}>
@@ -396,7 +431,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             <ul className="list-group">
                                 <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                 {this.state.optionItems.length == 0 ? "" : this.optionItems}
-                                {this.state.codingItems.length == 0 ? "" : this.codingItems}
+                                {!this.state.codeCDM ? "***" : this.codingItems}
                             </ul>
                             {/* </div> */}
 
@@ -406,7 +441,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                         <div className={`optionInfos ${this.props.sid} col-7`} >
-                            <OptionInfo submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
+                            <OptionInfo answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
                                 sid={this.props.sid} say={this.props.say} answers={this.answers} />
                         </div>
                     </div>

@@ -1,8 +1,10 @@
+import { Compiler } from './compiler';
+import { Controller } from './controller';
 import { LOGINTYPE } from './../common/udc-service';
 import { UdcClient } from './../common/udc-watcher';
 import { UdcTerminal } from './udc-terminal';
 import { UdcService } from './../common/udc-service';
-import { injectable, inject } from "inversify";
+import { injectable, inject, } from "inversify";
 import { ILogger } from '@theia/core';
 import { RawProcessFactory } from '@theia/process/lib/node';
 @injectable()
@@ -11,6 +13,8 @@ export class UdcServiceImpl implements UdcService {
         @inject(ILogger) protected readonly logger: ILogger,
         @inject(RawProcessFactory) protected readonly rawProcessFactory: RawProcessFactory,
         @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal,
+        @inject(Controller) protected readonly controller: Controller,
+        @inject(Compiler) protected readonly compiler: Compiler,
     ) {
     }
 
@@ -22,9 +26,9 @@ export class UdcServiceImpl implements UdcService {
     }
 
 
-    async connect(login_type: LOGINTYPE, model: string, pid: string,timeout:string): Promise<string> {
+    async connect(login_type: LOGINTYPE, model: string, pid: string, timeout: string): Promise<string> {
         try {
-            let result = await this.udcTerminal.connect(login_type, model, pid,timeout);
+            let result = await this.udcTerminal.connect(login_type, model, pid, timeout);
             if (result === true) {
                 return "连接成功"
             } else {
@@ -58,10 +62,10 @@ export class UdcServiceImpl implements UdcService {
     }
 
 
-    program(filepath: string, address: string, devstr: string): Promise<Boolean> {
+    program(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         return new Promise<Boolean>((resolve, rejects) => {
             // console.log(filepath, " ", devstr);
-            let result = this.udcTerminal.program_device(filepath, address, devstr);
+            let result = this.udcTerminal.program_device(filepath, address, devstr, pid);
             resolve(result);
         });
     }
@@ -102,22 +106,14 @@ export class UdcServiceImpl implements UdcService {
     // }
 
 
-    createSrcFile(filnames: string): void {
-        this.udcTerminal.createSrcFile(filnames)
-
-    }
-
-
-    postSrcFile(fn: string): void {
-        this.udcTerminal.postSrcFile(fn)
+    postSrcFile(pid: string): void {
+        this.compiler.compile(pid)
     }
 
 
     setCookie(cookie: string): boolean {
         return this.udcTerminal.setCookie(cookie)
     }
-
-
     outputResult(res: string) {
         this.udcTerminal.outputResult(res)
     }
@@ -129,5 +125,11 @@ export class UdcServiceImpl implements UdcService {
     }
     setQueue() {
         this.udcTerminal.setQueue()
+    }
+    setPidInfos(pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string }) {
+        this.udcTerminal.setPidInfos(pid, content)
+    }
+    initPidQueueInfo(infos: string): Promise<string> {
+        return this.udcTerminal.initPidQueueInfo(infos)
     }
 }

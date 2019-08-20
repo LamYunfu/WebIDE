@@ -1,7 +1,9 @@
 import * as EventEmitor from 'events'
 import { Logger } from "./logger"
 
-
+/*
+处理tcp粘包问题
+*/
 export class HalfPackProcess extends EventEmitor {
     constructor() {
         super()
@@ -17,8 +19,8 @@ export class HalfPackProcess extends EventEmitor {
     currentDataSize: number
     callNum: number = 1
 
-    
-    puttingData(inData: Buffer): void {
+
+    putData(inData: Buffer): void {
         if (this.currentDataSize + inData.length > this.maxSize) {
             Logger.info("data overflowing")
             return
@@ -32,7 +34,7 @@ export class HalfPackProcess extends EventEmitor {
         this.acquireData()
     }
 
-    
+
     acquireData() {
         Logger.info(`before start:${this.cursorStart}size:${this.currentDataSize}end:${this.cursorEnd}`)
         if (this.currentDataSize < 0) {
