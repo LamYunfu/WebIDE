@@ -1,8 +1,13 @@
-import { Controller } from './controller';
+import { ConfigSetter } from './util/configsetter';
+import { Programer } from './util/programmer';
+import { Extractor } from './util/extractor';
+import { FileMapper } from './util/filemapper';
+import { Logger } from './util/logger';
+import { Controller } from './util/controller';
 import { UdcCompiler } from './compilers/udc-compiler';
 import { AliosCompiler } from './compilers/alios-compiler';
-import { UdcTerminal } from './udc-terminal';
-import { Packet } from './packet';
+import { UdcTerminal } from './util/udc-terminal';
+import { Packet } from './util/packet';
 import { udcServicePath } from './../common/udc-service';
 import { ContainerModule } from "inversify";
 import { UdcService } from "../common/udc-service";
@@ -10,7 +15,7 @@ import { UdcServiceImpl } from "./udc-service-impl";
 import { ConnectionHandler, JsonRpcConnectionHandler } from "@theia/core/lib/common";
 import { createCommonBindings } from '../common/udc-common-module';
 import { UdcClient } from '../common/udc-watcher';
-import { Compiler } from "./compiler"
+import { Compiler } from "./compilers/compiler"
 
 
 export default new ContainerModule(bind => {
@@ -30,4 +35,10 @@ export default new ContainerModule(bind => {
     bind(AliosCompiler).toSelf().inSingletonScope();
     bind(Compiler).toSelf().inSingletonScope();
     bind(Controller).toSelf().inSingletonScope();
+    bind(FileMapper).toSelf().inSingletonScope();
+    bind(Logger).toSelf().inSingletonScope();
+    bind(Extractor).toSelf().inSingletonScope();
+    bind(Programer).toSelf().inSingletonScope();
+    bind(ConfigSetter).toSelf().inSingletonScope();
+    // bind(Controller).toSelf().inSingletonScope();
 });

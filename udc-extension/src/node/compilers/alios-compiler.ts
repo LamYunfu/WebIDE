@@ -3,9 +3,9 @@ import * as path from 'path'
 import * as unzip from "unzip"
 import * as FormData from "form-data"
 import * as fs from 'fs-extra';
-import { UdcTerminal } from '../udc-terminal'
+import { UdcTerminal } from '../util/udc-terminal'
 import * as http from 'http'
-import { Logger } from '../logger'
+import { Logger } from '../util/logger'
 
 @injectable()
 export class AliosCompiler {
@@ -36,13 +36,7 @@ export class AliosCompiler {
 
 
     getHexNmame(fn: string) {
-        let x = 'B'
-        for (let i = 0; i < fn.length; i++) {
-            x += fn.charCodeAt(i).toString(16)
-        }
-        Logger.val("16>>>>>>>>>>>>>>>>>>" + x)
-        return x
-
+        return "B" + new Buffer(fn).toString("hex")
     }
     //fn{fn:1}
 
@@ -76,7 +70,7 @@ export class AliosCompiler {
                         Logger.info("programming")
                         if (useQueue) {
                             _this.outputResult(`program with queue`)
-                            _this.udc.program_device_queue(path.join(rootDir, dirName, 'sketch.ino.hex'), "1", _this.devs[index]).then(
+                            _this.udc.program_device_queue(path.join(rootDir, dirName, 'sketch.ino.hex'), "1", _this.devs[index], pid).then(
                                 (res) => {
                                     if (res) {
                                         _this.outputResult("program scc")

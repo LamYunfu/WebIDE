@@ -13,7 +13,7 @@ export namespace Chapter {
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
-
+        config: () => void
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
@@ -38,6 +38,7 @@ export class Chapter extends React.Component<Chapter.Props>{
         for (let x of this.props.sections) {
             this.sectionsDataPool[x.sid] == undefined && this.setSectionsDataPool(x.sid, {})
             uiArray.push(<SectionUI
+                config={this.props.config}
                 openShell={this.props.openShell}
                 closeTables={this.props.closeTables}
                 initPidQueueInfo={this.props.initPidQueueInfo}

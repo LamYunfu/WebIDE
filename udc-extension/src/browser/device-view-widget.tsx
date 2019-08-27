@@ -72,6 +72,8 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <View
+                config={this.config}
+                setTinyLink={this.setTinyLink}
                 openShell={this.openShell}
                 initPidQueueInfo={this.initPidQueueInfo}
                 closeTabs={this.closeTabs}
@@ -121,7 +123,9 @@ export class DeviceViewWidget extends TreeWidget {
     disconnect = () => {
         this.commandRegistry.executeCommand(UdcCommands.DisConnect.id)
     }
-
+    // config = (url: string, name: string, passwd: string) => {
+    //     this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.config", url, name, passwd)
+    // }
 
     callUpdate = () => {
         this.update()
@@ -150,6 +154,7 @@ export class DeviceViewWidget extends TreeWidget {
         this.udcService.storeState(data)
     }
     getData = (type: string) => {
+        console.log("in device widget type is :" + type)
         return this.udcService.getState(type)
     }
     setQueue = () => {
@@ -161,5 +166,12 @@ export class DeviceViewWidget extends TreeWidget {
     initPidQueueInfo = (infos: string): Promise<string> => {
         console.log(infos + "....................................info")
         return this.udcService.initPidQueueInfo(infos)
+    }
+    setTinyLink = (name: string, passwd: string) => {
+        this.udcService.setTinyLink(name, passwd)
+
+    }
+    config = () => {
+        this.udcService.config()
     }
 }

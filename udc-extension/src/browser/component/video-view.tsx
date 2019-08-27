@@ -10,17 +10,19 @@ export namespace VideoItem {
 }
 export class VideoItem extends React.Component<VideoItem.Props>{
     componentDidMount() {
-        console.log("video names is :"+JSON.stringify(this .props.videoNames))
+        console.log("video names is :" + JSON.stringify(this.props.videoNames))
 
     }
 
 
     render(): JSX.Element {
         return (
-            <li className={`videoItem${this.props.sid} list-group-item`}>
+            this.props.videoNames[0] != null ? <li className={`videoItem${this.props.sid} list-group-item`}>
                 <span className="oi oi-video" aria-hidden="true"></span>
                 <a className={"videoName"} title={this.props.title}>{this.props.videoNames[parseInt(this.props.title)]}</a>
             </li>
+                :
+                <span style={{ display: "hidden" }}> </span>
         )
 
     }

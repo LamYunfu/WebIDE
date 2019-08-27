@@ -1,7 +1,7 @@
-import { Controller } from './controller';
 import { HalfPackProcess } from './half-pkt-process';
+import * as path from 'path'
 // import { certificate } from './../common/udc-config';
-import { UdcClient } from '../common/udc-watcher';
+import { UdcClient } from '../../common/udc-watcher';
 import { injectable, inject } from "inversify";
 // import * as tls from 'tls';
 import * as net from 'net'
@@ -9,7 +9,7 @@ import * as fs from 'fs-extra';
 import { Packet } from "./packet";
 import * as events from "events";
 // import { networkInterfaces } from 'os';
-import { LOGINTYPE } from '../common/udc-service';
+import { LOGINTYPE } from '../../common/udc-service';
 import { Logger } from './logger'
 // import { networkInterfaces } from 'os';
 @injectable()
@@ -17,6 +17,7 @@ import { Logger } from './logger'
 存储一些数据，以及ldc相关指令操作
 */
 export class UdcTerminal {
+    userid: string = ""
     cookie: string = ""
     DEBUG: boolean = false
     udcserver: any;
@@ -37,22 +38,60 @@ export class UdcTerminal {
     programState: { [key: string]: { [key: string]: string } } = {}
     pidQueueInfo: { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string } } = {}
     cuurentPid: string = ``
+    rootDir: string = "/home/project"
+    tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
 
 
     constructor(
         @inject(Packet) protected readonly pkt: Packet,
-        @inject(Controller) protected readonly controller: Controller
     ) {
         this.event = new events.EventEmitter();
         this.hpp = new HalfPackProcess()
         Logger.val("current path:" + process.cwd())
+    }
+    creatSrcFile(fnJSON: string, dirName: string) {
+        Logger.info(`FNJSON:${fnJSON}`)
+        let fn = JSON.parse(fnJSON)
+        let rootdir = this.rootDir
+        fs.exists(path.join(rootdir, dirName), (res) => {
+            if (!res) {
+                fs.mkdir(path.join(rootdir, dirName), (err) => {
+                    Logger.info(err)
+                    for (let i of fn) {
+                        let x: string[] = i.split(".")
+                        let tmpPath = ""
+                        if (x.length == 1)
+                            tmpPath = path.join(rootdir, dirName, i + ".cpp")
+                        else
+                            tmpPath = path.join(rootdir, dirName, i)
+                        fs.exists(tmpPath, (res) => {
+                            if (!res)
+                                fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
+                        })
+                    }
+                })
+            }
+            else
+                for (let i of fn) {
+                    let x: string[] = i.split(".")
+                    let tmpPath = ""
+                    if (x.length == 1)
+                        tmpPath = path.join(rootdir, dirName, i + ".cpp")
+                    else
+                        tmpPath = path.join(rootdir, dirName, i)
+                    fs.exists(tmpPath, (res) => {
+                        if (!res)
+                            fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
+                    })
+                }
+        })
     }
     initPidQueueInfo(infos: string): Promise<string> {
         Logger.info(infos, 'info')
         this.pidQueueInfo = JSON.parse(infos)
         for (let index in this.pidQueueInfo) {
             let { dirName, fns } = this.pidQueueInfo[index]
-            this.controller.creatSrcFile(fns, dirName)
+            this.creatSrcFile(fns, dirName)
 
         }
         return new Promise((res) => {
@@ -88,8 +127,10 @@ export class UdcTerminal {
     //     return uuid;
     // }
     get uuid(): string {
-        Logger.info(`uuid:${(this.cookie.slice(20, 32) + '0000').toLowerCase()}`)
-        return (this.cookie.slice(20, 36)).toLowerCase()
+        if (this.userid == "")
+            this.userid = (this.cookie.slice(20, 36)).toLowerCase()
+        Logger.info(`uuid:${this.userid}`)
+        return this.userid
     }
 
     login_and_get_server(login_type: LOGINTYPE, model: string): Promise<Array<any>> {
@@ -119,7 +160,7 @@ export class UdcTerminal {
             });
             ctrFd.on("data", (data: Buffer) => {
                 let d = data.toString('ascii').substr(1, data.length).split(',')
-                Logger.val(d.slice(2, d.length))
+                Logger.val("d:" + d.slice(2, d.length))
                 resolve(d.slice(2, d.length))
             });
             // let cm = '{ALGI,00035,terminal,74dfbfad34520000,adhoc,any}'
@@ -285,7 +326,9 @@ export class UdcTerminal {
 
 
     }
+    // 39d16c10bbef0000
     getState(type: string): Promise<string> {
+        Logger.info(`type info :${type}`, "type")
         let tmp: { [key: string]: {} } = {}
         tmp[type] = this.dataStorage[type]
         return new Promise(res => res(JSON.stringify(tmp)))
@@ -298,7 +341,8 @@ export class UdcTerminal {
             ...  this.pidQueueInfo[pid],
             // fns: JSON.stringify(["helloworld", "helloworld", 'README.md', 'ucube.py']),
             // dirName: "helloworld",
-            // model: model,
+            loginType: loginType,
+            model: model,
             waitID: (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString()
         }
         this.cuurentPid = pid
@@ -368,9 +412,9 @@ export class UdcTerminal {
         });
     }
     // async program_device_queue(filepath: string, address: string, devstr: string, model: string = "tinylink_platform_1", waitID: string = "1234567890123456", timeout: string = "20"): Promise<Boolean> {
-    async program_device_queue(filepath: string, address: string, devstr: string): Promise<Boolean> {
+    async program_device_queue(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         // let content =this.pkt.construct(Packet.DEVICE_WAIT, `${model}:${waitID}:${timeout}`)
-        let pid = this.cuurentPid
+        // let pid = this.cuurentPid
         let model = this.pidQueueInfo[pid].model
         let waitID = this.pidQueueInfo[pid].waitID
         let timeout = this.pidQueueInfo[pid].timeout
@@ -560,6 +604,15 @@ export class UdcTerminal {
     }
     outputResult(res: string) {
         this.udcClient && this.udcClient.OnDeviceLog("::" + res)
+    }
+    config() {
+        this.udcClient && this.udcClient.onConfigLog(this.tinyLinkInfo)
+    }
+    setTinyLink(name: string, passwd: string): void {
+        this.tinyLinkInfo.name = name
+        this.tinyLinkInfo.passwd = passwd
+
+        console.log(JSON.stringify(this.tinyLinkInfo) + ".........................................")
     }
 
 }

@@ -17,7 +17,7 @@ export namespace SectionUI {
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
-
+        config: () => void
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
@@ -120,6 +120,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
             {
                 headers: {
                     "accept": "application/json",
+
                 },
                 xhrFields: {
                     withCredentials: true
@@ -208,11 +209,11 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         }
                         else {
                             for (let r of _this.role[`${item.pid}`]) {
-                                fns.push("helloworld"+"_" + r)
+                                fns.push("helloworld" + "_" + r)
                             }
                         }
                         if (item.deviceType.split("-")[0] == "alios") {
-                            fns.push("helloworld"+ ".mk")
+                            fns.push("helloworld" + ".mk")
                             fns.push("ucube.py")
                             fns.push("README.md")
                         }
@@ -421,7 +422,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
         // if(this.submittedOptionAnswers[this.props.sid]
         return (
             <div >
-                <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.sid}、{this.props.section.title}</span>
+                <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.section.title}</span>
 
                 <div className={`contentsAndInfos${this.props.sid} container`}>
                     <div className="row">
@@ -437,11 +438,11 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
                         </div>
                         <div className={`codingInfos ${this.props.sid} col-7`} >
-                            <CodingInfo roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                            <CodingInfo config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                         <div className={`optionInfos ${this.props.sid} col-7`} >
-                            <OptionInfo answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
+                            <OptionInfo types={this.types} answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
                                 sid={this.props.sid} say={this.props.say} answers={this.answers} />
                         </div>
                     </div>

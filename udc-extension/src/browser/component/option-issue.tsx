@@ -62,6 +62,7 @@ export namespace OptionInfo {
         submittedOptionAnswers: { [pid: string]: { answer: string, isRight: boolean } }
         setSubmittedOptionAnswer: (pid: string, answer: string, isRight: boolean) => void
         say: (thing: string) => void
+        types: { [key: string]: string }
     }
     export interface States {
         status: string
@@ -122,55 +123,12 @@ export class OptionInfo extends React.Component<OptionInfo.Props, OptionInfo.Sta
         )
     }
 
-
-    // public render() {
-    //     return (
-    //         <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>
-    //             <div className="card-body">
-    //                 <p className={"optionIssueTitle" + this.props.sid}>
-    //                     请选出以下正确的答案()
-    //                 </p>
-    //                 <form className={`options${this.props.sid}`} id="1" >
-    //                     <div className="custom-control custom-radio">
-    //                         <input className="custom-control-input" id={`optionRadio${this.props.sid}1`} type="radio" name="1" value="1" />
-    //                         <label className="custom-control-label" htmlFor={`optionRadio${this.props.sid}1`} >
-    //                             A. <span className={`optionContent${this.props.sid}`}></span><br />
-    //                         </label>
-    //                     </div>
-    //                     <div className="custom-control custom-radio">
-    //                         <input className="custom-control-input" id={`optionRadio${this.props.sid}2`} type="radio" name="1" value="2" />
-    //                         <label className="custom-control-label" htmlFor={`optionRadio${this.props.sid}2`} >
-    //                             B. <span className={`optionContent${this.props.sid}`}></span><br />
-    //                         </label>
-    //                     </div>
-    //                     <div className="custom-control custom-radio">
-    //                         <input className="custom-control-input" id={`optionRadio${this.props.sid}3`} type="radio" name="1" value="3" />
-    //                         <label className="custom-control-label" htmlFor={`optionRadio${this.props.sid}3`} >
-    //                             C. <span className={`optionContent${this.props.sid}`}></span><br />
-    //                         </label>
-    //                     </div>
-    //                     <div className="custom-control custom-radio">
-    //                         <input className="custom-control-input" id={`optionRadio${this.props.sid}4`} type="radio" name="1" value="4" />
-    //                         <label className="custom-control-label" htmlFor={`optionRadio${this.props.sid}4`} >
-    //                             D. <span className={`optionContent${this.props.sid}`}></span><br />
-    //                         </label>
-    //                     </div>
-    //                     {/* <input type="radio" name="1" value="2" />B:<span className="optionContent"></span><br />
-    //                     <input type="radio" name="1" value="3" />C:<span className="optionContent"></span><br />
-    //                     <input type="radio" name="1" value="4" />D:<span className="optionContent"></span><br /> */}
-    //                     <hr />
-    //                     <button className={`optionInfoSubmit${this.props.sid} btn btn-primary`} type="button">提交</button>
-    //                 </form>
-    //             </div>
-    //         </div >
-    //     )
-    // }
     public render() {
         return (
-            <div>
-                <ChoiceCollection contentsCollection={this.props.contentsCollection} answersCollection={this.props.answersCollection}
-                    titlesCollection={this.props.titlesCollection} sid={this.props.sid} ></ChoiceCollection>
-            </div>
+
+            <ChoiceCollection types={this.props.types} contentsCollection={this.props.contentsCollection} answersCollection={this.props.answersCollection}
+                titlesCollection={this.props.titlesCollection} sid={this.props.sid} ></ChoiceCollection>
+
         )
     }
 }
@@ -179,19 +137,52 @@ export namespace Choice {
         sid: string
         content: string
         choiceNum: string
+        type: string
+        pid: string
+        checked: boolean
+    }
+    export interface States {
+        checked: boolean
     }
 }
-export class Choice extends React.Component<Choice.Props>{
+export class Choice extends React.Component<Choice.Props, Choice.States>{
+    constructor(props: Readonly<Choice.Props>) {
+        super(props)
+        this.state = {
+            checked: this.props.checked
+        }
+    }
+
     render(): JSX.Element {
         return (
-            <div className="custom-control custom-checkbox">
-                <input className="custom-control-input" id={`optionCheck${this.props.sid}${this.props.choiceNum}`} type="checkbox" name="1" value={this.props.choiceNum} />
-                <label className="custom-control-label" htmlFor={`optionCheck${this.props.sid}${this.props.choiceNum}`}>
-                    <span className={`optionContent${this.props.sid}`}>{this.props.content}</span><br />
-                </label>
-            </div>
+            this.props.type == "MC" ?
+                <div className="custom-control custom-checkbox">
+                    <input className="custom-control-input" id={`optionCheck${this.props.sid}${this.props.choiceNum}`} type="checkbox" name={this.props.pid} value={this.props.choiceNum} />
+                    <label className="custom-control-label" htmlFor={`optionCheck${this.props.sid}${this.props.choiceNum}`}>
+                        <span className={`optionContent${this.props.sid}`}>{this.props.content}</span><br />
+                    </label>
+                </div>
+                :
+                <div className="custom-control custom-radio">
+                    <input className="custom-control-input" id={`optionRadio${this.props.sid}${this.props.choiceNum}`} type="radio" defaultChecked={this.props.checked} name={this.props.pid} value={this.props.choiceNum} />
+                    <label className="custom-control-label" htmlFor={`optionRadio${this.props.sid}${this.props.choiceNum}`}>
+                        <span className={`optionContent${this.props.sid}`}>{this.props.content}</span><br />
+                    </label>
+                </div>
         )
     }
+
+
+    componentDidUpdate() {
+        if (this.props.checked) {
+            $(`input:visible[name=${this.props.pid}][value=${this.props.choiceNum}]`).prop("checked", true)
+
+        }
+        else {
+            $(`input:visible[name=${this.props.pid}][value=${this.props.choiceNum}]`).prop("checked", false)
+        }
+    }
+
 }
 export namespace ChoiceCollection {
     export interface Props {
@@ -199,6 +190,7 @@ export namespace ChoiceCollection {
         answersCollection: { [key: string]: string }
         titlesCollection: { [key: string]: string }
         sid: string
+        types: { [key: string]: string }
     }
     export interface States {
         sid: string
@@ -206,10 +198,12 @@ export namespace ChoiceCollection {
         contents: string[]
         pid: string
         title: string
+        type: string
     }
 
 }
 export class ChoiceCollection extends React.Component<ChoiceCollection.Props, ChoiceCollection.States>{
+    uAnswers: { [pid: string]: { answer: string[], uRight: boolean } } = {}
     constructor(props: Readonly<ChoiceCollection.Props>) {
         super(props)
         this.state = {
@@ -219,9 +213,8 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             contents: [],
             pid: "",
             title: "",
+            type: ""
         }
-
-
     }
     render(): JSX.Element {
         let carr = []
@@ -230,30 +223,48 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
         // }
         for (let index in this.state.contents) {
             console.log(index)
-            carr.push(<Choice sid={this.state.sid} content={this.state.contents[index]} choiceNum={(parseInt(index) + 1).toString()}></ Choice>)
+            let tmp = this.uAnswers[this.state.pid] == undefined ? false : this.uAnswers[this.state.pid].answer.indexOf((parseInt(index) + 1).toString()) != -1
+            // alert(`tmp:${tmp}`)
+            carr.push(<Choice type={this.state.type} pid={this.state.pid} sid={this.state.sid} content={this.state.contents[index]}
+                choiceNum={(parseInt(index) + 1).toString()} checked={tmp}>
+            </ Choice >)
         }
         return (
             this.state.contents == [] || this.state.contents == undefined ? <div>loading</div> :
-                <div>
+                this.state.pid == "" || this.state.pid != Object.keys(this.props.contentsCollection).length.toString() ?
+
                     <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>
                         <div className="card-body">
                             <p className={"optionIssueTitle" + this.props.sid}>
                                 {this.state.title}
                             </p>
-                            <form className={`options${this.state.sid}`} id="1" ></form>
-                            {carr}
+                            <form className={`options${this.state.sid}`} id={this.state.pid}  >
+                                {carr}
+                            </form>
+
                         </div>
-                        <button className={`optionInfoSubmit${this.state.sid} btn btn-primary`} type="button">提交</button>
+                        <button className={`optionInfoSubmit${this.state.sid} btn btn-primary`} type="button">保存</button>
                     </div>
-                </div >
+                    :
+                    <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>
+                        <div className="card-body">
+                            <p className={"optionIssueTitle" + this.props.sid}>
+                                {this.state.title}
+                            </p>
+                            <form className={`options${this.state.sid}`} id={this.state.pid}  >
+                                {carr}
+                            </form>
+
+                        </div>
+                        <button className={`optionInfoSubmit${this.state.sid} all btn btn-primary`} type="button">提交全部</button>
+                    </div>
+
+
         )
     }
     componentDidMount() {
         let _this = this
         $(document).on('click', ".optionItem." + _this.props.sid, (e) => {
-            $("input").map((index, html) => {
-                $(html).prop("checked", false)
-            })
             let index = $(e.currentTarget).children(".index").text()
             console.log(index + ".............index")
             _this.setState(() => ({
@@ -263,13 +274,14 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                 contents: _this.props.contentsCollection[index],
                 titles: _this.props.titlesCollection[index],
                 answers: _this.props.answersCollection[index],
+                type: _this.props.types[index]
             }))
 
         })
         $(document).on('click', `.optionInfoSubmit${this.props.sid}`, (e) => {
             console.log("click!!!!!!!!!!!!!")
             let answers: string[] = []
-            $("input:checkbox:checked").map((index, html) => {
+            $("input:checked").map((index, html) => {
                 answers.push($(html).prop("value"))
             })
             // alert(JSON.stringify(answers))
@@ -277,22 +289,125 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             // alert("pid:" + pid)
             let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
             let rightAnswer = _this.state.answers.split(',')
-            if (rightAnswer.length != answers.length) {
-                // alert("wrong answer")
-                sp.prop("class", "oi oi-x")
-                sp.show()
-                return
-            }
-            for (let uAns of answers)
-                if (rightAnswer.indexOf(uAns) == undefined) {
-                    // alert("wrong answer")
-                    sp.prop("class", "oi oi-x")
-                    sp.show()
-                    return
-                }
-            sp.prop("class", "oi oi-check")
+            console.log("right :uAns" + JSON.stringify(rightAnswer), JSON.stringify(answers))
+            // if (rightAnswer.length != answers.length) {
+            //     _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            //     console.log("与正解数量不符" + JSON.stringify(rightAnswer), JSON.stringify(answers))
+            //     sp.prop("class", "oi oi-x")
+            //     sp.show()
+            //     return
+            // }
+            // for (let uAns of answers) {
+            //     // console.log("right answer :" + rightAnswer.indexOf(uAns))
+            //     if (rightAnswer.indexOf(uAns) == -1) {
+            //         // alert("wrong answer")
+            //         console.log("有错误答案")
+            //         _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            //         sp.prop("class", "oi oi-x")
+            //         sp.show()
+            //         return
+            //     }
+            // }
+            // _this.uAnswers[_this.state.pid] = { answer: answers, uRight: true }
+            // sp.prop("class", "oi oi-check")
+            // sp.show()
+            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            sp.prop("class", "oi oi-pin")
             sp.show()
             // alert("right")
+
+
+        })
+
+        // $(document).on('click', `.section9`, (e) => {
+        $(document).on('click', `.optionInfoSubmit${this.props.sid}.all`, (e) => {
+            console.log("click!!!!!!!!!!!!!")
+            let answers: string[] = []
+            $("input:checked").map((index, html) => {
+                answers.push($(html).prop("value"))
+            })
+            // alert(JSON.stringify(answers))
+            let pid = _this.state.pid
+            // alert("pid:" + pid)
+            let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
+            // let rightAnswer = _this.state.answers.split(',')
+            // console.log("right :uAns" + JSON.stringify(rightAnswer), JSON.stringify(answers))
+            // if (rightAnswer.length != answers.length) {
+            //     _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            //     console.log("与正解数量不符" + JSON.stringify(rightAnswer), JSON.stringify(answers))
+            //     sp.prop("class", "oi oi-x")
+            //     sp.show()
+            //     return
+            // }
+            // for (let uAns of answers) {
+            //     // console.log("right answer :" + rightAnswer.indexOf(uAns))
+            //     if (rightAnswer.indexOf(uAns) == -1) {
+            //         // alert("wrong answer")
+            //         console.log("有错误答案")
+            //         _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            //         sp.prop("class", "oi oi-x")
+            //         sp.show()
+            //         return
+            //     }
+            // }
+
+            // _this.uAnswers[_this.state.pid] = { answer: answers, uRight: true }
+            // sp.prop("class", "oi oi-check")
+            // sp.show()
+            // alert("right")
+            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            sp.prop("class", "oi oi-pin")
+            sp.show()
+            let answersForSubmit = []
+            for (let index = 0; index < Object.keys(_this.props.contentsCollection).length; index++) {
+                let indexstr = (index + 1).toString()
+                if (_this.uAnswers[indexstr] == undefined || _this.uAnswers[indexstr].answer == [])
+                    answersForSubmit[index] = "X"
+                else
+                    answersForSubmit[index] = _this.uAnswers[indexstr].answer.join(",")
+            }
+            let tmp = "提交的答案为："
+            for (let index in answersForSubmit) {
+                tmp += "  " + (parseInt(index) + 1).toString() + ": " + answersForSubmit[index]
+            }
+            alert(JSON.stringify(tmp))
+            $.ajax(
+                {
+                    headers: {
+                        "accept": "application/json",
+                    },
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    method: "POST",
+                    url: "http://api.tinylink.cn/problem/quiz/judge",
+                    dataType: 'json',
+                    contentType: "text/javascript",
+                    data: JSON.stringify({
+                        qzid: _this.props.sid,
+                        answer: answersForSubmit
+                    }),
+                    success: async function (data) {
+                        // let x = data.question.slice(0, 3)
+                        let correctItem: string[] = data.data.correct
+                        for (let item in correctItem) {
+                            let pid = (parseInt(item) + 1).toString()
+                            let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
+                            if (correctItem[item] == "1") {
+                                sp.prop("class", "oi oi-check")
+                                sp.show()
+                            }
+                            else {
+                                sp.prop("class", "oi oi-x")
+                                sp.show()
+                            }
+                        }
+                        // alert(JSON.stringify(data) + "****************************")
+
+                        // let x = _this.props.getData
+                    }
+                }
+            )
 
 
         })

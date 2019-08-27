@@ -17,17 +17,17 @@
   "devDependencies": {
     "rimraf": "latest",
     "typescript": "latest"
+
   },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
     "build": "tsc  --jsx react",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "test": "jest"
   },
-  "theiaExtensions": [
-    {
-      "frontend": "lib/browser/udc-extension-frontend-module",
-      "backend": "lib/node/index"
-    }
-  ]
+  "theiaExtensions": [{
+    "frontend": "lib/browser/udc-extension-frontend-module",
+    "backend": "lib/node/index"
+  }]
 }

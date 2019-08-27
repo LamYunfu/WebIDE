@@ -1,8 +1,9 @@
-import { Compiler } from './compiler';
-import { Controller } from './controller';
+import { Logger } from './util/logger';
+import { Compiler } from './compilers/compiler';
+import { Controller } from './util/controller';
 import { LOGINTYPE } from './../common/udc-service';
 import { UdcClient } from './../common/udc-watcher';
-import { UdcTerminal } from './udc-terminal';
+import { UdcTerminal } from './util/udc-terminal';
 import { UdcService } from './../common/udc-service';
 import { injectable, inject, } from "inversify";
 import { ILogger } from '@theia/core';
@@ -107,7 +108,7 @@ export class UdcServiceImpl implements UdcService {
 
 
     postSrcFile(pid: string): void {
-        this.compiler.compile(pid)
+        this.controller.processIssue(pid)
     }
 
 
@@ -121,6 +122,7 @@ export class UdcServiceImpl implements UdcService {
         this.udcTerminal.storeState(data)
     }
     getState(type: string): Promise<string> {
+        Logger.info(" in impl type is :" + type)
         return this.udcTerminal.getState(type)
     }
     setQueue() {
@@ -131,5 +133,11 @@ export class UdcServiceImpl implements UdcService {
     }
     initPidQueueInfo(infos: string): Promise<string> {
         return this.udcTerminal.initPidQueueInfo(infos)
+    }
+    setTinyLink(name: string, passwd: string): void {
+        this.udcTerminal.setTinyLink(name, passwd)
+    }
+    config(): any{
+        this.udcTerminal.config()
     }
 }

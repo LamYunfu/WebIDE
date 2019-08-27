@@ -6,9 +6,9 @@ import { injectable, inject } from "inversify";
 import { CommandContribution, MenuContribution, MenuModelRegistry, MessageService, MAIN_MENU_BAR, Command } from "@theia/core/lib/common";
 import { LanguageGrammarDefinitionContribution, TextmateRegistry } from '@theia/monaco/lib/browser/textmate';
 import { WorkspaceService } from "@theia/workspace/lib/browser/"
-import { FileDialogService} from "@theia/filesystem/lib/browser"
+import { FileDialogService } from "@theia/filesystem/lib/browser"
 import { FileSystem } from '@theia/filesystem/lib/common';
-import { QuickOpenService, QuickOpenModel, QuickOpenItem, QuickOpenItemOptions } from '@theia/core/lib/browser';
+import { QuickOpenService, QuickOpenModel, QuickOpenItem, QuickOpenItemOptions, ApplicationShell } from '@theia/core/lib/browser';
 import { UdcConsoleSession } from './udc-console-session';
 import { DeviceViewService } from './device-view-service';
 import URI from "@theia/core/lib/common/uri";
@@ -132,11 +132,22 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         @inject(UdcConsoleSession) protected readonly udcConsoleSession: UdcConsoleSession,
         @inject(DeviceViewService) protected readonly deviceViewService: DeviceViewService,
         @inject(EditorManager) protected em: EditorManager,
-        @inject(InMemoryResources) protected imr: InMemoryResources
+        @inject(InMemoryResources) protected imr: InMemoryResources,
+        @inject(CommandRegistry) protected readonly commandRegistry: CommandRegistry,
+        @inject(ApplicationShell) protected applicationShell: ApplicationShell,
+
 
     ) {
+        this.udcWatcher.onConfigLog((data: { name: string, passwd: string }) => {
+            let tmp = data
+            applicationShell.closeTabs("bottom")
+            // applicationShell.closeTabs("left")
+            console.log(JSON.stringify(data)+"::::::front ")
+            this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.config", "http://tinylink.cn:12352/tinylink/tinylinkApp/login.php", tmp.name, tmp.passwd)
+            this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.node", tmp.name, tmp.passwd)
+        })
         this.udcWatcher.onDeviceLog((data: string) => {
-            // console.log([data]);
+            // console.log("data is :" + data + "............................")
             let array = data.split(":");
             let log = array.slice(2).join(':').replace(/</g, "&lt;").replace(/>/g, "&gt;");
             // console.log(log);
@@ -293,8 +304,8 @@ export class UdcExtensionHighlightContribution implements LanguageGrammarDefinit
     registerTextmateLanguage(registry: TextmateRegistry) {
         monaco.languages.register({
             id: this.id,
-            extensions: ['.cpp', '.cc', '.cxx', '.hpp', '.hh', '.hxx', '.h', '.ino', '.inl', '.ipp', 'cl','.c'],
-            aliases: ['C++', 'Cpp', 'cpp','c'],
+            extensions: ['.cpp', '.cc', '.cxx', '.hpp', '.hh', '.hxx', '.h', '.ino', '.inl', '.ipp', 'cl', '.c'],
+            aliases: ['C++', 'Cpp', 'cpp', 'c'],
         });
         monaco.languages.setLanguageConfiguration(this.id, this.config);
         registry.registerTextmateGrammarScope(this.scopeName, {

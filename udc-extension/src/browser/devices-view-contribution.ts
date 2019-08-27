@@ -22,7 +22,7 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
             widgetName: 'Online IOT Study System',
             defaultWidgetOptions: {
                 area: 'left',
-                rank: 500
+                rank: 574
             },
             toggleCommandId: 'UDC devices'
         })

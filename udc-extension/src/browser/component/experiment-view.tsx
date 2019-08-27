@@ -11,7 +11,7 @@ export namespace Experiment {
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
-
+        config: () => void
         setCookie: (cookie: string) => void
         say: (verbose: string) => void
         outputResult: (res: string) => void
@@ -291,7 +291,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             </div>
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
-                            <CodingInfo roles={this.role} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                            <CodingInfo config={this.props.config} roles={this.role} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                     </div>

@@ -43,7 +43,7 @@ export class CodeItem extends React.Component<CodeItem.Props>{
                                 _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.codingTitles[tmp]}`, `helloworld.cpp`)))
                             else {
                                 for (let mem of _this.props.role) {
-                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.codingTitles[tmp]}`, `${"helloworld" +"_"+ mem}.cpp`)))
+                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.codingTitles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
                                 }
                             }
                             $(".optionInfos." + _this.props.sid).hide()
@@ -83,6 +83,7 @@ export namespace CodingInfo {
         postSrcFile: (fn: string) => void
         addCodingSubmittedIssue: (index: string) => void
         say: (verbose: string) => void
+        config: () => void
     }
 }
 
@@ -121,10 +122,11 @@ export class CodingInfo extends React.Component<CodingInfo.Props>{
                         <pre className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</pre>
                     </div>
                     <span><button className="btn btn-info" id={"connectButton" + this.props.sid}>连接</button></span><span><button className="btn btn-info" id={"setQueue" + this.props.sid}>排队</button></span>
-
                     <br />
                     <div>
-                        <button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></div>
+                        <span><button className="btn btn-primary" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span>
+                        <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></span>
+                    </div>
                 </div>
             </div>
         )
