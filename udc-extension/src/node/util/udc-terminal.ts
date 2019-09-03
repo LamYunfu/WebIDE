@@ -513,45 +513,16 @@ export class UdcTerminal {
         // Logger.info(fileBuffer.slice(0, 8).toString("hex"), "file buff:")
         // return false
         let seq = 0;
-        // while (seq * 8192 < fileBuffer.length) {
-        //     let header = `${devstr}:${filehash}:${seq}:`;
-        //     let end = (seq + 1) * 8192;
-        //     if (end > fileBuffer.length) {
-        //         end = fileBuffer.length;
-        //     }
-        //     retry = 4;
-        //     while (retry > 0) {
-        //         Logger.info("sending data");
-        //         this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 8192, end).toString('ascii'));
-        //         await this.wait_cmd_excute_done(2000);
-        //         if (this.cmd_excute_return === null) {
-        //             Logger.info("cmd retuen null");
-
-        //             retry--;
-        //             continue;
-        //         } else if (this.cmd_excute_return != 'ok') {
-        //             Logger.info("cmd not ok");
-        //             return false;
-        //         }
-        //         break;
-        //     }
-        //     if (retry === 0) {
-        //         return false;
-        //     }
-        //     seq++;
-        // }
-        while (seq * 1024 < fileBuffer.length) {
-            Logger.info(seq, "seq:")
+        while (seq * 8192 < fileBuffer.length) {
             let header = `${devstr}:${filehash}:${seq}:`;
-            let end = (seq + 1) * 1024;
+            let end = (seq + 1) * 8192;
             if (end > fileBuffer.length) {
                 end = fileBuffer.length;
             }
             retry = 4;
             while (retry > 0) {
                 Logger.info("sending data");
-                // this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 1024, end).toString('ascii'));
-                this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 1024, end).toString("ascii"));
+                this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 8192, end).toString('ascii'));
                 await this.wait_cmd_excute_done(2000);
                 if (this.cmd_excute_return === null) {
                     Logger.info("cmd retuen null");
@@ -569,6 +540,35 @@ export class UdcTerminal {
             }
             seq++;
         }
+        // while (seq * 1024 < fileBuffer.length) {
+        //     Logger.info(seq, "seq:")
+        //     let header = `${devstr}:${filehash}:${seq}:`;
+        //     let end = (seq + 1) * 1024;
+        //     if (end > fileBuffer.length) {
+        //         end = fileBuffer.length;
+        //     }
+        //     retry = 4;
+        //     while (retry > 0) {
+        //         Logger.info("sending data");
+        //         // this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 1024, end).toString('ascii'));
+        //         this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 1024, end).toString("ascii"));
+        //         await this.wait_cmd_excute_done(2000);
+        //         if (this.cmd_excute_return === null) {
+        //             Logger.info("cmd retuen null");
+
+        //             retry--;
+        //             continue;
+        //         } else if (this.cmd_excute_return != 'ok') {
+        //             Logger.info("cmd not ok");
+        //             return false;
+        //         }
+        //         break;
+        //     }
+        //     if (retry === 0) {
+        //         return false;
+        //     }
+        //     seq++;
+        // }
         content = `${devstr}:${filehash}:${filename}`;
         retry = 4;
         while (retry > 0) {
