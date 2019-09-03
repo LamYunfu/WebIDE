@@ -91,7 +91,7 @@ export class AliosCompiler {
                         }
                         else {
                             _this.outputResult(`program without queue`)
-                            _this.udc.program_device(path.join(rootDir, dirName, 'sketch.ino.hex'), "1", _this.devs[index], pid).then(
+                            _this.udc.program_device(path.join(rootDir, dirName, 'sketch.ino.hex'), "0x10000", _this.devs[index], pid).then(
                                 (res) => {
                                     if (res) {
                                         _this.outputResult("program scc")

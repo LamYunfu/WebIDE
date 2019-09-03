@@ -22,8 +22,21 @@ export class Controller {
     ) {
     }
     rootDir: string = "/home/project"
+    getCompilerType(model: string): string {
+        const AliosType = ["", "", "",]
+        const TinylinkType = ["lora_p2p", "", "",]
+        if (model.startsWith("alios") || AliosType.indexOf(model) != -1) {
+            return "alios"
+        }
+        if (model.startsWith("tinylink") || TinylinkType.indexOf(model) != -1) {
+            return "tinylink"
+        }
+        Logger.info("get compiler type failed")
+        return "No this type"
+    }
     async processIssue(pid: string) {
-        let { loginType } = this.ut.getPidInfos(pid)
+        let { loginType, model } = this.ut.getPidInfos(pid)
+        let devType = this.getCompilerType(model)
         let _this = this
         switch (loginType) {
             case "adhoc":
@@ -38,6 +51,8 @@ export class Controller {
                 }).then(
                     async res => {
                         if (res == "scc") {
+                            if (devType == "alios")
+                                return true;
                             return _this.pm.program(pid)
                         }
                     }
@@ -46,7 +61,7 @@ export class Controller {
 
     }
     async processSingleFile(pid: string) {
-        Logger.info(pid,"pid:")
+        Logger.info(pid, "pid:")
         let _this = this
         let tmp = pid.split("&")
         pid = tmp[0]

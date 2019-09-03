@@ -522,7 +522,7 @@ export class UdcTerminal {
             retry = 4;
             while (retry > 0) {
                 Logger.info("sending data");
-                this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 8192, end).toString('ascii'));
+                this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 8192, end).toString('hex'));
                 await this.wait_cmd_excute_done(2000);
                 if (this.cmd_excute_return === null) {
                     Logger.info("cmd retuen null");
