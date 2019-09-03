@@ -1,0 +1,36 @@
+0 silly input [ 'prepare' ]
+1 silly flags { _: [ 'run' ], script: 'prepare', args: [] }
+2 verbose rootPath /home/liang/load/webIDE7.29
+3 info version 2.4.0
+4 silly existsSync /home/liang/load/webIDE7.29/VERSION
+5 silly initialize attempt
+6 silly initialize success
+7 silly execute attempt
+8 silly runScriptInPackageStreaming [ 'prepare', [], 'udc-extension' ]
+9 silly getExecOpts { cwd: '/home/liang/load/webIDE7.29/udc-extension' }
+10 error execute callback with error
+11 error Error: Command failed: npm run prepare
+11 error warning package.json: No license field
+11 error warning package.json: No license field
+11 error error Command failed with exit code 2.
+11 error npm ERR! code ELIFECYCLE
+11 error npm ERR! errno 2
+11 error npm ERR! udc-extension@0.0.0 prepare: `yarn run clean && yarn run build`
+11 error npm ERR! Exit status 2
+11 error npm ERR!
+11 error npm ERR! Failed at the udc-extension@0.0.0 prepare script.
+11 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+11 error
+11 error npm ERR! A complete log of this run can be found in:
+11 error npm ERR!     /home/liang/.npm/_logs/2019-09-03T07_03_46_839Z-debug.log
+11 error
+11 error
+11 error > udc-extension@0.0.0 prepare /home/liang/load/webIDE7.29/udc-extension
+11 error > yarn run clean && yarn run build
+11 error
+11 error $ rimraf lib
+11 error $ tsc  --jsx react
+11 error src/browser/component/code-issue.tsx(80,9): error TS2741: Property 'currentFile' is missing in type '{ pid: string; singleFileButtons: never[]; }' but required in type 'Readonly<States>'.
+11 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+11 error
+11 error     at Promise.all.then.arr (/home/liang/load/webIDE7.29/node_modules/lerna/node_modules/execa/index.js:236:11)

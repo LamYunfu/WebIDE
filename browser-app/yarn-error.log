@@ -1,0 +1,65 @@
+Arguments: 
+  /home/liang/.nvm/versions/node/v8.16.0/bin/node /home/liang/.nvm/versions/node/v8.16.0/bin/yarn start
+
+PATH: 
+  /home/liang/.local/bin:/home/liang/.nvm/versions/node/v8.16.0/bin:/home/liang/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/jdk/bin:/usr/jdk/bin:/usr/hadoop/sbin:/usr/hadoop/bin:/home/hadoop/hive/bin:/opt/armgcc/bin:/usr/jdk/bin:/usr/jdk/bin:/usr/hadoop/sbin:/usr/hadoop/bin:/home/hadoop/hive/bin:/opt/armgcc/bin
+
+Yarn version: 
+  1.15.2
+
+Node version: 
+  8.16.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/liang/load/webIDE/browser-app/package.json: Unexpected token } in JSON at position 584
+      at JSON.parse (<anonymous>)
+      at /home/liang/.nvm/versions/node/v8.16.0/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/home/liang/.nvm/versions/node/v8.16.0/lib/node_modules/yarn/lib/cli.js:304:30)
+      at /home/liang/.nvm/versions/node/v8.16.0/lib/node_modules/yarn/lib/cli.js:315:13
+      at <anonymous>
+
+npm manifest: 
+  {
+    "private": true,
+    "name": "browser-app",
+    "version": "0.0.0",
+    "dependencies": {
+      "@theia/core": "latest",
+      "@theia/filesystem": "latest",
+      "@theia/workspace": "latest",
+      "@theia/preferences": "latest",
+      "@theia/navigator": "latest",
+      "@theia/process": "latest",
+      "@theia/terminal": "latest",
+      "@theia/editor": "latest",
+      "@theia/languages": "latest",
+      "@theia/markers": "latest",
+      "@theia/monaco": "latest",
+      "@theia/typescript": "latest",
+      "@theia/messages": "latest",
+      "@theia/plugin-ext": "latest",
+      "udc-extension": "0.0.0",
+    },
+    "devDependencies": {
+      "@theia/cli": "latest"
+    },
+    "scripts": {
+      "prepare": "theia build --mode development",
+      "start": "theia start",
+      "watch": "theia build --watch --mode development",
+  	"build": "theia build"
+    },
+    "theia": {
+      "target": "browser"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
