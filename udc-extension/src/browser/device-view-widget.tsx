@@ -1,12 +1,11 @@
 import { injectable, inject } from "inversify";
-import { TreeWidget, TreeProps, TreeModel, ContextMenuRenderer, CompositeTreeNode, SelectableTreeNode, TreeNode, ApplicationShell } from "@theia/core/lib/browser";
+import { TreeWidget, TreeProps, TreeModel, ContextMenuRenderer, CompositeTreeNode, SelectableTreeNode, TreeNode, ApplicationShell, LocalStorageService } from "@theia/core/lib/browser";
 import React = require("react");
 import { Emitter } from "vscode-jsonrpc";
 import { UdcService } from "../common/udc-service";
 import { MessageService, CommandRegistry } from "@theia/core";
 import { UdcCommands } from "./udc-extension-contribution";
 import URI from "@theia/core/lib/common/uri";
-import { EditorManager } from "@theia/editor/lib/browser";
 import { View } from './component/renderView'
 export interface DeviceViewSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode {
     iconClass: string;
@@ -44,7 +43,7 @@ export class DeviceViewWidget extends TreeWidget {
         @inject(MessageService) protected readonly messageService: MessageService,
         @inject(CommandRegistry) protected readonly commandRegistry: CommandRegistry,
         @inject(ApplicationShell) protected applicationShell: ApplicationShell,
-        @inject(EditorManager) protected em: EditorManager
+        @inject(LocalStorageService) protected readonly lss: LocalStorageService
     ) {
         super(treePros, model, contextMenuRenderer);
         this.id = 'device-view';
@@ -72,6 +71,9 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <View
+                programSingleFile={this.programSingleFile}
+                getLocal={this.getLocal}
+                setLocal={this.saveLocal}
                 config={this.config}
                 setTinyLink={this.setTinyLink}
                 openShell={this.openShell}
@@ -173,5 +175,14 @@ export class DeviceViewWidget extends TreeWidget {
     }
     config = () => {
         this.udcService.config()
+    }
+    saveLocal = (key: string, obj: object) => {
+        this.lss.setData(key, obj)
+    }
+    getLocal = (key: string, obj: object) => {
+        return this.lss.getData(key)
+    }
+    programSingleFile = (pidAndFn: string) => {
+        this.udcService.programSingleFile(pidAndFn)
     }
 }

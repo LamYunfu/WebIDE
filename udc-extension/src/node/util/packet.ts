@@ -26,7 +26,7 @@ export class Packet {
             return ''
         } else {
             let frame = '{' + type + ',' + value.length.toString().padStart(5, '0') + ',' + value + '}';
-            Logger.info('send package:' + frame);
+            // Logger.info('send package:' + frame);
             return frame
         }
     }

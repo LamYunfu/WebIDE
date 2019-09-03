@@ -25,6 +25,10 @@ export namespace SectionUI {
         initPidQueueInfo: (infos: string) => Promise<string>
         closeTables: () => void
         openShell: () => void
+        seq: number
+        setLocal: (key: string, obj: any) => void
+        getLocal: (key: string, obj: any) => any
+        programSingleFile: (pidAndFn: string) => void
     }
 
 
@@ -237,10 +241,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     // }))
 
                     for (let entry in _this.codingIssues) {
-                        _this.codingItems.push(<CodeItem openShell={_this.props.openShell} loginType={_this.loginType[entry]} model={_this.model[entry]}
+                        _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
                             role={_this.role[entry]} sid={_this.props.sid} akey={entry} key={entry}
-                            codingInfos={_this.codingInfos} codingTitles={_this.codingIssues}
-                            codingStatus={_this.codingStatus} openSrcFile={_this.props.openSrcFile} />)
+                             codingTitles={_this.codingIssues}
+                            codingStatus={_this.codingStatus}  />)
                     }
                     console.log("CDM OK")
                     _this.setState((state) => ({
@@ -254,13 +258,23 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
 
     submittedOptionStatus: { [key: string]: string } = {}
-    componentDidMount() {
+    async componentDidMount() {
         let _this = this
         $(document).ready(
             () => {
                 $(document).on("click", ".section" + _this.props.sid, (e) => {
                     console.log("section click...................")
                     $(".contentsAndInfos" + _this.props.sid).toggle()
+                    if ($(".contentsAndInfos" + _this.props.sid).css("display") == "none") {
+                        $(`.section${_this.props.sid}`).children("span").removeClass("indicateTag")
+                        $(`.section${_this.props.sid}`).children("span").addClass("indicateTagChanged")
+
+                    }
+                    else {
+                        $(`.section${_this.props.sid}`).children("span").removeClass("indicateTagChanged")
+                        $(`.section${_this.props.sid}`).children("span").addClass("indicateTag")
+
+                    }
                 })
             }
         )
@@ -274,19 +288,21 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         // _this.shell.closeTabs("bottom")
                         // _this.shell.closeTabs("right")
                         _this.props.closeTables()
-                        $(".codingInfos." + _this.props.sid).hide()
+                        // $(".codingInfos." + _this.props.sid).hide()
+                        $(".codingInfos").hide()
+                        $(".optionInfos").hide()
                         $(".optionInfos." + _this.props.sid).show()
                         let x = $(e.currentTarget).children("a").attr("id")
                         if (x != undefined) {
                             $(".optionIssueTitle" + _this.props.sid).text(this.optionIssues[x])
-                            $("form.options" + _this.props.sid).attr("id", x)
-                            for (let index in this.choices[x]) {
-                                let op = $(`.optionContent${_this.props.sid}:eq(${index})`)
-                                op.text(this.choices[x][index])
-                            }
-                            if (_this.submittedOptionAnswers[x] != undefined) {
-                                $(`#optionRadio${_this.props.sid}${_this.submittedOptionAnswers[x].answer}`).prop("checked", true)
-                            }
+                            // $("form.options" + _this.props.sid).attr("id", x)
+                            // for (let index in this.choices[x]) {
+                            //     let op = $(`.optionContent${_this.props.sid}:eq(${index})`)
+                            //     op.text(this.choices[x][index])
+                            // }
+                            // if (_this.submittedOptionAnswers[x] != undefined) {
+                            //     $(`#optionRadio${_this.props.sid}${_this.submittedOptionAnswers[x].answer}`).prop("checked", true)
+                            // }
                         }
                     }
                 )
@@ -416,14 +432,39 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
             }
         )
 
+
+    }
+    async recoveryState() {
+        let _this = this
+        let uAnswers = await _this.props.getLocal(_this.props.sid, {})
+        for (let pid in uAnswers) {
+            let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
+            if (uAnswers != {} && uAnswers[pid] != undefined) {
+                console.log("pid: " + pid)
+                if (uAnswers[pid].uRight) {
+                    sp.prop("class", "oi oi-check")
+                    sp.show()
+                }
+                else {
+                    sp.prop("class", "oi oi-x")
+                    sp.show()
+                }
+
+            }
+        }
+
+    }
+    upDateCount: number = 0
+    componentDidUpdate() {
+        if (this, this.upDateCount++ == 0)
+            this.recoveryState()
     }
 
     render(): React.ReactNode {
         // if(this.submittedOptionAnswers[this.props.sid]
         return (
-            <div >
-                <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.section.title}</span>
-
+            <div className="currentSection" >
+                <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.seq}. {this.props.section.title}<span className="indicateTag"></span></span>
                 <div className={`contentsAndInfos${this.props.sid} container`}>
                     <div className="row">
                         <div className="contents col-5" style={{ "padding": "0px" }}>
@@ -438,11 +479,11 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
                         </div>
                         <div className={`codingInfos ${this.props.sid} col-7`} >
-                            <CodingInfo config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                            <CodingInfo programSingleFile={this.props.programSingleFile}  codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                         <div className={`optionInfos ${this.props.sid} col-7`} >
-                            <OptionInfo types={this.types} answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
+                            <OptionInfo getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.types} answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
                                 sid={this.props.sid} say={this.props.say} answers={this.answers} />
                         </div>
                     </div>

@@ -69,7 +69,47 @@ export class Programer {
                 break
             }
         }
+    }
+    async programSingleFile(pid: string, fn: string) {
+        let { fns, dirName } = this.ut.getPidInfos(pid)
+        let devArr = []
+        let fnArr: string[] = JSON.parse(fns)
+        let devInfo: { [devid: string]: number } | undefined
+        for (let i = 4; ; i--) {
+            devInfo = this.ut.get_devlist()
+            if (devInfo != undefined) {
+                break
+            }
+            if (i == 0) {
+                return "fail"
+            }
+            Logger.info("waitting for allocate device")
+            await new Promise(res => {
+                setTimeout(() => {
+                    res()
+                }, 1000)
+            })
 
+        }
+        for (let item in this.ut.get_devlist()) {
+            devArr.push(item)
+        }
+        let hex = this.fm.getFileNameMapper(pid)
+        if (typeof (hex) == "string") {
+            Logger.info("error file name map")
+            return "fail"
+        }
+        let hexFile = hex[fn.split(".")[0]]
+        let index = fnArr.findIndex((val) => {
+            if (val.match(`${fn}|${fn}.cpp`))
+                return true
+        })
+        let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[index], pid)
+        if (bv == false) {
+            return false
+        }
 
     }
+
+
 }

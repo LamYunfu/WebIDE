@@ -22,7 +22,7 @@
 11 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 11 error
 11 error npm ERR! A complete log of this run can be found in:
-11 error npm ERR!     /home/liang/.npm/_logs/2019-08-27T11_50_46_506Z-debug.log
+11 error npm ERR!     /home/liang/.npm/_logs/2019-09-03T07_03_46_839Z-debug.log
 11 error
 11 error
 11 error > udc-extension@0.0.0 prepare /home/liang/load/webIDE7.29/udc-extension
@@ -30,7 +30,7 @@
 11 error
 11 error $ rimraf lib
 11 error $ tsc  --jsx react
-11 error src/browser/device-view-widget.tsx(74,14): error TS2741: Property 'config' is missing in type '{ setTinyLink: (name: string, passwd: string) => void; openShell: () => void; initPidQueueInfo: (infos: string) => Promise<string>; closeTabs: () => void; setQueue: () => void; setSize: (size: number) => void; ... 10 more ...; postSrcFile: (fn: string) => void; }' but required in type 'Readonly<Props>'.
+11 error src/browser/component/code-issue.tsx(80,9): error TS2741: Property 'currentFile' is missing in type '{ pid: string; singleFileButtons: never[]; }' but required in type 'Readonly<States>'.
 11 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 11 error
 11 error     at Promise.all.then.arr (/home/liang/load/webIDE7.29/node_modules/lerna/node_modules/execa/index.js:236:11)

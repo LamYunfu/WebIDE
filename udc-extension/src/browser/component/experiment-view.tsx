@@ -19,6 +19,7 @@ export namespace Experiment {
         closeTabs: () => void
         initPidQueueInfo(infos: string): Promise<string>
         openShell: () => void
+        programSingleFile: (pidAndFn: string) => void
 
     }
 
@@ -142,10 +143,10 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     }
 
                     for (let entry in _this.codingIssues)
-                        _this.codingItems.push(<CodeItem openShell={_this.props.openShell} loginType={_this.loginType[entry]} model={_this.model[entry]}
+                        _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
                             role={_this.role[entry]} sid={_this.props.section.sid} akey={entry} key={entry}
-                            codingInfos={_this.codingInfos} codingTitles={_this.codingIssues}
-                            codingStatus={_this.codingStatus} openSrcFile={_this.props.openSrcFile} />)
+                            codingTitles={_this.codingIssues}
+                            codingStatus={_this.codingStatus} />)
                     _this.setState((state) => ({
                         ...state,
                         codingItems: _this.codingItems
@@ -291,7 +292,8 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             </div>
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
-                            <CodingInfo config={this.props.config} roles={this.role} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                            <CodingInfo   programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile}
+                                codeInfoType="coding" config={this.props.config} roles={this.role} sid={"experiment"} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                     </div>

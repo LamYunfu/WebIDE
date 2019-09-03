@@ -35,6 +35,7 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
                 await this.applicationShell.closeTabs("bottom")
                 await this.applicationShell.closeTabs("right")
                 this.registry.executeCommand("udc:shell:toggle")
+                this.applicationShell.activateWidget("device-view")
             }
             // if (e == 'ready') {
             //     await this.applicationShell.revealWidget(DEVICE_WIDGET_FACTORY_ID)

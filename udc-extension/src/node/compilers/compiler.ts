@@ -19,13 +19,12 @@ export class Compiler {
         let fnsArr = JSON.parse(fns)
         Logger.info("start compiling")
         Logger.info("MODEL is:" + model)
+        if (this.getCompilerType(model) == "alios") {
+            this.udcCompiler.outputResult("use alios compiler")
+            Logger.info("use alios compiler")
+            await this.aliosCompiler.postNameAndType(pid)
+        }
         for (let fn of fnsArr) {
-            if (this.getCompilerType(model) == "alios") {
-                this.udcCompiler.outputResult("use alios compiler")
-                Logger.info("use alios compiler")
-                await this.aliosCompiler.postNameAndType(pid)
-                break
-            }
             if (this.getCompilerType(model) == "tinylink") {
                 this.udcCompiler.outputResult("use tinylink compiler")
                 Logger.info("use tinylink compiler")
@@ -34,6 +33,13 @@ export class Compiler {
                     return "fail"
             }
         }
+        return "scc"
+    }
+    async compileSingleFile(pid: string, fn: string) {
+        let { dirName } = this.udcTerminal.getPidInfos(pid)
+        let bv = await this.udcCompiler.postSrcFile(fn, dirName)
+        if (bv != 'scc')
+            return "fail"
         return "scc"
     }
     getCompilerType(model: string): string {

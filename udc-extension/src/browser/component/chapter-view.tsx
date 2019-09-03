@@ -22,6 +22,9 @@ export namespace Chapter {
         initPidQueueInfo(infos: string): Promise<string>
         closeTables: () => void
         openShell: () => void
+        setLocal: (key: string, obj: object) => void
+        getLocal: (key: string, obj: object) => object
+        programSingleFile: (pidAndFn: string) => void
     }
 }
 export class Chapter extends React.Component<Chapter.Props>{
@@ -38,6 +41,11 @@ export class Chapter extends React.Component<Chapter.Props>{
         for (let x of this.props.sections) {
             this.sectionsDataPool[x.sid] == undefined && this.setSectionsDataPool(x.sid, {})
             uiArray.push(<SectionUI
+                programSingleFile={this.props.programSingleFile} 
+                getLocal={this.props.getLocal}
+                setLocal={this.props.setLocal}
+                seq={uiArray.length + 1}
+                key={uiArray.length + 1}
                 config={this.props.config}
                 openShell={this.props.openShell}
                 closeTables={this.props.closeTables}
@@ -58,7 +66,7 @@ export class Chapter extends React.Component<Chapter.Props>{
                 postSrcFile={this.props.postSrcFile} />)
         }
         return (
-            <div>
+            <div className="sections">
                 {uiArray}
             </div>
 

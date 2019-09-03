@@ -2,6 +2,7 @@ import React = require("react");
 import URI from "@theia/core/lib/common/uri";
 import { Experiment } from "./experiment-view"
 import { Chapter } from './chapter-view'
+import { Scene } from './scene-view'
 import * as $ from "jquery"
 export namespace View {
     export interface Props {
@@ -23,6 +24,9 @@ export namespace View {
         openShell: () => void
         setTinyLink: (name: string, passwd: string) => void
         config: () => void
+        setLocal: (key: string, obj: object) => void
+        getLocal: (key: string, obj: object) => object
+        programSingleFile: (pidAndFn: string) => void
     }
     export interface State {
         ajaxNotFinish: boolean
@@ -137,12 +141,14 @@ export class View extends React.Component<View.Props, View.State>{
                         case "1": {
                             _this.sections = data.data.section
                             _this.title = data.data.title
-                            _this.renderView = <div>
-                                <div>
+                            _this.renderView =
+                                <div >
                                     <div className="title_timer"><h4> {_this.title}</h4><span id='timer'></span></div>
-
                                     {/* <hr /> */}
                                     <Chapter
+                                        programSingleFile={_this.props.programSingleFile}
+                                        setLocal={_this.props.setLocal}
+                                        getLocal={_this.props.getLocal}
                                         config={_this.props.config}
                                         openShell={_this.props.openShell}
                                         closeTables={_this.props.closeTabs}
@@ -162,7 +168,6 @@ export class View extends React.Component<View.Props, View.State>{
                                         postSrcFile={_this.props.postSrcFile}
                                     />
                                 </div>
-                            </div>
                             break
                         }
                         case "2": {
@@ -170,9 +175,10 @@ export class View extends React.Component<View.Props, View.State>{
                             _this.ppid = data.data.ppid
                             console.log(`ppid.......................................${_this.ppid}`)
                             _this.renderView = <div>
-                                <div>
+                                <div >
                                     {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
                                     <Experiment
+                                        programSingleFile={_this.props.programSingleFile}
                                         config={_this.props.config}
                                         openShell={_this.props.openShell}
                                         initPidQueueInfo={_this.props.initPidQueueInfo}
@@ -185,7 +191,34 @@ export class View extends React.Component<View.Props, View.State>{
                                         disconnect={_this.props.disconnect}
                                         connect={_this.props.connect}
                                         callUpdate={_this.props.callUpdate}
-
+                                        openSrcFile={_this.props.openSrcFile}
+                                        postSrcFile={_this.props.postSrcFile}
+                                    />
+                                </div>
+                            </div>
+                            break
+                        }
+                        case "3": {
+                            _this.title = data.data.title
+                            _this.ppid = data.data.ppid
+                            console.log(`ppid.......................................${_this.ppid}`)
+                            _this.renderView = <div>
+                                <div >
+                                    {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+                                    <Scene
+                                        programSingleFile={_this.props.programSingleFile}
+                                        config={_this.props.config}
+                                        openShell={_this.props.openShell}
+                                        initPidQueueInfo={_this.props.initPidQueueInfo}
+                                        closeTabs={_this.props.closeTabs}
+                                        setQueue={_this.props.setQueue}
+                                        section={{ ppid: [_this.ppid], sid: "Scene" }}
+                                        outputResult={_this.props.outputResult}
+                                        say={_this.props.say}
+                                        setCookie={_this.props.setCookie}
+                                        disconnect={_this.props.disconnect}
+                                        connect={_this.props.connect}
+                                        callUpdate={_this.props.callUpdate}
                                         openSrcFile={_this.props.openSrcFile}
                                         postSrcFile={_this.props.postSrcFile}
                                     />

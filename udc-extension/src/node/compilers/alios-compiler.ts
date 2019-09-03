@@ -142,7 +142,7 @@ export class AliosCompiler {
         await this.submitForm(fm,
             this.AliosAPIs["hostname"],
             this.AliosAPIs["port"],
-            this.AliosAPIs["srcPostPath"],
+            this.AliosAPIs["projectNameAndBoardPath"],
             "POST").then(res => {
                 return Logger.info(`postNameAndType back:${res}`)
             }).then(async () => {
@@ -282,8 +282,8 @@ export class AliosCompiler {
                     "Cookie": _this.cookie
                 },
             }, (err, res) => {
-                if (this.DEBUG)
-                    Logger.val(res.statusCode)
+
+                Logger.val(res.statusCode,"stateCode:")
                 let content = ''
                 res.on('data', (b: Buffer) => {
                     if (this.DEBUG)

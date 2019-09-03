@@ -9,7 +9,6 @@
     "@theia/preferences": "latest",
     "@theia/navigator": "latest",
     "@theia/process": "latest",
-    "@theia/terminal": "latest",
     "@theia/editor": "latest",
     "@theia/languages": "latest",
     "@theia/markers": "latest",

@@ -7,6 +7,7 @@
     position: sticky;
     top: 0;
 }
+
 .optionInfos {
     display: none;
     position: sticky;
@@ -20,8 +21,16 @@
     padding-top: 3px;
     padding-bottom: 3px;
     margin-left: 35px;
-    margin-right: auto;
+    margin-right: 25px;
+    border-color: #3c3c43;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+}
 
+.codeItemexperiment.list-group-item {
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 pre {
@@ -38,4 +47,58 @@ h4 {
 
 .title_timer {
     text-align: center;
+    border-bottom-color: gray;
+    border-top: none;
+    border-bottom-style: solid;
 }
+
+span[class*=section] {
+    cursor: pointer;
+}
+
+.indicateTag::before {
+    background-color: #4F5150;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    color: #FFFFFF;
+    content: "-";
+    display: block;
+    float: right;
+    font-weight: bold;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 5px;
+    text-align: center;
+    width: 20px;
+    cursor: pointer;
+}
+
+.indicateTagChanged::before {
+    background-color: #4F5150;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    color: #FFFFFF;
+    content: "+";
+    display: block;
+    float: right;
+    font-weight: bold;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 5px;
+    text-align: center;
+    width: 20px;
+    cursor: pointer;
+}
+
+
+
+/* .sections {
+    counter-reset: section 1;
+} */
+
+/* span[class*=section]::before {
+    counter-increment: seciton;
+    content: counter(section)". "
+} */

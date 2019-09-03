@@ -137,7 +137,10 @@ export class UdcServiceImpl implements UdcService {
     setTinyLink(name: string, passwd: string): void {
         this.udcTerminal.setTinyLink(name, passwd)
     }
-    config(): any{
+    config(): any {
         this.udcTerminal.config()
+    }
+    programSingleFile(pidAndFn: string) {
+        this.controller.processSingleFile(pidAndFn)
     }
 }

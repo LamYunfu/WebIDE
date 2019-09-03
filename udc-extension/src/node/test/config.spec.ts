@@ -27,8 +27,15 @@ testContainer.load(new ContainerModule(bind => {
 describe('extractor', () => {
     it("test", () => {
         testContainer.get(sp).split()
+    })
+    it("find", () => {
+        let fn = ["a.cpp"]
+        fn.findIndex((val) => {
+            if (val.match(`b.*|a.*`) != null) {
+                console.log(true)
 
-
+            }
+        })
     })
 
 })

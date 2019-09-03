@@ -22,6 +22,7 @@ export interface UdcService {
     initPidQueueInfo(infos: string): Promise<string>
     setTinyLink(name: string, passwd: string): void
     config(): void
+    programSingleFile: (pidAndFn: string) => void
 
 }
 

@@ -80,6 +80,43 @@ export class Extractor {
         }
         return "scc"
     }
+    async extractSingleFile(pid: string, fn: string) {//提取成功返回“scc”
+        let _this = this
+        let { dirName } = this.ut.getPidInfos(pid)
+        this.mkdir(dirName, "hexFiles")
+        let filePath = ""
+        let item = fn.split('.')[0]
+        filePath = path.join(this.projectDir, item + "Install.zip")
+        await new Promise((res, reject) => fs.createReadStream(filePath)
+            .pipe(unzip.Parse())
+            .on('entry', function (entry) {
+                let fileName: string = entry.path;
+                let suffix = fileName.split(".").pop()
+                let hexName = fileName.split('/').pop()
+                if (suffix == 'hex' || suffix == 'bin') {
+                    Logger.info("find hex : " + hexName)
+                    let fss = fs.createWriteStream(path.join(_this.hexFileDir, _this.getHexName(item) + 'sketch.ino.hex'))
+                    entry.pipe(fss);
+                    fss.on("close", () => {
+                        fss.close()
+                        let tmp: { [rawname: string]: string } = {}
+                        //tslint
+                        tmp[item] = _this.getHexName(item) + 'sketch.ino.hex'
+                        Logger.info(`extract a hex file(raw:${item} transform:${tmp[item]})`)
+                        _this.fm.setFileNameMapper(pid, tmp)
+                        res("scc")
+                    }
+                    )
+                } else {
+                    entry.autodrain();
+                }
+            })
+        )
+        let etArr = this.fm.getFileNameMapper(pid)
+        if (typeof (etArr) == 'string' || etArr == undefined)
+            return "failed"
+        return "scc"
+    }
     outputResult(arg0: string) {
         throw new Error("Method not implemented.");
     }
