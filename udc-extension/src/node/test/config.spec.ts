@@ -3,6 +3,7 @@
 import "reflect-metadata"
 import { sp } from './test';
 import { Container, ContainerModule } from "inversify";
+import * as fs from "fs";
 // import { ConfigSetter } from './../util/configsetter';
 // import { Container, ContainerModule } from "inversify";
 // import { UdcTerminal } from './../util/udc-terminal';
@@ -36,6 +37,9 @@ describe('extractor', () => {
 
             }
         })
+    })
+    it("filename", () => {
+      
     })
 
 })

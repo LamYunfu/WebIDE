@@ -166,19 +166,33 @@ export class AliosCompiler {
             this.devs = []
         }
         let rootDir = this.rootDir
+        let absPath = path.join(rootDir, dirName)
+        let farr = fs.readdirSync(absPath)
+        let fileList: string[] = []
+        farr.forEach(function (item) {
+            let suffix = item.split(".").pop()
+            if (fs.statSync(path.join(absPath, item)).isFile() &&suffix!="hex"&&suffix!="zip") {
+                fileList.push(item);
+            }
+        });
         let fm = new FormData()
-        let cppPath = path.join(rootDir, dirName, "helloworld.cpp")
-        let mkPath = path.join(rootDir, dirName, "helloworld.mk")
-        let pyPath = path.join(rootDir, dirName, "ucube.py")
-        let rdPath = path.join(rootDir, dirName, "README.md")
-        let cs = fs.readFileSync(cppPath)
-        let ms = fs.readFileSync(mkPath)
-        let ps = fs.readFileSync(pyPath)
-        let rs = fs.readFileSync(rdPath)
-        fm.append("files", cs, "helloworld" + ".cpp")
-        fm.append("files", ms, "helloworld" + ".mk")
-        fm.append("files", ps, "ucube.py")
-        fm.append("files", rs, "README.md")
+        for (let ct of fileList) {
+            let tmpPath = path.join(absPath, ct)
+            let tmps = fs.readFileSync(tmpPath)
+            fm.append("files", tmps, ct)
+        }
+        // let cppPath = path.join(rootDir, dirName, "helloworld.cpp")
+        // let mkPath = path.join(rootDir, dirName, "helloworld.mk")
+        // let pyPath = path.join(rootDir, dirName, "ucube.py")
+        // let rdPath = path.join(rootDir, dirName, "README.md")
+        // let cs = fs.readFileSync(cppPath)
+        // let ms = fs.readFileSync(mkPath)
+        // let ps = fs.readFileSync(pyPath)
+        // let rs = fs.readFileSync(rdPath)
+        // fm.append("files", cs, "helloworld" + ".cpp")
+        // fm.append("files", ms, "helloworld" + ".mk")
+        // fm.append("files", ps, "ucube.py")
+        // fm.append("files", rs, "README.md")
         let _this = this
         await _this.submitForm(fm,
             _this.AliosAPIs["hostname"],
@@ -283,7 +297,7 @@ export class AliosCompiler {
                 },
             }, (err, res) => {
 
-                Logger.val(res.statusCode,"stateCode:")
+                Logger.val(res.statusCode, "stateCode:")
                 let content = ''
                 res.on('data', (b: Buffer) => {
                     if (this.DEBUG)
