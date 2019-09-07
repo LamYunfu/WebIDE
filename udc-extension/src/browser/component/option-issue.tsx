@@ -1,5 +1,6 @@
 import React = require("react");
 import * as $ from "jquery"
+import { Logger } from "../../node/util/logger";
 export namespace OptionItem {
     export interface Props {
         type: string,
@@ -11,6 +12,8 @@ export namespace OptionItem {
         optionIssues: { [key: string]: string }
         // addOptionStatus: (pid: string, selected: string) => void
         submittedOptionAnswers: { [key: string]: { answer: string, isRight: boolean } }
+        qzid: string
+        scid: string
     }
 }
 export class OptionItem extends React.Component<OptionItem.Props> {
@@ -40,6 +43,8 @@ export class OptionItem extends React.Component<OptionItem.Props> {
     public render(): JSX.Element {
         return (
             <li className={`optionItem ${this.props.sid} list-group-item`} >
+                <span className={`scid ${this.props.sid}`} style={{ display: "none" }} >{this.props.scid}</span>
+                <span className={`qzid ${this.props.sid}`} style={{ display: "none" }}>{this.props.qzid}</span>
                 <span className="index" style={{ display: "none" }}>{this.props.akey}</span>
                 <span className="oi oi-pencil" aria-hidden="true"></span>
                 <a id={this.props.akey} style={{ textAlign: "center" }} >选择题{this.props.akey} </a>&nbsp;
@@ -65,6 +70,7 @@ export namespace OptionInfo {
         types: { [key: string]: string }
         setLocal: (key: string, obj: object) => void
         getLocal: (key: string, obj: object) => object
+        submitStyle: string
 
     }
     export interface States {
@@ -129,7 +135,7 @@ export class OptionInfo extends React.Component<OptionInfo.Props, OptionInfo.Sta
     public render() {
         return (
 
-            <ChoiceCollection getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.props.types} contentsCollection={this.props.contentsCollection}
+            <ChoiceCollection submitStyle={this.props.submitStyle} getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.props.types} contentsCollection={this.props.contentsCollection}
                 titlesCollection={this.props.titlesCollection} sid={this.props.sid} ></ChoiceCollection>
 
         )
@@ -222,6 +228,7 @@ export namespace ChoiceCollection {
         types: { [key: string]: string }
         setLocal: (key: string, obj: any) => void
         getLocal: (key: string, obj: any) => any
+        submitStyle: string
     }
     export interface States {
         sid: string
@@ -231,11 +238,14 @@ export namespace ChoiceCollection {
         title: string
         type: string
         submitStyle: string
+        qzid: string
+        scid: string
     }
 
 }
 export class ChoiceCollection extends React.Component<ChoiceCollection.Props, ChoiceCollection.States>{
-    uAnswers: { [pid: string]: { answer: string[], uRight: boolean } } = {}
+    uAnswers: { [pid: string]: { answer: string[], uRight: boolean | undefined } } = {}
+    isSubmitted: boolean = false
     constructor(props: Readonly<ChoiceCollection.Props>) {
         super(props)
         this.state = {
@@ -246,15 +256,19 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             pid: "",
             title: "",
             type: "",
-            submitStyle: "single"
+            submitStyle: "single",
+            qzid: "",
+            scid: ""
         }
     }
 
-     componentWillMount() {
+    async componentWillMount() {
+        this.isSubmitted = await this.props.getLocal(this.props.sid + "isSubmitted", {})
+        Logger.info(this.isSubmitted, "isSubmitted:")
         this.uAnswers = {
-            ... this.props.getLocal(this.props.sid, {})
+            ... await this.props.getLocal(this.props.sid, {})
         }
-
+        Logger.info(JSON.stringify(this.uAnswers), "storage:")
         this.setState({
             uAnswers: this.uAnswers
         })
@@ -272,9 +286,25 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
         return (//一次性提交、单次提交
             this.state.contents == [] || this.state.contents == undefined || this.state.uAnswers == {} ? <div>loading</div> :
 
-                this.state.pid == "" || this.state.pid != Object.keys(this.props.contentsCollection).length.toString() ?
-                    this.state.submitStyle == "single" ?
+
+                this.props.submitStyle == "single" ?
+                    <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>
+
+                        <div className="card-body">
+                            <p className={"optionIssueTitle" + this.props.sid}>
+                                {this.state.title}
+                            </p>
+                            <form className={`options${this.state.sid}`} id={this.state.pid}  >
+                                {carr}
+                            </form>
+
+                        </div>
+                        <button className={`optionInfoSubmitSingle${this.state.sid} btn btn-primary`} type="button">提交</button>
+                    </div>
+                    :
+                    this.state.pid != Object.keys(this.props.contentsCollection).length.toString() ?
                         <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>
+                            <span className={`qzid ${this.props.sid}`} style={{ display: "none" }}></span>
                             <div className="card-body">
                                 <p className={"optionIssueTitle" + this.props.sid}>
                                     {this.state.title}
@@ -284,7 +314,7 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                                 </form>
 
                             </div>
-                            <button className={`optionInfoSubmitSingle${this.state.sid} btn btn-primary`} type="button">提交</button>
+                            <button className={`optionInfoSubmit${this.state.sid} btn btn-primary`} type="button">保存</button>
                         </div>
                         :
                         <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>
@@ -297,21 +327,8 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                                 </form>
 
                             </div>
-                            <button className={`optionInfoSubmit${this.state.sid} btn btn-primary`} type="button">保存</button>
+                            <button className={`optionInfoSubmit${this.state.sid} all btn btn-primary`} type="button">提交全部</button>
                         </div>
-                    :
-                    <div className={`optionInfos ${this.props.sid} card text-white bg-secondary`}>
-                        <div className="card-body">
-                            <p className={"optionIssueTitle" + this.props.sid}>
-                                {this.state.title}
-                            </p>
-                            <form className={`options${this.state.sid}`} id={this.state.pid}  >
-                                {carr}
-                            </form>
-
-                        </div>
-                        <button className={`optionInfoSubmit${this.state.sid} all btn btn-primary`} type="button">提交全部</button>
-                    </div>
 
 
         )
@@ -323,6 +340,8 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
         // alert(JSON.stringify(uAnswers))
         $(document).on('click', ".optionItem." + _this.props.sid, (e) => {
             let index = $(e.currentTarget).children(".index").text()
+            let qzid = $(e.currentTarget).children(".qzid").text()
+            let scid = $(e.currentTarget).children(".scid").text()
             console.log(index + ".............index")
             _this.setState(() => ({
                 ..._this.state,
@@ -332,12 +351,18 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                 titles: _this.props.titlesCollection[index],
                 // answers: _this.props.answersCollection[index],
                 uAnswers: _this.uAnswers,
-                type: _this.props.types[index]
+                type: _this.props.types[index],
+                qzid: qzid,
+                scid: scid
             }))
 
         })
         $(document).on('click', `.optionInfoSubmit${this.props.sid}`, (e) => {
             console.log("click!!!!!!!!!!!!!")
+            if (_this.isSubmitted) {
+                alert("无法保存！")
+                return
+            }
             let answers: string[] = []
             $("input:checked").map((index, html) => {
                 answers.push($(html).prop("value"))
@@ -369,9 +394,10 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             // _this.uAnswers[_this.state.pid] = { answer: answers, uRight: true }
             // sp.prop("class", "oi oi-check")
             // sp.show()
-            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
             sp.prop("class", "oi oi-pin")
             sp.show()
+            _this.props.setLocal(_this.props.sid, _this.uAnswers)
             // alert("right")
 
 
@@ -380,7 +406,12 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
         // $(document).on('click', `.section9`, (e) => {
         $(document).on('click', `.optionInfoSubmit${this.props.sid}.all`, (e) => {
             console.log("click!!!!!!!!!!!!!")
+            if (_this.isSubmitted) {
+                alert("无法提交！")
+                return
+            }
             let answers: string[] = []
+
             $("input:checked").map((index, html) => {
                 answers.push($(html).prop("value"))
             })
@@ -413,7 +444,8 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             // sp.prop("class", "oi oi-check")
             // sp.show()
             // alert("right")
-            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+
+            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
             sp.prop("class", "oi oi-pin")
             sp.show()
             let answersForSubmit = []
@@ -442,7 +474,7 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                     dataType: 'json',
                     contentType: "text/javascript",
                     data: JSON.stringify({
-                        qzid: _this.props.sid,
+                        qzid: _this.state.qzid,
                         answer: answersForSubmit
                     }),
                     success: async function (data) {
@@ -461,19 +493,27 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                                 sp.show()
                             }
                         }
+                        _this.isSubmitted = true
+                        _this.props.setLocal(_this.props.sid + "isSubmitted", _this.isSubmitted)
+                        let crtCount = 0
+                        for (let item of correctItem) {
+                            if (item == '1')
+                                crtCount++;
+                        }
+                        alert(`正确${crtCount}道,\n错误${correctItem.length - crtCount}道`)
                     }
                 }
             )
 
 
         })
-        $(document).on('click', `.optionInfoSubmitSingle${this.props.sid}`, async (e) => {
+        $(document).on('click', `.optionInfoSubmitSingle${this.props.sid}deprecated`, async (e) => {
             let answers: string[] = []
-            $("input:checked").map((index, html) => {
+            $("input:visible:checked").map((index, html) => {
                 answers.push($(html).prop("value"))
             })
             let pid = _this.state.pid
-            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
+            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
             let answersForSubmit = []
             for (let index = 0; index < Object.keys(_this.props.contentsCollection).length; index++) {
                 answersForSubmit[index] = "X"
@@ -492,7 +532,7 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                     dataType: 'json',
                     contentType: "text/javascript",
                     data: JSON.stringify({
-                        qzid: _this.props.sid,
+                        qzid: _this.state.qzid,
                         answer: answersForSubmit
                     }),
                     success: async function (data) {
@@ -510,9 +550,55 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                             _this.uAnswers[_this.state.pid].uRight = false
                         }
                         _this.props.setLocal(_this.props.sid, _this.uAnswers)
+                        // _this.uAnswers[_this.state.pid] = { answer: [], uRight: false }
                     }
                 }
             )
         })
+        $(document).on('click', `.optionInfoSubmitSingle${this.props.sid}`, async (e) => {
+            let answers: string[] = []
+            $("input:visible:checked").map((index, html) => {
+                answers.push($(html).prop("value"))
+            })
+
+            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
+
+            $.ajax(
+                {
+                    headers: {
+                        "accept": "application/json",
+                    },
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    method: "POST",
+                    url: "http://judge.tinylink.cn/quiz/choices/judge",
+                    dataType: 'json',
+                    contentType: "text/javascript",
+                    data: JSON.stringify({
+                        scid: _this.state.scid,
+                        answer: answers.join(",")
+                    }),
+                    success: async function (data) {
+                        let correctItem: string = data.correct
+                        let pid = (parseInt(_this.state.pid)).toString()
+                        let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
+                        if (correctItem == "1") {
+                            _this.uAnswers[_this.state.pid].uRight = true
+                            sp.prop("class", "oi oi-check")
+                            sp.show()
+                        }
+                        else {
+                            sp.prop("class", "oi oi-x")
+                            sp.show()
+                            _this.uAnswers[_this.state.pid].uRight = false
+                        }
+                        _this.props.setLocal(_this.props.sid, _this.uAnswers)
+                        // _this.uAnswers[_this.state.pid] = { answer: [], uRight: false }
+                    }
+                }
+            )
+        })
+
     }
 }

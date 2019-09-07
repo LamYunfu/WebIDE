@@ -119,8 +119,12 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                                     singleFileButtons: singleFileButtons
                                 })
                             }
-                            if (_this.props.roles[tmp] == undefined)
-                                _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `helloworld.cpp`)))
+                            if (_this.props.roles[tmp] == undefined) {
+                                if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1)
+                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `helloworld.c`)))
+                                else
+                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `helloworld.cpp`)))
+                            }
                             else {
                                 for (let mem of _this.props.roles[tmp]) {
                                     _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))

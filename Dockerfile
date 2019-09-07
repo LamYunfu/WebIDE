@@ -34,7 +34,7 @@ EXPOSE 3000
 ENV SHELL /bin/bash
 #ENV USE_LOCAL_GIT true
 # 指定 plugin 路径
-ENV THEIA_PLUGINS local-dir:./plugins/tinylink
+ENV THEIA_PLUGINS local-dir:./plugins/node
 USER theia
 # ENTRYPOINT [ "yarn" , "start" , "plugin"]
 ENTRYPOINT [ "node", "/home/theia/browser-app/src-gen/backend/main.js", "/home/project", "--hostname=0.0.0.0" ]

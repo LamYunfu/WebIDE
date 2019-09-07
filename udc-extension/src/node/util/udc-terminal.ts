@@ -159,7 +159,7 @@ export class UdcTerminal {
                 Logger.info('Connection to Udc Server Closed!');
             });
             ctrFd.on("data", (data: Buffer) => {
-                let d = data.toString('ascii').substr(1, data.length).split(',')
+                let d = data.toString('utf8').substr(1, data.length).split(',')
                 Logger.val("d:" + d.slice(2, d.length))
                 resolve(d.slice(2, d.length))
             });
@@ -206,11 +206,11 @@ export class UdcTerminal {
             Logger.val("server pid:" + pid)
             // _this.udcServerClient.on('data', (data: Buffer) => _this.onUdcServerData(data, pid));
             _this.udcServerClient.on('data', (data: Buffer) => {
-                Logger.info("hpp recived <<<<<<<<<<:" + data.toString('ascii'))
+                Logger.info("hpp recived <<<<<<<<<<:" + data.toString('utf8'))
                 _this.hpp.putData(data)
             });
             _this.hpp.on("data", (data) => {
-                Logger.info("hpp  processed >>>>>>>>>>:" + data.toString('ascii'))
+                Logger.info("hpp  processed >>>>>>>>>>:" + data.toString('utf8'))
                 _this.onUdcServerData(data, pid)
             })
 
@@ -223,9 +223,9 @@ export class UdcTerminal {
 
 
     onUdcServerData = (data: Buffer, pid: string) => {
-        // let [type, length, value, msg] = this.pkt.parse(data.toString('ascii'));
-        let [type, , value] = this.pkt.parse(data.toString('ascii'));
-        // Logger.log(`Received: type=${type} length=${length} value= ${value} msg=${msg}`);
+        // let [type, , value] = this.pkt.parse(data.toString('ascii'));
+        let [type, , value] = this.pkt.parse(data.toString('utf8'));
+        Logger.info(`Received: type=${type}  value= ${value}`);
 
         if (type === Packet.ALL_DEV) {
 
@@ -256,7 +256,7 @@ export class UdcTerminal {
                 this.connect(this.login_type, this.model, pid)
             }
         } else if (type === Packet.CMD_DONE || type === Packet.CMD_ERROR) {
-            Logger.info(data.toString('ascii'));
+            Logger.info(data.toString('utf8'));
             this.cmd_excute_return = value;
             this.cmd_excute_state = (type === Packet.CMD_DONE ? 'done' : 'error');
             this.events.emit('cmd-response');

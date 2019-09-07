@@ -138,7 +138,8 @@ export class View extends React.Component<View.Props, View.State>{
                     }
                     console.log(`"VID:${_this.vid}!!!!!!!!!!!!!!!!!!!!!!!!!"`)
                     switch (_this.type) {
-                        case "1": {
+                        case "4":
+                        case "1": {//章节
                             _this.sections = data.data.section
                             _this.title = data.data.title
                             _this.renderView =
@@ -146,6 +147,7 @@ export class View extends React.Component<View.Props, View.State>{
                                     <div className="title_timer"><h4> {_this.title}</h4><span id='timer'></span></div>
                                     {/* <hr /> */}
                                     <Chapter
+                                        viewType={_this.type}
                                         programSingleFile={_this.props.programSingleFile}
                                         setLocal={_this.props.setLocal}
                                         getLocal={_this.props.getLocal}
@@ -170,7 +172,7 @@ export class View extends React.Component<View.Props, View.State>{
                                 </div>
                             break
                         }
-                        case "2": {
+                        case "2": {//实验
                             _this.title = data.data.title
                             _this.ppid = data.data.ppid
                             console.log(`ppid.......................................${_this.ppid}`)

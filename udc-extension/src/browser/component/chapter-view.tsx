@@ -5,6 +5,7 @@ import { SectionUI } from "./section-view"
 
 export namespace Chapter {
     export interface Props {
+        viewType: string
         vid: string
         chapterData: { [key: string]: {} }
         sections: [{ [key: string]: string }]
@@ -41,7 +42,9 @@ export class Chapter extends React.Component<Chapter.Props>{
         for (let x of this.props.sections) {
             this.sectionsDataPool[x.sid] == undefined && this.setSectionsDataPool(x.sid, {})
             uiArray.push(<SectionUI
-                programSingleFile={this.props.programSingleFile} 
+                viewType={this.props.viewType}
+                vid={this.props.vid}
+                programSingleFile={this.props.programSingleFile}
                 getLocal={this.props.getLocal}
                 setLocal={this.props.setLocal}
                 seq={uiArray.length + 1}
@@ -54,6 +57,7 @@ export class Chapter extends React.Component<Chapter.Props>{
                 setSectionDataPool={this.setSectionsDataPool}
                 sectionData={this.sectionsDataPool[x.sid]}
                 sid={x.sid}
+                // sid={this.props.vid}
                 section={x}
                 outputResult={this.props.outputResult}
                 say={this.props.say}

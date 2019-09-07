@@ -29,6 +29,8 @@ export namespace SectionUI {
         setLocal: (key: string, obj: any) => void
         getLocal: (key: string, obj: any) => any
         programSingleFile: (pidAndFn: string) => void
+        vid: string
+        viewType: string
     }
 
 
@@ -83,6 +85,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     codingItems: JSX.Element[] = []
     pidQueueInfo: { [pid: string]: {} } = {};
     types: { [pid: string]: string } = {};
+    scids: { [pid: string]: string } = {};
     get submittedOptionAnswers() {
         return this.props.sectionData
     }
@@ -142,9 +145,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         _this.answers[item.order] = item.answer
                         _this.choices[item.order] = item.choices.split("\n")
                         _this.types[item.order] = item.type
+                        _this.scids[item.order] = item.scid
                     }
                     for (let index in _this.optionIssues)
-                        _this.optionItems.push(<OptionItem type={_this.types[index]} submittedOptionAnswers={_this.props.sectionData} optionIssues={_this.optionIssues} sid={_this.props.sid} akey={index} key={index} choices={_this.choices}
+                        _this.optionItems.push(<OptionItem scid={_this.scids[index]} qzid={_this.props.section.qzid} type={_this.types[index]} submittedOptionAnswers={_this.props.sectionData} optionIssues={_this.optionIssues} sid={_this.props.sid} akey={index} key={index} choices={_this.choices}
                             optionStatus={_this.optionStatus} titles={_this.optionIssues} />)
 
                     _this.setState((state) => ({
@@ -243,8 +247,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     for (let entry in _this.codingIssues) {
                         _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
                             role={_this.role[entry]} sid={_this.props.sid} akey={entry} key={entry}
-                             codingTitles={_this.codingIssues}
-                            codingStatus={_this.codingStatus}  />)
+                            codingTitles={_this.codingIssues}
+                            codingStatus={_this.codingStatus} />)
                     }
                     console.log("CDM OK")
                     _this.setState((state) => ({
@@ -254,6 +258,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 }
             }
         )
+        if (_this.props.viewType == '4')
+            alert(`欢迎来到考试系统！\n本系统题目分多选（选项标识为方框）、单选（选项标识为圆框）、及编程题三个部分,选择题在提交全部前可自由更改,编程题需按要求编辑代码、连接设备后方能提交判题。`)
     }
 
 
@@ -445,8 +451,12 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     sp.prop("class", "oi oi-check")
                     sp.show()
                 }
-                else {
+                else if (uAnswers[pid].uRight != undefined) {
                     sp.prop("class", "oi oi-x")
+                    sp.show()
+                }
+                else {
+                    sp.prop("class", "oi oi-pin")
                     sp.show()
                 }
 
@@ -462,33 +472,65 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
     render(): React.ReactNode {
         // if(this.submittedOptionAnswers[this.props.sid]
-        return (
-            <div className="currentSection" >
-                <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.seq}. {this.props.section.title.split("-").pop()}<span className="indicateTag"></span></span>
-                <div className={`contentsAndInfos${this.props.sid} container`}>
-                    <div className="row">
-                        <div className="contents col-5" style={{ "padding": "0px" }}>
+        if (this.props.viewType != "4")
+            return (
+                <div className="currentSection" >
+                    <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.seq}. {this.props.section.title.split("-").pop()}<span className="indicateTag"></span></span>
+                    <div className={`contentsAndInfos${this.props.sid} container`}>
+                        <div className="row">
+                            <div className="contents col-5" style={{ "padding": "0px" }}>
 
-                            {/* <div className={`coding${this.props.sid} col-12`} > */}
-                            <ul className="list-group">
-                                <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
-                                {this.state.optionItems.length == 0 ? "" : this.optionItems}
-                                {!this.state.codeCDM ? "***" : this.codingItems}
-                            </ul>
-                            {/* </div> */}
+                                {/* <div className={`coding${this.props.sid} col-12`} > */}
+                                <ul className="list-group">
+                                    <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
+                                    {this.state.optionItems.length == 0 ? "" : this.optionItems}
+                                    {!this.state.codeCDM ? "***" : this.codingItems}
+                                </ul>
+                                {/* </div> */}
 
-                        </div>
-                        <div className={`codingInfos ${this.props.sid} col-7`} >
-                            <CodingInfo programSingleFile={this.props.programSingleFile}  codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
-                                postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
-                        </div>
-                        <div className={`optionInfos ${this.props.sid} col-7`} >
-                            <OptionInfo getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.types} answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
-                                sid={this.props.sid} say={this.props.say} answers={this.answers} />
+                            </div>
+                            <div className={`codingInfos ${this.props.sid} col-7`} >
+                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                                    postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
+                            </div>
+                            <div className={`optionInfos ${this.props.sid} col-7`} >
+                                <OptionInfo submitStyle={"single"} getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.types} answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
+                                    sid={this.props.sid} say={this.props.say} answers={this.answers} />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        else {
+            return (
+                <div className="currentSection" >
+                    <span style={{ fontSize: "1.1rem" }}> <span ></span></span>
+                    <div className={`contentsAndInfos${this.props.sid} container`}>
+                        <div className="row">
+                            <div className="contents col-5" style={{ "padding": "0px" }}>
+
+                                {/* <div className={`coding${this.props.sid} col-12`} > */}
+                                <ul className="list-group">
+                                    <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
+                                    {this.state.optionItems.length == 0 ? "" : this.optionItems}
+                                    {!this.state.codeCDM ? "***" : this.codingItems}
+                                </ul>
+                                {/* </div> */}
+
+                            </div>
+                            <div className={`codingInfos ${this.props.sid} col-7`} >
+                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                                    postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
+                            </div>
+                            <div className={`optionInfos ${this.props.sid} col-7`} >
+                                <OptionInfo submitStyle="mutiple" getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.types} answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
+                                    sid={this.props.sid} say={this.props.say} answers={this.answers} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            )
+        }
     }
 }
