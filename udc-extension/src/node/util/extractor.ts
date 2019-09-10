@@ -93,7 +93,7 @@ export class Extractor {
                 let fileName: string = entry.path;
                 let suffix = fileName.split(".").pop()
                 let hexName = fileName.split('/').pop()
-                if (suffix == 'hex' || suffix == 'bin') {
+                if (hexName!.match("sketch.*")||suffix == 'hex' || suffix == 'bin'){
                     Logger.info("find hex : " + hexName)
                     let fss = fs.createWriteStream(path.join(_this.hexFileDir, _this.getHexName(item) + 'sketch.ino.hex'))
                     entry.pipe(fss);

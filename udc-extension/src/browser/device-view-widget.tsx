@@ -117,13 +117,13 @@ export class DeviceViewWidget extends TreeWidget {
     }
 
 
-    connect = (loginType: string, model: string, pid: string, timeout: string) => {
-        this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
+    connect = async (loginType: string, model: string, pid: string, timeout: string) => {
+       await  this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
     }
 
 
-    disconnect = () => {
-        this.commandRegistry.executeCommand(UdcCommands.DisConnect.id)
+     disconnect = async () => {
+        await this.commandRegistry.executeCommand(UdcCommands.DisConnect.id)
     }
     // config = (url: string, name: string, passwd: string) => {
     //     this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.config", url, name, passwd)

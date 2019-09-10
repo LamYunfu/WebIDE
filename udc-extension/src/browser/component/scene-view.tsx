@@ -41,6 +41,9 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
     pids: string[] = []
     codingItems: JSX.Element[] = []
     deviceButtons: JSX.Element[] = []
+    loginGroups: { [key: string]: string[] } = {}
+    currentLoginType: string = ""
+    currentModel: string = ""
     addSubmittedCodingIssue = (issueIndex: string) => {
         this.submittedCodingIssue.push(issueIndex)
     }
@@ -80,22 +83,15 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                         _this.loginType[`${item.pid}`] = 'group'
                         _this.role[`${item.pid}`] = item.deviceRole
                         _this.model[`${item.pid}`] = item.deviceType
+                        _this.loginGroups[`${item.pid}`] = item.deviceType.trim().split(";")
                         tmp = { ...tmp, loginType: 'group', model: item.deviceType }
                         console.log("login type is :" + _this.loginType[`${item.pid}`])
                         _this.timeout[item.pid] = item.timeout
                         _this.codingIssues[item.pid] = item.title
-                        if (_this.role[`${item.pid}`] == undefined)
-                            fns.push("helloworld")
-                        else {
-                            for (let r of _this.role[`${item.pid}`]) {
-                                fns.push("helloworld" + "_" + r)
-
+                        for (let ct of _this.loginGroups[`${item.pid}`]) {
+                            if (ct != "") {
+                                fns.push(`helloworld_${ct}`)
                             }
-                        }
-                        if (item.deviceType.split("-")[0] == "alios") {
-                            fns.push("helloworld" + ".mk")
-                            fns.push("ucube.py")
-                            fns.push("README.md")
                         }
                         tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title }
                         _this.pidQueueInfo[item.pid] = tmp
@@ -108,7 +104,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
 
                     for (let entry in _this.codingIssues)
                         _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
-                            role={_this.role[entry]} sid={_this.props.section.sid} akey={entry} key={entry}
+                            role={_this.loginGroups[entry]} sid={_this.props.section.sid} akey={entry} key={entry}
                             codingTitles={_this.codingIssues}
                             codingStatus={_this.codingStatus} />)
                     _this.setState((state) => ({
@@ -160,6 +156,32 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                 )
             }
         )
+        $(document).ready(
+            () => {
+                $("#connectButtonSingleFile" + _this.props.section.sid).click(
+                    (e) => {
+                        if ($(e.currentTarget).text() == "断开") {
+                            _this.props.disconnect()
+                            $(e.currentTarget).text("连接")
+                        }
+                        else {
+                            let val = $("#codingInfoArea" + _this.props.section.sid).attr("title")//pid
+                            // alert(val)
+                            val != undefined && (_this.currentFocusCodingIndex[0] = val)
+                            console.log("<<<<<<<<<set current coding index:" + _this.currentFocusCodingIndex[0])
+                            let model = $(`.codingRole${_this.props.section.sid}`).text()
+
+                            if (model == "" || model == undefined) {
+                                _this.props.say("请先设置当前配置的设备！")
+                                return
+                            }
+                            val != undefined && _this.props.connect("group", model.trim(), val, _this.timeout[val])
+                            $(e.currentTarget).text("断开")
+                        }   
+                    }
+                )
+            }
+        )
     }
 
 
@@ -180,7 +202,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
                             <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile}
-                                codeInfoType="scene" config={this.props.config} roles={this.role} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                                codeInfoType="scene" config={this.props.config} roles={this.loginGroups} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                     </div>

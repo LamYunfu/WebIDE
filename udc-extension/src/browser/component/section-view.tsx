@@ -475,7 +475,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
         if (this.props.viewType != "4")
             return (
                 <div className="currentSection" >
-                    <span className={`section${this.props.sid}`} style={{ fontSize: "1.1rem" }}> {this.props.seq}. {this.props.section.title.split("-").pop()}<span className="indicateTag"></span></span>
+                    <span className={`section${this.props.sid}`} style={{ fontSize: "1.3rem" }}> {this.props.seq}. {this.props.section.title.split("-").pop()}<span className="indicateTag"></span></span>
                     <div className={`contentsAndInfos${this.props.sid} container`}>
                         <div className="row">
                             <div className="contents col-5" style={{ "padding": "0px" }}>
@@ -504,7 +504,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
         else {
             return (
                 <div className="currentSection" >
-                    <span style={{ fontSize: "1.1rem" }}> <span ></span></span>
+                    <span style={{ fontSize: "1.3rem" }}> <span ></span></span>
                     <div className={`contentsAndInfos${this.props.sid} container`}>
                         <div className="row">
                             <div className="contents col-5" style={{ "padding": "0px" }}>

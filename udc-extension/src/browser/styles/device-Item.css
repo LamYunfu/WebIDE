@@ -1,14 +1,17 @@
 .container {
+    font-size: 15px;
     display: inline
 }
 
 .codingInfos {
+    font-size: 16px;
     display: none;
     position: sticky;
     top: 0;
 }
 
 .optionInfos {
+    font-size: 16px;
     display: none;
     position: sticky;
     top: 0;
@@ -16,6 +19,7 @@
 }
 
 .list-group-item {
+    font-size: 15px;
     padding-left: 25px;
     padding-right: 35px;
     padding-top: 3px;

@@ -86,6 +86,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
     componentDidMount() {
         let _this = this
         $(document).ready(
+
             () => {
                 $("#submitSrcButton" + _this.props.sid).click(
                     () => {
@@ -111,9 +112,8 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             if (_this.props.roles[_this.state.pid] != undefined) {
                                 let singleFileButtons = []
                                 for (let item of _this.props.roles[_this.state.pid]) {
-                                    singleFileButtons.push(<span><button className={`singleFile btn btn-primary`} id={`${item} `}>{item}
+                                    singleFileButtons.push(<span><button className={`singleFile btn btn-primary col-auto`} id={`${item} `}>{item}
                                     </button></span>)
-
                                 }
                                 _this.setState({
                                     singleFileButtons: singleFileButtons
@@ -153,6 +153,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         })
                         _this.props.say(`设置当前配置对象为${_this.focusFile}`)
                         // alert("focusFile is ：" + _this.focusFile)
+                        $(`.codingRole${_this.props.sid}`).text(_this.focusFile)
                     }
                 })
                 $(document).on("click", `#singleFileSubmitButton` + _this.props.sid, (e) => {
@@ -199,6 +200,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                 </div>
                 :
                 <div className={`codingInfos ${this.props.sid} card text-white bg-secondary`}>
+                    <span className={`codingRole${this.props.sid}`} style={{ display: 'none' }}></span>
                     <div className={` Container card-body`}>
                         <h5 id="titleAndStatus" className="card-title">
                             <span id={"coding_title" + this.props.sid}>关于场景编程的一道题</span>
@@ -206,14 +208,17 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         <div id="codingInfoAreaContainer">
                             {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
                             <pre className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</pre>
-                        </div>
-                        {this.state.singleFileButtons.length == 0 ? [] : this.state.singleFileButtons}
 
-                        <br />
-                        <div>
-                            <span><button className="btn btn-info" id={"connectButton" + this.props.sid}>连接</button></span>
-                            <span><button className="btn btn-primary" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span>
-                            <span><button className="btn btn-primary" id={"singleFileSubmitButton" + this.props.sid}>烧入</button></span>
+                        </div>
+                        <div className="controlButtons col-12">
+                            {this.state.singleFileButtons.length == 0 ? [] : this.state.singleFileButtons}
+
+                            <br />
+                            <div>
+                                <span><button className="btn btn-info col-auto" id={"connectButtonSingleFile" + this.props.sid}>连接</button></span>
+                                <span><button className="btn btn-primary col-auto" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span>
+                                <span><button className="btn btn-primary col-auto" id={"singleFileSubmitButton" + this.props.sid}>烧入</button></span>
+                            </div>
                         </div>
                     </div>
                 </div>

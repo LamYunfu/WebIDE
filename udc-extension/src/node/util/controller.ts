@@ -60,7 +60,7 @@ export class Controller {
         }
 
     }
-    async processSingleFile(pid: string) {
+    async processSingleFile(pid: string) {//pid&filename
         Logger.info(pid, "pid:")
         let _this = this
         let tmp = pid.split("&")

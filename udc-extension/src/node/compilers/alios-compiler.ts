@@ -70,7 +70,7 @@ export class AliosCompiler {
                         Logger.info("programming")
                         if (useQueue) {
                             _this.outputResult(`program with queue`)
-                            _this.udc.program_device_queue(path.join(rootDir, dirName, 'sketch.ino.hex'), "1", _this.devs[index], pid).then(
+                            _this.udc.program_device_queue(path.join(rootDir, dirName, 'sketch.ino.hex'), "0x10000", _this.devs[index], pid).then(
                                 (res) => {
                                     if (res) {
                                         _this.outputResult("program scc")
@@ -296,7 +296,9 @@ export class AliosCompiler {
                     "Cookie": _this.cookie
                 },
             }, (err, res) => {
-
+                if(res==undefined){
+                    _this.outputResult("post form failed!")
+                }
                 Logger.val(res.statusCode, "stateCode:")
                 let content = ''
                 res.on('data', (b: Buffer) => {

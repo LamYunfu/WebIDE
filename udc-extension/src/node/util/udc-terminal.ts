@@ -429,6 +429,7 @@ export class UdcTerminal {
                 return false
             }
             let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0,${await this.pkt.hash_of_file(filepath)},${waitID}`
+            Logger.info(content,"content:")
             this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content)
             await this.wait_cmd_excute_done(270000);
         }
@@ -487,8 +488,9 @@ export class UdcTerminal {
         let content = devstr + ":" + filehash + ":" + filename;
         let retry = 4;
         while (retry > 0) {
+            Logger.info(`Packet.FILE_BEGIN:${Packet.FILE_BEGIN},content:${content}`)
             this.send_packet(Packet.FILE_BEGIN, content);
-            await this.wait_cmd_excute_done(200);
+            await this.wait_cmd_excute_done(2000);
             if (this.cmd_excute_state === "timeout") {
                 Logger.err("file send timeout")
                 retry--;

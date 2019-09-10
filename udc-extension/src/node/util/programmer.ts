@@ -71,9 +71,10 @@ export class Programer {
         }
     }
     async programSingleFile(pid: string, fn: string) {
-        let { fns, dirName } = this.ut.getPidInfos(pid)
+        let {  dirName } = this.ut.getPidInfos(pid)
+        // let { fns, dirName } = this.ut.getPidInfos(pid)
         let devArr = []
-        let fnArr: string[] = JSON.parse(fns)
+        // let fnArr: string[] = JSON.parse(fns)
         let devInfo: { [devid: string]: number } | undefined
         for (let i = 4; ; i--) {
             devInfo = this.ut.get_devlist()
@@ -100,11 +101,12 @@ export class Programer {
             return "fail"
         }
         let hexFile = hex[fn.split(".")[0]]
-        let index = fnArr.findIndex((val) => {
-            if (val.match(`${fn}|${fn}.cpp`))
-                return true
-        })
-        let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[index], pid)
+        // let index = fnArr.findIndex((val) => {
+        //     if (val.match(`${fn}|${fn}.cpp`))
+        //         return true
+        // })
+        // let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[index], pid)
+        let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
         if (bv == false) {
             return false
         }
