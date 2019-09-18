@@ -128,7 +128,10 @@ export class UdcServiceImpl implements UdcService {
     setQueue() {
         this.udcTerminal.setQueue()
     }
-    setPidInfos(pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string }) {
+    setPidInfos(pid: string, content: {
+        loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string,
+        projectName: string | undefined, boardType: string | undefined, deviceRole?: string[] | undefined
+    }) {
         this.udcTerminal.setPidInfos(pid, content)
     }
     initPidQueueInfo(infos: string): Promise<string> {

@@ -35,8 +35,10 @@ export class Controller {
         return "No this type"
     }
     async processIssue(pid: string) {
-        let { loginType, model } = this.ut.getPidInfos(pid)
-        let devType = this.getCompilerType(model)
+        let { loginType, 
+            // model 
+        } = this.ut.getPidInfos(pid)
+        // let devType = this.getCompilerType(model)
         let _this = this
         switch (loginType) {
             case "adhoc":
@@ -51,8 +53,8 @@ export class Controller {
                 }).then(
                     async res => {
                         if (res == "scc") {
-                            if (devType == "alios")
-                                return true;
+                            // if (devType == "alios")
+                            //     return true;
                             return _this.pm.program(pid)
                         }
                     }

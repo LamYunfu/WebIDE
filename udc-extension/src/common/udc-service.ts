@@ -18,7 +18,7 @@ export interface UdcService {
     storeState(stat: string): void
     getState(type: string): Promise<string>
     setQueue(): void
-    setPidInfos(pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string }): void
+    setPidInfos(pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string, deviceRole?: string[] | undefined }): void
     initPidQueueInfo(infos: string): Promise<string>
     setTinyLink(name: string, passwd: string): void
     config(): void

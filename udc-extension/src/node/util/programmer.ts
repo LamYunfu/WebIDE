@@ -13,14 +13,15 @@ export class Programer {
 
     }
     async program(pid: string) {
-        let { loginType, fns, dirName } = this.ut.getPidInfos(pid)
+        let { loginType, fns, dirName, model, deviceRole } = this.ut.getPidInfos(pid)
         let devArr = []
         let fnArr = JSON.parse(fns)
+        if (model.split("-")[0] == "alios"||model.split("-")[0] == "ble")
+            fnArr = deviceRole
         let devInfo: { [devid: string]: number } | undefined
         for (let i = 4; ; i--) {
             devInfo = this.ut.get_devlist()
             if (devInfo != undefined) {
-
                 break
             }
             if (i == 0) {
@@ -42,6 +43,7 @@ export class Programer {
             Logger.info("error file name map")
             return "fail"
         }
+        this.ut.outputResult("programming.........")
         switch (loginType) {
             case "queue": {
                 for (let item of fnArr) {
@@ -71,7 +73,7 @@ export class Programer {
         }
     }
     async programSingleFile(pid: string, fn: string) {
-        let {  dirName } = this.ut.getPidInfos(pid)
+        let { dirName } = this.ut.getPidInfos(pid)
         // let { fns, dirName } = this.ut.getPidInfos(pid)
         let devArr = []
         // let fnArr: string[] = JSON.parse(fns)

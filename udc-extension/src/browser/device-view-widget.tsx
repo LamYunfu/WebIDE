@@ -58,7 +58,7 @@ export class DeviceViewWidget extends TreeWidget {
     rootdir: string = "/home/project"
     setSize = (size: number) => {
         console.log("rendering")
-        this.applicationShell.activateWidget(this.id)
+        // this.applicationShell.activateWidget(this.id)
         this.applicationShell.setLayoutData({
             version: this.applicationShell.getLayoutData().version,
             activeWidgetId: this.id,
@@ -102,10 +102,10 @@ export class DeviceViewWidget extends TreeWidget {
             this.commandRegistry.executeCommand("udc:shell:toggle")
         }
     }
-    closeTabs = () => {
-        this.applicationShell.closeTabs("main")
-        this.applicationShell.closeTabs("bottom")
-        this.applicationShell.closeTabs("right")
+    closeTabs = async () => {
+        await this.applicationShell.closeTabs("main")
+        await this.applicationShell.closeTabs("bottom")
+        await this.applicationShell.closeTabs("right")
     }
     outputResult = (res: string) => {
         this.udcService.outputResult(res)
@@ -118,11 +118,11 @@ export class DeviceViewWidget extends TreeWidget {
 
 
     connect = async (loginType: string, model: string, pid: string, timeout: string) => {
-       await  this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
+        await this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
     }
 
 
-     disconnect = async () => {
+    disconnect = async () => {
         await this.commandRegistry.executeCommand(UdcCommands.DisConnect.id)
     }
     // config = (url: string, name: string, passwd: string) => {
@@ -150,6 +150,7 @@ export class DeviceViewWidget extends TreeWidget {
     }
 
     gotoVideo = (uri: string, videoName: string) => {
+        this.setSize(574)
         this.commandRegistry.executeCommand(UdcCommands.openViewPanel.id, uri, videoName)
     }
     storeData = (data: string) => {
@@ -162,7 +163,10 @@ export class DeviceViewWidget extends TreeWidget {
     setQueue = () => {
         this.udcService.setQueue()
     }
-    setPidQueueInfo = (pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string }) => {
+    setPidQueueInfo = (pid: string, content: {
+        loginType: string, timeout: string, model: string, waitID: string,
+        fns?: string, dirName?: string, deviceRole: string[] | undefined
+    }) => {
         this.udcService.setPidInfos(pid, content)
     }
     initPidQueueInfo = (infos: string): Promise<string> => {

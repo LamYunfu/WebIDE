@@ -36,7 +36,14 @@ export class UdcTerminal {
     hpp: HalfPackProcess
     dataStorage: { [key: string]: {} } = {}
     programState: { [key: string]: { [key: string]: string } } = {}
-    pidQueueInfo: { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string } } = {}
+    pidQueueInfo: {
+        [pid: string]: {
+            loginType: string, projectName: string | undefined,
+            boardType: string | undefined, timeout: string,
+            model: string, waitID: string, fns: string,
+            dirName: string, deviceRole?: string[] | undefined
+        }
+    } = {}
     cuurentPid: string = ``
     rootDir: string = "/home/project"
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
@@ -49,14 +56,30 @@ export class UdcTerminal {
         this.hpp = new HalfPackProcess()
         Logger.val("current path:" + process.cwd())
     }
-    creatSrcFile(fnJSON: string, dirName: string) {
-        Logger.info(`FNJSON:${fnJSON}`)
-        let fn = JSON.parse(fnJSON)
+    creatSrcFile(fnJSON: string, dirName: string, type?: string, deviceRole?: string[]) {
         let rootdir = this.rootDir
-        fs.exists(path.join(rootdir, dirName), (res) => {
-            if (!res) {
-                fs.mkdir(path.join(rootdir, dirName), (err) => {
-                    Logger.info(err)
+        if (type == undefined) {
+            Logger.info(`FNJSON:${fnJSON}`)
+            let fn = JSON.parse(fnJSON)
+            fs.exists(path.join(rootdir, dirName), (res) => {
+                if (!res) {
+                    fs.mkdir(path.join(rootdir, dirName), (err) => {
+                        Logger.info(err)
+                        for (let i of fn) {
+                            let x: string[] = i.split(".")
+                            let tmpPath = ""
+                            if (x.length == 1)
+                                tmpPath = path.join(rootdir, dirName, i + ".cpp")
+                            else
+                                tmpPath = path.join(rootdir, dirName, i)
+                            fs.exists(tmpPath, (res) => {
+                                if (!res)
+                                    fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
+                            })
+                        }
+                    })
+                }
+                else
                     for (let i of fn) {
                         let x: string[] = i.split(".")
                         let tmpPath = ""
@@ -69,36 +92,41 @@ export class UdcTerminal {
                                 fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
                         })
                     }
-                })
-            }
-            else
-                for (let i of fn) {
-                    let x: string[] = i.split(".")
-                    let tmpPath = ""
-                    if (x.length == 1)
-                        tmpPath = path.join(rootdir, dirName, i + ".cpp")
-                    else
-                        tmpPath = path.join(rootdir, dirName, i)
-                    fs.exists(tmpPath, (res) => {
-                        if (!res)
-                            fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
+            })
+        }
+        else {
+            fs.exists(path.join(rootdir, dirName), (res) => {
+                if (!res) {
+                    fs.mkdir(path.join(rootdir, dirName), (err) => {
+                        for (let item of deviceRole!) {
+                            fs.mkdir(path.join(rootdir, dirName, item))
+                        }
                     })
                 }
-        })
+            })
+
+        }
     }
     initPidQueueInfo(infos: string): Promise<string> {
         Logger.info(infos, 'info')
         this.pidQueueInfo = JSON.parse(infos)
         for (let index in this.pidQueueInfo) {
-            let { dirName, fns } = this.pidQueueInfo[index]
-            this.creatSrcFile(fns, dirName)
+            let { dirName, fns, model, deviceRole } = this.pidQueueInfo[index]
+            if (model.split("-")[0] == "alios"||model.split("-")[0] == "ble") {
+                this.creatSrcFile(fns, dirName, "alios", deviceRole)
+            }
+            else
+                this.creatSrcFile(fns, dirName)
 
         }
         return new Promise((res) => {
             res("scc")
         })
     }
-    setPidInfos(pid: string, content: { loginType: string, timeout: string, model: string, waitID: string, fns: string, dirName: string }) {
+    setPidInfos(pid: string, content: {
+        loginType: string, projectName: string | undefined, boardType: string | undefined,
+        timeout: string, model: string, waitID: string, fns: string, dirName: string, deviceRole?: string[] | undefined
+    }) {
         this.pidQueueInfo[pid] = content
     }
     getPidInfos(pid: string) {
@@ -261,7 +289,7 @@ export class UdcTerminal {
             this.cmd_excute_state = (type === Packet.CMD_DONE ? 'done' : 'error');
             this.events.emit('cmd-response');
         } else if (type == Packet.DEVICE_LOG) {
-            this.outputResult(value.toString().split(':')[2])
+            this.outputResult(value.toString().split(':').slice(2).join(":"))
         } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
             Logger.val(value, 'DPBN')
             let tmp = value.split(":")
@@ -428,8 +456,8 @@ export class UdcTerminal {
                 Logger.err("sending file err")
                 return false
             }
-            let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0,${await this.pkt.hash_of_file(filepath)},${waitID}`
-            Logger.info(content,"content:")
+            let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0x10000,${await this.pkt.hash_of_file(filepath)},${waitID}`
+            Logger.info(content, "content:")
             this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content)
             await this.wait_cmd_excute_done(270000);
         }

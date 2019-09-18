@@ -2,6 +2,8 @@ import React = require("react");
 import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import * as path from 'path'
+import { MyContext } from "./context";
+// import { MyContext } from "./context";
 
 
 export namespace CodeItem {
@@ -104,7 +106,9 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         // alert("click codeItem")
                         _this.props.openShell()
                         let tmp = $(e.currentTarget).children("a").attr("title")
-
+                        $(".optionDescription").hide()
+                        $(".optionChocies").hide()
+                        _this.context.props.setSize(720)
                         if (tmp != undefined) {
                             _this.setState({
                                 pid: tmp
@@ -226,3 +230,4 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
         )
     }
 }
+CodingInfo.contextType = MyContext

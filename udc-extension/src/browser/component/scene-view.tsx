@@ -2,6 +2,7 @@ import React = require("react");
 import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { CodeItem, CodingInfo } from "./code-issue"
+import { MyContext } from "./context";
 export namespace Scene {
     export interface Props {
         section: { [key: string]: any }
@@ -56,6 +57,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
 
 
     componentWillMount() {
+        this.context.props.setSize(720)
         let _this = this
         _this.props.section.ppid != 'null' && $.ajax(
             {
@@ -93,10 +95,10 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                                 fns.push(`helloworld_${ct}`)
                             }
                         }
-                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title }
+                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title ,projectName:"helloworld",boardType:"esp32devkitc",deviceRole:_this.role[`${item.pid}`]}
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
-                            console.log("initpidqueue scc")
+                           alert(JSON.stringify(_this.pidQueueInfo))
                         })
                         _this.codingInfos[item.pid] = item.content
                         _this.pids.push(item.pid)
@@ -211,3 +213,4 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
         )
     }
 }
+Scene.contextType=MyContext

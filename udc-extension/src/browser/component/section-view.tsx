@@ -5,6 +5,7 @@ import { find } from "@phosphor/algorithm";
 import { VideoItem, } from "./video-view"
 import { OptionItem, OptionInfo, } from './option-issue'
 import { CodeItem, CodingInfo } from './code-issue'
+import { MyContext } from './context'
 
 export namespace SectionUI {
     export interface Props {
@@ -40,6 +41,7 @@ export namespace SectionUI {
         optionItems: JSX.Element[]
     }
 }
+
 export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>{
     // submittedOptionAnswers: { [pid: string]: { answer: string, isRight: boolean } }
     // setSubmittedOptionAnswer: (section: string, pid: string, answer: string, isRight: boolean) => void
@@ -86,6 +88,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     pidQueueInfo: { [pid: string]: {} } = {};
     types: { [pid: string]: string } = {};
     scids: { [pid: string]: string } = {};
+    // ctx: React.ContextType< typeof()> = this.context
+    static contextType = MyContext
     get submittedOptionAnswers() {
         return this.props.sectionData
     }
@@ -113,8 +117,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     }
 
 
-    componentWillMount() {
-
+    async componentWillMount() {
         let _this = this
         this.videoNames = [this.props.section.video]
         this.uris = [`http://linklab.tinylink.cn/${this.props.section.video}`]
@@ -147,6 +150,12 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         _this.types[item.order] = item.type
                         _this.scids[item.order] = item.scid
                     }
+                    _this.context.setQuestionPool(_this.props.sid, {//存储选择题信息到全局
+                        descriptions: _this.optionIssues,
+                        choices: _this.choices,
+                        scids: _this.scids,
+                        types: _this.types,
+                    })
                     for (let index in _this.optionIssues)
                         _this.optionItems.push(<OptionItem scid={_this.scids[index]} qzid={_this.props.section.qzid} type={_this.types[index]} submittedOptionAnswers={_this.props.sectionData} optionIssues={_this.optionIssues} sid={_this.props.sid} akey={index} key={index} choices={_this.choices}
                             optionStatus={_this.optionStatus} titles={_this.optionIssues} />)
@@ -225,7 +234,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             fns.push("ucube.py")
                             fns.push("README.md")
                         }
-                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title }
+                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title, deviceRole: _this.role[`${item.pid}`] }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
                             console.log("initpidqueue scc")
@@ -287,6 +296,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
         $(document).ready(
             () => {
                 // $(".optionItem").on('click',
+                $(document).off('click', ".optionItem." + _this.props.sid)
                 $(document).on('click', ".optionItem." + _this.props.sid,
                     (e) => {
                         console.log("click.............................")
@@ -294,21 +304,40 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         // _this.shell.closeTabs("bottom")
                         // _this.shell.closeTabs("right")
                         _this.props.closeTables()
+                        _this.context.props.setSize(5740)
                         // $(".codingInfos." + _this.props.sid).hide()
                         $(".codingInfos").hide()
                         $(".optionInfos").hide()
-                        $(".optionInfos." + _this.props.sid).show()
+                        $(".optionDescription").show()
+                        $(".optionChocies").show()
+                        // $(".optionInfos." + _this.props.sid).show()
                         let x = $(e.currentTarget).children("a").attr("id")
                         if (x != undefined) {
                             $(".optionIssueTitle" + _this.props.sid).text(this.optionIssues[x])
-                            // $("form.options" + _this.props.sid).attr("id", x)
-                            // for (let index in this.choices[x]) {
-                            //     let op = $(`.optionContent${_this.props.sid}:eq(${index})`)
-                            //     op.text(this.choices[x][index])
-                            // }
-                            // if (_this.submittedOptionAnswers[x] != undefined) {
-                            //     $(`#optionRadio${_this.props.sid}${_this.submittedOptionAnswers[x].answer}`).prop("checked", true)
-                            // }
+                            _this.context.setOptionDescription(this.optionIssues[x])
+                            let choices = []
+                            for (let index in _this.choices[x]) {
+                                choices.push(
+                                    <div className="oneOptionDescription col-12" style={{
+                                        backgroundColor: "white", height: "60px",
+                                        borderStyle: "solid", borderColor: "grey",
+                                        borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
+                                        display: "inline-table", margin: "5px 10px"
+                                    }} title={(parseInt(index) + 1).toString()}>
+                                        <div className="option-choice" style={{
+                                            display: "table-cell", verticalAlign: "middle",
+                                        }} >
+                                            {_this.choices[x][index]}
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            _this.context.setState("pid", x)
+                            _this.context.setState("sid", _this.props.sid)
+                            _this.context.setState("scid", _this.scids[x])
+                            _this.context.setOptionChoicesDescription(choices)
+
+
                         }
                     }
                 )
@@ -433,6 +462,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     let index = $(e.currentTarget).children('.videoName').attr("title")
                     _this.props.closeTables()
                     console.log("video uri ..........." + index)
+                    $(".optionDescription").hide()
+                    $(".optionChocies").hide()
                     index != undefined && _this.props.gotoVideo(_this.uris[parseInt(index)], _this.videoNames[parseInt(index)])
                 })
             }
@@ -484,7 +515,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 <ul className="list-group">
                                     <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                     {this.state.optionItems.length == 0 ? "" : this.optionItems}
-                                    {!this.state.codeCDM ? "***" : this.codingItems}
+                                    {!this.state.codeCDM ? "" : this.codingItems}
                                 </ul>
                                 {/* </div> */}
 
@@ -513,7 +544,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 <ul className="list-group">
                                     <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                     {this.state.optionItems.length == 0 ? "" : this.optionItems}
-                                    {!this.state.codeCDM ? "***" : this.codingItems}
+                                    {!this.state.codeCDM ? "" : this.codingItems}
                                 </ul>
                                 {/* </div> */}
 
@@ -534,3 +565,4 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
         }
     }
 }
+SectionUI.contextType = MyContext;

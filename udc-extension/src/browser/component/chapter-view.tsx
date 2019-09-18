@@ -1,6 +1,7 @@
 import React = require("react");
 import URI from "@theia/core/lib/common/uri";
 import { SectionUI } from "./section-view"
+import { MyContext } from "./context";
 
 
 export namespace Chapter {
@@ -29,6 +30,7 @@ export namespace Chapter {
     }
 }
 export class Chapter extends React.Component<Chapter.Props>{
+    sidArray: string[] = []
     get sectionsDataPool() {
         return this.props.chapterData
     }
@@ -37,9 +39,17 @@ export class Chapter extends React.Component<Chapter.Props>{
         tmp[sid] = sectionData
         this.props.setChapterData(this.props.vid, tmp)
     }
+
+    componentDidMount() {
+        let _this = this
+        _this.context.props.setSize(9999)
+        // alert("sidarry:" + _this.sidArray.join(";"))
+      
+    }
     render(): JSX.Element {
         let uiArray = []
         for (let x of this.props.sections) {
+            this.sidArray.push(x.sid)
             this.sectionsDataPool[x.sid] == undefined && this.setSectionsDataPool(x.sid, {})
             uiArray.push(<SectionUI
                 viewType={this.props.viewType}
@@ -69,6 +79,7 @@ export class Chapter extends React.Component<Chapter.Props>{
                 openSrcFile={this.props.openSrcFile}
                 postSrcFile={this.props.postSrcFile} />)
         }
+   
         return (
             <div className="sections">
                 {uiArray}
@@ -77,3 +88,4 @@ export class Chapter extends React.Component<Chapter.Props>{
         )
     }
 }
+Chapter.contextType = MyContext

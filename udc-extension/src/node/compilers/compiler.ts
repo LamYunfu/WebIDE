@@ -43,7 +43,7 @@ export class Compiler {
         return "scc"
     }
     getCompilerType(model: string): string {
-        const AliosType = ["", "", "",]
+        const AliosType = ["ble", "", "",]
         const TinylinkType = ["lora_p2p", "", "",]
         if (model.startsWith("alios") || AliosType.indexOf(model) != -1) {
             return "alios"

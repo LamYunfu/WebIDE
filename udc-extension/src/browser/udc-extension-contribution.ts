@@ -142,7 +142,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
             let tmp = data
             applicationShell.closeTabs("bottom")
             // applicationShell.closeTabs("left")
-            console.log(JSON.stringify(data)+"::::::front ")
+            console.log(JSON.stringify(data) + "::::::front ")
             this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.config", "http://tinylink.cn:12352/tinylink/tinylinkApp/login.php", tmp.name, tmp.passwd)
             this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.node", tmp.name, tmp.passwd)
         })
@@ -183,7 +183,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                     this.messageService.info('Already Connected');
                 } else {
                     this.udcService.connect(loginType, model, pid, timeout).then(async re => {
-                        this.messageService.info(re)
+                        // this.messageService.info(re)
                     }).catch(err => {
                         this.messageService.error(err)
                     })
@@ -194,7 +194,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         registry.registerCommand(UdcCommands.DisConnect, {
             execute: () => {
                 this.udcService.disconnect().then(re => {
-                    this.messageService.info(re)
+                    // this.messageService.info(re)
                 }).catch(err => {
                     this.messageService.error(err)
                 })

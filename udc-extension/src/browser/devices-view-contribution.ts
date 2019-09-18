@@ -23,6 +23,7 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
             defaultWidgetOptions: {
                 area: 'left',
                 rank: 574
+                // rank: 1380
             },
             toggleCommandId: 'UDC devices'
         })
@@ -34,7 +35,7 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
                 await this.applicationShell.closeTabs("main")
                 await this.applicationShell.closeTabs("bottom")
                 await this.applicationShell.closeTabs("right")
-                this.registry.executeCommand("udc:shell:toggle")
+                // this.registry.executeCommand("udc:shell:toggle")
                 this.applicationShell.activateWidget("device-view")
             }
             // if (e == 'ready') {
@@ -57,7 +58,7 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
         console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx close tabs")
         await this.applicationShell.collapsePanel("bottom")
         await this.applicationShell.collapsePanel("right")
-        await this.applicationShell.save()
+        // await this.applicationShell.save()
         // await this.shell.collapsePanel("main")
 
     }

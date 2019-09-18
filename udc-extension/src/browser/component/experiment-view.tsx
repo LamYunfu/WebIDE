@@ -3,6 +3,7 @@ import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { find } from "@phosphor/algorithm";
 import { CodeItem, CodingInfo } from "./code-issue"
+import { MyContext } from "./context";
 export namespace Experiment {
     export interface Props {
         section: { [key: string]: any }
@@ -74,6 +75,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
 
     componentWillMount() {
+        this.context.props.setSize(720)
         let _this = this
         _this.props.section.ppid != 'null' && $.ajax(
             {
@@ -96,6 +98,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     let x = data.data; // show response from the php script.
                     let fns = []
                     for (let item of x) {
+                        _this.role[`${item.pid}`] = item.deviceRole
                         _this.pidQueueInfo[item.pid] = {}
                         let tmp = {}
                         if (item.deviceRole[0] == 'null') {
@@ -133,7 +136,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             fns.push("ucube.py")
                             fns.push("README.md")
                         }
-                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title }
+                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title,projectName:'helloworld',boardType:"esp32devkitc",deviceRole:  _this.role[`${item.pid}`] }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
                             console.log("initpidqueue scc")
@@ -302,3 +305,4 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
         )
     }
 }
+Experiment.contextType = MyContext

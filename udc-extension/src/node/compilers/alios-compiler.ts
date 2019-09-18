@@ -28,13 +28,6 @@ export class AliosCompiler {
     }
 
 
-    downloadZip(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            resolve('scc')
-        })
-    }
-
-
     getHexNmame(fn: string) {
         return "B" + new Buffer(fn).toString("hex")
     }
@@ -111,8 +104,7 @@ export class AliosCompiler {
                             )
 
                         }
-                        if (_this.fns.length == 0)
-                            _this.outputResult("all hex files have been programmed!")
+
                     })
                 }
                 else {
@@ -125,53 +117,36 @@ export class AliosCompiler {
         })
 
     }
-    // async postNameAndType(projectName: string, boardType: string, fns: string) {
-
     async postNameAndType(pid: string) {
-        const BoardType: { [key: string]: string } = {
-            esp32: "esp32devkitc"
+        let { projectName, boardType, dirName, deviceRole } = await this.udc.getPidInfos(pid)
+        for (let item of deviceRole!) {
+            this.outputResult(`compile:${item}`)
+            let fm = new FormData()
+            fm.append("Pname", projectName)
+            fm.append("Board", boardType)
+            this.setDownloadHexPathName(projectName!, boardType!)
+            await this.submitForm(fm,
+                this.AliosAPIs["hostname"],
+                this.AliosAPIs["port"],
+                this.AliosAPIs["projectNameAndBoardPath"],
+                "POST").then(res => {
+                    return Logger.info(`postNameAndType back:${res}`)
+                }).then(async () => {
+                    // let x = ["helloworld"]
+                    await this.postRoleSrcFile(dirName, item)
+                })
+                .then(() => {
+                    Logger.info('alios program finish')
+                })
         }
-        let { model, fns, dirName } = await this.udc.getPidInfos(pid)
-        let projectName = "helloworld"
-        let boardType = BoardType[model.split('-')[1]]
-        Logger.info("start post Name and type" + fns)
-        let fm = new FormData()
-        fm.append("Pname", projectName)
-        fm.append("Board", boardType)
-        this.setDownloadHexPathName(projectName!, boardType)
-        await this.submitForm(fm,
-            this.AliosAPIs["hostname"],
-            this.AliosAPIs["port"],
-            this.AliosAPIs["projectNameAndBoardPath"],
-            "POST").then(res => {
-                return Logger.info(`postNameAndType back:${res}`)
-            }).then(async () => {
-                // let x = ["helloworld"]
-                await this.postSrcFile(fns!, true, 0, dirName)
-            })
-            .then(() => {
-                Logger.info('alios program finish')
-            })
     }
-
-    fns: string[] = []
-    async postSrcFile(fns: string, setTag: boolean, dev: number, dirName: string) {
-        let pid = this.udc.cuurentPid
-        let useQueue = false
-        if (this.udc.pidQueueInfo[pid].loginType == "queue")
-            useQueue = true
-        Logger.val("filenames:" + JSON.stringify(fns))
-        if (setTag) {
-            this.fns = JSON.parse(fns)
-            this.devs = []
-        }
-        let rootDir = this.rootDir
-        let absPath = path.join(rootDir, dirName)
+    async postRoleSrcFile(dirName: string, srcFileDirName: string) {
+        let absPath = path.join(this.rootDir, dirName, srcFileDirName)
         let farr = fs.readdirSync(absPath)
         let fileList: string[] = []
         farr.forEach(function (item) {
             let suffix = item.split(".").pop()
-            if (fs.statSync(path.join(absPath, item)).isFile() &&suffix!="hex"&&suffix!="zip") {
+            if (fs.statSync(path.join(absPath, item)).isFile() && suffix != "hex" && suffix != "zip") {
                 fileList.push(item);
             }
         });
@@ -181,80 +156,64 @@ export class AliosCompiler {
             let tmps = fs.readFileSync(tmpPath)
             fm.append("files", tmps, ct)
         }
-        // let cppPath = path.join(rootDir, dirName, "helloworld.cpp")
-        // let mkPath = path.join(rootDir, dirName, "helloworld.mk")
-        // let pyPath = path.join(rootDir, dirName, "ucube.py")
-        // let rdPath = path.join(rootDir, dirName, "README.md")
-        // let cs = fs.readFileSync(cppPath)
-        // let ms = fs.readFileSync(mkPath)
-        // let ps = fs.readFileSync(pyPath)
-        // let rs = fs.readFileSync(rdPath)
-        // fm.append("files", cs, "helloworld" + ".cpp")
-        // fm.append("files", ms, "helloworld" + ".mk")
-        // fm.append("files", ps, "ucube.py")
-        // fm.append("files", rs, "README.md")
         let _this = this
-        await _this.submitForm(fm,
-            _this.AliosAPIs["hostname"],
-            _this.AliosAPIs["port"],
-            _this.AliosAPIs["srcPostPath"],
-            "POST")
-            .then(res => {
-                Logger.info(`post src scc ,begin compiling res :${res}`)
-                return _this.postData(
-                    _this.AliosAPIs["hostname"],
-                    _this.AliosAPIs["port"],
-                    _this.AliosAPIs["beginCompilePath"],
-                    "")
-            })
-            .then(res => {
-                Logger.info(`post src scc ,start program res:${res}`)
-                if (res == null || res == undefined) {
-                    Logger.info("Compile No Data Back")
-                    _this.outputResult("There are no Response from Compiler ")
-                    return
-                }
-                let data = JSON.parse(res)
-                Logger.val("compiler return data :" + res)
-                Logger.val("compile result:" + data.compileInfo)
-                Logger.val("compiler's state:" + data.exitVal)
-                if (data.exitVal != "0") {
-                    this.outputResult(data.compileInfo)
-                    return
-                }
-                else {
-                    let downloadFd = http.request({
-                        method: "GET",
-                        hostname: _this.AliosAPIs["hostname"],
-                        port: _this.AliosAPIs["port"],
-                        path: _this.AliosAPIs["downloadHexPath"],
-                        headers: {
-                            Cookie: this.cookie
-                        }
-                    }, (mesg) => {
-                        fs.exists(path.join(_this.rootDir, dirName, 'Install.zip'), (tag) => {
-                            // if (tag == true) fs.remove(path.join(this.rootDir, fn + 'Install.zip'))
-                            let ws = fs.createWriteStream(path.join(this.rootDir, dirName, 'Install.zip'))
+        return new Promise<string>((resolve) => {
+            _this.submitForm(fm,
+                _this.AliosAPIs["hostname"],
+                _this.AliosAPIs["port"],
+                _this.AliosAPIs["srcPostPath"],
+                "POST")
+                .then(res => {
+                    Logger.info(`post src scc ,begin compiling res :${res}`)
+                    return _this.postData(
+                        _this.AliosAPIs["hostname"],
+                        _this.AliosAPIs["port"],
+                        _this.AliosAPIs["beginCompilePath"],
+                        "")
+                })
+                .then(res => {
+                    if (res == null || res == undefined) {
+                        Logger.info("Compile No Data Back")
+                        _this.outputResult("There are no Response from Compiler ")
+                        return
+                    }
+                    let data = JSON.parse(res)
+                    Logger.val("compiler return data :" + res)
+                    Logger.val("compile result:" + data.compileInfo)
+                    Logger.val("compiler's state:" + data.exitVal)
+                    if (data.exitVal != "0") {
+                        this.outputResult(data.compileInfo)
+                        return
+                    }
+                    else {
+                        Logger.info(`post src scc ,start dowloading hex file res:${res}`)
+                        let downloadFd = http.request({
+                            method: "GET",
+                            hostname: _this.AliosAPIs["hostname"],
+                            port: _this.AliosAPIs["port"],
+                            path: _this.AliosAPIs["downloadHexPath"],
+                            headers: {
+                                Cookie: this.cookie
+                            }
+                        }, (mesg) => {
+                            let ws = fs.createWriteStream(path.join(absPath, 'Install.zip'))
                             mesg.on("data", (b: Buffer) => {
                                 Logger.info("downloading")
                                 ws.write(b)
                             })
                             mesg.on("end", () => {
                                 ws.close()
+                                resolve("scc")
                                 _this.outputResult('download hex.zip completed ,extracting hex file')
                                 Logger.info("download scc")
-                                _this.extractHex(dev, useQueue, dirName, pid).then((result) => {
-                                    Logger.info(`extract ${result}`)
-                                }, () => {
-                                    _this.outputResult('extract failure')
-                                })
                             })
                         })
-                    })
-                    downloadFd.write("")
-                    downloadFd.end()
-                }
-            }, err => console.log("err"))
+                        downloadFd.write("")
+                        downloadFd.end()
+                    }
+                }, err => console.log("err"))
+        })
+
 
 
     }
@@ -296,7 +255,7 @@ export class AliosCompiler {
                     "Cookie": _this.cookie
                 },
             }, (err, res) => {
-                if(res==undefined){
+                if (res == undefined) {
                     _this.outputResult("post form failed!")
                 }
                 Logger.val(res.statusCode, "stateCode:")
