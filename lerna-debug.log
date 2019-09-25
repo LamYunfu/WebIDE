@@ -12,17 +12,17 @@
 11 error Error: Command failed: npm run prepare
 11 error warning package.json: No license field
 11 error warning package.json: No license field
-11 error error Command failed with exit code 2.
+11 error error Command failed with exit code 1.
 11 error npm ERR! code ELIFECYCLE
-11 error npm ERR! errno 2
+11 error npm ERR! errno 1
 11 error npm ERR! udc-extension@0.0.0 prepare: `yarn run clean && yarn run build`
-11 error npm ERR! Exit status 2
+11 error npm ERR! Exit status 1
 11 error npm ERR!
 11 error npm ERR! Failed at the udc-extension@0.0.0 prepare script.
 11 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 11 error
 11 error npm ERR! A complete log of this run can be found in:
-11 error npm ERR!     /home/liang/.npm/_logs/2019-09-24T05_09_23_087Z-debug.log
+11 error npm ERR!     /home/liang/.npm/_logs/2019-09-25T13_12_47_823Z-debug.log
 11 error
 11 error
 11 error > udc-extension@0.0.0 prepare /home/liang/load/webIDE7.29/udc-extension
@@ -30,8 +30,10 @@
 11 error
 11 error $ rimraf lib
 11 error $ tsc  --jsx react
-11 error src/browser/component/option-issue.tsx(57,79): error TS1109: Expression expected.
-11 error src/browser/component/option-issue.tsx(57,183): error TS1005: ':' expected.
+11 error src/node/compilers/compiler.ts(5,1): error TS6133: 'AliosCompiler' is declared but its value is never read.
+11 error src/node/compilers/compiler.ts(16,17): error TS2304: Cannot find name 'NewAliosCompiler'.
+11 error src/node/compilers/compiler.ts(16,72): error TS2304: Cannot find name 'NewAliosCompiler'.
+11 error src/node/compilers/compiler.ts(16,72): error TS4063: Parameter 'newAliosCompiler' of constructor from exported class has or is using private name 'NewAliosCompiler'.
 11 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 11 error
 11 error     at Promise.all.then.arr (/home/liang/load/webIDE7.29/node_modules/lerna/node_modules/execa/index.js:236:11)

@@ -16,6 +16,7 @@ import { ConnectionHandler, JsonRpcConnectionHandler } from "@theia/core/lib/com
 import { createCommonBindings } from '../common/udc-common-module';
 import { UdcClient } from '../common/udc-watcher';
 import { Compiler } from "./compilers/compiler"
+import { NewAliosCompiler } from './compilers/new-alios-compiler';
 
 
 export default new ContainerModule(bind => {
@@ -33,6 +34,7 @@ export default new ContainerModule(bind => {
     bind(UdcTerminal).toSelf().inSingletonScope();
     bind(UdcCompiler).toSelf().inSingletonScope();
     bind(AliosCompiler).toSelf().inSingletonScope();
+    bind(NewAliosCompiler).toSelf().inSingletonScope();
     bind(Compiler).toSelf().inSingletonScope();
     bind(Controller).toSelf().inSingletonScope();
     bind(FileMapper).toSelf().inSingletonScope();
@@ -40,5 +42,6 @@ export default new ContainerModule(bind => {
     bind(Extractor).toSelf().inSingletonScope();
     bind(Programer).toSelf().inSingletonScope();
     bind(ConfigSetter).toSelf().inSingletonScope();
+
     // bind(Controller).toSelf().inSingletonScope();
 });

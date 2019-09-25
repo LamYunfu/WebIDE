@@ -136,7 +136,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             fns.push("ucube.py")
                             fns.push("README.md")
                         }
-                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title,projectName:'helloworld',boardType:"esp32devkitc",deviceRole:  _this.role[`${item.pid}`] }
+                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title, projectName: 'helloworld', boardType: "esp32devkitc", deviceRole: _this.role[`${item.pid}`] }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
                             console.log("initpidqueue scc")
@@ -295,9 +295,13 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             </div>
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
-                            <CodingInfo   programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile}
-                                codeInfoType="coding" config={this.props.config} roles={this.role} sid={"experiment"} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
-                                postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
+                            <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell}
+                                openSrcFile={this.props.openSrcFile}
+                                codeInfoType="coding" config={this.props.config} roles={this.role} sid={"experiment"}
+                                say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex}
+                                issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                                postSrcFile={this.props.postSrcFile}
+                                addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
                     </div>
                 </div>

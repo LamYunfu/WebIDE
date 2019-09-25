@@ -205,6 +205,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     //     _this.pids.push(item.pid)
                     // }
                     for (let item of x) {
+                        _this.role[`${item.pid}`] = item.deviceRole
                         _this.pidQueueInfo[item.pid] = {}
                         let tmp = {}
                         // { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string } } = {}
@@ -230,7 +231,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         _this.timeout[item.pid] = item.timeout
                         _this.codingIssues[item.pid] = item.title
                         if (_this.role[`${item.pid}`] == undefined) {
-                            fns.push("helloworld")
+                            fns.push("helloworld_device")
                         }
                         else {
                             for (let r of _this.role[`${item.pid}`]) {
@@ -554,7 +555,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
                             </div>
                             <div className={`codingInfos ${this.props.sid} col-7`} >
-                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} 
+                                openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" 
+                                config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} 
+                                currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                     postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                             </div>
                             <div className={`optionInfos ${this.props.sid} col-7`} >

@@ -1,8 +1,10 @@
+import { NewAliosCompiler } from './new-alios-compiler';
 import { Logger } from '../util/logger';
 import { UdcTerminal } from '../util/udc-terminal';
 import { UdcCompiler } from './udc-compiler';
-import { AliosCompiler } from './alios-compiler';
+// import { AliosCompiler } from './alios-compiler';
 import { inject, injectable } from 'inversify';
+
 @injectable()
 /*
 编译
@@ -10,7 +12,8 @@ import { inject, injectable } from 'inversify';
 export class Compiler {
     constructor(
         @inject(UdcCompiler) protected readonly udcCompiler: UdcCompiler,
-        @inject(AliosCompiler) protected readonly aliosCompiler: AliosCompiler,
+        // @inject(AliosCompiler) protected readonly aliosCompiler: AliosCompiler,
+        @inject(NewAliosCompiler) protected readonly newAliosCompiler: NewAliosCompiler,
         @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal
     ) {
     }
@@ -22,7 +25,8 @@ export class Compiler {
         if (this.getCompilerType(model) == "alios") {
             this.udcCompiler.outputResult("use alios compiler")
             Logger.info("use alios compiler")
-            await this.aliosCompiler.postNameAndType(pid)
+            // await this.aliosCompiler.postNameAndType(pid)
+            await this.newAliosCompiler.postNameAndType(pid)
         }
         for (let fn of fnsArr) {
             if (this.getCompilerType(model) == "tinylink") {

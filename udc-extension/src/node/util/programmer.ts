@@ -16,7 +16,7 @@ export class Programer {
         let { loginType, fns, dirName, model, deviceRole } = this.ut.getPidInfos(pid)
         let devArr = []
         let fnArr = JSON.parse(fns)
-        if (model.split("-")[0] == "alios"||model.split("-")[0] == "ble")
+        if (model.split("-")[0] == "alios" || model.split("-")[0] == "ble")
             fnArr = deviceRole
         let devInfo: { [devid: string]: number } | undefined
         for (let i = 4; ; i--) {
@@ -55,7 +55,10 @@ export class Programer {
             }
             case "adhoc": {
                 for (let item of fnArr) {
+                   
                     let hexFile = hex[item.split(".")[0]]
+                    console.log(item +":hexFile:"+JSON.stringify(hex))
+                    console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
                     return this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
                 }
                 break
@@ -63,6 +66,7 @@ export class Programer {
             case "group": {
                 for (let index in devArr) {
                     let hexFile = hex[fnArr[index].split(".")[0]]
+
                     let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[index], pid)
                     if (bv == false) {
                         return false

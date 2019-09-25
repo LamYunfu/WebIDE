@@ -121,16 +121,16 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                                     singleFileButtons: singleFileButtons
                                 })
                             }
-                          
+
                             if (_this.props.roles[tmp] != undefined) {
                                 if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1) {
                                     for (let item of _this.props.roles[tmp]) {
-                                        alert(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`))
-                                       await  _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
-                                       await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
-                                       await  _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
-                                       await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
-                                       await  _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `main.c`)))
+                                        // alert(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`))
+                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
+                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
+                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
+                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
+                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `main.c`)))
                                     }
                                 }
                                 else
@@ -139,10 +139,10 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                                     }
                             }
                             else {
-                                for (let mem of _this.props.roles[tmp]) {
-                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
+                                // for (let mem of _this.props.roles[tmp]) {
+                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + "device"}.cpp`)))
                                 }
-                            }
+                            // }
                             $(".codingInfos." + _this.props.sid).show()
                             $("#coding_title" + _this.props.sid).html(_this.props.coding_titles[tmp])
                             //$("#codingInfoArea").val(_this.props.codingInfos[tmp])

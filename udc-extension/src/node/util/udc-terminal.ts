@@ -557,7 +557,7 @@ endif
                 Logger.err("sending file err")
                 return false
             }
-            let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0x10000,${await this.pkt.hash_of_file(filepath)},${waitID}`
+            let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0x10000,${await this.pkt.hash_of_file(filepath)},${waitID},${pid}`
             Logger.info(content, "content:")
             this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content)
             await this.wait_cmd_excute_done(270000);

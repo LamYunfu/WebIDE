@@ -35,10 +35,10 @@ export class Controller {
         return "No this type"
     }
     async processIssue(pid: string) {
-        let { loginType, 
-            // model 
+        let { loginType,
+            model
         } = this.ut.getPidInfos(pid)
-        // let devType = this.getCompilerType(model)
+        let devType = this.getCompilerType(model)
         let _this = this
         switch (loginType) {
             case "adhoc":
@@ -48,6 +48,8 @@ export class Controller {
                     if (res == "scc") {
                         // _this.ut.config({ name: "Markyuan1996", passwd: "Markyuan1996" })
                         // _this.ut.config(_this.ut.tinyLinkInfo)
+                        if (devType == "alios")
+                            return "scc";
                         return _this.et.extract(pid)
                     }
                 }).then(

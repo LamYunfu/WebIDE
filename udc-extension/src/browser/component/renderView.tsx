@@ -238,7 +238,7 @@ export class View extends React.Component<View.Props, View.State>{
         $(".resultBoard").text("")
         if (this.submitedAnswers[this.state.sid] == undefined) {
             this.submitedAnswers[this.state.sid] = await this.props.getLocal(this.state.sid, {})
-           //alert("getLocal:" + JSON.stringify(this.submitedAnswers[this.state.sid]))
+            //alert("getLocal:" + JSON.stringify(this.submitedAnswers[this.state.sid]))
         }
         let sidData: any = this.submitedAnswers[this.state.sid]
         ////alert(JSON.stringify(sidData))
@@ -300,9 +300,9 @@ export class View extends React.Component<View.Props, View.State>{
                 _this.setState({
                     sidIndex: index
                 })
-            
+
                 if (index >= _this.state.sidArray.length - 1) {
-                   alert("没有更多了！")
+                    alert("没有更多了！")
                     return;
                 }
                 else {
@@ -356,7 +356,7 @@ export class View extends React.Component<View.Props, View.State>{
         $(document).on("click", ".newSubmitAll", async () => {
             if (_this.submitedAnswers[_this.state.sid] == undefined) {
                 _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
-               //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+                //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
             }
             let answers: string[] = []
             $(".oneOptionDescription.skyblueItem").map((index, html) => {
@@ -379,7 +379,7 @@ export class View extends React.Component<View.Props, View.State>{
             $(".resultBoard").text("已保存")
             $(".resultBoard").css("color", "black")
             _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
-           //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
             for (let index = 0; index < Object.keys(_this.questionPool[_this.state.sid].descriptions).length; index++) {
                 let indexStr = (index + 1).toString()
                 if (_this.submitedAnswers[_this.state.sid][indexStr] == undefined ||
@@ -442,13 +442,13 @@ export class View extends React.Component<View.Props, View.State>{
                         }
 
                         await _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
-                       //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+                        //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
                         let crtCount = 0
                         for (let item of correctItem) {
                             if (item == '1')
                                 crtCount++;
                         }
-                       alert(`正确${crtCount}道,\n错误${correctItem.length - crtCount}道`)
+                        alert(`正确${crtCount}道,\n错误${correctItem.length - crtCount}道`)
                     }
                 }
             )
@@ -458,7 +458,7 @@ export class View extends React.Component<View.Props, View.State>{
         $(document).on("click", ".newSaveButton", async () => {
             if (_this.submitedAnswers[_this.state.sid] == undefined) {
                 _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
-               //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+                //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
             }
             let answers: string[] = []
             $(".oneOptionDescription.skyblueItem").map((index, html) => {
@@ -480,15 +480,15 @@ export class View extends React.Component<View.Props, View.State>{
             sp.show()
             $(".resultBoard").text("已保存")
             $(".resultBoard").css("color", "black")
-            await  _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
-           //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            await _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
+            //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
         })
 
 
         $(document).on("click", ".newSubmitButton", async () => {
             if (_this.submitedAnswers[_this.state.sid] == undefined) {
                 _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
-               //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+                //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
             }
             let answers: string[] = []
             $(".oneOptionDescription.skyblueItem").map((index, html) => {
@@ -546,7 +546,7 @@ export class View extends React.Component<View.Props, View.State>{
                             ...uAnswers
                         }
                         _this.props.setLocal(_this.state.sid, store)
-                        
+
                     }
 
                 }
@@ -562,32 +562,32 @@ export class View extends React.Component<View.Props, View.State>{
         let _this = this
         return (
             this.state.viewType == "1" || this.state.viewType == "4" ?
-                <MyContext.Provider value={{
-                    setQuestionPool: (section: string, data: any) => {
-                        _this.questionPool[section] = data
-                    },
-                    setOptionDescription: (a: string) => {
-                        _this.setOptionDescription(a)
-                    },
-                    setOptionChoicesDescription: (a: JSX.Element[]) => {
-                        _this.setOptionChoicesDescription(a)
-                    },
-                    setState: (name: string, value: any) => {
-                        let tmp: any = {}
-                        tmp[name] = value
-                        _this.setState({
-                            ...tmp
-                        })
+                <div style={{ height: "100%", zIndex: 0 }}>
+                    <div className="title_timer col-12"><h4> {_this.title}</h4><span id='timer'></span></div>
+                    <MyContext.Provider value={{
+                        setQuestionPool: (section: string, data: any) => {
+                            _this.questionPool[section] = data
+                        },
+                        setOptionDescription: (a: string) => {
+                            _this.setOptionDescription(a)
+                        },
+                        setOptionChoicesDescription: (a: JSX.Element[]) => {
+                            _this.setOptionChoicesDescription(a)
+                        },
+                        setState: (name: string, value: any) => {
+                            let tmp: any = {}
+                            tmp[name] = value
+                            _this.setState({
+                                ...tmp
+                            })
 
-                    },
-                    get sidArray() {
-                        return _this.state.sidArray
-                    },
-                    props: _this.props
+                        },
+                        get sidArray() {
+                            return _this.state.sidArray
+                        },
+                        props: _this.props
 
-                }}>
-                    <div style={{ height: "100%", zIndex: 0 }}>
-                        <div className="title_timer col-12"><h4> {_this.title}</h4><span id='timer'></span></div>
+                    }}>
                         <div className="selectPanel row col-3" style={{ minWidth: '450px', height: "90%", backgroundColor: "#262527", left: "10px", zIndex: 1, position: "absolute" }}>
                             <div className="col-12" style={{ height: "100%", overflow: "scroll", backgroundColor: "#262527", zIndex: 1, }}>
                                 <Chapter
@@ -627,7 +627,7 @@ export class View extends React.Component<View.Props, View.State>{
                             color: "black",
                             left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", bottom: "10px", display: "none"
                         }}>
-                            {`第${_this.state.sidIndex+1}部分，选择题${_this.state.pid}`}
+                            {`第${_this.state.sidIndex + 1}部分，选择题${_this.state.pid}`}
                         </div>
 
                         <div className="row col-12" style={{
@@ -655,8 +655,9 @@ export class View extends React.Component<View.Props, View.State>{
                             </div>
 
                         </div>
-                    </div>
-                </MyContext.Provider >
+                    </MyContext.Provider >
+                </div>
+
                 :
                 this.state.viewType == "2" ?
                     <MyContext.Provider value={{
