@@ -181,10 +181,14 @@ export class DeviceViewWidget extends TreeWidget {
         this.udcService.config()
     }
     saveLocal = (key: string, obj: object) => {
+        // alert(`save key:${key},obj:${JSON.stringify(obj)}`)
         this.lss.setData(key, obj)
     }
-    getLocal = (key: string, obj: object) => {
-        return this.lss.getData(key)
+ getLocal =     async (key: string, obj: object) => {
+       
+        let val=await this.lss.getData(key, obj)
+        // alert(`get key:${key},obj:${JSON.stringify(val)}`)
+        return val
     }
     programSingleFile = (pidAndFn: string) => {
         this.udcService.programSingleFile(pidAndFn)

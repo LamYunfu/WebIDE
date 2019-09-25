@@ -48,19 +48,30 @@ pre {
 h4 {
     text-align: center;
 }
-
+.expander:hover{
+    cursor: pointer;
+}
 .title_timer {
     text-align: center;
     border-bottom-color: gray;
     border-top: none;
     border-bottom-style: solid;
+    height: 10%;
 }
 
 span[class*=section] {
     cursor: pointer;
 }
 
-.indicateTag::before {
+.indicateTag {
+    float: right;
+}
+
+.indicateTagChanged {
+    float: right;
+}
+
+.indicateTag::after {
     background-color: #4F5150;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -78,7 +89,13 @@ span[class*=section] {
     cursor: pointer;
 }
 
-.indicateTagChanged::before {
+.sidebar:hover {
+    text-decoration-line: underline;
+    cursor: pointer;
+
+}
+
+.indicateTagChanged::after {
     background-color: #4F5150;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -95,7 +112,6 @@ span[class*=section] {
     width: 20px;
     cursor: pointer;
 }
-
 .oneOptionDescription:hover {
     color: skyblue;
     border-color: skyblue;

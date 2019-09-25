@@ -81,7 +81,7 @@ export class Chapter extends React.Component<Chapter.Props>{
         }
    
         return (
-            <div className="sections">
+            <div className="sections col-12">
                 {uiArray}
             </div>
 

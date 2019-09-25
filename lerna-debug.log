@@ -22,7 +22,7 @@
 11 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 11 error
 11 error npm ERR! A complete log of this run can be found in:
-11 error npm ERR!     /home/liang/.npm/_logs/2019-09-17T07_15_52_520Z-debug.log
+11 error npm ERR!     /home/liang/.npm/_logs/2019-09-24T05_09_23_087Z-debug.log
 11 error
 11 error
 11 error > udc-extension@0.0.0 prepare /home/liang/load/webIDE7.29/udc-extension
@@ -30,7 +30,8 @@
 11 error
 11 error $ rimraf lib
 11 error $ tsc  --jsx react
-11 error src/node/util/controller.ts(38,26): error TS6133: 'model' is declared but its value is never read.
+11 error src/browser/component/option-issue.tsx(57,79): error TS1109: Expression expected.
+11 error src/browser/component/option-issue.tsx(57,183): error TS1005: ':' expected.
 11 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 11 error
 11 error     at Promise.all.then.arr (/home/liang/load/webIDE7.29/node_modules/lerna/node_modules/execa/index.js:236:11)

@@ -27,15 +27,6 @@ export class CodeItem extends React.Component<CodeItem.Props>{
 
 
 
-    componentDidMount() {
-        let _this = this
-        for (let index in _this.props.codingStatus) {
-            $(".codeItem").children(`#${index}`).css("color", "red")
-        }
-
-    }
-
-
     public render(): JSX.Element {
         return (
             <li className={`codeItem${this.props.sid} list-group-item`} >
@@ -88,7 +79,6 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
     componentDidMount() {
         let _this = this
         $(document).ready(
-
             () => {
                 $("#submitSrcButton" + _this.props.sid).click(
                     () => {
@@ -102,8 +92,16 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                     }
                 )
                 $(document).on("click", `.codeItem${_this.props.sid}`,
-                    (e) => {
+                    async (e) => {
                         // alert("click codeItem")
+                        if ($(".selectPanel").hasClass("col-3")) {
+                            $(".selectPanel").removeClass("col-3")
+                        }
+                        $(".selectPanel").addClass("col-12")
+                        if ($(".contents").hasClass("col-12")) {
+                            $(".contents").removeClass("col-12")
+                        }
+                        $(".contents").addClass("col-5")
                         _this.props.openShell()
                         let tmp = $(e.currentTarget).children("a").attr("title")
                         $(".optionDescription").hide()
@@ -123,18 +121,28 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                                     singleFileButtons: singleFileButtons
                                 })
                             }
-                            if (_this.props.roles[tmp] == undefined) {
-                                if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1)
-                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `helloworld.c`)))
+                          
+                            if (_this.props.roles[tmp] != undefined) {
+                                if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1) {
+                                    for (let item of _this.props.roles[tmp]) {
+                                        alert(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`))
+                                       await  _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
+                                       await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
+                                       await  _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
+                                       await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
+                                       await  _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `main.c`)))
+                                    }
+                                }
                                 else
-                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `helloworld.cpp`)))
+                                    for (let mem of _this.props.roles[tmp]) {
+                                        _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
+                                    }
                             }
                             else {
                                 for (let mem of _this.props.roles[tmp]) {
                                     _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
                                 }
                             }
-                            $(".optionInfos." + _this.props.sid).hide()
                             $(".codingInfos." + _this.props.sid).show()
                             $("#coding_title" + _this.props.sid).html(_this.props.coding_titles[tmp])
                             //$("#codingInfoArea").val(_this.props.codingInfos[tmp])
@@ -185,7 +193,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
 
         return (
             this.props.codeInfoType == "coding" ?
-                <div className={`codingInfos ${this.props.sid} card text-white bg-secondary`}>
+                <div className={`codingInfos ${this.props.sid} card text-white bg-secondary`} style={{ minWidth: "380px" }}>
                     <div className={` Container card-body`}>
                         <h5 id="titleAndStatus" className="card-title">
                             <span id={"coding_title" + this.props.sid}>关于mqtt的一道题</span>

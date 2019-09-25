@@ -5,6 +5,7 @@ import { Chapter } from './chapter-view'
 import { Scene } from './scene-view'
 import * as $ from "jquery"
 import { MyContext } from './context'
+// import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
         getData: (type: string) => Promise<string>
@@ -26,7 +27,7 @@ export namespace View {
         setTinyLink: (name: string, passwd: string) => void
         config: () => void
         setLocal: (key: string, obj: object) => void
-        getLocal: (key: string, obj: object) => object
+        getLocal: (key: string, obj: object) => any
         programSingleFile: (pidAndFn: string) => void
     }
     export interface State {
@@ -37,7 +38,10 @@ export namespace View {
         pid: string,
         viewType: string,
         scid: string,
-        sidArray: string[]
+        sidArray: string[],
+        isLast: boolean,
+        sidIndex: number,
+        qzid: string
     }
 }
 export class View extends React.Component<View.Props, View.State>{
@@ -51,7 +55,10 @@ export class View extends React.Component<View.Props, View.State>{
             pid: "",
             viewType: "",
             scid: "",
-            sidArray: []
+            sidArray: [],
+            isLast: false,
+            sidIndex: 0,
+            qzid: ""
         }
     }
     vid = ""
@@ -63,6 +70,9 @@ export class View extends React.Component<View.Props, View.State>{
     typeDataPool: { [key: string]: { [key: string]: {} } } = {}
     answerPool: { [section: string]: { [index: string]: { "uAnswer": string | undefined, "isRight": boolean | undefined } } } = {}
     questionPool: { [section: string]: any } = {}
+    submitedAnswers: { [sid: string]: { [index: string]: { "uAnswer": string[] | undefined, "uRight": boolean | undefined, saved: boolean | undefined } } } = {}
+    notForAll: boolean = true;
+
     /* 
    
    {
@@ -98,7 +108,7 @@ export class View extends React.Component<View.Props, View.State>{
             ...this.answerPool[section]!,
             ...tmp
         }
-        // alert(JSON.stringify(_this.answerPool))
+        ////alert(JSON.stringify(_this.answerPool))
     }
 
     setOptionDescription = (ds: string) => {
@@ -143,7 +153,7 @@ export class View extends React.Component<View.Props, View.State>{
                 data: "", // serializes the form's elements.
                 success: function (data) {
                     $(".userName").text(data.data.uname)
-                    // alert(data.data.JSESSIONID)
+                    ////alert(data.data.JSESSIONID)
                     _this.props.setTinyLink(data.data.tinyId, data.data.tinyPasswd)
                     _this.props.setCookie(data.data.JSESSIONID)
                 }
@@ -223,9 +233,32 @@ export class View extends React.Component<View.Props, View.State>{
         }))
 
     }
-    componentWillUpdate() {
+    async componentWillUpdate() {
         $(".oneOptionDescription").removeClass("skyblueItem")
         $(".resultBoard").text("")
+        if (this.submitedAnswers[this.state.sid] == undefined) {
+            this.submitedAnswers[this.state.sid] = await this.props.getLocal(this.state.sid, {})
+           //alert("getLocal:" + JSON.stringify(this.submitedAnswers[this.state.sid]))
+        }
+        let sidData: any = this.submitedAnswers[this.state.sid]
+        ////alert(JSON.stringify(sidData))
+        if (sidData != undefined && sidData[this.state.pid] != undefined) {
+            for (let item of sidData[this.state.pid].uAnswer) {
+                $(`.oneOptionDescription[title=${item}]`).addClass("skyblueItem")
+            }
+            switch (sidData[this.state.pid].uRight) {
+                case true: $(".resultBoard").text("答案正确"); $(".resultBoard").css("color", "green"); break
+                case false: $(".resultBoard").text("答案错误"); $(".resultBoard").css("color", "red"); break
+                case undefined: {
+                    if (sidData[this.state.pid].saved) {
+                        $(".resultBoard").text("已保存"); $(".resultBoard").css("color", "black");
+                    }
+                    else
+                        $(".resultBoard").text("")
+                    break
+                }
+            }
+        }
 
     }
     componentDidMount() {
@@ -242,26 +275,39 @@ export class View extends React.Component<View.Props, View.State>{
             let pid = _this.state.pid
             if (parseInt(pid) < Object.keys(_this.questionPool[csid].descriptions).length) {
                 pid = (parseInt(pid) + 1).toString()
-                // alert(`pid:${pid}`)
+                ////alert(`pid:${pid}`)
+                parseInt(pid) == Object.keys(_this.questionPool[csid].descriptions).length ?
+                    _this.state.sidIndex == _this.state.sidArray.length - 1 ?
+                        _this.setState({
+                            isLast: true
+                        })
+                        :
+                        _this.setState({
+                            isLast: false
+                        })
+                    :
+                    _this.setState({
+                        isLast: false
+                    })
+
             }
             else {
-                // alert("no more answer")
+                ////alert("no more answer")
                 let index = _this.state.sidArray.findIndex((val, index) => {
                     if (val == _this.state.sid)
                         return true;
                 })
-                // alert(`sidArrayIndex:${index}`)
-                // alert(`length:${_this.state.sidArray.length}`)
-                // alert(`sidArray:${JSON.stringify(_this.state.sidArray)}`)
-                // alert(`sidArray:${ _this.state.sidArray.join(";")}`)
+                _this.setState({
+                    sidIndex: index
+                })
+            
                 if (index >= _this.state.sidArray.length - 1) {
-                    alert("没有更多了！")
+                   alert("没有更多了！")
                     return;
                 }
                 else {
                     csid = _this.state.sidArray[++index]
                     pid = "1"
-                    // alert(pid)
                 }
 
             }
@@ -292,14 +338,171 @@ export class View extends React.Component<View.Props, View.State>{
                 $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
             })
         })
-        $(document).on("click", ".newSubmitButton", () => {
+        $(document).on("click", ".expander", () => {
+            let sp = $(".expander>span")
+            if (sp.hasClass("oi-chevron-right")) {
+                sp.removeClass("oi-chevron-right")
+                sp.addClass("oi-chevron-left")
+            }
+            else {
+                sp.addClass("oi-chevron-right")
+                sp.removeClass("oi-chevron-left")
+            }
+            $(".stateProfile").toggle()
+            $(".selectPanel").toggle()
+
+        })
+
+        $(document).on("click", ".newSubmitAll", async () => {
+            if (_this.submitedAnswers[_this.state.sid] == undefined) {
+                _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
+               //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            }
             let answers: string[] = []
             $(".oneOptionDescription.skyblueItem").map((index, html) => {
                 answers.push($(html).prop("title"))
-                // alert("aaa")
+                ////alert("aaa")
             })
+            if (answers.length == 0) {
+                if (confirm("保存的结果为空，确认继续？") == false) {
+                    return
+                }
+
+            }
             let uAnswers: any = {}
-            uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
+            uAnswers[_this.state.pid] = { answer: answers, uRight: undefined, saved: true }
+            _this.submitedAnswers[_this.state.sid][_this.state.pid] = uAnswers[_this.state.pid]
+            let pid = _this.state.pid
+            let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next()
+            sp.prop("class", "oi oi-pin")
+            sp.show()
+            $(".resultBoard").text("已保存")
+            $(".resultBoard").css("color", "black")
+            _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
+           //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            for (let index = 0; index < Object.keys(_this.questionPool[_this.state.sid].descriptions).length; index++) {
+                let indexStr = (index + 1).toString()
+                if (_this.submitedAnswers[_this.state.sid][indexStr] == undefined ||
+                    _this.submitedAnswers[_this.state.sid][indexStr].uAnswer == undefined ||
+                    _this.submitedAnswers[_this.state.sid][indexStr].uAnswer!.length == 0) {
+                    let toGo = _this.notForAll && confirm(`第${index + 1}题，答案为空，确认继续提交？`)
+                    if (toGo == true) {
+                        answers[index] = "X"
+                        _this.submitedAnswers[_this.state.sid][indexStr] = { uAnswer: [], uRight: false, saved: true }
+                        _this.notForAll && confirm(`提交全部不再提醒？`) ? _this.notForAll = false : _this.notForAll = true
+                    }
+                    else {
+                        if (_this.notForAll == false) {
+                            answers[index] = "X"
+                            _this.submitedAnswers[_this.state.sid][indexStr] = { uAnswer: [], uRight: false, saved: true }
+                        }
+                        else {
+                            return
+                        }
+
+                    }
+                }
+                else
+                    answers[index] = _this.submitedAnswers[_this.state.sid][indexStr].uAnswer!.join(",")
+
+            }
+            _this.notForAll = true
+            $.ajax(
+                {
+                    headers: {
+                        "accept": "application/json",
+                    },
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    method: "POST",
+                    url: "http://api.tinylink.cn/problem/quiz/judge",
+                    dataType: 'json',
+                    contentType: "text/javascript",
+                    data: JSON.stringify({
+                        qzid: _this.state.qzid,
+                        answer: answers
+                    }),
+                    success: async function (data) {
+                        let correctItem: string[] = data.data.correct
+                        for (let item in correctItem) {
+                            let pid = (parseInt(item) + 1).toString()
+                            ////alert(`.optionItem.${_this.state.sid} a[id=${pid}]`)
+                            let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next()
+                            if (correctItem[item] == "1") {
+                                _this.submitedAnswers[_this.state.sid][pid].uRight = true
+                                sp.prop("class", "oi oi-check")
+                                sp.show()
+                            }
+                            else {
+                                _this.submitedAnswers[_this.state.sid][pid].uRight = false
+                                sp.prop("class", "oi oi-x")
+                                sp.show()
+                            }
+                        }
+
+                        await _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
+                       //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+                        let crtCount = 0
+                        for (let item of correctItem) {
+                            if (item == '1')
+                                crtCount++;
+                        }
+                       alert(`正确${crtCount}道,\n错误${correctItem.length - crtCount}道`)
+                    }
+                }
+            )
+
+
+        })
+        $(document).on("click", ".newSaveButton", async () => {
+            if (_this.submitedAnswers[_this.state.sid] == undefined) {
+                _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
+               //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            }
+            let answers: string[] = []
+            $(".oneOptionDescription.skyblueItem").map((index, html) => {
+                answers.push($(html).prop("title"))
+                ////alert("aaa")
+            })
+            if (answers.length == 0) {
+                if (confirm("保存的结果为空，确认继续？") == false) {
+                    return
+                }
+
+            }
+            let uAnswers: any = {}
+            uAnswers[_this.state.pid] = { uAnswer: answers, uRight: undefined, saved: true }
+            _this.submitedAnswers[_this.state.sid][_this.state.pid] = uAnswers[_this.state.pid]
+            let pid = _this.state.pid
+            let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next()
+            sp.prop("class", "oi oi-pin")
+            sp.show()
+            $(".resultBoard").text("已保存")
+            $(".resultBoard").css("color", "black")
+            await  _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
+           //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+        })
+
+
+        $(document).on("click", ".newSubmitButton", async () => {
+            if (_this.submitedAnswers[_this.state.sid] == undefined) {
+                _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
+               //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            }
+            let answers: string[] = []
+            $(".oneOptionDescription.skyblueItem").map((index, html) => {
+                answers.push($(html).prop("title"))
+                ////alert("aaa")
+            })
+            if (answers.length == 0) {
+                if (confirm("提交的结果为空，确认继续？") == false) {
+                    return
+                }
+
+            }
+            let uAnswers: any = {}
+            uAnswers[_this.state.pid] = { uAnswer: answers, uRight: undefined }
             $.ajax(
                 {
                     headers: {
@@ -318,28 +521,36 @@ export class View extends React.Component<View.Props, View.State>{
                     }),
                     success: async function (data) {
                         let correctItem: string = data.correct
-                        let pid = (parseInt(_this.state.pid)).toString()
+                        let pid = _this.state.pid
                         let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next()
+                        ////alert(`.optionItem.${_this.state.sid} a[id=${pid}]`)
                         if (correctItem == "1") {
-                            uAnswers[_this.state.pid].uRight = true
+                            uAnswers[_this.state.pid]["uRight"] = true
+                            _this.submitedAnswers[_this.state.sid][pid] = uAnswers[_this.state.pid]
                             sp.prop("class", "oi oi-check")
-                            sp.show()
                             $(".resultBoard").text("答案正确")
                             $(".resultBoard").css("color", "green")
-
+                            sp.show()
                         }
                         else {
+                            uAnswers[_this.state.pid]["uRight"] = false
+                            _this.submitedAnswers[_this.state.sid][pid] = uAnswers[_this.state.pid]
                             sp.prop("class", "oi oi-x")
-                            sp.show()
-                            uAnswers[_this.state.pid].uRight = false
                             $(".resultBoard").text("答案错误")
                             $(".resultBoard").css("color", "red")
+                            sp.show()
                         }
-                        _this.setAnswerPool(_this.state.sid, _this.state.pid, uAnswers)
-                        _this.props.setLocal(_this.state.sid, uAnswers)
-                        // _this.uAnswers[_this.state.pid] = { answer: [], uRight: false }
+                        let tmp = await _this.props.getLocal(_this.state.sid, {})
+                        let store = {
+                            ...tmp,
+                            ...uAnswers
+                        }
+                        _this.props.setLocal(_this.state.sid, store)
+                        
                     }
+
                 }
+
             )
         })
 
@@ -354,8 +565,6 @@ export class View extends React.Component<View.Props, View.State>{
                 <MyContext.Provider value={{
                     setQuestionPool: (section: string, data: any) => {
                         _this.questionPool[section] = data
-                        // alert(JSON.stringify(_this.questionPool))
-
                     },
                     setOptionDescription: (a: string) => {
                         _this.setOptionDescription(a)
@@ -366,53 +575,85 @@ export class View extends React.Component<View.Props, View.State>{
                     setState: (name: string, value: any) => {
                         let tmp: any = {}
                         tmp[name] = value
-                        // alert(JSON.stringify(value))
                         _this.setState({
                             ...tmp
                         })
 
                     },
+                    get sidArray() {
+                        return _this.state.sidArray
+                    },
                     props: _this.props
 
                 }}>
-                    <div className="col-12">
+                    <div style={{ height: "100%", zIndex: 0 }}>
                         <div className="title_timer col-12"><h4> {_this.title}</h4><span id='timer'></span></div>
-                        {/* <hr /> */}
-                        <div className="col-4" style={{ float: "left", height: "790px", overflow: "scroll", minWidth: "590px" }}>
-                            <Chapter
-                                viewType={_this.type}
-                                programSingleFile={_this.props.programSingleFile}
-                                setLocal={_this.props.setLocal}
-                                getLocal={_this.props.getLocal}
-                                config={_this.props.config}
-                                openShell={_this.props.openShell}
-                                closeTables={_this.props.closeTabs}
-                                initPidQueueInfo={_this.props.initPidQueueInfo}
-                                setQueue={_this.props.setQueue}
-                                vid={_this.vid}
-                                chapterData={_this.typeDataPool[_this.type][_this.vid]}
-                                setChapterData={_this.setChapterData}
-                                sections={_this.sections}
-                                outputResult={_this.props.outputResult}
-                                say={_this.props.say}
-                                gotoVideo={_this.props.gotoVideo}
-                                disconnect={_this.props.disconnect}
-                                connect={_this.props.connect}
-                                callUpdate={_this.props.callUpdate}
-                                openSrcFile={_this.props.openSrcFile}
-                                postSrcFile={_this.props.postSrcFile}
-                            />
-
+                        <div className="selectPanel row col-3" style={{ minWidth: '450px', height: "90%", backgroundColor: "#262527", left: "10px", zIndex: 1, position: "absolute" }}>
+                            <div className="col-12" style={{ height: "100%", overflow: "scroll", backgroundColor: "#262527", zIndex: 1, }}>
+                                <Chapter
+                                    viewType={_this.type}
+                                    programSingleFile={_this.props.programSingleFile}
+                                    setLocal={_this.props.setLocal}
+                                    getLocal={_this.props.getLocal}
+                                    config={_this.props.config}
+                                    openShell={_this.props.openShell}
+                                    closeTables={_this.props.closeTabs}
+                                    initPidQueueInfo={_this.props.initPidQueueInfo}
+                                    setQueue={_this.props.setQueue}
+                                    vid={_this.vid}
+                                    chapterData={_this.typeDataPool[_this.type][_this.vid]}
+                                    setChapterData={_this.setChapterData}
+                                    sections={_this.sections}
+                                    outputResult={_this.props.outputResult}
+                                    say={_this.props.say}
+                                    gotoVideo={_this.props.gotoVideo}
+                                    disconnect={_this.props.disconnect}
+                                    connect={_this.props.connect}
+                                    callUpdate={_this.props.callUpdate}
+                                    openSrcFile={_this.props.openSrcFile}
+                                    postSrcFile={_this.props.postSrcFile}
+                                />
+                            </div>
                         </div>
-                        <div className="optionDescription col-4" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "790px" }} >
-                            {_this.state.optionDescription}
 
+                        <div className="expander row col-3" style={{
+                            width: '30px', height: "30px", fontSize: '30px', color: "blue",
+                            left: "10px", backgroundColor: "rgb(38, 37, 39,0)", zIndex: 1, position: "absolute", bottom: "50%"
+                        }}>
+                            <span className="oi oi-chevron-left"></span>
                         </div>
-                        <div className="optionChocies col-4" style={{ backgroundColor: "#e7ebee", color: "green", fontSize: `15px`, float: "left", height: "790px" }}>
-                            <div className="choices"> {_this.state.optionChoicesDecription}</div>
-                            <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
-                            <div className="next btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>下一个</div>
-                            <div className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</div>
+                        <div className="stateProfile row col-3" style={{
+                            minWidth: '450px', height: "30px", fontSize: "20px",
+                            color: "black",
+                            left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", bottom: "10px", display: "none"
+                        }}>
+                            {`第${_this.state.sidIndex+1}部分，选择题${_this.state.pid}`}
+                        </div>
+
+                        <div className="row col-12" style={{
+                            height: "90%", zIndex: 0, margin: 0,
+                            padding: 0,
+                        }}>
+                            {/* <hr /> */}
+                            {/* <div className="row col-3" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "100%" }} >
+                
+                            </div> */}
+                            <div className="optionDescription col-6" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "100%" }} >
+                                {_this.state.optionDescription}
+
+                            </div>
+                            <div className="optionChocies col-6" style={{ backgroundColor: "#e7ebee", color: "green", fontSize: `15px`, float: "left", height: "100%" }}>
+                                <div className="choices"> {_this.state.optionChoicesDecription}</div>
+                                <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
+                                <div className="next btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>下一个</div>
+                                {this.state.viewType == "1" ? <div className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</div>
+                                    :
+                                    this.state.isLast ? <div className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</div>//考试模式
+                                        :
+                                        <div className="newSaveButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>保存</div>
+                                }
+                            </div>
+
                         </div>
                     </div>
                 </MyContext.Provider >
@@ -465,7 +706,7 @@ export class View extends React.Component<View.Props, View.State>{
                         <MyContext.Provider value={{
                             setQuestionPool: (section: string, data: any) => {
                                 _this.questionPool[section] = data
-                                // alert(JSON.stringify(_this.answerPool))
+                                ////alert(JSON.stringify(_this.answerPool))
                             },
 
                             setOptionDescription: (a: string) => {

@@ -99,10 +99,111 @@ export class UdcTerminal {
                 if (!res) {
                     fs.mkdir(path.join(rootdir, dirName), (err) => {
                         for (let item of deviceRole!) {
-                            fs.mkdir(path.join(rootdir, dirName, item))
+                            fs.mkdir(path.join(rootdir, dirName, item), (rv) => {
+                                if (rv == null) {
+                                    fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
+                                   
+                                    `)
+                                    fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
+                                   
+src     = Split('''
+helloworld.c
+''')
+
+component = aos_component('helloworld', src)
+component.add_comp_deps('kernel/yloop', 'kernel/cli')
+component.add_global_macros('AOS_NO_WIFI')`)
+                                    fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
+                                   
+/* user space */
+#ifndef RHINO_CONFIG_USER_SPACE
+#define RHINO_CONFIG_USER_SPACE              0
+#endif
+`)
+                                    fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
+                                   
+config AOS_APP_HELLOWORLD
+bool "HelloWorld"
+select AOS_COMP_OSAL_AOS
+help
+Hello World
+
+if AOS_APP_HELLOWORLD
+# Configurations for app helloworld
+endif
+`)
+                                    fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
+                                   
+NAME := helloworld
+
+$(NAME)_SOURCES := main.c
+
+GLOBAL_DEFINES += AOS_NO_WIFI
+
+$(NAME)_COMPONENTS := yloop cli
+
+ifeq ($(BENCHMARKS),1)
+$(NAME)_COMPONENTS  += benchmarks
+GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
+endif
+`)
+                                }
+                            })
                         }
                     })
                 }
+                else
+                    for (let item of deviceRole!) {
+                        fs.exists(path.join(rootdir, dirName, item, 'main.c'), (rv) => {
+                            if (rv == false) {
+                                fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
+                               
+                                `)
+                                fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
+src     = Split('''
+main.c
+''')
+
+component = aos_component('helloworld', src)
+component.add_comp_deps('kernel/yloop', 'kernel/cli')
+component.add_global_macros('AOS_NO_WIFI')`)
+                                fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
+                               
+/* user space */
+#ifndef RHINO_CONFIG_USER_SPACE
+#define RHINO_CONFIG_USER_SPACE              0
+#endif
+`)
+                                fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
+                               
+config AOS_APP_HELLOWORLD
+bool "HelloWorld"
+select AOS_COMP_OSAL_AOS
+help
+    Hello World
+
+if AOS_APP_HELLOWORLD
+# Configurations for app helloworld
+endif
+`)
+                                fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
+                               
+NAME := helloworld
+
+$(NAME)_SOURCES := helloworld.c
+
+GLOBAL_DEFINES += AOS_NO_WIFI
+
+$(NAME)_COMPONENTS := yloop cli
+
+ifeq ($(BENCHMARKS),1)
+$(NAME)_COMPONENTS  += benchmarks
+GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
+endif
+`)
+                            }
+                        })
+                    }
             })
 
         }
@@ -112,7 +213,7 @@ export class UdcTerminal {
         this.pidQueueInfo = JSON.parse(infos)
         for (let index in this.pidQueueInfo) {
             let { dirName, fns, model, deviceRole } = this.pidQueueInfo[index]
-            if (model.split("-")[0] == "alios"||model.split("-")[0] == "ble") {
+            if (model.split("-")[0] == "alios" || model.split("-")[0] == "ble") {
                 this.creatSrcFile(fns, dirName, "alios", deviceRole)
             }
             else

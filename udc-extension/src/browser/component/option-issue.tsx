@@ -10,10 +10,10 @@ export namespace OptionItem {
         choices: { [key: string]: string[] }
         optionStatus: { [key: string]: string }
         optionIssues: { [key: string]: string }
-        // addOptionStatus: (pid: string, selected: string) => void
-        submittedOptionAnswers: { [key: string]: { answer: string, isRight: boolean } }
         qzid: string
         scid: string
+        uRight: boolean | undefined
+        saved: boolean | undefined
     }
 }
 export class OptionItem extends React.Component<OptionItem.Props> {
@@ -23,20 +23,6 @@ export class OptionItem extends React.Component<OptionItem.Props> {
 
 
     componentDidMount() {
-        let tmp = this.props.submittedOptionAnswers[this.props.akey]
-        if (tmp != undefined) {
-            let sp = $(`.optionItem.${this.props.sid}  a[id=${this.props.akey}]`).next()
-            if (tmp.isRight) {
-                sp.attr("class", "oi oi-check")
-                sp.show()
-            }
-            else {
-
-                sp.attr("class", "oi oi-x")
-                sp.show()
-            }
-
-        }
     }
 
 
@@ -48,9 +34,14 @@ export class OptionItem extends React.Component<OptionItem.Props> {
                 <span className="index" style={{ display: "none" }}>{this.props.akey}</span>
                 <span className="oi oi-pencil" aria-hidden="true"></span>
                 <a id={this.props.akey} style={{ textAlign: "center" }} >选择题{this.props.akey} </a>&nbsp;
-                <span className="oi" aria-hidden="true" style={{ display: "none", float: "right" }}></span>
+                <span className={this.props.uRight == undefined ? this.props.saved ? "oi oi-pin" :
+                    "oi"
+                    :
+                    this.props.uRight ? "oi oi-check"
+                        : "oi oi-x"
+                } aria-hidden="true" style={this.props.uRight == undefined && this.props.saved != true ? { display: "none", float: "right" } : { display: "inline", float: "right" }}></span>
                 {/* <a className="issue_status">●</a><br /> */}
-            </li>
+            </li >
 
         )
     }
@@ -81,57 +72,6 @@ export namespace OptionInfo {
 
 
 export class OptionInfo extends React.Component<OptionInfo.Props, OptionInfo.States>{
-    // componentDidMount() {
-    //     let _this = this
-    //     $(document).ready(
-    //         () => {
-    //             $(".optionInfoSubmit" + _this.props.sid).click(
-    //                 (e) => {
-    //                     e.preventDefault()
-    //                     let idv = $(".options" + _this.props.sid).attr("id")
-    //                     if (idv == undefined) {
-    //                         alert("ERR:NO ISSUE ID ")
-    //                         return
-    //                     }
-    //                     // let checked = $(".options" + _this.props.sid + " input:radio:checked").val()
-    //                     if (_this.props.submittedOptionAnswers[idv] != undefined) {
-    //                         _this.props.say("题目已提交,勿重复操作" + `,当前答案:${_this.props.submittedOptionAnswers[idv].answer}`)
-    //                         return
-
-    //                     }
-    //                     // if (idv != undefined && _this.props.submittedOptionStatus[idv] != undefined && _this.props.submittedOptionStatus[idv] != checked) {
-    //                     //     _this.props.say("题目已提交,勿重复操作")
-    //                     //     return
-    //                     // }
-    //                     // idv != undefined && checked != undefined && (_this.props.addOptionStatus(idv, checked.toString()))
-    //                     let ans = $(".options" + _this.props.sid + " input:radio:checked").val()
-    //                     if (ans == undefined) {
-    //                         alert("no answer selected ")
-    //                         return
-    //                     }
-    //                     if (ans == _this.props.answers[idv]) {
-    //                         //$(`.optionItem a[id=${idv}]`).next().css("color", "green")
-    //                         //$(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-success")
-    //                         let sp = $(`.optionItem.${_this.props.sid} a[id=${idv}]`).next()
-    //                         sp.attr("class", "oi oi-check")
-    //                         sp.show()
-    //                         this.props.setSubmittedOptionAnswer(idv, ans.toString(), true)
-
-    //                     }
-    //                     else {
-    //                         //$(`.optionItem a[id=${idv}]`).next().css("color", "red")
-    //                         //$(`.optionItem a[id=${idv}]`).parent().attr("class", "optionItem list-group-item list-group-item-danger")
-    //                         let sp = $(`.optionItem.${_this.props.sid}  a[id=${idv}]`).next()
-    //                         sp.attr("class", "oi oi-x")
-    //                         sp.show()
-    //                         this.props.setSubmittedOptionAnswer(idv, ans.toString(), false)
-    //                     }
-    //                 }
-    //             )
-    //         }
-    //     )
-    // }
-
     public render() {
         return (
 
@@ -371,29 +311,6 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             let pid = _this.state.pid
             // alert("pid:" + pid)
             let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
-            // let rightAnswer = _this.state.answers.split(',')
-            // console.log("right :uAns" + JSON.stringify(rightAnswer), JSON.stringify(answers))
-            // if (rightAnswer.length != answers.length) {
-            //     _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
-            //     console.log("与正解数量不符" + JSON.stringify(rightAnswer), JSON.stringify(answers))
-            //     sp.prop("class", "oi oi-x")
-            //     sp.show()
-            //     return
-            // }
-            // for (let uAns of answers) {
-            //     // console.log("right answer :" + rightAnswer.indexOf(uAns))
-            //     if (rightAnswer.indexOf(uAns) == -1) {
-            //         // alert("wrong answer")
-            //         console.log("有错误答案")
-            //         _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
-            //         sp.prop("class", "oi oi-x")
-            //         sp.show()
-            //         return
-            //     }
-            // }
-            // _this.uAnswers[_this.state.pid] = { answer: answers, uRight: true }
-            // sp.prop("class", "oi oi-check")
-            // sp.show()
             _this.uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
             sp.prop("class", "oi oi-pin")
             sp.show()
@@ -419,32 +336,6 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             let pid = _this.state.pid
             // alert("pid:" + pid)
             let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
-            // let rightAnswer = _this.state.answers.split(',')
-            // console.log("right :uAns" + JSON.stringify(rightAnswer), JSON.stringify(answers))
-            // if (rightAnswer.length != answers.length) {
-            //     _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
-            //     console.log("与正解数量不符" + JSON.stringify(rightAnswer), JSON.stringify(answers))
-            //     sp.prop("class", "oi oi-x")
-            //     sp.show()
-            //     return
-            // }
-            // for (let uAns of answers) {
-            //     // console.log("right answer :" + rightAnswer.indexOf(uAns))
-            //     if (rightAnswer.indexOf(uAns) == -1) {
-            //         // alert("wrong answer")
-            //         console.log("有错误答案")
-            //         _this.uAnswers[_this.state.pid] = { answer: answers, uRight: false }
-            //         sp.prop("class", "oi oi-x")
-            //         sp.show()
-            //         return
-            //     }
-            // }
-
-            // _this.uAnswers[_this.state.pid] = { answer: answers, uRight: true }
-            // sp.prop("class", "oi oi-check")
-            // sp.show()
-            // alert("right")
-
             _this.uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
             sp.prop("class", "oi oi-pin")
             sp.show()
