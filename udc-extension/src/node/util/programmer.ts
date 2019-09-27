@@ -43,7 +43,7 @@ export class Programer {
             Logger.info("error file name map")
             return "fail"
         }
-        this.ut.outputResult("programming.........")
+        this.ut.outputResult("sending file......")
         switch (loginType) {
             case "queue": {
                 for (let item of fnArr) {
@@ -55,9 +55,9 @@ export class Programer {
             }
             case "adhoc": {
                 for (let item of fnArr) {
-                   
+
                     let hexFile = hex[item.split(".")[0]]
-                    console.log(item +":hexFile:"+JSON.stringify(hex))
+                    console.log(item + ":hexFile:" + JSON.stringify(hex))
                     console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
                     return this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
                 }

@@ -121,7 +121,14 @@ export class NewAliosCompiler {
                             }
                         }, (mesg) => {
                             let ws = fs.createWriteStream(`/home/project/${projectName}/hexFiles/${new Buffer(`${role}`).toString("hex")}.hex`, {
-                                encoding:"binary"
+                                encoding: "binary"
+                            })
+                            ws.on("close", () => {
+                                let tmp: any = {}
+                                tmp[role] = new Buffer(`${role}`).toString("hex") + ".hex"
+                                _this.fm.setFileNameMapper(pid, tmp)
+                                resolve("scc")
+                                console.log("download scc")
                             })
                             mesg.on("data", (b: Buffer) => {
                                 console.log("downloading")
@@ -129,12 +136,6 @@ export class NewAliosCompiler {
                             })
                             mesg.on("end", () => {
                                 ws.close()
-                                let tmp: any = {}
-                                tmp[role] = new Buffer(`${role}`).toString("hex") + ".hex"
-                                _this.fm.setFileNameMapper(pid, tmp)
-                                resolve("scc")
-                                console.log("download scc")
-
                             })
                         })
                         downloadRequest.write(JSON.stringify({

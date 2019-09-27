@@ -83,6 +83,7 @@ export class Packet {
     async hash_of_file(filename: string) {
         crypto.createHash('sha1');
         let h = crypto.createHash('sha1');
+        // let fd = await fs.readFileSync(filename, { encoding: "hex" });
         let fd = await fs.readFileSync(filename);
         h.update(fd);
         return h.digest('hex');

@@ -371,8 +371,21 @@ endif
                     new_dev_list[uuid + ',' + dev] = using
                 }
             }
+            let tag = false
+            if (this.dev_list == undefined || this.dev_list == null) {
+                tag = true
+            }
             this.dev_list = new_dev_list;
-            this.outputResult(`allocated devs ${JSON.stringify(this.dev_list)}`)
+            //allocated devs {"1234567890123456,/dev/tinylink_platform_1-75735303731351C04212":"0"}
+            let tmp = []
+            for (let item of Object.keys(this.dev_list)) {
+                let slices = item.split("/")
+                let res = slices[slices.length - 1].trim()
+                res != "" ? tmp.push(res) : "";
+            }
+            if (tag)
+                this.outputResult("allocated devices:" + tmp.join(" "))
+
             if (this.udcClient) {
                 this.udcClient.onDeviceList(new_dev_list)
             }
@@ -493,11 +506,11 @@ endif
         if (rets === []) { return false; }
         let [re, server_ip, server_port, token, certificate] = rets;
         if (re != 'success') { return false; }
-        this.outputResult('connect to controller success, server ip is ' + server_ip)
+        this.outputResult('connect to controller success')
         let result = await this.connect_to_server(server_ip, server_port, certificate, pid);
         Logger.val("result-----------------------------" + result)
         if (result !== 'success') return false;
-        this.outputResult('connect to server success')
+        this.outputResult('connect to server success, server ip is ' + server_ip)
         await this.send_packet(Packet.packet_type.TERMINAL_LOGIN, `${this.uuid},${token},${pid}`)//modifiy,timeout/
         // await this.AC.postNameAndType("helloworld", "esp32devkitc")
         return true;
@@ -557,10 +570,15 @@ endif
                 Logger.err("sending file err")
                 return false
             }
+            this.outputResult('send hex file to LDC success')
             let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0x10000,${await this.pkt.hash_of_file(filepath)},${waitID},${pid}`
             Logger.info(content, "content:")
+            this.outputResult('program......')
             this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content)
             await this.wait_cmd_excute_done(270000);
+            if (this.cmd_excute_state === 'done') {
+                this.outputResult('program success ^.^')
+            }
         }
         else {
             Logger.info('enter in queue failed', ' T.T ')
@@ -575,13 +593,14 @@ endif
         }
         this.outputResult('send hex file to LDC success')
         let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
+        this.outputResult('program......')
         this.send_packet(Packet.DEVICE_PROGRAM, content);
         await this.wait_cmd_excute_done(270000);
         if (this.cmd_excute_state === 'done') {
-            this.outputResult('program success')
+            this.outputResult('program success ^.^')
         }
         else {
-            this.outputResult('program fail')
+            this.outputResult('program fail T.T')
         }
         return (this.cmd_excute_state === 'done' ? true : false);
     }
@@ -615,7 +634,9 @@ endif
         let fullpath = filepath.split('/');
         let filename = fullpath[fullpath.length - 1]
         let content = devstr + ":" + filehash + ":" + filename;
+        this.outputResult("filehash:"+filehash)
         let retry = 4;
+        
         while (retry > 0) {
             Logger.info(`Packet.FILE_BEGIN:${Packet.FILE_BEGIN},content:${content}`)
             this.send_packet(Packet.FILE_BEGIN, content);

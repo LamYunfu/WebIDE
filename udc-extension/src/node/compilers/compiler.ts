@@ -23,14 +23,14 @@ export class Compiler {
         Logger.info("start compiling")
         Logger.info("MODEL is:" + model)
         if (this.getCompilerType(model) == "alios") {
-            this.udcCompiler.outputResult("use alios compiler")
+            // this.udcCompiler.outputResult("use alios compiler")
             Logger.info("use alios compiler")
             // await this.aliosCompiler.postNameAndType(pid)
             await this.newAliosCompiler.postNameAndType(pid)
         }
         for (let fn of fnsArr) {
             if (this.getCompilerType(model) == "tinylink") {
-                this.udcCompiler.outputResult("use tinylink compiler")
+                // this.udcCompiler.outputResult("use tinylink compiler")
                 Logger.info("use tinylink compiler")
                 let bv = await this.udcCompiler.postSrcFile(fn, dirName)
                 if (bv != 'scc')
