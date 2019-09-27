@@ -61,6 +61,7 @@ export namespace CodingInfo {
         pid: string
         singleFileButtons: JSX.Element[]
         currentFile: string
+        connectionStatus: string
     }
 }
 
@@ -73,20 +74,34 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
         this.state = {
             pid: "",
             singleFileButtons: [],
-            currentFile: ""
+            currentFile: "",
+            connectionStatus: "连接"
+
         }
     }
     componentDidMount() {
+        this.context.props.isconnected().then((res: boolean) => {
+            if (res) {
+                _this.setState({
+                    connectionStatus: "断开"
+                })
+            }
+            else {
+                _this.setState({
+                    connectionStatus: "连接"
+                })
+            }
+        })
         let _this = this
         $(document).ready(
             () => {
                 $("#submitSrcButton" + _this.props.sid).click(
                     () => {
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")
-                        if (_this.props.currentFocusCodingIndex[0] != index) {
-                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
-                            return
-                        }
+                        // if (_this.props.currentFocusCodingIndex[0] != index) {
+                        //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                        //     return
+                        // }
                         index != undefined && _this.props.postSrcFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
@@ -140,8 +155,8 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             }
                             else {
                                 // for (let mem of _this.props.roles[tmp]) {
-                                    _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + "device"}.cpp`)))
-                                }
+                                _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + "device"}.cpp`)))
+                            }
                             // }
                             $(".codingInfos." + _this.props.sid).show()
                             $("#coding_title" + _this.props.sid).html(_this.props.coding_titles[tmp])
@@ -202,12 +217,13 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
                             <pre className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</pre>
                         </div>
-                        <span><button className="btn btn-info" id={"connectButton" + this.props.sid}>连接</button></span><span><button className="btn btn-info" id={"setQueue" + this.props.sid}>排队</button></span>
-                        <br />
-                        <div>
-                            <span><button className="btn btn-primary" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span>
-                            <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></span>
-                        </div>
+                        <span><button className="btn btn-primary" id={"connectButton" + this.props.sid}>{this.state.connectionStatus}</button></span>
+                        {/* <span><button className="btn btn-primary" id={"setQueue" + this.props.sid}>排队</button></span> */}
+                     
+
+                        {/* <span><button className="btn btn-primary" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span> */}
+                        <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></span>
+
                     </div>
                 </div>
                 :
@@ -227,7 +243,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
 
                             <br />
                             <div>
-                                <span><button className="btn btn-info col-auto" id={"connectButtonSingleFile" + this.props.sid}>连接</button></span>
+                                <span><button className="btn btn-primary col-auto" id={"connectButtonSingleFile" + this.props.sid}>{this.state.connectionStatus}</button></span>
                                 <span><button className="btn btn-primary col-auto" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span>
                                 <span><button className="btn btn-primary col-auto" id={"singleFileSubmitButton" + this.props.sid}>烧入</button></span>
                             </div>

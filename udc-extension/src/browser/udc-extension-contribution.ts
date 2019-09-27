@@ -178,17 +178,18 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         registry.registerCommand(UdcCommands.Connect, {
             execute: async (loginType: string, model: string, pid: string, timeout: string) => {
                 console.log("pid in front end :" + pid)
-                let connected = await this.udcService.is_connected();
-                if (connected === true) {
-                    this.messageService.info('Already Connected');
-                } else {
-                    this.udcService.connect(loginType, model, pid, timeout).then(async re => {
-                        // this.messageService.info(re)
-                    }).catch(err => {
-                        this.messageService.error(err)
-                    })
+                // let connected = await this.udcService.is_connected();
+                // if (connected === true) {
+                //     this.messageService.info('Already Connected');
+                // } else {
+                this.udcService.connect(loginType, model, pid, timeout)
+                // .then(async re => {
+                    // this.messageService.info(re)
+                    //     }).catch(err => {
+                    //         this.messageService.error(err)
+                    //     })
+                    // }
                 }
-            }
         })
 
         registry.registerCommand(UdcCommands.DisConnect, {

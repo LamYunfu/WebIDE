@@ -19,9 +19,10 @@ export namespace SectionUI {
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
         config: () => void
+     
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
-        outputResult: (res: string) => void
+        outputResult: (res: string, types?: string) => void
         setQueue: () => void
         initPidQueueInfo: (infos: string) => Promise<string>
         closeTables: () => void
@@ -414,7 +415,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
                                 if (_this.judgeStatus[x.pid] == '1') {
-                                    _this.props.outputResult("::ACCEPT")
+                                    _this.props.outputResult("ACCEPT", "rightAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
@@ -424,7 +425,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 // alert(_this.judgeStatus[x.pid])
                                 if (_this.judgeStatus[x.pid] == '1') {
 
-                                    _this.props.outputResult("::WRONG_ANSWER")
+                                    _this.props.outputResult("WRONG_ANSWER", "wrongAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
@@ -469,11 +470,11 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 $("#setQueue" + this.props.sid).click(
                     () => {
                         console.log("click queue")
-                        let index = $("#codingInfoArea" + this.props.sid).attr("title")
-                        if (_this.currentFocusCodingIndex[0] != index) {
-                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
-                            return
-                        }
+                        // let index = $("#codingInfoArea" + this.props.sid).attr("title")
+                        // if (_this.currentFocusCodingIndex[0] != index) {
+                        //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                        //     return
+                        // }
                         _this.props.setQueue()
                         _this.props.say("已设为排队模式")
                         $("#setQueue" + this.props.sid).hide()
@@ -546,7 +547,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             <div className="contents col-12" style={{ "padding": "0px" }}>
 
                                 {/* <div className={`coding${this.props.sid} col-12`} > */}
-                                <ul className="list-group col-11">
+                                <ul className="list-group col-12">
                                     <VideoItem sid={this.props.sid} title='0' videoNames={[this.props.section.video]} uris={this.uris} gotoVideo={this.props.gotoVideo}></VideoItem>
                                     {this.state.optionItems.length == 0 ? "" : this.optionItems}
                                     {!this.state.codeCDM ? "" : this.codingItems}
@@ -555,10 +556,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
                             </div>
                             <div className={`codingInfos ${this.props.sid} col-7`} >
-                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} 
-                                openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" 
-                                config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} 
-                                currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos}
+                                    openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding"
+                                    config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say}
+                                    currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                     postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                             </div>
                             <div className={`optionInfos ${this.props.sid} col-7`} >

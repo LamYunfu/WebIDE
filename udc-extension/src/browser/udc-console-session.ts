@@ -57,7 +57,7 @@ export class UdcConsoleSession extends ConsoleSession {
             try {
                 let thewidget = await this.consoleWidget;
                 thewidget.upupup();
-                
+
             } catch (err) {
                 console.log(err);
             }
@@ -75,7 +75,7 @@ export class UdcConsoleSession extends ConsoleSession {
         this.onDidChangeEmitter.fire(undefined);
     }
 
-    
+
     public setWidget(widget: Promise<UdcConsoleWidget>) {
         this.consoleWidget = widget
     }

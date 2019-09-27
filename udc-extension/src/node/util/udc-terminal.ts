@@ -11,6 +11,7 @@ import * as events from "events";
 // import { networkInterfaces } from 'os';
 import { LOGINTYPE } from '../../common/udc-service';
 import { Logger } from './logger'
+import * as Color from "colors"
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -58,6 +59,15 @@ export class UdcTerminal {
     }
     creatSrcFile(fnJSON: string, dirName: string, type?: string, deviceRole?: string[]) {
         let rootdir = this.rootDir
+        new Promise((resolve) => {
+            fs.exists(`/home/project/${dirName}/hexFiles`, async (res) => {
+                if (!res) {
+                    fs.mkdir(`/home/project/${dirName}/hexFiles`, () => {
+                        resolve()
+                    })
+                }
+            })
+        })
         if (type == undefined) {
             Logger.info(`FNJSON:${fnJSON}`)
             let fn = JSON.parse(fnJSON)
@@ -107,7 +117,7 @@ export class UdcTerminal {
                                     fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
                                    
 src     = Split('''
-helloworld.c
+main.c
 ''')
 
 component = aos_component('helloworld', src)
@@ -289,8 +299,12 @@ endif
             });
             ctrFd.on("data", (data: Buffer) => {
                 let d = data.toString('utf8').substr(1, data.length).split(',')
-                Logger.val("d:" + d.slice(2, d.length))
-                resolve(d.slice(2, d.length))
+                let serverData = d.slice(2, d.length)
+                Logger.val("serverData:" + serverData)
+                if (serverData.join() == `no available device}`) {
+                    _this.outputResult("device allocate err: no more device in server")
+                }
+                resolve(serverData)
             });
             // let cm = '{ALGI,00035,terminal,74dfbfad34520000,adhoc,any}'
             // let cm = '{ALGI,00035,terminal,74dfbfad34520000,adhoc,any}'
@@ -403,7 +417,7 @@ endif
             this.cmd_excute_state = (type === Packet.CMD_DONE ? 'done' : 'error');
             this.events.emit('cmd-response');
         } else if (type == Packet.DEVICE_LOG) {
-            this.outputResult(value.toString().split(':').slice(2).join(":"))
+            this.outputResult(value.toString().split(':').slice(2).join(":"), "log")
         } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
             Logger.val(value, 'DPBN')
             let tmp = value.split(":")
@@ -487,7 +501,12 @@ endif
             model: model,
             waitID: (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString()
         }
+        if (this.cuurentPid == pid && await this.is_connected) {
+            this.outputResult("connect server some time before,no need for more opreation")
+            return true
+        }
         this.cuurentPid = pid
+
         let login_type = LOGINTYPE.QUEUE
         // model = `tinylink_lora`
 
@@ -520,12 +539,14 @@ endif
 
     async disconnect(): Promise<Boolean> {
         if (this.udcServerClient === null) {
+            this.outputResult('disconnect server success')
             return true;
         }
         this.hpp.removeAllListeners("data")
-        this.udcServerClient.destroy();
+        await this.udcServerClient.destroy();
         this.udcServerClient = null;
         this.dev_list = undefined
+        this.outputResult('disconnect server success')
         return true;
     }
 
@@ -567,17 +588,21 @@ endif
             Logger.info("enter in queue scc", ' ^.^> ')
             let result = await this.send_file_to_client(filepath, `${this.programState[waitID].clientID},${this.programState[waitID].devicePort}`)
             if (result == false) {
-                Logger.err("sending file err")
+                Logger.err("send file err")
+                this.outputResult('send hex file err')
                 return false
             }
             this.outputResult('send hex file to LDC success')
             let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0x10000,${await this.pkt.hash_of_file(filepath)},${waitID},${pid}`
             Logger.info(content, "content:")
-            this.outputResult('program......')
+            this.outputResult('programming......')
             this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content)
             await this.wait_cmd_excute_done(270000);
             if (this.cmd_excute_state === 'done') {
                 this.outputResult('program success ^.^')
+            }
+            else {
+                this.outputResult('program err ^.^')
             }
         }
         else {
@@ -589,18 +614,19 @@ endif
     async program_device(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         let send_result = await this.send_file_to_client(filepath, devstr);
         if (send_result === false) {
+            this.outputResult('send hex file err')
             return false;
         }
         this.outputResult('send hex file to LDC success')
         let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
-        this.outputResult('program......')
+        this.outputResult('programming......')
         this.send_packet(Packet.DEVICE_PROGRAM, content);
         await this.wait_cmd_excute_done(270000);
         if (this.cmd_excute_state === 'done') {
             this.outputResult('program success ^.^')
         }
         else {
-            this.outputResult('program fail T.T')
+            this.outputResult('program error T.T')
         }
         return (this.cmd_excute_state === 'done' ? true : false);
     }
@@ -634,9 +660,9 @@ endif
         let fullpath = filepath.split('/');
         let filename = fullpath[fullpath.length - 1]
         let content = devstr + ":" + filehash + ":" + filename;
-        this.outputResult("filehash:"+filehash)
+        this.outputResult("filehash:" + filehash)
         let retry = 4;
-        
+
         while (retry > 0) {
             Logger.info(`Packet.FILE_BEGIN:${Packet.FILE_BEGIN},content:${content}`)
             this.send_packet(Packet.FILE_BEGIN, content);
@@ -785,8 +811,13 @@ endif
         Logger.info(" null cookie")
         return true
     }
-    outputResult(res: string) {
-        this.udcClient && this.udcClient.OnDeviceLog("::" + res)
+    outputResult(res: string, types: string = "systemInfo") {
+        Color.enable()
+        switch (types) {
+            case undefined:
+            case "systemInfo": { this.udcClient && this.udcClient.OnDeviceLog("::" + res.grey); break; }
+            case "log": { this.udcClient && this.udcClient.OnDeviceLog("::" + res.green); break; }
+        }
     }
     config() {
         this.udcClient && this.udcClient.onConfigLog(this.tinyLinkInfo)

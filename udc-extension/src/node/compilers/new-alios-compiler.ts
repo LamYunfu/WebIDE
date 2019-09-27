@@ -57,7 +57,8 @@ export class NewAliosCompiler {
                                 resolve("scc")
                             }
                             else {
-                                console.log("Alios Post Config Failed!")
+                                console.log("Alios Post Config Err:" + res.status)
+                                _this.udc.outputResult("Alios Post Config Err:" + res.status)
                             }
                         })
                     })
@@ -97,7 +98,8 @@ export class NewAliosCompiler {
                                 resolve("scc")
                             }
                             else {
-                                console.log("Alios Post Upload Failed!")
+                                console.log('Alios Post Upload Err:' + res.status)
+                                _this.udc.outputResult(`Alios Post Upload Err:${res.status}`)
                             }
                         })
                     })
@@ -119,24 +121,41 @@ export class NewAliosCompiler {
                             headers: {
                                 'Content-Type': "application/json"
                             }
-                        }, (mesg) => {
-                            let ws = fs.createWriteStream(`/home/project/${projectName}/hexFiles/${new Buffer(`${role}`).toString("hex")}.hex`, {
-                                encoding: "binary"
-                            })
-                            ws.on("close", () => {
-                                let tmp: any = {}
-                                tmp[role] = new Buffer(`${role}`).toString("hex") + ".hex"
-                                _this.fm.setFileNameMapper(pid, tmp)
-                                resolve("scc")
-                                console.log("download scc")
-                            })
-                            mesg.on("data", (b: Buffer) => {
-                                console.log("downloading")
-                                ws.write(b)
-                            })
-                            mesg.on("end", () => {
-                                ws.close()
-                            })
+                        }, async (mesg) => {
+                            let bufferStore = ""
+                            if (mesg.headers["content-type"] == "application/octet-stream") {
+                                let ws = fs.createWriteStream(`/home/project/${projectName}/hexFiles/${new Buffer(`${role}`).toString("hex")}.hex`, {
+                                    encoding: "binary"
+                                })
+                                ws.on("close", () => {
+                                    let tmp: any = {}
+                                    tmp[role] = new Buffer(`${role}`).toString("hex") + ".hex"
+                                    _this.fm.setFileNameMapper(pid, tmp)
+                                    resolve("scc")
+                                    console.log("download scc")
+                                })
+                                mesg.on("data", (b: Buffer) => {
+                                    console.log("downloading")
+                                    bufferStore += b.toString("binary")
+                                })
+                                mesg.on("end", () => {
+                                    ws.write(new Buffer(bufferStore, "binary"),()=>{
+                                        ws.close()
+                                    })
+                                   
+                                })
+                            }
+                            else {
+                                mesg.on("data", (b: Buffer) => {
+                                    console.log("downloading")
+                                    bufferStore += b.toString()
+                                })
+                                mesg.on("end", () => {
+                                    _this.udc.outputResult("compile err:" + JSON.parse(bufferStore).status)
+                                })
+
+                            }
+
                         })
                         downloadRequest.write(JSON.stringify({
                             filehash: hashVal

@@ -48,7 +48,7 @@ export class UdcCompiler {
                 "POST").then(res => {
                     if (res == null || res == undefined || res == '') {
                         Logger.info("Compile No Data Back,Mabye your login info expired,try login again")
-                        _this.outputResult("There are no Response from Compiler ")
+                        _this.outputResult("there are no Response from Compiler ")
                         reject("failed")
                         return
                     }
@@ -64,7 +64,7 @@ export class UdcCompiler {
                     Logger.val("compile result:" + tmp.data)
                     Logger.val("compiler's state:" + data["systemState"])
                     if (data.verbose == 'Cross Compiling Error.') {
-                        this.udc.udcClient != undefined && this.outputResult("online compile failure,check your src file please")
+                        this.udc.udcClient != undefined && this.outputResult("compile online unsuccess,check your src file please")
                         this.outputResult(data.compileDebug)
                         reject("srcFile Post failed")
                     }
@@ -97,8 +97,7 @@ export class UdcCompiler {
                             mesg.on("end", async () => {
                                 // ws.write(x)
                                 ws.close()
-                                _this.outputResult('download hex.zip completed ,extracting hex file')
-                                await Logger.info("download scc")
+                                _this.outputResult('extracting hex file......')
                                 resolve("scc")
                                 return
                             })
@@ -177,7 +176,7 @@ export class UdcCompiler {
     }
 
 
-    outputResult(res: string) {
-        this.udc.udcClient && this.udc.udcClient.OnDeviceLog("::" + res)
+    outputResult(res: string, types: string = "systemInfo") {
+        this.udc.outputResult(res, types)
     }
 }

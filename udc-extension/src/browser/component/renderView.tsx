@@ -11,6 +11,7 @@ export namespace View {
         getData: (type: string) => Promise<string>
         storeData: (data: string) => void
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
+        isconnected: () => Promise<Boolean>
         disconnect: () => void
         callUpdate: () => void
         openSrcFile: (uri: URI) => void
@@ -18,7 +19,7 @@ export namespace View {
         setCookie: (cookie: string) => void
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
-        outputResult: (res: string) => void
+        outputResult: (res: string, types?: string) => void
         setSize: (size: number) => void
         setQueue: () => void
         closeTabs: () => void

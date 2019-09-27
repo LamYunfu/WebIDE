@@ -14,7 +14,7 @@ export namespace Scene {
         config: () => void
         setCookie: (cookie: string) => void
         say: (verbose: string) => void
-        outputResult: (res: string) => void
+        outputResult: (res: string,types?:string) => void
         setQueue: () => void
         closeTabs: () => void
         initPidQueueInfo(infos: string): Promise<string>

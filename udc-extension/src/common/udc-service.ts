@@ -14,7 +14,7 @@ export interface UdcService {
     control(devstr: string, operation: string): Promise<Boolean>;
     postSrcFile(pid: string): void
     setCookie(cookie: string): boolean
-    outputResult(res: string): void
+    outputResult(res: string,types?:string): void
     storeState(stat: string): void
     getState(type: string): Promise<string>
     setQueue(): void

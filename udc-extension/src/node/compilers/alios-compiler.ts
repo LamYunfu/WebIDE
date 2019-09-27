@@ -292,7 +292,7 @@ export class AliosCompiler {
     }
 
 
-    outputResult(res: string) {
-        this.udc.udcClient && this.udc.udcClient.OnDeviceLog("::" + res)
+    outputResult(res: string,types?:string) {
+        this.udc.outputResult("::" + res,types)
     }
 }

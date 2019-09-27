@@ -7,6 +7,8 @@ import { MessageService, CommandRegistry } from "@theia/core";
 import { UdcCommands } from "./udc-extension-contribution";
 import URI from "@theia/core/lib/common/uri";
 import { View } from './component/renderView'
+import { UdcWatcher } from "../common/udc-watcher";
+import * as color from 'colors'
 export interface DeviceViewSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode {
     iconClass: string;
 }
@@ -43,7 +45,8 @@ export class DeviceViewWidget extends TreeWidget {
         @inject(MessageService) protected readonly messageService: MessageService,
         @inject(CommandRegistry) protected readonly commandRegistry: CommandRegistry,
         @inject(ApplicationShell) protected applicationShell: ApplicationShell,
-        @inject(LocalStorageService) protected readonly lss: LocalStorageService
+        @inject(LocalStorageService) protected readonly lss: LocalStorageService,
+        @inject(UdcWatcher) protected readonly uwc: UdcWatcher
     ) {
         super(treePros, model, contextMenuRenderer);
         this.id = 'device-view';
@@ -71,6 +74,7 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <View
+                isconnected={this.isconnected}
                 programSingleFile={this.programSingleFile}
                 getLocal={this.getLocal}
                 setLocal={this.saveLocal}
@@ -107,8 +111,16 @@ export class DeviceViewWidget extends TreeWidget {
         await this.applicationShell.closeTabs("bottom")
         await this.applicationShell.closeTabs("right")
     }
-    outputResult = (res: string) => {
-        this.udcService.outputResult(res)
+    outputResult = (res: string, types?: string) => {
+        // this.udcService.outputResult(res,types)
+        color.enable()
+        let client = this.uwc.getUdcWatcherClient()
+        switch (types) {
+            case "wrongAnswer": client.OnDeviceLog("::" + res.red); break;
+            case "rightAnswer": client.OnDeviceLog("::" + res.blue); break;
+            default: client.OnDeviceLog("::" + res.green); break;
+        }
+
     }
 
 
@@ -120,7 +132,9 @@ export class DeviceViewWidget extends TreeWidget {
     connect = async (loginType: string, model: string, pid: string, timeout: string) => {
         await this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
     }
-
+    isconnected = async () => {
+        return this.udcService.is_connected()
+    }
 
     disconnect = async () => {
         await this.commandRegistry.executeCommand(UdcCommands.DisConnect.id)
@@ -184,9 +198,9 @@ export class DeviceViewWidget extends TreeWidget {
         // alert(`save key:${key},obj:${JSON.stringify(obj)}`)
         this.lss.setData(key, obj)
     }
- getLocal =     async (key: string, obj: object) => {
-       
-        let val=await this.lss.getData(key, obj)
+    getLocal = async (key: string, obj: object) => {
+
+        let val = await this.lss.getData(key, obj)
         // alert(`get key:${key},obj:${JSON.stringify(val)}`)
         return val
     }

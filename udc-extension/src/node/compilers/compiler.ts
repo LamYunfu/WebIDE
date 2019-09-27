@@ -22,6 +22,7 @@ export class Compiler {
         let fnsArr = JSON.parse(fns)
         Logger.info("start compiling")
         Logger.info("MODEL is:" + model)
+        this.udcTerminal.outputResult("compiling......")
         if (this.getCompilerType(model) == "alios") {
             // this.udcCompiler.outputResult("use alios compiler")
             Logger.info("use alios compiler")

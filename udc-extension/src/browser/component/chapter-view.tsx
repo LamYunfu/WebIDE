@@ -18,7 +18,7 @@ export namespace Chapter {
         config: () => void
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
-        outputResult: (res: string) => void
+        outputResult: (res: string,types?:string) => void
         setChapterData: (vid: string, data: {}) => void
         setQueue: () => void
         initPidQueueInfo(infos: string): Promise<string>

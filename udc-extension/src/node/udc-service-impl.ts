@@ -115,7 +115,7 @@ export class UdcServiceImpl implements UdcService {
     setCookie(cookie: string): boolean {
         return this.udcTerminal.setCookie(cookie)
     }
-    outputResult(res: string) {
+    outputResult(res: string,types?:string) {
         this.udcTerminal.outputResult(res)
     }
     storeState(data: string) {

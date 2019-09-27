@@ -15,7 +15,7 @@ export namespace Experiment {
         config: () => void
         setCookie: (cookie: string) => void
         say: (verbose: string) => void
-        outputResult: (res: string) => void
+        outputResult: (res: string, types?: string) => void
         setQueue: () => void
         closeTabs: () => void
         initPidQueueInfo(infos: string): Promise<string>
@@ -194,11 +194,11 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                 )
                 $("#setQueue" + this.props.section.sid).click(
                     () => {
-                        let index = $("#codingInfoArea" + this.props.section.sid).attr("title")
-                        if (_this.currentFocusCodingIndex[0] != index) {
-                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
-                            return
-                        }
+                        // let index = $("#codingInfoArea" + this.props.section.sid).attr("title")
+                        // if (_this.currentFocusCodingIndex[0] != index) {
+                        //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                        //     return
+                        // }
                         _this.props.setQueue()
                         _this.props.say("已设为排队模式")
                         $("#setQueue" + this.props.section.sid).hide()
@@ -247,8 +247,8 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             } else if (status == 'ACCEPT') {
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
-                                if (_this.judgeStatus[x.pid] == '1') {
-                                    _this.props.outputResult("::ACCEPT")
+                                if (_this.judgeStatus[x.pid] == '1') { //9.27
+                                    _this.props.outputResult("ACCEPT", "rightAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
@@ -257,8 +257,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
                                 // alert(_this.judgeStatus[x.pid])
                                 if (_this.judgeStatus[x.pid] == '1') {
-
-                                    _this.props.outputResult("::WRONG_ANSWER")
+                                    _this.props.outputResult("WRONG_ANSWER", "wrongAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
