@@ -23,6 +23,7 @@ export interface UdcService {
     setTinyLink(name: string, passwd: string): void
     config(): void
     programSingleFile: (pidAndFn: string) => void
+    postSimFile:(pid:string)=>void
 
 }
 

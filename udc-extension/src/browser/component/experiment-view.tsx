@@ -231,6 +231,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         // alert(JSON.stringify(data))
                         let tmp = data.problem
                         for (let x of tmp) {
+                            $(`.onlineCount.${x.pid}>span`).text(x.count)
                             _this.codingStatus[x.pid] = x.status
                             if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
 

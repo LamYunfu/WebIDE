@@ -115,7 +115,7 @@ export class UdcServiceImpl implements UdcService {
     setCookie(cookie: string): boolean {
         return this.udcTerminal.setCookie(cookie)
     }
-    outputResult(res: string,types?:string) {
+    outputResult(res: string, types?: string) {
         this.udcTerminal.outputResult(res)
     }
     storeState(data: string) {
@@ -145,5 +145,8 @@ export class UdcServiceImpl implements UdcService {
     }
     programSingleFile(pidAndFn: string) {
         this.controller.processSingleFile(pidAndFn)
+    }
+    postSimFile(pid: string) {
+        this.udcTerminal.postSimFile(pid)
     }
 }

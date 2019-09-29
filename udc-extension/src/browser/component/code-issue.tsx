@@ -82,27 +82,27 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
     componentDidMount() {
         this.context.props.isconnected().then((res: boolean) => {
             if (res) {
-                _this.setState({
-                    connectionStatus: "断开"
-                })
-            }
-            else {
-                _this.setState({
-                    connectionStatus: "连接"
-                })
+                _this.context.props.disconnect()
             }
         })
         let _this = this
         $(document).ready(
             () => {
-                $("#submitSrcButton" + _this.props.sid).click(
-                    () => {
+                $(document).on("click", "#submitSrcButton" + _this.props.sid,
+                    (e) => {
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")
                         // if (_this.props.currentFocusCodingIndex[0] != index) {
                         //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
                         //     return
                         // }
                         index != undefined && _this.props.postSrcFile(index)
+                        index != undefined && _this.props.addCodingSubmittedIssue(index)
+                    }
+                )
+                $(document).on("click", "#submitSimButton" + _this.props.sid,
+                    (e) => {
+                        let index = $("#codingInfoArea" + this.props.sid).attr("title")
+                        index != undefined && _this.context.props.postSimFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
                 )
@@ -123,19 +123,19 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         $(".optionChocies").hide()
                         _this.context.props.setSize(720)
                         if (tmp != undefined) {
-                            _this.setState({
-                                pid: tmp
-                            })
-                            if (_this.props.roles[_this.state.pid] != undefined) {
-                                let singleFileButtons = []
-                                for (let item of _this.props.roles[_this.state.pid]) {
+                            let singleFileButtons = _this.state.singleFileButtons
+                            if (_this.props.roles[tmp] != undefined) {
+                                for (let item of _this.props.roles[tmp]) {
                                     singleFileButtons.push(<span><button className={`singleFile btn btn-primary col-auto`} id={`${item} `}>{item}
                                     </button></span>)
                                 }
-                                _this.setState({
-                                    singleFileButtons: singleFileButtons
-                                })
+
                             }
+                            _this.setState({
+                                pid: tmp,
+                                singleFileButtons: singleFileButtons
+                            })
+                            // alert(singleFileButtons.length)
 
                             if (_this.props.roles[tmp] != undefined) {
                                 if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1) {
@@ -213,17 +213,18 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         <h5 id="titleAndStatus" className="card-title">
                             <span id={"coding_title" + this.props.sid}>关于mqtt的一道题</span>
                         </h5>
+                        <div className={`onlineCount ${this.state.pid}`} style={{ textAlign: "right", color:"chartreuse",fontSize: "12px" }}>当前有<span style={{ textDecorationLine: "underline", color: "yellow" }}>***</span>人在做这道题</div>
                         <div id="codingInfoAreaContainer">
                             {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
                             <pre className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</pre>
                         </div>
                         <span><button className="btn btn-primary" id={"connectButton" + this.props.sid}>{this.state.connectionStatus}</button></span>
                         {/* <span><button className="btn btn-primary" id={"setQueue" + this.props.sid}>排队</button></span> */}
-                     
+
 
                         {/* <span><button className="btn btn-primary" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span> */}
                         <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></span>
-
+                        <span><button className="btn btn-primary" id={"submitSimButton" + this.props.sid}>仿真</button></span>
                     </div>
                 </div>
                 :
@@ -240,7 +241,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         </div>
                         <div className="controlButtons col-12">
                             {this.state.singleFileButtons.length == 0 ? [] : this.state.singleFileButtons}
-
+                            {/* {this.state.singleFileButtons} */}
                             <br />
                             <div>
                                 <span><button className="btn btn-primary col-auto" id={"connectButtonSingleFile" + this.props.sid}>{this.state.connectionStatus}</button></span>

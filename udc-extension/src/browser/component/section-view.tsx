@@ -19,7 +19,7 @@ export namespace SectionUI {
         openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
         config: () => void
-     
+
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string, types?: string) => void
@@ -339,7 +339,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             for (let index in _this.choices[x]) {
                                 choices.push(
                                     <div className="oneOptionDescription col-12" style={{
-                                        backgroundColor: "white", height: "60px",
+                                        height: "60px",
                                         borderStyle: "solid", borderColor: "grey",
                                         borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
                                         display: "inline-table", margin: "5px 10px"
@@ -357,20 +357,22 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 if (x == _this.props.sid)
                                     return true;
                             })
-                            _this.context.setState({
-                                sidIndex: index
-                            })
+
+                            let isLast = this.context.getState("isLast")
+                            let qzid = this.context.getState("qzid")
                             index == _this.context.sidArray.length - 1 && parseInt(x) == Object.keys(_this.optionIssues).length ?
-                                _this.context.setState("isLast", true) :
-                                _this.context.setState("isLast", false)
-                            _this.context.setState("qzid", $(e.currentTarget).children(".qzid").text())
-
-                            _this.context.setState("pid", x)
-                            _this.context.setState("sid", _this.props.sid)
-                            _this.context.setState("scid", _this.scids[x])
-                            _this.context.setOptionChoicesDescription(choices)
-
-
+                                isLast = true :
+                                isLast = false
+                            qzid = $(e.currentTarget).children(".qzid").text()
+                            _this.context.setState({
+                                sidIndex: index,
+                                qzid: qzid,
+                                isLast: isLast,
+                                "pid": x,
+                                "scid": _this.scids[x],
+                                sid: _this.props.sid,
+                                optionChoicesDecription: choices
+                            })
                         }
                     }
                 )
@@ -398,6 +400,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         }
                         let tmp = data.problem
                         for (let x of tmp) {
+                            $(`.onlineCount.${x.pid}>span`).text(x.count)
                             _this.codingStatus[x.pid] = x.status
                             if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
 
@@ -498,6 +501,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     $(".optionDescription").hide()
                     $(".optionChocies").hide()
                     index != undefined && _this.props.gotoVideo(_this.uris[parseInt(index)], _this.videoNames[parseInt(index)])
+                    _this.context.props.setSize(500)
                 })
             }
         )

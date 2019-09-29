@@ -12,6 +12,7 @@ import * as events from "events";
 import { LOGINTYPE } from '../../common/udc-service';
 import { Logger } from './logger'
 import * as Color from "colors"
+import * as WebSocket from 'ws'
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -589,20 +590,20 @@ endif
             let result = await this.send_file_to_client(filepath, `${this.programState[waitID].clientID},${this.programState[waitID].devicePort}`)
             if (result == false) {
                 Logger.err("send file err")
-                this.outputResult('send hex file err')
+                this.outputResult('send hex file to LDC err')
                 return false
             }
             this.outputResult('send hex file to LDC success')
             let content = `${this.programState[waitID].clientID},${this.programState[waitID].devicePort},0x10000,${await this.pkt.hash_of_file(filepath)},${waitID},${pid}`
             Logger.info(content, "content:")
-            this.outputResult('programming......')
+            this.outputResult('burning......')
             this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content)
             await this.wait_cmd_excute_done(270000);
             if (this.cmd_excute_state === 'done') {
-                this.outputResult('program success ^.^')
+                this.outputResult('burn success ^.^')
             }
             else {
-                this.outputResult('program err ^.^')
+                this.outputResult('burn err ^.^')
             }
         }
         else {
@@ -614,19 +615,19 @@ endif
     async program_device(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         let send_result = await this.send_file_to_client(filepath, devstr);
         if (send_result === false) {
-            this.outputResult('send hex file err')
+            this.outputResult('send hex file to LDC err')
             return false;
         }
         this.outputResult('send hex file to LDC success')
         let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
-        this.outputResult('programming......')
+        this.outputResult('burning......')
         this.send_packet(Packet.DEVICE_PROGRAM, content);
         await this.wait_cmd_excute_done(270000);
         if (this.cmd_excute_state === 'done') {
-            this.outputResult('program success ^.^')
+            this.outputResult('burn success ^.^')
         }
         else {
-            this.outputResult('program error T.T')
+            this.outputResult('burn error T.T')
         }
         return (this.cmd_excute_state === 'done' ? true : false);
     }
@@ -660,7 +661,7 @@ endif
         let fullpath = filepath.split('/');
         let filename = fullpath[fullpath.length - 1]
         let content = devstr + ":" + filehash + ":" + filename;
-        this.outputResult("filehash:" + filehash)
+        // this.outputResult("filehash:" + filehash)
         let retry = 4;
 
         while (retry > 0) {
@@ -815,8 +816,8 @@ endif
         Color.enable()
         switch (types) {
             case undefined:
-            case "systemInfo": { this.udcClient && this.udcClient.OnDeviceLog("::" + res.grey); break; }
-            case "log": { this.udcClient && this.udcClient.OnDeviceLog("::" + res.green); break; }
+            case "systemInfo": { this.udcClient && this.udcClient.OnDeviceLog("::" + `*${res}`.green); break; }
+            case "log": { this.udcClient && this.udcClient.OnDeviceLog("::" + res.gray); break; }
         }
     }
     config() {
@@ -828,5 +829,42 @@ endif
 
         console.log(JSON.stringify(this.tinyLinkInfo) + ".........................................")
     }
+    async postSimFile(pid: string) {
+        let _this = this
+        let { dirName, fns } = this.pidQueueInfo[pid]
+        let filename = JSON.parse(fns)[0].split(".")[0]
+        _this.outputResult("try to build the connection with simulator")
+        let tinySimRequest = new WebSocket(
+            "ws://47.98.249.190:8004/", {
+                // "ws://localhost:8765/", {
 
+            }
+        )
+        await new Promise(res => {
+            tinySimRequest.on("message", (data: string) => {
+                let tmp = new Buffer(data).toString('utf8')
+                console.log(tmp.toString())
+                _this.outputResult(tmp.toString(), 'log')
+            })
+            tinySimRequest.on("close", () => {
+                res()
+            })
+            tinySimRequest.on("open", () => {
+                _this.outputResult("sending buffer to simulator......")
+
+                let buff = fs.readFileSync(`/home/project/${dirName}/${filename}.cpp`, { encoding: 'utf8' })
+                tinySimRequest.send(buff, () => {
+                    _this.outputResult("send buffer to simulator success")
+                    tinySimRequest.send("quit")
+                })
+            })
+            tinySimRequest.on("error", () => {
+                _this.outputResult("bad connection with simulator")
+            })
+
+        })
+
+
+
+    }
 }

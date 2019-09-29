@@ -43,7 +43,7 @@ export class Programer {
             Logger.info("error file name map")
             return "fail"
         }
-        this.ut.outputResult("sending file......")
+        this.ut.outputResult("sending file to LDC......")
         switch (loginType) {
             case "queue": {
                 for (let item of fnArr) {

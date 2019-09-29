@@ -1907,6 +1907,13 @@
     "@types/events" "*"
     "@types/node" "*"
 
+"@types/ws@^6.0.3":
+  version "6.0.3"
+  resolved "https://registry.npm.taobao.org/@types/ws/download/@types/ws-6.0.3.tgz#b772375ba59d79066561c8d87500144d674ba6b3"
+  integrity sha1-t3I3W6WdeQZlYcjYdQAUTWdLprM=
+  dependencies:
+    "@types/node" "*"
+
 "@types/yargs-parser@*":
   version "13.0.0"
   resolved "https://registry.npm.taobao.org/@types/yargs-parser/download/@types/yargs-parser-13.0.0.tgz#453743c5bbf9f1bed61d959baab5b06be029b2d0"
@@ -2446,6 +2453,11 @@ async-each@^1.0.1:
   version "1.0.3"
   resolved "https://registry.npm.taobao.org/async-each/download/async-each-1.0.3.tgz#b727dbf87d7651602f06f4d4ac387f47d91b0cbf"
   integrity sha1-tyfb+H12UWAvBvTUrDh/R9kbDL8=
+
+async-limiter@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/async-limiter/download/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
+  integrity sha1-3TeelPDbgxCwgpH51kwyCXZmF/0=
 
 async-limiter@~1.0.0:
   version "1.0.0"
@@ -12905,6 +12917,13 @@ ws@^5.2.0, ws@^5.2.2:
   integrity sha1-3/7xSGa46NyRM1glFNG++vlumA8=
   dependencies:
     async-limiter "~1.0.0"
+
+ws@^7.1.2:
+  version "7.1.2"
+  resolved "https://registry.npm.taobao.org/ws/download/ws-7.1.2.tgz#c672d1629de8bb27a9699eb599be47aeeedd8f73"
+  integrity sha1-xnLRYp3ouyepaZ61mb5Hru7dj3M=
+  dependencies:
+    async-limiter "^1.0.0"
 
 xdg-basedir@^2.0.0:
   version "2.0.0"

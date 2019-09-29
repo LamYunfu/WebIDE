@@ -74,6 +74,7 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <View
+                postSimFile={this.postSimFile}
                 isconnected={this.isconnected}
                 programSingleFile={this.programSingleFile}
                 getLocal={this.getLocal}
@@ -206,5 +207,8 @@ export class DeviceViewWidget extends TreeWidget {
     }
     programSingleFile = (pidAndFn: string) => {
         this.udcService.programSingleFile(pidAndFn)
+    }
+    postSimFile = (pid: string) => {
+        this.udcService.postSimFile(pid)
     }
 }

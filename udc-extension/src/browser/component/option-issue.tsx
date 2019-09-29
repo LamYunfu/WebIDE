@@ -295,6 +295,7 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                 qzid: qzid,
                 scid: scid
             }))
+            
 
         })
         $(document).on('click', `.optionInfoSubmit${this.props.sid}`, (e) => {

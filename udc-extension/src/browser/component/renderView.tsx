@@ -30,6 +30,7 @@ export namespace View {
         setLocal: (key: string, obj: object) => void
         getLocal: (key: string, obj: object) => any
         programSingleFile: (pidAndFn: string) => void
+        postSimFile: (pid: string) => void
     }
     export interface State {
         ajaxNotFinish: boolean,
@@ -182,9 +183,9 @@ export class View extends React.Component<View.Props, View.State>{
                     }
                     _this.type = data.data.type
                     _this.vid = data.data.vid
-                    setInterval(() => {
-                        _this.props.storeData(JSON.stringify(_this.typeDataPool))
-                    }, 8000)
+                    // setInterval(() => {
+                    //     _this.props.storeData(JSON.stringify(_this.typeDataPool))
+                    // }, 8000)
                     if (_this.typeDataPool[_this.type] == undefined) {
                         _this.typeDataPool[_this.type] = {}
                     }
@@ -234,9 +235,8 @@ export class View extends React.Component<View.Props, View.State>{
         }))
 
     }
-    async componentWillUpdate() {
-        $(".oneOptionDescription").removeClass("skyblueItem")
-        $(".resultBoard").text("")
+    async componentDidUpdate() {
+
         if (this.submitedAnswers[this.state.sid] == undefined) {
             this.submitedAnswers[this.state.sid] = await this.props.getLocal(this.state.sid, {})
             //alert("getLocal:" + JSON.stringify(this.submitedAnswers[this.state.sid]))
@@ -244,6 +244,7 @@ export class View extends React.Component<View.Props, View.State>{
         let sidData: any = this.submitedAnswers[this.state.sid]
         ////alert(JSON.stringify(sidData))
         if (sidData != undefined && sidData[this.state.pid] != undefined) {
+            // alert(`updata:${this.state.pid}`)
             for (let item of sidData[this.state.pid].uAnswer) {
                 $(`.oneOptionDescription[title=${item}]`).addClass("skyblueItem")
             }
@@ -262,8 +263,15 @@ export class View extends React.Component<View.Props, View.State>{
         }
 
     }
+    componentWillUpdate() {
+        $(".oneOptionDescription").removeClass("skyblueItem")
+        $(".resultBoard").text("")
+
+    }
     componentDidMount() {
         let _this = this
+        $(".oneOptionDescription").removeClass("skyblueItem")
+        $(".resultBoard").text("")
         setInterval(() => $("#timer").text(new Date().toLocaleString()), 1)
         $(document).on("click", ".oneOptionDescription", (e) => {
             if ($(e.currentTarget).hasClass("skyblueItem"))
@@ -271,37 +279,110 @@ export class View extends React.Component<View.Props, View.State>{
             else
                 $(e.currentTarget).addClass("skyblueItem")
         })
+        $(document).on('click', ".btn", async (e) => {
+
+            let sp = $(e.currentTarget)
+            sp.attr("disabled", "true")
+            await new Promise(res => {
+                setTimeout((x) => {
+                    $(x).removeAttr("disabled")
+                    res()
+                }, 1000, sp);
+            })
+
+        })
+        // $(document).on("click", ".next", () => {
+        //     let csid = _this.state.sid
+        //     let pid = _this.state.pid
+        //     if (parseInt(pid) < Object.keys(_this.questionPool[csid].descriptions).length) {
+        //         pid = (parseInt(pid) + 1).toString()
+        //         alert(`pid:${pid}`)
+        //         parseInt(pid) == Object.keys(_this.questionPool[csid].descriptions).length ?
+        //             _this.state.sidIndex == _this.state.sidArray.length - 1 ?
+        //                 _this.setState({
+        //                     isLast: true
+        //                 })
+        //                 :
+        //                 _this.setState({
+        //                     isLast: false
+        //                 })
+        //             :
+        //             _this.setState({
+        //                 isLast: false
+        //             })
+
+        //     }
+        //     else {
+        //         ////alert("no more answer")
+        //         let index = _this.state.sidArray.findIndex((val, index) => {
+        //             if (val == _this.state.sid)
+        //                 return true;
+        //         })
+        //         _this.setState({
+        //             sidIndex: index
+        //         })
+
+        //         if (index >= _this.state.sidArray.length - 1) {
+        //             alert("没有更多了！")
+        //             return;
+        //         }
+        //         else {
+        //             csid = _this.state.sidArray[++index]
+        //             pid = "1"
+        //         }
+
+        //     }
+        //     let options = []
+        //     let choices = _this.questionPool[csid]["choices"][pid]
+        //     for (let index in choices) {
+        //         options.push(<div className="oneOptionDescription col-12" style={{
+        //             backgroundColor: "white", height: "60px",
+        //             borderStyle: "solid", borderColor: "grey",
+        //             borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
+        //             display: "inline-table", margin: "5px 10px"
+        //         }} title={(parseInt(index) + 1).toString()}>
+        //             <div className="option-choice" style={{
+        //                 display: "table-cell", verticalAlign: "middle",
+        //             }} >
+        //                 {choices[index]}
+        //             </div>
+        //         </div>)
+        //     }
+        //     _this.setState({
+        //         sid: csid,
+        //         optionDescription: _this.questionPool[csid]["descriptions"][pid],
+        //         optionChoicesDecription: options,
+        //         pid: pid,
+        //         scid: _this.questionPool[csid]["scids"][pid],
+        //     }, () => {
+        //         $(".list-group-item").removeClass("list-group-item-primary")
+        //         $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
+        //     })
+        // })
+
         $(document).on("click", ".next", () => {
             let csid = _this.state.sid
             let pid = _this.state.pid
+            let newIsLast = _this.state.isLast
+            let index = _this.state.sidIndex
             if (parseInt(pid) < Object.keys(_this.questionPool[csid].descriptions).length) {
                 pid = (parseInt(pid) + 1).toString()
-                ////alert(`pid:${pid}`)
+                // alert(`pid:${pid}`)
                 parseInt(pid) == Object.keys(_this.questionPool[csid].descriptions).length ?
                     _this.state.sidIndex == _this.state.sidArray.length - 1 ?
-                        _this.setState({
-                            isLast: true
-                        })
+                        newIsLast = true
                         :
-                        _this.setState({
-                            isLast: false
-                        })
+                        newIsLast = false
                     :
-                    _this.setState({
-                        isLast: false
-                    })
+                    newIsLast = false
 
             }
             else {
                 ////alert("no more answer")
-                let index = _this.state.sidArray.findIndex((val, index) => {
+                index = _this.state.sidArray.findIndex((val, index) => {
                     if (val == _this.state.sid)
                         return true;
                 })
-                _this.setState({
-                    sidIndex: index
-                })
-
                 if (index >= _this.state.sidArray.length - 1) {
                     alert("没有更多了！")
                     return;
@@ -316,7 +397,7 @@ export class View extends React.Component<View.Props, View.State>{
             let choices = _this.questionPool[csid]["choices"][pid]
             for (let index in choices) {
                 options.push(<div className="oneOptionDescription col-12" style={{
-                    backgroundColor: "white", height: "60px",
+                    height: "60px",
                     borderStyle: "solid", borderColor: "grey",
                     borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
                     display: "inline-table", margin: "5px 10px"
@@ -329,6 +410,8 @@ export class View extends React.Component<View.Props, View.State>{
                 </div>)
             }
             _this.setState({
+                sidIndex: index,
+                isLast: newIsLast,
                 sid: csid,
                 optionDescription: _this.questionPool[csid]["descriptions"][pid],
                 optionChoicesDecription: options,
@@ -339,6 +422,9 @@ export class View extends React.Component<View.Props, View.State>{
                 $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
             })
         })
+
+
+
         $(document).on("click", ".expander", () => {
             let sp = $(".expander>span")
             if (sp.hasClass("oi-chevron-right")) {
@@ -575,13 +661,15 @@ export class View extends React.Component<View.Props, View.State>{
                         setOptionChoicesDescription: (a: JSX.Element[]) => {
                             _this.setOptionChoicesDescription(a)
                         },
-                        setState: (name: string, value: any) => {
-                            let tmp: any = {}
-                            tmp[name] = value
+                        setState: (tmp: object) => {
                             _this.setState({
                                 ...tmp
                             })
 
+                        },
+                        getState: (key: string) => {
+                            let tmp: any = this.state
+                            return tmp[key]
                         },
                         get sidArray() {
                             return _this.state.sidArray
@@ -644,12 +732,12 @@ export class View extends React.Component<View.Props, View.State>{
 
                             </div>
                             <div className="optionChocies col-6" style={{ backgroundColor: "#e7ebee", color: "green", fontSize: `15px`, float: "left", height: "100%" }}>
-                                <div className="choices"> {_this.state.optionChoicesDecription}</div>
+                                <div className="choices" > {_this.state.optionChoicesDecription}</div>
                                 <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
                                 <div className="next btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>下一个</div>
-                                {this.state.viewType == "1" ? <div className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</div>
+                                {this.state.viewType == "1" ? <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
                                     :
-                                    this.state.isLast ? <div className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</div>//考试模式
+                                    this.state.isLast ? <button className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>//考试模式
                                         :
                                         <div className="newSaveButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>保存</div>
                                 }
@@ -670,12 +758,15 @@ export class View extends React.Component<View.Props, View.State>{
                         setOptionChoicesDescription: (a: JSX.Element[]) => {
                             _this.setOptionChoicesDescription(a)
                         },
-                        setState: (name: string, value: string) => {
-                            let tmp: any = {}
-                            tmp[name] = value
+                        setState: (tmp: object) => {
                             _this.setState({
                                 ...tmp
                             })
+
+                        },
+                        getState: (key: string) => {
+                            let tmp: any = this.state
+                            return tmp[key]
                         },
                         props: _this.props
 
@@ -717,12 +808,15 @@ export class View extends React.Component<View.Props, View.State>{
                             setOptionChoicesDescription: (a: JSX.Element[]) => {
                                 _this.setOptionChoicesDescription(a)
                             },
-                            setState: (name: string, value: string) => {
-                                let tmp: any = {}
-                                tmp[name] = value
+                            setState: (tmp: object) => {
                                 _this.setState({
                                     ...tmp
                                 })
+
+                            },
+                            getState: (key: string) => {
+                                let tmp: any = this.state
+                                return tmp[key]
                             },
                             props: _this.props
 

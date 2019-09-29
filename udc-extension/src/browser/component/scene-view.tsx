@@ -203,7 +203,8 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                             </div>
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
-                            <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile}
+                            <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos}
+                             openShell={this.props.openShell} openSrcFile={this.props.openSrcFile}
                                 codeInfoType="scene" config={this.props.config} roles={this.loginGroups} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>

@@ -48,9 +48,11 @@ pre {
 h4 {
     text-align: center;
 }
-.expander:hover{
+
+.expander:hover {
     cursor: pointer;
 }
+
 .title_timer {
     text-align: center;
     border-bottom-color: gray;
@@ -112,13 +114,14 @@ span[class*=section] {
     width: 20px;
     cursor: pointer;
 }
-.oneOptionDescription:hover {
-    color: skyblue;
-    border-color: skyblue;
-}
 
+.oneOptionDescription:hover  {
+    border-color: skyblue;
+    background-color: skyblue;
+}
 .skyblueItem {
     color: blue;
+    background-color: skyblue;
 }
 
 .optionDescription {
