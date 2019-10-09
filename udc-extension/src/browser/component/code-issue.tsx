@@ -3,6 +3,7 @@ import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import * as path from 'path'
 import { MyContext } from "./context";
+import { getCompilerType } from "../../node/globalconst";
 // import { MyContext } from "./context";
 
 
@@ -138,24 +139,28 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             // alert(singleFileButtons.length)
 
                             if (_this.props.roles[tmp] != undefined) {
-                                if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1) {
+                                if (getCompilerType(_this.props.coding_titles[tmp]) == "alios") {
                                     for (let item of _this.props.roles[tmp]) {
                                         // alert(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`))
-                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
-                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
-                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
-                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
+                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
+                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
+                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
+                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
                                         await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `main.c`)))
                                     }
+                                    $("#submitSimButton" + this.props.sid).hide()
                                 }
-                                else
+                                else {
                                     for (let mem of _this.props.roles[tmp]) {
                                         _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
                                     }
+                                    $("#submitSimButton" + this.props.sid).show()
+                                }
                             }
                             else {
                                 // for (let mem of _this.props.roles[tmp]) {
                                 _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + "device"}.cpp`)))
+                                $("#submitSimButton" + this.props.sid).show()
                             }
                             // }
                             $(".codingInfos." + _this.props.sid).show()
@@ -213,7 +218,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         <h5 id="titleAndStatus" className="card-title">
                             <span id={"coding_title" + this.props.sid}>关于mqtt的一道题</span>
                         </h5>
-                        <div className={`onlineCount ${this.state.pid}`} style={{ textAlign: "right", color:"chartreuse",fontSize: "12px" }}>当前有<span style={{ textDecorationLine: "underline", color: "yellow" }}>***</span>人在做这道题</div>
+                        <div className={`onlineCount ${this.state.pid}`} style={{ textAlign: "right", color: "chartreuse", fontSize: "12px" }}>当前有<span style={{ textDecorationLine: "underline", color: "yellow" }}>***</span>人在做这道题</div>
                         <div id="codingInfoAreaContainer">
                             {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
                             <pre className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</pre>

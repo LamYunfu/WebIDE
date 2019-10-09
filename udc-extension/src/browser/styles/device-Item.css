@@ -131,7 +131,15 @@ span[class*=section] {
 .optionChocies {
     display: none;
 }
-
+.p-Widget > ul > li:nth-child(8){
+    display: none
+}
+.p-Widget > ul > li:nth-child(6){
+    display: none
+}
+.p-Widget > ul > li:nth-child(7){
+    display: none
+}
 /* .sections {
     counter-reset: section 1;
 } */

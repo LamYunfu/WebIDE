@@ -60,7 +60,7 @@ export class View extends React.Component<View.Props, View.State>{
             sidArray: [],
             isLast: false,
             sidIndex: 0,
-            qzid: ""
+            qzid: "",
         }
     }
     vid = ""
@@ -74,6 +74,7 @@ export class View extends React.Component<View.Props, View.State>{
     questionPool: { [section: string]: any } = {}
     submitedAnswers: { [sid: string]: { [index: string]: { "uAnswer": string[] | undefined, "uRight": boolean | undefined, saved: boolean | undefined } } } = {}
     notForAll: boolean = true;
+    clickTime: number = new Date().getSeconds()
 
     /* 
    
@@ -287,79 +288,10 @@ export class View extends React.Component<View.Props, View.State>{
                 setTimeout((x) => {
                     $(x).removeAttr("disabled")
                     res()
-                }, 1000, sp);
+                }, 1500, sp);
             })
 
         })
-        // $(document).on("click", ".next", () => {
-        //     let csid = _this.state.sid
-        //     let pid = _this.state.pid
-        //     if (parseInt(pid) < Object.keys(_this.questionPool[csid].descriptions).length) {
-        //         pid = (parseInt(pid) + 1).toString()
-        //         alert(`pid:${pid}`)
-        //         parseInt(pid) == Object.keys(_this.questionPool[csid].descriptions).length ?
-        //             _this.state.sidIndex == _this.state.sidArray.length - 1 ?
-        //                 _this.setState({
-        //                     isLast: true
-        //                 })
-        //                 :
-        //                 _this.setState({
-        //                     isLast: false
-        //                 })
-        //             :
-        //             _this.setState({
-        //                 isLast: false
-        //             })
-
-        //     }
-        //     else {
-        //         ////alert("no more answer")
-        //         let index = _this.state.sidArray.findIndex((val, index) => {
-        //             if (val == _this.state.sid)
-        //                 return true;
-        //         })
-        //         _this.setState({
-        //             sidIndex: index
-        //         })
-
-        //         if (index >= _this.state.sidArray.length - 1) {
-        //             alert("没有更多了！")
-        //             return;
-        //         }
-        //         else {
-        //             csid = _this.state.sidArray[++index]
-        //             pid = "1"
-        //         }
-
-        //     }
-        //     let options = []
-        //     let choices = _this.questionPool[csid]["choices"][pid]
-        //     for (let index in choices) {
-        //         options.push(<div className="oneOptionDescription col-12" style={{
-        //             backgroundColor: "white", height: "60px",
-        //             borderStyle: "solid", borderColor: "grey",
-        //             borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
-        //             display: "inline-table", margin: "5px 10px"
-        //         }} title={(parseInt(index) + 1).toString()}>
-        //             <div className="option-choice" style={{
-        //                 display: "table-cell", verticalAlign: "middle",
-        //             }} >
-        //                 {choices[index]}
-        //             </div>
-        //         </div>)
-        //     }
-        //     _this.setState({
-        //         sid: csid,
-        //         optionDescription: _this.questionPool[csid]["descriptions"][pid],
-        //         optionChoicesDecription: options,
-        //         pid: pid,
-        //         scid: _this.questionPool[csid]["scids"][pid],
-        //     }, () => {
-        //         $(".list-group-item").removeClass("list-group-item-primary")
-        //         $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
-        //     })
-        // })
-
         $(document).on("click", ".next", () => {
             let csid = _this.state.sid
             let pid = _this.state.pid
@@ -425,7 +357,7 @@ export class View extends React.Component<View.Props, View.State>{
 
 
 
-        $(document).on("click", ".expander", () => {
+        $(document).on("click", ".expander", async () => {
             let sp = $(".expander>span")
             if (sp.hasClass("oi-chevron-right")) {
                 sp.removeClass("oi-chevron-right")
@@ -437,7 +369,39 @@ export class View extends React.Component<View.Props, View.State>{
             }
             $(".stateProfile").toggle()
             $(".selectPanel").toggle()
+            _this.clickTime = new Date().getSeconds()
+            await new Promise((res) => {
+                setTimeout(() => {
+                    res()
+                }, 5000);
+            })
+            let gap = (new Date().getSeconds() - _this.clickTime)
 
+            if (gap >= 5 && $(".selectPanel").css("display") != "none") {
+                let sp = $(".expander>span")
+                sp.addClass("oi-chevron-right")
+                sp.removeClass("oi-chevron-left")
+                $(".stateProfile").show()
+                $(".selectPanel").hide()
+            }
+        })
+        $(document).on("click", ".list-group-item", async () => {
+            _this.clickTime = new Date().getSeconds()
+            await new Promise((res) => {
+                setTimeout(() => {
+                    res()
+                }, 5000);
+            })
+            let gap = (new Date().getSeconds() - _this.clickTime)
+
+            if (gap >= 5 && $(".selectPanel").css("display") != "none") {
+                let sp = $(".expander>span")
+                sp.addClass("oi-chevron-right")
+                sp.removeClass("oi-chevron-left")
+                $(".stateProfile").show()
+                $(".selectPanel").hide()
+
+            }
         })
 
         $(document).on("click", ".newSubmitAll", async () => {
@@ -648,10 +612,13 @@ export class View extends React.Component<View.Props, View.State>{
     render(): JSX.Element {
         let _this = this
         return (
-            this.state.viewType == "1" || this.state.viewType == "4" ?
+            this.state.viewType == "1" || this.state.viewType == "4" ?//选择 &&考试
                 <div style={{ height: "100%", zIndex: 0 }}>
                     <div className="title_timer col-12"><h4> {_this.title}</h4><span id='timer'></span></div>
                     <MyContext.Provider value={{
+                        setClickTime: () => {
+                            _this.clickTime = new Date().getSeconds()
+                        },
                         setQuestionPool: (section: string, data: any) => {
                             _this.questionPool[section] = data
                         },
@@ -716,7 +683,8 @@ export class View extends React.Component<View.Props, View.State>{
                             color: "black",
                             left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", bottom: "10px", display: "none"
                         }}>
-                            {`第${_this.state.sidIndex + 1}部分，选择题${_this.state.pid}`}
+                            {/* {`第${_this.state.sidIndex + 1}部分，`} */}
+                            {(_this.state.sidIndex + 1)>0?`${$(`.section${_this.state.sidIndex + 1}`).text()},选择题${_this.state.pid}`:`error`}
                         </div>
 
                         <div className="row col-12" style={{
@@ -745,13 +713,14 @@ export class View extends React.Component<View.Props, View.State>{
 
                         </div>
                     </MyContext.Provider >
-                </div>
+                </div >
 
                 :
-                this.state.viewType == "2" ?
+                this.state.viewType == "2" ?//实验题
                     <MyContext.Provider value={{
-
-
+                        setClickTime: () => {
+                            _this.clickTime = new Date().getSeconds()
+                        },
                         setOptionDescription: (a: string) => {
                             _this.setOptionDescription(a)
                         },
@@ -795,8 +764,11 @@ export class View extends React.Component<View.Props, View.State>{
                         </div>
                     </MyContext.Provider >
                     :
-                    this.state.viewType == "3" ?
+                    this.state.viewType == "3" ?//场景模式
                         <MyContext.Provider value={{
+                            setClickTime: () => {
+                                _this.clickTime = new Date().getSeconds()
+                            },
                             setQuestionPool: (section: string, data: any) => {
                                 _this.questionPool[section] = data
                                 ////alert(JSON.stringify(_this.answerPool))

@@ -4,6 +4,7 @@ import { UdcTerminal } from '../util/udc-terminal';
 import { UdcCompiler } from './udc-compiler';
 // import { AliosCompiler } from './alios-compiler';
 import { inject, injectable } from 'inversify';
+import { getCompilerType } from '../globalconst';
 
 @injectable()
 /*
@@ -23,14 +24,14 @@ export class Compiler {
         Logger.info("start compiling")
         Logger.info("MODEL is:" + model)
         this.udcTerminal.outputResult("compiling......")
-        if (this.getCompilerType(model) == "alios") {
+        if (getCompilerType(model) == "alios") {
             // this.udcCompiler.outputResult("use alios compiler")
             Logger.info("use alios compiler")
             // await this.aliosCompiler.postNameAndType(pid)
             await this.newAliosCompiler.postNameAndType(pid)
         }
         for (let fn of fnsArr) {
-            if (this.getCompilerType(model) == "tinylink") {
+            if (getCompilerType(model) == "tinylink") {
                 // this.udcCompiler.outputResult("use tinylink compiler")
                 Logger.info("use tinylink compiler")
                 let bv = await this.udcCompiler.postSrcFile(fn, dirName)
@@ -46,17 +47,5 @@ export class Compiler {
         if (bv != 'scc')
             return "fail"
         return "scc"
-    }
-    getCompilerType(model: string): string {
-        const AliosType = ["ble", "", "",]
-        const TinylinkType = ["lora_p2p", "", "",]
-        if (model.startsWith("alios") || AliosType.indexOf(model) != -1) {
-            return "alios"
-        }
-        if (model.startsWith("tinylink") || TinylinkType.indexOf(model) != -1) {
-            return "tinylink"
-        }
-        Logger.info("get compiler type failed")
-        return "No this type"
     }
 }

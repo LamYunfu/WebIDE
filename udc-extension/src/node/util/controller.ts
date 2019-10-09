@@ -8,6 +8,7 @@ import { injectable, inject, } from 'inversify';
 import { Compiler } from '../compilers/compiler';
 import { Programer } from './programmer';
 import { Logger } from './logger';
+import { getCompilerType } from '../globalconst';
 @injectable()
 /*
 文件操作
@@ -22,23 +23,11 @@ export class Controller {
     ) {
     }
     rootDir: string = "/home/project"
-    getCompilerType(model: string): string {
-        const AliosType = ["", "", "",]
-        const TinylinkType = ["lora_p2p", "", "",]
-        if (model.startsWith("alios") || AliosType.indexOf(model) != -1) {
-            return "alios"
-        }
-        if (model.startsWith("tinylink") || TinylinkType.indexOf(model) != -1) {
-            return "tinylink"
-        }
-        Logger.info("get compiler type failed")
-        return "No this type"
-    }
     async processIssue(pid: string) {
         let { loginType,
             model
         } = this.ut.getPidInfos(pid)
-        let devType = this.getCompilerType(model)
+        let devType = getCompilerType(model)
         let _this = this
         switch (loginType) {
             case "adhoc":
@@ -64,7 +53,7 @@ export class Controller {
         }
 
     }
-    async processSingleFile(pid: string) {//pid&filename
+    async processSingleFile(pid: string) {//pid&filename//10.9 comments
         Logger.info(pid, "pid:")
         let _this = this
         let tmp = pid.split("&")

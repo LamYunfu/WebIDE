@@ -4,6 +4,7 @@ import * as $ from "jquery"
 import { find } from "@phosphor/algorithm";
 import { CodeItem, CodingInfo } from "./code-issue"
 import { MyContext } from "./context";
+import { getCompilerType } from "../../node/globalconst";
 export namespace Experiment {
     export interface Props {
         section: { [key: string]: any }
@@ -131,7 +132,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
                             }
                         }
-                        if (item.deviceType.split("-")[0] == "alios") {
+                        if (getCompilerType(item.deviceType) == "alios") {
                             fns.push("helloworld" + ".mk")
                             fns.push("ucube.py")
                             fns.push("README.md")
@@ -223,13 +224,17 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         withCredentials: true
                     },
                     method: "POST",
-                    url: "http://judge.tinylink.cn/problem/status",
-                    dataType: 'json',
-                    // contentType: "text/plain",
-                    data: JSON.stringify({ pid: _this.pids }),
+                    url: "http://api.tinylink.cn/problem/status",
+
+                    contentType: "text/plain",
+                    data: JSON.stringify({ pid: _this.pids.join().trim() }),
                     success: function (data) {
                         // alert(JSON.stringify(data))
-                        let tmp = data.problem
+                        if (data.code != "0") {
+                            _this.props.outputResult(data.message)
+                            return
+                        }
+                        let tmp = [data.data]
                         for (let x of tmp) {
                             $(`.onlineCount.${x.pid}>span`).text(x.count)
                             _this.codingStatus[x.pid] = x.status

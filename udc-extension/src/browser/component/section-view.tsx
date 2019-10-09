@@ -6,6 +6,7 @@ import { VideoItem, } from "./video-view"
 import { OptionItem, OptionInfo, } from './option-issue'
 import { CodeItem, CodingInfo } from './code-issue'
 import { MyContext } from './context'
+import { getCompilerType } from "../../node/globalconst";
 
 export namespace SectionUI {
     export interface Props {
@@ -239,7 +240,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 fns.push("helloworld" + "_" + r)
                             }
                         }
-                        if (item.deviceType.split("-")[0] == "alios") {
+                        if (getCompilerType(item.deviceType) == "alios") {
                             fns.push("helloworld" + ".mk")
                             fns.push("ucube.py")
                             fns.push("README.md")
@@ -488,6 +489,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         $(_this).removeClass("list-group-item-primary")
                     })
                     $(e.currentTarget).addClass("list-group-item-primary")
+                    
                 })
             }
         )

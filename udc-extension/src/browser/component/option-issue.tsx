@@ -399,54 +399,6 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
 
 
         })
-        $(document).on('click', `.optionInfoSubmitSingle${this.props.sid}deprecated`, async (e) => {
-            let answers: string[] = []
-            $("input:visible:checked").map((index, html) => {
-                answers.push($(html).prop("value"))
-            })
-            let pid = _this.state.pid
-            _this.uAnswers[_this.state.pid] = { answer: answers, uRight: undefined }
-            let answersForSubmit = []
-            for (let index = 0; index < Object.keys(_this.props.contentsCollection).length; index++) {
-                answersForSubmit[index] = "X"
-            }
-            answersForSubmit[parseInt(pid) - 1] = _this.uAnswers[_this.state.pid].answer.join(",")
-            $.ajax(
-                {
-                    headers: {
-                        "accept": "application/json",
-                    },
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    method: "POST",
-                    url: "http://api.tinylink.cn/problem/quiz/judge",
-                    dataType: 'json',
-                    contentType: "text/javascript",
-                    data: JSON.stringify({
-                        qzid: _this.state.qzid,
-                        answer: answersForSubmit
-                    }),
-                    success: async function (data) {
-                        let correctItem: string[] = data.data.correct
-                        let pid = (parseInt(_this.state.pid)).toString()
-                        let sp = $(`.optionItem.${_this.props.sid} a[id=${pid}]`).next()
-                        if (correctItem[parseInt(_this.state.pid) - 1] == "1") {
-                            _this.uAnswers[_this.state.pid].uRight = true
-                            sp.prop("class", "oi oi-check")
-                            sp.show()
-                        }
-                        else {
-                            sp.prop("class", "oi oi-x")
-                            sp.show()
-                            _this.uAnswers[_this.state.pid].uRight = false
-                        }
-                        _this.props.setLocal(_this.props.sid, _this.uAnswers)
-                        // _this.uAnswers[_this.state.pid] = { answer: [], uRight: false }
-                    }
-                }
-            )
-        })
         $(document).on('click', `.optionInfoSubmitSingle${this.props.sid}`, async (e) => {
             let answers: string[] = []
             $("input:visible:checked").map((index, html) => {

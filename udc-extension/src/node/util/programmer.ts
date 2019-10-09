@@ -3,7 +3,7 @@ import { Extractor } from './extractor';
 import { FileMapper } from './filemapper';
 import { UdcTerminal } from './udc-terminal';
 import { injectable, inject } from 'inversify';
-import { rootDir, hexFileDir } from "./globalconst"
+import { rootDir, hexFileDir, getCompilerType } from "../globalconst"
 import * as path from 'path';
 @injectable()
 export class Programer {
@@ -16,7 +16,7 @@ export class Programer {
         let { loginType, fns, dirName, model, deviceRole } = this.ut.getPidInfos(pid)
         let devArr = []
         let fnArr = JSON.parse(fns)
-        if (model.split("-")[0] == "alios" || model.split("-")[0] == "ble")
+        if (getCompilerType(model)=="alios")
             fnArr = deviceRole
         let devInfo: { [devid: string]: number } | undefined
         for (let i = 4; ; i--) {
@@ -47,6 +47,7 @@ export class Programer {
         switch (loginType) {
             case "queue": {
                 for (let item of fnArr) {
+                  
                     let hexFile = hex[item.split(".")[0]]
                     return this.ut.program_device_queue(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
                     // break
@@ -55,7 +56,7 @@ export class Programer {
             }
             case "adhoc": {
                 for (let item of fnArr) {
-
+                    console.log("fnArr:"+fnArr.join(";"))
                     let hexFile = hex[item.split(".")[0]]
                     console.log(item + ":hexFile:" + JSON.stringify(hex))
                     console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
