@@ -4,5 +4,6 @@ lib
 **/lib
 **/src-gen/
 **/dist/
+*.zip
 
 

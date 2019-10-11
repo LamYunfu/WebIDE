@@ -369,23 +369,23 @@ export class View extends React.Component<View.Props, View.State>{
             }
             $(".stateProfile").toggle()
             $(".selectPanel").toggle()
-            _this.clickTime = new Date().getSeconds()
-            await new Promise((res) => {
-                setTimeout(() => {
-                    res()
-                }, 5000);
-            })
-            let gap = (new Date().getSeconds() - _this.clickTime)
+            // _this.clickTime = new Date().getSeconds()
+            // await new Promise((res) => {
+            //     setTimeout(() => {
+            //         res()
+            //     }, 5000);
+            // })
+            // let gap = (new Date().getSeconds() - _this.clickTime)
 
-            if (gap >= 5 && $(".selectPanel").css("display") != "none") {
-                let sp = $(".expander>span")
-                sp.addClass("oi-chevron-right")
-                sp.removeClass("oi-chevron-left")
-                $(".stateProfile").show()
-                $(".selectPanel").hide()
-            }
+            // if (gap >= 5 && $(".selectPanel").css("display") != "none") {
+            //     let sp = $(".expander>span")
+            //     sp.addClass("oi-chevron-right")
+            //     sp.removeClass("oi-chevron-left")
+            //     $(".stateProfile").show()
+            //     $(".selectPanel").hide()
+            // }
         })
-        $(document).on("click", ".list-group-item", async () => {
+        $(document).on("click", ".optionItem", async () => {
             _this.clickTime = new Date().getSeconds()
             await new Promise((res) => {
                 setTimeout(() => {
@@ -684,7 +684,7 @@ export class View extends React.Component<View.Props, View.State>{
                             left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", bottom: "10px", display: "none"
                         }}>
                             {/* {`第${_this.state.sidIndex + 1}部分，`} */}
-                            {(_this.state.sidIndex + 1)>0?`${$(`.section${_this.state.sidIndex + 1}`).text()},选择题${_this.state.pid}`:`error`}
+                            {(_this.state.sidIndex + 1)>0?`${$(`.section${_this.state.sidIndex + 1}`).text()} 选择题${_this.state.pid}`:`error`}
                         </div>
 
                         <div className="row col-12" style={{

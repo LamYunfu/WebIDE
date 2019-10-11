@@ -128,7 +128,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
             optionItems: _this.optionItems,
             codingItems: _this.codingItems
         }))
-        $.ajax(
+        _this.props.section.qzid != null && $.ajax(
             {
                 headers: {
                     "accept": "application/json",
@@ -489,7 +489,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         $(_this).removeClass("list-group-item-primary")
                     })
                     $(e.currentTarget).addClass("list-group-item-primary")
-                    
+
                 })
             }
         )
