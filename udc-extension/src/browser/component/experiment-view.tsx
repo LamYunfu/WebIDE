@@ -1,5 +1,5 @@
 import React = require("react");
-import URI from "@theia/core/lib/common/uri";
+// import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { find } from "@phosphor/algorithm";
 import { CodeItem, CodingInfo } from "./code-issue"
@@ -11,7 +11,6 @@ export namespace Experiment {
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
-        openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
         config: () => void
         setCookie: (cookie: string) => void
@@ -33,6 +32,7 @@ export namespace Experiment {
 export class Experiment extends React.Component<Experiment.Props, Experiment.State> {
     timeout: { [pid: string]: string } = {}
     model: { [key: string]: string } = {}
+    ppids: { [key: string]: string } = {}
     loginType: { [key: string]: string } = {}
     role: { [key: string]: string[] } = {}
     currentFocusCodingIndex: string[] = ['00000']
@@ -101,6 +101,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     for (let item of x) {
                         _this.role[`${item.pid}`] = item.deviceRole
                         _this.pidQueueInfo[item.pid] = {}
+                        _this.ppids[`${item.pid}`] = item.ppid
                         let tmp = {}
                         if (item.deviceRole[0] == 'null') {
                             _this.loginType[`${item.pid}`] = 'adhoc'
@@ -137,7 +138,10 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                             fns.push("ucube.py")
                             fns.push("README.md")
                         }
-                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title, projectName: 'helloworld', boardType: "esp32devkitc", deviceRole: _this.role[`${item.pid}`] }
+                        tmp = {
+                            ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title,
+                            projectName: 'helloworld', boardType: "esp32devkitc", deviceRole: _this.role[`${item.pid}`], ppid: _this.ppids[`${item.pid}`]
+                        }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
                             console.log("initpidqueue scc")
@@ -301,7 +305,6 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
                             <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell}
-                                openSrcFile={this.props.openSrcFile}
                                 codeInfoType="coding" config={this.props.config} roles={this.role} sid={"experiment"}
                                 say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex}
                                 issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}

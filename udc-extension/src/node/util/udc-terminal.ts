@@ -14,7 +14,7 @@ import { LOGINTYPE } from '../../common/udc-service';
 import { Logger } from './logger'
 import * as Color from "colors"
 import * as WebSocket from 'ws'
-import { getCompilerType } from '../globalconst';
+// import { getCompilerType } from '../globalconst';
 import * as crypto from "crypto"
 import * as FormData from "form-data"
 // import { networkInterfaces } from 'os';
@@ -47,10 +47,11 @@ export class UdcTerminal {
             loginType: string, projectName: string | undefined,
             boardType: string | undefined, timeout: string,
             model: string, waitID: string, fns: string,
-            dirName: string, deviceRole?: string[] | undefined
+            dirName: string, deviceRole?: string[] | undefined,
+            ppid?: string
         }
     } = {}
-    cuurentPid: string = ``
+    currentPid: string = ``
     rootDir: string = "/home/project"
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
 
@@ -64,176 +65,228 @@ export class UdcTerminal {
     }
 
     creatSrcFile(fnJSON: string, dirName: string, type?: string, deviceRole?: string[]) {
-        let rootdir = this.rootDir
-        new Promise((resolve) => {
-            fs.exists(`/home/project/${dirName}/hexFiles`, async (res) => {
-                if (!res) {
-                    fs.mkdir(`/home/project/${dirName}/hexFiles`, () => {
-                        resolve()
-                    })
-                }
-            })
-        })
-        if (type == undefined) {
-            Logger.info(`FNJSON:${fnJSON}`)
-            let fn = JSON.parse(fnJSON)
-            fs.exists(path.join(rootdir, dirName), (res) => {
-                if (!res) {
-                    fs.mkdir(path.join(rootdir, dirName), (err) => {
-                        Logger.info(err)
-                        for (let i of fn) {
-                            let x: string[] = i.split(".")
-                            let tmpPath = ""
-                            if (x.length == 1)
-                                tmpPath = path.join(rootdir, dirName, i + ".cpp")
-                            else
-                                tmpPath = path.join(rootdir, dirName, i)
-                            fs.exists(tmpPath, (res) => {
-                                if (!res)
-                                    fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
-                            })
-                        }
-                    })
-                }
-                else
-                    for (let i of fn) {
-                        let x: string[] = i.split(".")
-                        let tmpPath = ""
-                        if (x.length == 1)
-                            tmpPath = path.join(rootdir, dirName, i + ".cpp")
-                        else
-                            tmpPath = path.join(rootdir, dirName, i)
-                        fs.exists(tmpPath, (res) => {
-                            if (!res)
-                                fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
-                        })
-                    }
-            })
-        }
-        else {
-            fs.exists(path.join(rootdir, dirName), (res) => {
-                if (!res) {
-                    fs.mkdir(path.join(rootdir, dirName), (err) => {
-                        for (let item of deviceRole!) {
-                            fs.mkdir(path.join(rootdir, dirName, item), (rv) => {
-                                if (rv == null) {
-                                    fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
-                                   
-                                    `)
-                                    fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
-                                   
-src     = Split('''
-main.c
-''')
+        //         let rootdir = this.rootDir
+        //         new Promise((resolve) => {
+        //             fs.exists(`/home/project/${dirName}/hexFiles`, async (res) => {
+        //                 if (!res) {
+        //                     fs.mkdir(`/home/project/${dirName}/hexFiles`, () => {
+        //                         resolve()
+        //                     })
+        //                 }
+        //             })
+        //         })
+        //         if (type == undefined) {
+        //             Logger.info(`FNJSON:${fnJSON}`)
+        //             let fn = JSON.parse(fnJSON)
+        //             fs.exists(path.join(rootdir, dirName), (res) => {
+        //                 if (!res) {
+        //                     fs.mkdir(path.join(rootdir, dirName), (err) => {
+        //                         Logger.info(err)
+        //                         for (let i of fn) {
+        //                             let x: string[] = i.split(".")
+        //                             let tmpPath = ""
+        //                             if (x.length == 1)
+        //                                 tmpPath = path.join(rootdir, dirName, i + ".cpp")
+        //                             else
+        //                                 tmpPath = path.join(rootdir, dirName, i)
+        //                             fs.exists(tmpPath, (res) => {
+        //                                 if (!res)
+        //                                     fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
+        //                             })
+        //                         }
+        //                     })
+        //                 }
+        //                 else
+        //                     for (let i of fn) {
+        //                         let x: string[] = i.split(".")
+        //                         let tmpPath = ""
+        //                         if (x.length == 1)
+        //                             tmpPath = path.join(rootdir, dirName, i + ".cpp")
+        //                         else
+        //                             tmpPath = path.join(rootdir, dirName, i)
+        //                         fs.exists(tmpPath, (res) => {
+        //                             if (!res)
+        //                                 fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
+        //                         })
+        //                     }
+        //             })
+        //         }
+        //         else {
+        //             fs.exists(path.join(rootdir, dirName), (res) => {
+        //                 if (!res) {
+        //                     fs.mkdir(path.join(rootdir, dirName), (err) => {
+        //                         for (let item of deviceRole!) {
+        //                             fs.mkdir(path.join(rootdir, dirName, item), (rv) => {
+        //                                 if (rv == null) {
+        //                                     fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
 
-component = aos_component('helloworld', src)
-component.add_comp_deps('kernel/yloop', 'kernel/cli')
-component.add_global_macros('AOS_NO_WIFI')`)
-                                    fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
-                                   
-/* user space */
-#ifndef RHINO_CONFIG_USER_SPACE
-#define RHINO_CONFIG_USER_SPACE              0
-#endif
-`)
-                                    fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
-                                   
-config AOS_APP_HELLOWORLD
-bool "HelloWorld"
-select AOS_COMP_OSAL_AOS
-help
-Hello World
+        //                                     `)
+        //                                     fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
 
-if AOS_APP_HELLOWORLD
-# Configurations for app helloworld
-endif
-`)
-                                    fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
-                                   
-NAME := helloworld
+        // src     = Split('''
+        // main.c
+        // ''')
 
-$(NAME)_SOURCES := main.c
+        // component = aos_component('helloworld', src)
+        // component.add_comp_deps('kernel/yloop', 'kernel/cli')
+        // component.add_global_macros('AOS_NO_WIFI')`)
+        //                                     fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
 
-GLOBAL_DEFINES += AOS_NO_WIFI
+        // /* user space */
+        // #ifndef RHINO_CONFIG_USER_SPACE
+        // #define RHINO_CONFIG_USER_SPACE              0
+        // #endif
+        // `)
+        //                                     fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
 
-$(NAME)_COMPONENTS := yloop cli
+        // config AOS_APP_HELLOWORLD
+        // bool "HelloWorld"
+        // select AOS_COMP_OSAL_AOS
+        // help
+        // Hello World
 
-ifeq ($(BENCHMARKS),1)
-$(NAME)_COMPONENTS  += benchmarks
-GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
-endif
-`)
-                                }
-                            })
-                        }
-                    })
-                }
-                else
-                    for (let item of deviceRole!) {
-                        fs.exists(path.join(rootdir, dirName, item, 'main.c'), (rv) => {
-                            if (rv == false) {
-                                fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
-                               
-                                `)
-                                fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
-src     = Split('''
-main.c
-''')
+        // if AOS_APP_HELLOWORLD
+        // # Configurations for app helloworld
+        // endif
+        // `)
+        //                                     fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
 
-component = aos_component('helloworld', src)
-component.add_comp_deps('kernel/yloop', 'kernel/cli')
-component.add_global_macros('AOS_NO_WIFI')`)
-                                fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
-                               
-/* user space */
-#ifndef RHINO_CONFIG_USER_SPACE
-#define RHINO_CONFIG_USER_SPACE              0
-#endif
-`)
-                                fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
-                               
-config AOS_APP_HELLOWORLD
-bool "HelloWorld"
-select AOS_COMP_OSAL_AOS
-help
-    Hello World
+        // NAME := helloworld
 
-if AOS_APP_HELLOWORLD
-# Configurations for app helloworld
-endif
-`)
-                                fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
-                               
-NAME := helloworld
+        // $(NAME)_SOURCES := main.c
 
-$(NAME)_SOURCES := helloworld.c
+        // GLOBAL_DEFINES += AOS_NO_WIFI
 
-GLOBAL_DEFINES += AOS_NO_WIFI
+        // $(NAME)_COMPONENTS := yloop cli
 
-$(NAME)_COMPONENTS := yloop cli
+        // ifeq ($(BENCHMARKS),1)
+        // $(NAME)_COMPONENTS  += benchmarks
+        // GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
+        // endif
+        // `)
+        //                                 }
+        //                             })
+        //                         }
+        //                     })
+        //                 }
+        //                 else
+        //                     for (let item of deviceRole!) {
+        //                         fs.exists(path.join(rootdir, dirName, item, 'main.c'), (rv) => {
+        //                             if (rv == false) {
+        //                                 fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
 
-ifeq ($(BENCHMARKS),1)
-$(NAME)_COMPONENTS  += benchmarks
-GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
-endif
-`)
-                            }
-                        })
-                    }
-            })
+        //                                 `)
+        //                                 fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
+        // src     = Split('''
+        // main.c
+        // ''')
 
-        }
+        // component = aos_component('helloworld', src)
+        // component.add_comp_deps('kernel/yloop', 'kernel/cli')
+        // component.add_global_macros('AOS_NO_WIFI')`)
+        //                                 fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
+
+        // /* user space */
+        // #ifndef RHINO_CONFIG_USER_SPACE
+        // #define RHINO_CONFIG_USER_SPACE              0
+        // #endif
+        // `)
+        //                                 fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
+
+        // config AOS_APP_HELLOWORLD
+        // bool "HelloWorld"
+        // select AOS_COMP_OSAL_AOS
+        // help
+        //     Hello World
+
+        // if AOS_APP_HELLOWORLD
+        // # Configurations for app helloworld
+        // endif
+        // `)
+        //                                 fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
+
+        // NAME := helloworld
+
+        // $(NAME)_SOURCES := helloworld.c
+
+        // GLOBAL_DEFINES += AOS_NO_WIFI
+
+        // $(NAME)_COMPONENTS := yloop cli
+
+        // ifeq ($(BENCHMARKS),1)
+        // $(NAME)_COMPONENTS  += benchmarks
+        // GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
+        // endif
+        // `)
+        //                             }
+        //                         })
+        //                     }
+        //             })
+
+        //         }
     }
-    initPidQueueInfo(infos: string): Promise<string> {
+    async  initPidQueueInfo(infos: string): Promise<string> {
         Logger.info(infos, 'info')
+        let _this = this
         this.pidQueueInfo = JSON.parse(infos)
         for (let index in this.pidQueueInfo) {
-            let { dirName, fns, model, deviceRole } = this.pidQueueInfo[index]
-            if (getCompilerType(model) == "alios") {
-                this.creatSrcFile(fns, dirName, "alios", deviceRole)
-            }
-            else
-                this.creatSrcFile(fns, dirName)
+            let { dirName,
+                //  fns, model, deviceRole,
+                ppid } = this.pidQueueInfo[index]
+            await new Promise(resolve => {
+                if (!fs.existsSync(path.join(_this.rootDir, dirName)) && ppid != null) {
+                    let fileRequest = http.request({//
+                        method: "POST",
+                        hostname: 'judge.tinylink.cn',
+                        path: "/problem/template",
+                        headers: {
+                            'Content-Type': "application/json"
+                        }
+                    }, (mesg) => {
+                        let bf = ""
+                        mesg.on("data", (b: Buffer) => {
+                            bf += b.toString("utf8")
+                        })
+                        mesg.on("end", () => {
+                            let res: any = JSON.parse(bf)
+                            if (res.result) {
+                                for (let item of Object.keys(res.template)) {
+                                    if (!fs.existsSync(path.join(_this.rootDir, dirName)))
+                                        fs.mkdirSync(path.join(_this.rootDir, dirName))
+                                    if (!fs.existsSync(path.join(_this.rootDir, dirName, "hexFiles")))
+                                        fs.mkdirSync(path.join(_this.rootDir, dirName, "hexFiles"))
+                                    if (!fs.existsSync(path.join(_this.rootDir, dirName, item))) {
+                                        fs.mkdirSync(path.join(_this.rootDir, dirName, item))
+                                        for (let file of Object.keys(res.template[item])) {
+                                            fs.writeFileSync(path.join(_this.rootDir, dirName, item, file), res.template[item][file])
+                                        }
+                                    }
+                                }
+                                resolve("scc")
+                            }
+                            resolve("err")
+                        })
+                    })
+                    fileRequest.write(JSON.stringify({
+                        ppid: ppid
+                    }))
+                    fileRequest.end()
+
+                }
+                else {
+                    resolve("scc")
+                }
+            })
+            // if (fileRequestResult != "scc") {
+            //     console.log("create file fail")
+            //     return "err"
+            // }
+
+            // if (getCompilerType(model) == "alios") {
+            //     this.creatSrcFile(fns, dirName, "alios", deviceRole)
+            // }
+            // else
+            //     this.creatSrcFile(fns, dirName)
 
         }
         return new Promise((res) => {
@@ -317,7 +370,7 @@ endif
             // let cm = '{ALGI,00035,terminal,74dfbfad34520000,adhoc,any}'
             // let cm = '{ALGI,00035,terminal,' + uuid + ',adhoc,any}'
             let cm = ""
-            Logger.val(`lenght is :` + (uuid + `${login_type},${model}}`).length + 9)
+            Logger.val(`length is :` + (uuid + `${login_type},${model}}`).length + 9)
             // cm = _this.pkt.construct(Packet.ACCESS_LOGIN, `terminal,${uuid},${login_type},${model}`)
             cm = _this.pkt.construct(Packet.ACCESS_LOGIN, `terminal,${uuid},${login_type},${model}`)
             Logger.val(`login pkt is :` + cm)
@@ -357,7 +410,7 @@ endif
             Logger.val("server pid:" + pid)
             // _this.udcServerClient.on('data', (data: Buffer) => _this.onUdcServerData(data, pid));
             _this.udcServerClient.on('data', (data: Buffer) => {
-                Logger.info("hpp recived <<<<<<<<<<:" + data.toString('utf8'))
+                Logger.info("hpp received <<<<<<<<<<:" + data.toString('utf8'))
                 _this.hpp.putData(data)
             });
             _this.hpp.on("data", (data) => {
@@ -473,17 +526,17 @@ endif
     }
     setQueue() {
         let _this = this
-        if (this.cuurentPid == '') {
+        if (this.currentPid == '') {
             this.outputResult("please connect dev,there is no pid!")
             return
         }
         if (this.is_connected) {
             this.disconnect().then(() => {
-                _this.connect("queue", this.pidQueueInfo[this.cuurentPid].model, this.cuurentPid, this.pidQueueInfo[this.cuurentPid].timeout)
+                _this.connect("queue", this.pidQueueInfo[this.currentPid].model, this.currentPid, this.pidQueueInfo[this.currentPid].timeout)
             })
         }
         else
-            this.connect("queue", this.pidQueueInfo[this.cuurentPid].model, this.cuurentPid, this.pidQueueInfo[this.cuurentPid].timeout)
+            this.connect("queue", this.pidQueueInfo[this.currentPid].model, this.currentPid, this.pidQueueInfo[this.currentPid].timeout)
     }
     storeState(data: string) {
         Logger.info(`data:${data}`)
@@ -513,11 +566,11 @@ endif
             model: model,
             waitID: (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString()
         }
-        if (this.cuurentPid == pid && await this.is_connected) {
+        if (this.currentPid == pid && await this.is_connected) {
             this.outputResult("connect server some time before,no need for more opreation")
             return true
         }
-        this.cuurentPid = pid
+        this.currentPid = pid
 
         let login_type = LOGINTYPE.QUEUE
         // model = `tinylink_lora`
@@ -924,8 +977,26 @@ endif
     setTinyLink(name: string, passwd: string): void {
         this.tinyLinkInfo.name = name
         this.tinyLinkInfo.passwd = passwd
-
         console.log(JSON.stringify(this.tinyLinkInfo) + ".........................................")
+    }
+    openPidFile(pid: string) {
+        console.log("openFile")
+        let { dirName } = this.pidQueueInfo[pid]
+        let fileArr = fs.readdirSync(path.join(this.rootDir, dirName))
+        fileArr.forEach((val) => {
+            if (fs.statSync(path.join(this.rootDir, dirName, val)).isDirectory()) {
+                let chidFileArr = fs.readdirSync(path.join(this.rootDir, dirName, val))
+                chidFileArr.forEach((file) => {
+                    console.log(file)
+                    if (fs.statSync(path.join(this.rootDir, dirName, val, file)).isFile() && (file.split('.').pop() == "c" || file.split('.').pop() == "cpp")) {
+                        console.log("openfile:" + path.join(this.rootDir, dirName, val, file))
+                        this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: path.join(this.rootDir, dirName, val, file) })
+                    }
+                })
+
+            }
+        })
+
     }
     async postSimFile(pid: string) {
         let _this = this
@@ -934,9 +1005,9 @@ endif
         _this.outputResult("try to build the connection with simulator")
         let tinySimRequest = new WebSocket(
             "ws://47.98.249.190:8004/", {
-                // "ws://localhost:8765/", {
+            // "ws://localhost:8765/", {
 
-            }
+        }
         )
         await new Promise(res => {
             tinySimRequest.on("message", (data: string) => {
@@ -964,8 +1035,5 @@ endif
             })
 
         })
-
-
-
     }
 }

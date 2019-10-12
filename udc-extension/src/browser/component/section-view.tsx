@@ -1,5 +1,5 @@
 import React = require("react");
-import URI from "@theia/core/lib/common/uri";
+// import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { find } from "@phosphor/algorithm";
 import { VideoItem, } from "./video-view"
@@ -17,7 +17,6 @@ export namespace SectionUI {
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
-        openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
         config: () => void
 
@@ -51,6 +50,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     model: { [key: string]: string } = {}
     loginType: { [key: string]: string } = {}
     role: { [key: string]: string[] } = {}
+    ppids: { [key: string]: string } = {}
     currentFocusCodingIndex: string[] = ['00000']
     optionIssues: { [key: string]: string } = {}
     optionStatus: { [key: string]: string } = {}
@@ -208,6 +208,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     // }
                     for (let item of x) {
                         _this.role[`${item.pid}`] = item.deviceRole
+                        _this.ppids[`${item.pid}`] = item.ppid
                         _this.pidQueueInfo[item.pid] = {}
                         let tmp = {}
                         // { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string } } = {}
@@ -245,7 +246,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             fns.push("ucube.py")
                             fns.push("README.md")
                         }
-                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title, deviceRole: _this.role[`${item.pid}`] }
+                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title, deviceRole: _this.role[`${item.pid}`], ppid: _this.ppids[`${item.pid}`] }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
                             console.log("initpidqueue scc")
@@ -259,7 +260,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     // for (let entry in _this.codingIssues)
                     //     _this.codingItems.push(<CodeItem sid={_this.props.sid} akey={entry} key={entry}
                     //         codingInfos={_this.codingInfos} codingTitles={_this.codingIssues}
-                    //         codingStatus={_this.codingStatus} openSrcFile={_this.props.openSrcFile} />)
+                    //         codingStatus={_this.codingStatus}  />)
                     // _this.setState((state) => ({
                     //     ...state,
                     //     codingItems: _this.codingItems
@@ -563,7 +564,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             </div>
                             <div className={`codingInfos ${this.props.sid} col-7`} >
                                 <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos}
-                                    openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding"
+                                    openShell={this.props.openShell} codeInfoType="coding"
                                     config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say}
                                     currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                     postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
@@ -599,7 +600,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                     sid={this.props.sid} say={this.props.say} answers={this.answers} />
                             </div> */}
                             <div className={`codingInfos ${this.props.sid} col-7`} style={{ zIndex: 2, position: "sticky", bottom: "50%" }}>
-                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell} openSrcFile={this.props.openSrcFile} codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
+                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell}
+                                    codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                     postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                             </div>
                         </div>

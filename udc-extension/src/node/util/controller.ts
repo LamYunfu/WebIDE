@@ -24,6 +24,7 @@ export class Controller {
     }
     rootDir: string = "/home/project"
     async processIssue(pid: string) {
+        console.log("entering pi")
         let { loginType,
             model
         } = this.ut.getPidInfos(pid)

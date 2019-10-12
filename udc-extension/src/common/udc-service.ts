@@ -14,7 +14,7 @@ export interface UdcService {
     control(devstr: string, operation: string): Promise<Boolean>;
     postSrcFile(pid: string): void
     setCookie(cookie: string): boolean
-    outputResult(res: string,types?:string): void
+    outputResult(res: string, types?: string): void
     storeState(stat: string): void
     getState(type: string): Promise<string>
     setQueue(): void
@@ -23,7 +23,8 @@ export interface UdcService {
     setTinyLink(name: string, passwd: string): void
     config(): void
     programSingleFile: (pidAndFn: string) => void
-    postSimFile:(pid:string)=>void
+    postSimFile: (pid: string) => void
+    openPidFile: (pid: string) => void
 
 }
 

@@ -1,5 +1,5 @@
 import React = require("react");
-import URI from "@theia/core/lib/common/uri";
+// import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { CodeItem, CodingInfo } from "./code-issue"
 import { MyContext } from "./context";
@@ -9,12 +9,11 @@ export namespace Scene {
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
-        openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
         config: () => void
         setCookie: (cookie: string) => void
         say: (verbose: string) => void
-        outputResult: (res: string,types?:string) => void
+        outputResult: (res: string, types?: string) => void
         setQueue: () => void
         closeTabs: () => void
         initPidQueueInfo(infos: string): Promise<string>
@@ -31,6 +30,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
     timeout: { [pid: string]: string } = {}
     model: { [key: string]: string } = {}
     loginType: { [key: string]: string } = {}
+    ppids: { [key: string]: string } = {}
     role: { [key: string]: string[] } = {}
     currentFocusCodingIndex: string[] = ['00000']
     codingIssues: { [key: string]: string } = {}
@@ -84,6 +84,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                         let tmp = {}
                         _this.loginType[`${item.pid}`] = 'group'
                         _this.role[`${item.pid}`] = item.deviceRole
+                        _this.ppids[`${item.pid}`] = item.pid
                         _this.model[`${item.pid}`] = item.deviceType
                         _this.loginGroups[`${item.pid}`] = item.deviceType.trim().split(";")
                         tmp = { ...tmp, loginType: 'group', model: item.deviceType }
@@ -95,10 +96,13 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                                 fns.push(`helloworld_${ct}`)
                             }
                         }
-                        tmp = { ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title ,projectName:"helloworld",boardType:"esp32devkitc",deviceRole:_this.role[`${item.pid}`]}
+                        tmp = {
+                            ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title, projectName: "helloworld"
+                            , boardType: "esp32devkitc", deviceRole: _this.role[`${item.pid}`],ppid:_this.ppids[`${item.pid}`]
+                        }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
-                           alert(JSON.stringify(_this.pidQueueInfo))
+                            alert(JSON.stringify(_this.pidQueueInfo))
                         })
                         _this.codingInfos[item.pid] = item.content
                         _this.pids.push(item.pid)
@@ -179,7 +183,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                             }
                             val != undefined && _this.props.connect("group", model.trim(), val, _this.timeout[val])
                             $(e.currentTarget).text("断开")
-                        }   
+                        }
                     }
                 )
             }
@@ -204,7 +208,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                         </div>
                         <div className={`codingInfos ${this.props.section.sid} col-7`} >
                             <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos}
-                             openShell={this.props.openShell} openSrcFile={this.props.openSrcFile}
+                                openShell={this.props.openShell}
                                 codeInfoType="scene" config={this.props.config} roles={this.loginGroups} sid={this.props.section.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                 postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                         </div>
@@ -214,4 +218,4 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
         )
     }
 }
-Scene.contextType=MyContext
+Scene.contextType = MyContext

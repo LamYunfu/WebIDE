@@ -1,9 +1,10 @@
-// import { NewAliosCompiler } from './../compilers/new-alios-compiler';
+// import "reflect-metadata"
 // import * as http from 'http'
 // import * as fs from 'fs-extra';
 // import * as ach from 'archiver'
 // import * as crypto from "crypto"
 // import * as FormData from "form-data"
+// // import { Logger } from '../util/logger';
 // describe('extractor', () => {
 //     it("test", async () => {
 //         let st = fs.createWriteStream(`/home/liang/load/liang.zip`) //打包
@@ -131,9 +132,32 @@
 //         achst.pipe(st)
 //         achst.finalize()
 //     })
-//     it("ss",()=>{
-//         let x = new NewAliosCompiler()  
-//         x.getHexFile(`串口打印(AliOS)`,"device")
+//     it("fileRequest", () => {
+//         let fileRequest = http.request({//
+//             method: "POST",
+//             hostname: 'judge.tinylink.cn',
+//             path: "/problem/template",
+//             headers: {
+//                 'Content-Type': "application/json"
+//             }
+//         }, (mesg) => {
+//             let bf = ""
+//             mesg.on("data", (b: Buffer) => {
+//                 bf += b.toString("utf8")
+//             })
+//             mesg.on("end", () => {
+//                 let res: any = JSON.parse(bf)
+//                 if (res.result) {
+//                     for(let item of Object.keys(res)){
+//                         // fs.existsSync(p)
+//                     }
+//                 }
+//             })
+//         })
+//         fileRequest.write(JSON.stringify({
+//             ppid: 1
+//         }))
+//         fileRequest.end()
 //     })
 // })
 

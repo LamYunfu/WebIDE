@@ -1,5 +1,4 @@
 import React = require("react");
-import URI from "@theia/core/lib/common/uri";
 import { SectionUI } from "./section-view"
 import { MyContext } from "./context";
 
@@ -13,7 +12,6 @@ export namespace Chapter {
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
         callUpdate: () => void
-        openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
         config: () => void
         gotoVideo: (uri: string, videoName: string) => void
@@ -75,8 +73,6 @@ export class Chapter extends React.Component<Chapter.Props>{
                 disconnect={this.props.disconnect}
                 connect={this.props.connect}
                 callUpdate={this.props.callUpdate}
-
-                openSrcFile={this.props.openSrcFile}
                 postSrcFile={this.props.postSrcFile} />)
         }
    

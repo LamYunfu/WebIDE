@@ -140,6 +140,10 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
     ) {
         this.udcWatcher.onConfigLog((data: { name: string, passwd: string }) => {
             let tmp = data
+            if (data.name = "openSrcFile") {
+                this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, new URI(data.passwd))
+                return
+            }
             applicationShell.closeTabs("bottom")
             // applicationShell.closeTabs("left")
             console.log(JSON.stringify(data) + "::::::front ")
@@ -184,12 +188,12 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 // } else {
                 this.udcService.connect(loginType, model, pid, timeout)
                 // .then(async re => {
-                    // this.messageService.info(re)
-                    //     }).catch(err => {
-                    //         this.messageService.error(err)
-                    //     })
-                    // }
-                }
+                // this.messageService.info(re)
+                //     }).catch(err => {
+                //         this.messageService.error(err)
+                //     })
+                // }
+            }
         })
 
         registry.registerCommand(UdcCommands.DisConnect, {

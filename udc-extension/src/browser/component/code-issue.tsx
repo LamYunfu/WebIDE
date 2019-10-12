@@ -1,9 +1,7 @@
 import React = require("react");
-import URI from "@theia/core/lib/common/uri";
+// import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
-import * as path from 'path'
 import { MyContext } from "./context";
-import { getCompilerType } from "../../node/globalconst";
 // import { MyContext } from "./context";
 
 
@@ -54,7 +52,6 @@ export namespace CodingInfo {
         config: () => void
         codeInfoType: string
         codingInfos: { [key: string]: string }
-        openSrcFile: (uri: URI) => void
         openShell: () => void
         programSingleFile: (pidAndFn: string) => void
     }
@@ -91,11 +88,13 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
             () => {
                 $(document).on("click", "#submitSrcButton" + _this.props.sid,
                     (e) => {
+                      
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")
                         // if (_this.props.currentFocusCodingIndex[0] != index) {
                         //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
                         //     return
                         // }
+                        console.log("click submit:"+index+"#codingInfofArea" + this.props.sid)
                         index != undefined && _this.props.postSrcFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
@@ -137,31 +136,32 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                                 singleFileButtons: singleFileButtons
                             })
                             // alert(singleFileButtons.length)
+                            _this.context.props.openSrcFile(tmp)
 
-                            if (_this.props.roles[tmp] != undefined) {
-                                if (getCompilerType(_this.props.coding_titles[tmp]) == "alios") {
-                                    for (let item of _this.props.roles[tmp]) {
-                                        // alert(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`))
-                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
-                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
-                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
-                                        // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
-                                        await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `main.c`)))
-                                    }
-                                    $("#submitSimButton" + this.props.sid).hide()
-                                }
-                                else {
-                                    for (let mem of _this.props.roles[tmp]) {
-                                        _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
-                                    }
-                                    $("#submitSimButton" + this.props.sid).show()
-                                }
-                            }
-                            else {
-                                // for (let mem of _this.props.roles[tmp]) {
-                                _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + "device"}.cpp`)))
-                                $("#submitSimButton" + this.props.sid).show()
-                            }
+                            // if (_this.props.roles[tmp] != undefined) {
+                            //     if (getCompilerType(_this.props.coding_titles[tmp]) == "alios") {
+                            //         for (let item of _this.props.roles[tmp]) {
+                            //             // alert(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`))
+                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
+                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
+                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
+                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
+                            //             await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `main.c`)))
+                            //         }
+                            //         $("#submitSimButton" + this.props.sid).hide()
+                            //     }
+                            //     else {
+                            //         for (let mem of _this.props.roles[tmp]) {
+                            //             _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
+                            //         }
+                            //         $("#submitSimButton" + this.props.sid).show()
+                            //     }
+                            // }
+                            // else {
+                            //     // for (let mem of _this.props.roles[tmp]) {
+                            //     _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + "device"}.cpp`)))
+                            //     $("#submitSimButton" + this.props.sid).show()
+                            // }
                             // }
                             $(".codingInfos." + _this.props.sid).show()
                             $("#coding_title" + _this.props.sid).html(_this.props.coding_titles[tmp])

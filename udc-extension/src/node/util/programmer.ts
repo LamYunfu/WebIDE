@@ -16,7 +16,7 @@ export class Programer {
         let { loginType, fns, dirName, model, deviceRole } = this.ut.getPidInfos(pid)
         let devArr = []
         let fnArr = JSON.parse(fns)
-        if (getCompilerType(model)=="alios")
+        if (getCompilerType(model) == "alios")
             fnArr = deviceRole
         let devInfo: { [devid: string]: number } | undefined
         for (let i = 4; ; i--) {
@@ -46,17 +46,16 @@ export class Programer {
         // this.ut.outputResult("sending file to LDC......")
         switch (loginType) {
             case "queue": {
-                for (let item of fnArr) {
-                  
+                for (let item of deviceRole!) {
                     let hexFile = hex[item.split(".")[0]]
-                    return this.ut.program_device_queue(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
+                    return this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
                     // break
                 }
                 break
             }
             case "adhoc": {
-                for (let item of fnArr) {
-                    console.log("fnArr:"+fnArr.join(";"))
+                for (let item of deviceRole!) {
+                    console.log("fnArr:" + fnArr.join(";"))
                     let hexFile = hex[item.split(".")[0]]
                     console.log(item + ":hexFile:" + JSON.stringify(hex))
                     console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))

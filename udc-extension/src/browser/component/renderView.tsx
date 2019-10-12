@@ -1,5 +1,4 @@
 import React = require("react");
-import URI from "@theia/core/lib/common/uri";
 import { Experiment } from "./experiment-view"
 import { Chapter } from './chapter-view'
 import { Scene } from './scene-view'
@@ -14,7 +13,6 @@ export namespace View {
         isconnected: () => Promise<Boolean>
         disconnect: () => void
         callUpdate: () => void
-        openSrcFile: (uri: URI) => void
         postSrcFile: (fn: string) => void
         setCookie: (cookie: string) => void
         gotoVideo: (uri: string, videoName: string) => void
@@ -31,6 +29,7 @@ export namespace View {
         getLocal: (key: string, obj: object) => any
         programSingleFile: (pidAndFn: string) => void
         postSimFile: (pid: string) => void
+        openSrcFile: (pid: string) => void
     }
     export interface State {
         ajaxNotFinish: boolean,
@@ -666,7 +665,6 @@ export class View extends React.Component<View.Props, View.State>{
                                     disconnect={_this.props.disconnect}
                                     connect={_this.props.connect}
                                     callUpdate={_this.props.callUpdate}
-                                    openSrcFile={_this.props.openSrcFile}
                                     postSrcFile={_this.props.postSrcFile}
                                 />
                             </div>
@@ -684,7 +682,7 @@ export class View extends React.Component<View.Props, View.State>{
                             left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", bottom: "10px", display: "none"
                         }}>
                             {/* {`第${_this.state.sidIndex + 1}部分，`} */}
-                            {(_this.state.sidIndex + 1)>0?`${$(`.section${_this.state.sidIndex + 1}`).text()} 选择题${_this.state.pid}`:`error`}
+                            {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidIndex + 1}`).text()} 选择题${_this.state.pid}` : `error`}
                         </div>
 
                         <div className="row col-12" style={{
@@ -757,7 +755,6 @@ export class View extends React.Component<View.Props, View.State>{
                                     disconnect={_this.props.disconnect}
                                     connect={_this.props.connect}
                                     callUpdate={_this.props.callUpdate}
-                                    openSrcFile={_this.props.openSrcFile}
                                     postSrcFile={_this.props.postSrcFile}
                                 />
                             </div>
@@ -810,7 +807,6 @@ export class View extends React.Component<View.Props, View.State>{
                                         disconnect={_this.props.disconnect}
                                         connect={_this.props.connect}
                                         callUpdate={_this.props.callUpdate}
-                                        openSrcFile={_this.props.openSrcFile}
                                         postSrcFile={_this.props.postSrcFile}
                                     />
                                 </div>

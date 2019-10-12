@@ -5,7 +5,7 @@ import { Emitter } from "vscode-jsonrpc";
 import { UdcService } from "../common/udc-service";
 import { MessageService, CommandRegistry } from "@theia/core";
 import { UdcCommands } from "./udc-extension-contribution";
-import URI from "@theia/core/lib/common/uri";
+// import URI from "@theia/core/lib/common/uri";
 import { View } from './component/renderView'
 import { UdcWatcher } from "../common/udc-watcher";
 import * as color from 'colors'
@@ -160,8 +160,9 @@ export class DeviceViewWidget extends TreeWidget {
     }
 
 
-    openSrcFile = (uri: URI) => {
-        this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
+    openSrcFile = (pid: string) => {
+        // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
+        this.udcService.openPidFile(pid)
     }
 
     gotoVideo = (uri: string, videoName: string) => {

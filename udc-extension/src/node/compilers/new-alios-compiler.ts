@@ -140,7 +140,7 @@ export class NewAliosCompiler {
                                 })
                                 mesg.on("end", () => {
                                     ws.write(new Buffer(bufferStore, "binary"),()=>{
-                                        ws.close()
+                                       ws.close()
                                     })
                                    
                                 })
