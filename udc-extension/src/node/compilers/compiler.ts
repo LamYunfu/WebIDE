@@ -39,7 +39,7 @@ export class Compiler {
         return "scc"
     }
     async compileSingleFile(pid: string, fn: string) {
-        let bv = await this.udcCompiler.postSrcFile(pid)
+        let bv = await this.udcCompiler.postSrcFile(pid,fn)
         if (bv != 'scc')
             return "fail"
         return "scc"

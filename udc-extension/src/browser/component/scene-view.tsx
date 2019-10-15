@@ -84,7 +84,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                         let tmp = {}
                         _this.loginType[`${item.pid}`] = 'group'
                         _this.role[`${item.pid}`] = item.deviceRole
-                        _this.ppids[`${item.pid}`] = item.pid
+                        _this.ppids[`${item.pid}`] = _this.props.section.ppid[0]
                         _this.model[`${item.pid}`] = item.deviceType
                         _this.loginGroups[`${item.pid}`] = item.deviceType.trim().split(";")
                         tmp = { ...tmp, loginType: 'group', model: item.deviceType }

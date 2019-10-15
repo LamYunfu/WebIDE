@@ -95,7 +95,9 @@ export class DeviceViewWidget extends TreeWidget {
                 disconnect={this.disconnect} connect={this.connect}
                 callUpdate={this.callUpdate}
                 openSrcFile={this.openSrcFile}
-                postSrcFile={this.postSrcFile} />
+                postSrcFile={this.postSrcFile}
+                saveAll={this.saveAll} 
+                />
 
         )
     }
@@ -211,5 +213,9 @@ export class DeviceViewWidget extends TreeWidget {
     }
     postSimFile = (pid: string) => {
         this.udcService.postSimFile(pid)
+    }
+    saveAll = async () => {
+        await this.applicationShell.saveAll()
+
     }
 }

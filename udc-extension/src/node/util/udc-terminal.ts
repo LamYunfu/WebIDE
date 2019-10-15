@@ -249,6 +249,7 @@ export class UdcTerminal {
                         })
                         mesg.on("end", () => {
                             let res: any = JSON.parse(bf)
+                            console.log("res:::" + bf)
                             if (res.result) {
                                 for (let item of Object.keys(res.template)) {
                                     if (!fs.existsSync(path.join(_this.rootDir, dirName)))
@@ -264,9 +265,15 @@ export class UdcTerminal {
                                 }
                                 resolve("scc")
                             }
+                            else {
+                                console.log(res.mes)
+                            }
                             resolve("err")
                         })
                     })
+                    console.log("ppid::::" + JSON.stringify({
+                        ppid: ppid
+                    }))
                     fileRequest.write(JSON.stringify({
                         ppid: ppid
                     }))
@@ -977,7 +984,7 @@ export class UdcTerminal {
     setTinyLink(name: string, passwd: string): void {
         this.tinyLinkInfo.name = name
         this.tinyLinkInfo.passwd = passwd
-        console.log(JSON.stringify(this.tinyLinkInfo) + ".........................................")
+        console.log("userName&passwd:"+JSON.stringify(this.tinyLinkInfo) + ".........................................")
     }
     openPidFile(pid: string) {
         console.log("openFile")

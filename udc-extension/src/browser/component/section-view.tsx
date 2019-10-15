@@ -354,7 +354,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                     </div>
                                 )
                             }
-
+                            console.log("Type is :"+_this.types[x])
                             let index = _this.context.sidArray.findIndex((x: any) => {
                                 if (x == _this.props.sid)
                                     return true;
@@ -373,7 +373,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 "pid": x,
                                 "scid": _this.scids[x],
                                 sid: _this.props.sid,
-                                optionChoicesDecription: choices
+                                optionChoicesDecription: choices,
+                                type:_this.types[x]
                             })
                         }
                     }

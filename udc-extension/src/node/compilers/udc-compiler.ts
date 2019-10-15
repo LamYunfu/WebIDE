@@ -30,10 +30,16 @@ export class UdcCompiler {
     getHexNmame(fn: string) {
         return "B" + new Buffer(fn).toString("hex")
     }
-    async postSrcFile(pid: string): Promise<string> {
+    async postSrcFile(pid: string, roleName?: string): Promise<string> {
         let tmpPath = ""
-        let { dirName, deviceRole } = this.udc.pidQueueInfo[pid]
+        let { dirName, deviceRole, model } = this.udc.pidQueueInfo[pid]
+        if (roleName != undefined) {
+            deviceRole = model.split(";")
+        }
         for (let item of deviceRole!) {
+            if (roleName != undefined && item != roleName) {
+                continue
+            }
             let fileDir = path.join(this.rootDir, dirName, item)
             let fn = fs.readdirSync(fileDir)[0].split(".")[0]
             tmpPath = path.join(fileDir, fn + ".cpp")

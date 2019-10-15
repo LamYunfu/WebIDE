@@ -30,6 +30,7 @@ export namespace View {
         programSingleFile: (pidAndFn: string) => void
         postSimFile: (pid: string) => void
         openSrcFile: (pid: string) => void
+        saveAll: () => void
     }
     export interface State {
         ajaxNotFinish: boolean,
@@ -42,7 +43,8 @@ export namespace View {
         sidArray: string[],
         isLast: boolean,
         sidIndex: number,
-        qzid: string
+        qzid: string,
+        type: string,//optionChoice type
     }
 }
 export class View extends React.Component<View.Props, View.State>{
@@ -60,6 +62,7 @@ export class View extends React.Component<View.Props, View.State>{
             isLast: false,
             sidIndex: 0,
             qzid: "",
+            type:"SC"
         }
     }
     vid = ""
@@ -274,6 +277,9 @@ export class View extends React.Component<View.Props, View.State>{
         $(".resultBoard").text("")
         setInterval(() => $("#timer").text(new Date().toLocaleString()), 1)
         $(document).on("click", ".oneOptionDescription", (e) => {
+            if (_this.state.type == "SC") {
+                $(".oneOptionDescription").removeClass("skyblueItem")
+            }
             if ($(e.currentTarget).hasClass("skyblueItem"))
                 $(e.currentTarget).removeClass("skyblueItem")
             else
@@ -693,11 +699,17 @@ export class View extends React.Component<View.Props, View.State>{
                             {/* <div className="row col-3" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "100%" }} >
                 
                             </div> */}
-                            <div className="optionDescription col-6" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "100%" }} >
+                            <div className="optionDescription col-6" style={{
+                                backgroundColor: "#f8fafc",
+                                color: "black", float: "left", fontSize: `26px`, height: "100%"
+                            }} >
                                 {_this.state.optionDescription}
 
                             </div>
-                            <div className="optionChocies col-6" style={{ backgroundColor: "#e7ebee", color: "green", fontSize: `15px`, float: "left", height: "100%" }}>
+                            <div className="optionChocies col-6" style={{
+                                backgroundColor: "#e7ebee", color: "green",
+                                fontSize: `20px`, float: "left", height: "100%"
+                            }}>
                                 <div className="choices" > {_this.state.optionChoicesDecription}</div>
                                 <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
                                 <div className="next btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>下一个</div>

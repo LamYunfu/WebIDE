@@ -87,14 +87,14 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
         $(document).ready(
             () => {
                 $(document).on("click", "#submitSrcButton" + _this.props.sid,
-                    (e) => {
-                      
+                    async (e) => {
+                        await this.context.props.saveAll()
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")
                         // if (_this.props.currentFocusCodingIndex[0] != index) {
                         //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
                         //     return
                         // }
-                        console.log("click submit:"+index+"#codingInfofArea" + this.props.sid)
+                        console.log("click submit:" + index + "#codingInfofArea" + this.props.sid)
                         index != undefined && _this.props.postSrcFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
@@ -196,9 +196,9 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                     }
                     else {
                         let val = $("#codingInfoArea" + _this.props.sid).attr("title")
-                        _this.props.say(`正在烧入对象：helloworld_${_this.state.currentFile.trim()}`)
+                        _this.props.say(`正在烧入对象：${_this.state.currentFile.trim()}`)
                         // alert(`${val}&helloworld_${_this.state.currentFile}xyz`)
-                        _this.props.programSingleFile(`${val}&helloworld_${_this.state.currentFile.trim()}`)
+                        _this.props.programSingleFile(`${val}&${_this.state.currentFile.trim()}`)
 
                     }
                 })

@@ -283,6 +283,7 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
             let qzid = $(e.currentTarget).children(".qzid").text()
             let scid = $(e.currentTarget).children(".scid").text()
             console.log(index + ".............index")
+            console.log("types:::::::::"+ _this.props.types[index])
             _this.setState(() => ({
                 ..._this.state,
                 sid: _this.props.sid,

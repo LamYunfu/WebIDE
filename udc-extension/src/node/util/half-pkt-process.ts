@@ -38,14 +38,18 @@ export class HalfPackProcess extends EventEmitor {
     acquireData() {
         Logger.info(`before start:${this.cursorStart}size:${this.currentDataSize}end:${this.cursorEnd}`)
         if (this.currentDataSize < 0) {
-            Logger.info("!!!!!!!!!something goes wrong exit1 size:" + this.currentDataSize)
+            Logger.info("illegal size:" + this.currentDataSize)
+            this.cursorStart = 0
+            this.cursorEnd = 0
+            this.currentDataSize = 0
+            return
         }
-        if (this.currentDataSize < 12) {
+        if (this.currentDataSize < 12) {//最小包长
             Logger.info("exit1 size:" + this.currentDataSize)
             return
         }
         let ctlen =
-            (this.cursorStart + 6) % this.maxSize <= (this.cursorStart + 11) % this.maxSize ?
+            (this.cursorStart + 6) % this.maxSize <= (this.cursorStart + 11) % this.maxSize ?//包长字段是否为两段
                 parseInt(this.dataBuffer.subarray((this.cursorStart + 6) % this.maxSize, (this.cursorStart + 11) % this.maxSize).toString("ascii"))
                 : parseInt(this.dataBuffer.subarray(this.cursorStart + 6, this.maxSize).toString("ascii") + this.dataBuffer.subarray(0, 11 + this.cursorStart - this.maxSize).toString("ascii"))
         Logger.info(`ctlen:${ctlen}:size${this.currentDataSize}`)
@@ -68,6 +72,13 @@ export class HalfPackProcess extends EventEmitor {
         else {
             tmp = Buffer.concat([this.dataBuffer.subarray(this.cursorStart, this.dataBuffer.length),
             this.dataBuffer.subarray(0, (this.cursorStart + ctlen + 13) % this.maxSize)])
+        }
+        if (tmp.subarray(0, 1).toString('ascii') != "{" || tmp.subarray(tmp.length - 1, tmp.length).toString('ascii') != "}") {
+            Logger.info("the process package err,reset data queue")
+            this.cursorStart = 0
+            this.cursorEnd = 0
+            this.currentDataSize = 0
+            return
         }
         this.emit("data", tmp)
         this.currentDataSize -= tmp.length
