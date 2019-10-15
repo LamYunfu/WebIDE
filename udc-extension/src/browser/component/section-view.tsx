@@ -19,7 +19,7 @@ export namespace SectionUI {
         callUpdate: () => void
         postSrcFile: (fn: string) => void
         config: () => void
-
+        ppidArr: string[]
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
         outputResult: (res: string, types?: string) => void
@@ -152,6 +152,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         _this.types[item.order] = item.type
                         _this.scids[item.order] = item.scid
                     }
+                    _this.context.setTypeData(_this.props.sid, _this.types)
                     _this.context.setQuestionPool(_this.props.sid, {//存储选择题信息到全局
                         descriptions: _this.optionIssues,
                         choices: _this.choices,
@@ -160,6 +161,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     })
                     let uAnswers: { [key: string]: { uAnswer: string[], uRight: boolean | undefined, saved: boolean | undefined } } = await _this.props.getLocal(_this.props.sid, {})
                     uAnswers == undefined ? uAnswers = {} : uAnswers
+
                     for (let index in _this.optionIssues) {
                         _this.optionItems.push(<OptionItem
                             saved={uAnswers[index] == undefined ? undefined : uAnswers[index].saved}
@@ -169,6 +171,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                             optionIssues={_this.optionIssues} sid={_this.props.sid} akey={index} key={index} choices={_this.choices}
                             optionStatus={_this.optionStatus} titles={_this.optionIssues} />)
                     }
+
 
                     _this.setState((state) => ({
                         ...state,
@@ -266,12 +269,24 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     //     codingItems: _this.codingItems
                     // }))
 
-                    for (let entry in _this.codingIssues) {
-                        _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
-                            role={_this.role[entry]} sid={_this.props.sid} akey={entry} key={entry}
-                            codingTitles={_this.codingIssues}
-                            codingStatus={_this.codingStatus} />)
-                    }
+                    _this.props.ppidArr.forEach((val) => {
+                        console.log("ppid val:" + val)
+                        for (let entry in _this.codingIssues) {
+                            if (val == _this.ppids[entry]) {
+                                _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
+                                    role={_this.role[entry]} sid={_this.props.sid} akey={entry} key={entry}
+                                    codingTitles={_this.codingIssues}
+                                    codingStatus={_this.codingStatus} />)
+                                return
+                            }
+                        }
+                    })
+                    // for (let entry in _this.codingIssues) {
+                    //     _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
+                    //         role={_this.role[entry]} sid={_this.props.sid} akey={entry} key={entry}
+                    //         codingTitles={_this.codingIssues}
+                    //         codingStatus={_this.codingStatus} />)
+                    // }
                     console.log("CDM OK")
                     _this.setState((state) => ({
                         ...state,
@@ -354,7 +369,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                     </div>
                                 )
                             }
-                            console.log("Type is :"+_this.types[x])
+                            console.log("Type is :" + _this.types[x])
                             let index = _this.context.sidArray.findIndex((x: any) => {
                                 if (x == _this.props.sid)
                                     return true;
@@ -374,7 +389,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 "scid": _this.scids[x],
                                 sid: _this.props.sid,
                                 optionChoicesDecription: choices,
-                                type:_this.types[x]
+                                type: _this.types[x]
                             })
                         }
                     }
@@ -398,9 +413,9 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     // contentType: "text/plain",
                     data: JSON.stringify({ pid: _this.pids }),
                     success: function (data) {
-                        for (let x of _this.pids) {
-                            console.log("pid:" + x + "!")
-                        }
+                        // for (let x of _this.pids) {
+                        //     console.log("pid:" + x + "!")
+                        // }
                         let tmp = data.problem
                         for (let x of tmp) {
                             $(`.onlineCount.${x.pid}>span`).text(x.count)

@@ -45,6 +45,7 @@ export namespace View {
         sidIndex: number,
         qzid: string,
         type: string,//optionChoice type
+
     }
 }
 export class View extends React.Component<View.Props, View.State>{
@@ -62,7 +63,7 @@ export class View extends React.Component<View.Props, View.State>{
             isLast: false,
             sidIndex: 0,
             qzid: "",
-            type:"SC"
+            type: "SC"
         }
     }
     vid = ""
@@ -77,6 +78,8 @@ export class View extends React.Component<View.Props, View.State>{
     submitedAnswers: { [sid: string]: { [index: string]: { "uAnswer": string[] | undefined, "uRight": boolean | undefined, saved: boolean | undefined } } } = {}
     notForAll: boolean = true;
     clickTime: number = new Date().getSeconds()
+    sectionData: any = {}
+    typeData: any = {}
 
     /* 
    
@@ -204,6 +207,7 @@ export class View extends React.Component<View.Props, View.State>{
                             let sids: string[] = []
                             for (let item of _this.sections) {
                                 sids.push(item.sid)
+                                _this.sectionData[item.sid] = item
                             }
                             _this.setState({ "sidArray": sids })
                             break
@@ -354,6 +358,62 @@ export class View extends React.Component<View.Props, View.State>{
                 optionChoicesDecription: options,
                 pid: pid,
                 scid: _this.questionPool[csid]["scids"][pid],
+                type: _this.typeData[csid][pid]
+            }, () => {
+                $(".list-group-item").removeClass("list-group-item-primary")
+                $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
+            })
+        })
+        $(document).on("click", ".last", () => {
+            let csid = _this.state.sid
+            let pid = _this.state.pid
+            let newIsLast = _this.state.isLast
+            let index = _this.state.sidIndex
+            if (parseInt(pid) > 1) {
+                pid = (parseInt(pid) - 1).toString()
+            }
+            else {
+                ////alert("no more answer")
+                index = _this.state.sidArray.findIndex((val, index) => {
+                    if (val == _this.state.sid)
+                        return true;
+                })
+                if (index == 0) {
+                    alert("没有更多了！")
+                    newIsLast = false
+                    return;
+                }
+                else {
+                    csid = _this.state.sidArray[--index]
+                    pid = Object.keys(_this.questionPool[csid].descriptions).length.toString()
+                }
+
+            }
+            let options = []
+            let choices = _this.questionPool[csid]["choices"][pid]
+            for (let index in choices) {
+                options.push(<div className="oneOptionDescription col-12" style={{
+                    height: "60px",
+                    borderStyle: "solid", borderColor: "grey",
+                    borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
+                    display: "inline-table", margin: "5px 10px"
+                }} title={(parseInt(index) + 1).toString()}>
+                    <div className="option-choice" style={{
+                        display: "table-cell", verticalAlign: "middle",
+                    }} >
+                        {choices[index]}
+                    </div>
+                </div>)
+            }
+            _this.setState({
+                sidIndex: index,
+                isLast: newIsLast,
+                sid: csid,
+                optionDescription: _this.questionPool[csid]["descriptions"][pid],
+                optionChoicesDecription: options,
+                pid: pid,
+                scid: _this.questionPool[csid]["scids"][pid],
+                type: _this.typeData[csid][pid]
             }, () => {
                 $(".list-group-item").removeClass("list-group-item-primary")
                 $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
@@ -621,6 +681,9 @@ export class View extends React.Component<View.Props, View.State>{
                 <div style={{ height: "100%", zIndex: 0 }}>
                     <div className="title_timer col-12"><h4> {_this.title}</h4><span id='timer'></span></div>
                     <MyContext.Provider value={{
+                        setTypeData: (sid: string, types: any) => {
+                            _this.typeData[sid] = types
+                        },
                         setClickTime: () => {
                             _this.clickTime = new Date().getSeconds()
                         },
@@ -652,6 +715,7 @@ export class View extends React.Component<View.Props, View.State>{
                         <div className="selectPanel row col-3" style={{ minWidth: '450px', height: "90%", backgroundColor: "#262527", left: "10px", zIndex: 1, position: "absolute" }}>
                             <div className="col-12" style={{ height: "100%", overflow: "scroll", backgroundColor: "#262527", zIndex: 1, }}>
                                 <Chapter
+                                    sectionData={_this.sectionData}
                                     viewType={_this.type}
                                     programSingleFile={_this.props.programSingleFile}
                                     setLocal={_this.props.setLocal}
@@ -713,6 +777,7 @@ export class View extends React.Component<View.Props, View.State>{
                                 <div className="choices" > {_this.state.optionChoicesDecription}</div>
                                 <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
                                 <div className="next btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>下一个</div>
+                                <div className="last btn btn-primary" style={{ left: '90px', bottom: '10px', position: "absolute" }}>上一个</div>
                                 {this.state.viewType == "1" ? <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
                                     :
                                     this.state.isLast ? <button className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>//考试模式

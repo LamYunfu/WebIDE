@@ -2,6 +2,7 @@ import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { MyContext } from "./context";
+import { getCompilerType } from "../../node/globalconst";
 // import { MyContext } from "./context";
 
 
@@ -100,7 +101,8 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                     }
                 )
                 $(document).on("click", "#submitSimButton" + _this.props.sid,
-                    (e) => {
+                    async (e) => {
+                        await this.context.props.saveAll()
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")
                         index != undefined && _this.context.props.postSimFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
@@ -137,6 +139,8 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             })
                             // alert(singleFileButtons.length)
                             _this.context.props.openSrcFile(tmp)
+                            if (getCompilerType(_this.props.coding_titles[tmp]) == "alios")
+                                $("#submitSimButton" + this.props.sid).hide()
 
                             // if (_this.props.roles[tmp] != undefined) {
                             //     if (getCompilerType(_this.props.coding_titles[tmp]) == "alios") {
@@ -188,8 +192,9 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         $(`.codingRole${_this.props.sid}`).text(_this.focusFile)
                     }
                 })
-                $(document).on("click", `#singleFileSubmitButton` + _this.props.sid, (e) => {
+                $(document).on("click", `#singleFileSubmitButton` + _this.props.sid, async (e) => {
                     // alert("singleFileProgram")
+                    await this.context.props.saveAll()
                     if (_this.focusFile == "") {
                         alert("请点击对应角色按钮、配置后再次烧入")
                         return

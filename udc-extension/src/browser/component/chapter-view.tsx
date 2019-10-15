@@ -8,6 +8,7 @@ export namespace Chapter {
         viewType: string
         vid: string
         chapterData: { [key: string]: {} }
+        sectionData: any
         sections: [{ [key: string]: string }]
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
@@ -16,7 +17,7 @@ export namespace Chapter {
         config: () => void
         gotoVideo: (uri: string, videoName: string) => void
         say: (verbose: string) => void
-        outputResult: (res: string,types?:string) => void
+        outputResult: (res: string, types?: string) => void
         setChapterData: (vid: string, data: {}) => void
         setQueue: () => void
         initPidQueueInfo(infos: string): Promise<string>
@@ -42,7 +43,7 @@ export class Chapter extends React.Component<Chapter.Props>{
         let _this = this
         _this.context.props.setSize(9999)
         // alert("sidarry:" + _this.sidArray.join(";"))
-      
+
     }
     render(): JSX.Element {
         let uiArray = []
@@ -50,6 +51,7 @@ export class Chapter extends React.Component<Chapter.Props>{
             this.sidArray.push(x.sid)
             this.sectionsDataPool[x.sid] == undefined && this.setSectionsDataPool(x.sid, {})
             uiArray.push(<SectionUI
+                ppidArr={this.props.sectionData[x.sid].ppid}
                 viewType={this.props.viewType}
                 vid={this.props.vid}
                 programSingleFile={this.props.programSingleFile}
@@ -75,7 +77,7 @@ export class Chapter extends React.Component<Chapter.Props>{
                 callUpdate={this.props.callUpdate}
                 postSrcFile={this.props.postSrcFile} />)
         }
-   
+
         return (
             <div className="sections col-12">
                 {uiArray}
