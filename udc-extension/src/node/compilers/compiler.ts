@@ -27,7 +27,7 @@ export class Compiler {
             // this.udcCompiler.outputResult("use alios compiler")
             Logger.info("use alios compiler")
             // await this.aliosCompiler.postNameAndType(pid)
-            await this.newAliosCompiler.postNameAndType(pid)
+            return await this.newAliosCompiler.postNameAndType(pid)
         }
         if (getCompilerType(model) == "tinylink") {
             // this.udcCompiler.outputResult("use tinylink compiler")
@@ -35,11 +35,13 @@ export class Compiler {
             let bv = await this.udcCompiler.postSrcFile(pid)
             if (bv != 'scc')
                 return "fail"
+            return 'scc'
         }
-        return "scc"
+        Logger.info("no this type")
+        return "fail"
     }
     async compileSingleFile(pid: string, fn: string) {
-        let bv = await this.udcCompiler.postSrcFile(pid,fn)
+        let bv = await this.udcCompiler.postSrcFile(pid, fn)
         if (bv != 'scc')
             return "fail"
         return "scc"

@@ -417,11 +417,11 @@ export class UdcTerminal {
             Logger.val("server pid:" + pid)
             // _this.udcServerClient.on('data', (data: Buffer) => _this.onUdcServerData(data, pid));
             _this.udcServerClient.on('data', (data: Buffer) => {
-                Logger.info("hpp received <<<<<<<<<<:" + data.toString('utf8'))
+                // Logger.info("hpp received <<<<<<<<<<:" + data.toString('utf8'))
                 _this.hpp.putData(data)
             });
             _this.hpp.on("data", (data) => {
-                Logger.info("hpp  processed >>>>>>>>>>:" + data.toString('utf8'))
+                // Logger.info("hpp  processed >>>>>>>>>>:" + data.toString('utf8'))
                 _this.onUdcServerData(data, pid)
             })
 
@@ -702,11 +702,14 @@ export class UdcTerminal {
     async program_device(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         let _this = this
         let { timeout, model, waitID } = this.pidQueueInfo[pid]
-        let uploadResult = ""
+        let uploadResult = "scc"
         let configResult = await new Promise((resolve) => {
+            Logger.info("configuring burning program")
             let hash = crypto.createHash("sha1")
-            let buff = new Buffer(fs.readFileSync(filepath))
+            let buff = fs.readFileSync(filepath)
+            // let hashVal = hash.update(buff).digest("hex")
             let hashVal = hash.update(buff).digest("hex")
+            Logger.info("hex hashval:" + hashVal)
             let configRequest = http.request({//
                 method: "POST",
                 hostname: '47.97.253.23',
@@ -721,15 +724,20 @@ export class UdcTerminal {
                     bf += b.toString("utf8")
                 })
                 mesg.on("end", () => {
+                    Logger.info("bf:" + bf)
                     let res: any = JSON.parse(bf)
                     if (!res.result) {
-                        Logger.info("burning config success")
-                        _this.outputResult("burning config success:")
+                        Logger.info("config burning success")
+                        _this.outputResult("config burning success")
+                        Logger.info(res.status)
+                        resolve("scc")
                     }
                     else {
-                        console.log(res.status)
+                        Logger.info(res.status)//已经存在
+                        resolve("exist")
                     }
-                    resolve("scc")
+
+
                 })
             })
             configRequest.write(JSON.stringify({
@@ -740,35 +748,48 @@ export class UdcTerminal {
 
         if (configResult == "scc") {
             let fm = new FormData()
-            uploadResult = await new Promise((resolve) => {
+            Logger.info("uploading hex file")
+            uploadResult = await new Promise(async (resolve) => {
                 let uploadRequest = http.request({//传zip
                     method: "POST",
                     hostname: '47.97.253.23',
                     port: '8081',
                     path: "/upload",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
-                    },
+                    // headers: {
+                    //     "Accept": "application/json",
+                    //     "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
+                    // },
+                    headers: fm.getHeaders()
                 }, (mesg) => {
                     let bf = ""
+                    Logger.info("upload statuscode:" + mesg.statusCode)
                     mesg.on("data", (b: Buffer) => {
+                        Logger.info("data comming")
                         bf += b.toString("utf8")
                     })
+                    mesg.on("error", () => {
+                        resolve("err")
+                    })
                     mesg.on("end", () => {
-                        console.log(bf)
+                        Logger.info("bf:" + bf)
                         let res: any = JSON.parse(bf)
                         if (res.result) {
                             resolve("scc")
                         }
                         else {
-                            resolve("err")
+                            _this.outputResult(res.msg)
+                            resolve(res.msg)
                         }
                     })
                 })
-                let blob = fs.readFileSync(filepath)
-                fm.append("file", blob, filepath.split("/").pop())
+
+                // let blob = fs.readFileSync(filepath)
+                let st = fs.createReadStream(filepath)
+                Logger.info("append file")
+                // fm.append("file", blob, filepath.split("/").pop())
+                fm.append("file", st, filepath.split("/").pop())
                 fm.pipe(uploadRequest)
+                Logger.info("file append ok")
             })
         }
         else {
@@ -776,10 +797,12 @@ export class UdcTerminal {
         }
 
         if (uploadResult != "scc") {
+            Logger.info("uploading zip file err")
             _this.outputResult("hexfile upload error")
             return false
         }
         else {
+            Logger.info("uploading zip file scc")
             _this.outputResult("hexfile upload success")
         }
         let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
@@ -984,7 +1007,7 @@ export class UdcTerminal {
     setTinyLink(name: string, passwd: string): void {
         this.tinyLinkInfo.name = name
         this.tinyLinkInfo.passwd = passwd
-        console.log("userName&passwd:"+JSON.stringify(this.tinyLinkInfo) + ".........................................")
+        console.log("userName&passwd:" + JSON.stringify(this.tinyLinkInfo) + ".........................................")
     }
     openPidFile(pid: string) {
         console.log("openFile")
@@ -995,7 +1018,8 @@ export class UdcTerminal {
                 let chidFileArr = fs.readdirSync(path.join(this.rootDir, dirName, val))
                 chidFileArr.forEach((file) => {
                     console.log(file)
-                    if (fs.statSync(path.join(this.rootDir, dirName, val, file)).isFile() && (file.split('.').pop() == "c" || file.split('.').pop() == "cpp")) {
+                    if (fs.statSync(path.join(this.rootDir, dirName, val, file)).isFile() && (file.split('.').pop() == "c" || file.split('.').pop() == "cpp") &&
+                        file.split('.')[0] != "app_entry") {
                         console.log("openfile:" + path.join(this.rootDir, dirName, val, file))
                         this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: path.join(this.rootDir, dirName, val, file) })
                     }

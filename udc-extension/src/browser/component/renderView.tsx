@@ -31,6 +31,8 @@ export namespace View {
         postSimFile: (pid: string) => void
         openSrcFile: (pid: string) => void
         saveAll: () => void
+        setSubmitEnableWithJudgeTag: (val: boolean) => void
+        getSubmitEnableWithJudgeTag: () => boolean
     }
     export interface State {
         ajaxNotFinish: boolean,
@@ -45,6 +47,7 @@ export namespace View {
         sidIndex: number,
         qzid: string,
         type: string,//optionChoice type
+
 
     }
 }
@@ -289,7 +292,7 @@ export class View extends React.Component<View.Props, View.State>{
             else
                 $(e.currentTarget).addClass("skyblueItem")
         })
-        $(document).on('click', ".btn", async (e) => {
+        $(document).on('click', ".btn:not([id*=submitSrc],[id*=connectButton])", async (e) => {
 
             let sp = $(e.currentTarget)
             sp.attr("disabled", "true")

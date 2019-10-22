@@ -36,7 +36,7 @@ export class HalfPackProcess extends EventEmitor {
 
 
     acquireData() {
-        Logger.info(`before start:${this.cursorStart}size:${this.currentDataSize}end:${this.cursorEnd}`)
+        // Logger.info(`before start:${this.cursorStart}size:${this.currentDataSize}end:${this.cursorEnd}`)
         if (this.currentDataSize < 0) {
             Logger.info("illegal size:" + this.currentDataSize)
             this.cursorStart = 0
@@ -52,7 +52,7 @@ export class HalfPackProcess extends EventEmitor {
             (this.cursorStart + 6) % this.maxSize <= (this.cursorStart + 11) % this.maxSize ?//包长字段是否为两段
                 parseInt(this.dataBuffer.subarray((this.cursorStart + 6) % this.maxSize, (this.cursorStart + 11) % this.maxSize).toString("ascii"))
                 : parseInt(this.dataBuffer.subarray(this.cursorStart + 6, this.maxSize).toString("ascii") + this.dataBuffer.subarray(0, 11 + this.cursorStart - this.maxSize).toString("ascii"))
-        Logger.info(`ctlen:${ctlen}:size${this.currentDataSize}`)
+        // Logger.info(`ctlen:${ctlen}:size${this.currentDataSize}`)
         if (ctlen + 13 > this.currentDataSize) {
             Logger.info(`exit2:${ctlen}:${this.currentDataSize}`)
             return
@@ -83,7 +83,7 @@ export class HalfPackProcess extends EventEmitor {
         this.emit("data", tmp)
         this.currentDataSize -= tmp.length
         this.cursorStart = (this.cursorStart + tmp.length) % this.maxSize
-        Logger.info(`after start:${this.cursorStart}size:${this.currentDataSize}end:${this.cursorEnd}`)
+        // Logger.info(`after start:${this.cursorStart}size:${this.currentDataSize}end:${this.cursorEnd}`)
         this.acquireData()
     }
 }

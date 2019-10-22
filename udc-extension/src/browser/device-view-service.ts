@@ -1,3 +1,4 @@
+import { Logger } from './../node/util/logger';
 import { injectable, inject } from "inversify";
 import { WidgetFactory, Widget } from "@theia/core/lib/browser";
 import { DeviceViewWidgetFactory, DeviceViewWidget, DeviceViewSymbolInformationNode } from "./device-view-widget";
@@ -22,7 +23,7 @@ export class DeviceViewService implements WidgetFactory {
 
 
     createWidget(): Promise<Widget> {
-     
+
         this.widget = this.factory();
         const disposables = new DisposableCollection();
         disposables.push(this.widget.onDidChangeOpenStateEmitter.event(open => this.onDidChangeOpenStateEmitter.fire(open)));
@@ -35,11 +36,15 @@ export class DeviceViewService implements WidgetFactory {
         })
         return Promise.resolve(this.widget);
     }
-
-
+    approveClick() {
+        this.widget!.setSubmitEnableWithJudgeTag(true)
+    }
+    enableClick() {
+        Logger.info(this.widget == null)
+        this.widget!.enableClick()
+    }
     push(devices: { [key: string]: number }): void {
     }
-
 
     public clearDevices(): void {
     }

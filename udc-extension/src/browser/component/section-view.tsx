@@ -418,6 +418,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         // }
                         let tmp = data.problem
                         for (let x of tmp) {
+                            let exeTag = _this.currentFocusCodingIndex[0] == x.pid
                             $(`.onlineCount.${x.pid}>span`).text(x.count)
                             _this.codingStatus[x.pid] = x.status
                             if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
@@ -433,6 +434,9 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 sp.show()
                                 _this.judgeStatus[x.pid] = '1'
                             } else if (status == 'ACCEPT') {
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
                                 if (_this.judgeStatus[x.pid] == '1') {
@@ -441,6 +445,9 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
                             } else if (status == 'WRONG_ANSWER') {
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
                                 // alert(_this.judgeStatus[x.pid])
@@ -451,9 +458,15 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
                             } else if (status == 'TIMEOUT') {
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
                             } else {
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                exeTag && _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
                             }

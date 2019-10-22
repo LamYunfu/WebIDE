@@ -48,7 +48,7 @@ export class UdcCompiler {
             let fm = new FormData()
             fm.append("file", b, fn + '.cpp')
             let _this = this
-            let res = await new Promise((resolve, reject) => {
+            let res = await new Promise((resolve) => {
                 _this.submitForm(fm,
                     _this.tinyLinkAPIs["hostname"],
                     _this.tinyLinkAPIs["port"],
@@ -57,7 +57,7 @@ export class UdcCompiler {
                         if (res == null || res == undefined || res == '') {
                             Logger.info("Compile No Data Back,Mabye your login info expired,try login again")
                             _this.outputResult("there are no Response from Compiler ")
-                            reject("failed")
+                            resolve("failed")
                             return
                         }
                         let tmp = JSON.parse(res)
@@ -72,14 +72,15 @@ export class UdcCompiler {
                         Logger.val("compile result:" + tmp.data)
                         Logger.val("compiler's state:" + data["systemState"])
                         if (data.verbose == 'Cross Compiling Error.') {
-                            this.udc.udcClient != undefined && this.outputResult("compile online unsuccess,check your src file please")
+                            this.udc.udcClient != undefined && this.outputResult("compile online error,check your src file please")
                             this.outputResult(data.compileDebug)
-                            reject("srcFile Post failed")
+                            resolve("srcFile Post failed")
+                            return
                         }
                         else if (data.verbose != '') {
-                            reject("online compiler error")
+                            resolve("online compiler error")
                             this.udc.udcClient != undefined && this.outputResult(`${data.verbose}`)
-                            reject("failed")
+                            resolve("failed")
                             return
                         }
                         else {
@@ -105,7 +106,7 @@ export class UdcCompiler {
                                 mesg.on("end", async () => {
                                     // ws.write(x)
                                     ws.close()
-                                    _this.outputResult('extracting hex file......')
+                                    // _this.outputResult('extracting hex file......')
                                     resolve("scc")
                                     return
                                 })
@@ -125,7 +126,7 @@ export class UdcCompiler {
 
 
     async postData(host: string, port: string, path: string, data: any): Promise<string> {
-        return new Promise((resolve, rejects) => {
+        return new Promise((resolve, resolves) => {
             let datastr = JSON.stringify(data)
             let respData = ''
             Logger.val("the cookie in postData:" + this.cookie)
@@ -148,7 +149,7 @@ export class UdcCompiler {
 
     submitForm(fm: FormData, hostname: string, port: string, path: string, method: string): Promise<string> {
         let _this = this
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             fm.submit({
                 method: method,
                 hostname: hostname,

@@ -4,15 +4,15 @@ const webpack = require('webpack');
 const yargs = require('yargs');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
-
 const outputPath = path.resolve(__dirname, 'lib');
-const { mode }  = yargs.option('mode', {
+const {
+    mode
+} = yargs.option('mode', {
     description: "Mode to use",
     choices: ["development", "production"],
     default: "production"
 }).argv;
 const development = mode === 'development';
-
 module.exports = {
     entry: path.resolve(__dirname, 'src-gen/frontend/index.js'),
     output: {
@@ -28,8 +28,7 @@ module.exports = {
         crypto: 'empty'
     },
     module: {
-        rules: [
-            {
+        rules: [{
                 test: /worker-main\.js$/,
                 loader: 'worker-loader',
                 options: {
@@ -43,15 +42,16 @@ module.exports = {
             },
             {
                 test: /\.useable\.css$/,
-                use: [
-                  {
-                    loader: 'style-loader/useable',
-                    options: {
-                      singleton: true,
-                      attrs: { id: 'theia-theme' },
-                    }
-                  },
-                  'css-loader'
+                use: [{
+                        loader: 'style-loader/useable',
+                        options: {
+                            singleton: true,
+                            attrs: {
+                                id: 'theia-theme'
+                            },
+                        }
+                    },
+                    'css-loader'
                 ]
             },
             {
@@ -82,7 +82,9 @@ module.exports = {
             },
             {
                 test: /node_modules[\\|/](vscode-languageserver-types|vscode-uri|jsonc-parser)/,
-                use: { loader: 'umd-compat-loader' }
+                use: {
+                    loader: 'umd-compat-loader'
+                }
             },
             {
                 test: /\.wasm$/,
@@ -100,8 +102,7 @@ module.exports = {
     },
     devtool: 'source-map',
     plugins: [
-        new CopyWebpackPlugin([
-        ]),
+        new CopyWebpackPlugin([]),
         new CircularDependencyPlugin({
             exclude: /(node_modules|examples)\/./,
             failOnError: false // https://github.com/nodejs/readable-stream/issues/280#issuecomment-297076462

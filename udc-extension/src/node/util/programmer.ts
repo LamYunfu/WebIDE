@@ -48,7 +48,7 @@ export class Programer {
             case "queue": {
                 for (let item of deviceRole!) {
                     let hexFile = hex[item.split(".")[0]]
-                    return this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
+                    return await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
                     // break
                 }
                 break
@@ -59,7 +59,7 @@ export class Programer {
                     let hexFile = hex[item.split(".")[0]]
                     console.log(item + ":hexFile:" + JSON.stringify(hex))
                     console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
-                    return this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
+                    return await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
                 }
                 break
             }

@@ -6,6 +6,7 @@ import * as ach from 'archiver'
 import * as crypto from "crypto"
 import * as FormData from "form-data"
 import { injectable, inject } from 'inversify';
+import { Logger } from '../util/logger';
 @injectable()
 export class NewAliosCompiler {
     constructor(@inject(UdcTerminal) protected readonly udc: UdcTerminal,
@@ -16,10 +17,14 @@ export class NewAliosCompiler {
         let { dirName, deviceRole } = await this.udc.getPidInfos(pid)
         for (let item of deviceRole!) {
             this.udc.outputResult(`compile:${item}`)
-            await this.postSingleSrcFile(dirName, item, pid)
+            let res = await this.postSingleSrcFile(dirName, item, pid)
+            if (res != "scc")
+                return 'err'
         }
+        return "scc"
     }
-    postSingleSrcFile(projectName: string, role: string, pid: string) {
+    async  postSingleSrcFile(projectName: string, role: string, pid: string) {
+        Logger.info("postSingleSrcFile")
         let _this = this
         let st = fs.createWriteStream(`/home/project/${projectName}/${role}.zip`) //打包
         let achst = ach.create("zip").directory(`/home/project/${projectName}/${role}`, false)
@@ -54,12 +59,13 @@ export class NewAliosCompiler {
                             let res: any = JSON.parse(bf)
                             if (res.result) {
                                 console.log("Alios Post Config SCC!")
-                                resolve("scc")
                             }
                             else {
                                 console.log("Alios Post Config Err:" + res.status)
                                 _this.udc.outputResult("Alios Post Config Err:" + res.status)
                             }
+                            resolve("scc")
+                            Logger.info("config state :" + res.status)
                         })
                     })
                     configRequest.write(JSON.stringify({
@@ -81,14 +87,13 @@ export class NewAliosCompiler {
                         hostname: '47.97.253.23',
                         port: '12305',
                         path: "/upload",
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
-                        },
+                        headers: fm.getHeaders(),
                     }, (mesg) => {
                         let bf = ""
                         mesg.on("data", (b: Buffer) => {
+
                             bf += b.toString("utf8")
+                            console.log(bf)
                         })
                         mesg.on("end", () => {
                             console.log(bf)
@@ -139,10 +144,11 @@ export class NewAliosCompiler {
                                     bufferStore += b.toString("binary")
                                 })
                                 mesg.on("end", () => {
-                                    ws.write(new Buffer(bufferStore, "binary"),()=>{
-                                       ws.close()
+                                    ws.write(new Buffer(bufferStore, "binary"), () => {
+                                        ws.close()
                                     })
-                                   
+
+
                                 })
                             }
                             else {
@@ -152,6 +158,7 @@ export class NewAliosCompiler {
                                 })
                                 mesg.on("end", () => {
                                     _this.udc.outputResult("compile err:" + JSON.parse(bufferStore).status)
+                                    resolve("err")
                                 })
 
                             }
@@ -168,7 +175,7 @@ export class NewAliosCompiler {
         )
         achst.pipe(st)
         achst.finalize()
-        return p
+        return await p
     }
 }
 

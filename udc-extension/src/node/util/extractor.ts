@@ -74,6 +74,7 @@ export class Extractor {
         // else {
         let filePath = ""
         for (let item of deviceRole!) {
+            Logger.info("extract :" + item)
             item = item.split('.')[0]
             filePath = path.join(this.rootDir, dirName, `${item}Install.zip`)
             await new Promise((res, reject) => fs.createReadStream(filePath)
@@ -84,10 +85,9 @@ export class Extractor {
                     let hexName = fileName.split('/').pop()
                     if (suffix == 'hex' || suffix == 'bin') {
                         Logger.info("find hex : " + hexName)
-                        let fss = fs.createWriteStream(path.join(_this.rootDir, dirName,"hexFiles", _this.getHexName(item) + 'sketch.ino.hex'))
-                        entry.pipe(fss);
+                        let fss = fs.createWriteStream(path.join(_this.rootDir, dirName, "hexFiles", _this.getHexName(item) + 'sketch.ino.hex'))
                         fss.on("close", () => {
-                            fss.close()
+                            // fss.close()
                             let tmp: { [rawname: string]: string } = {}
                             //tslint
                             tmp[item] = _this.getHexName(item) + 'sketch.ino.hex'
@@ -96,6 +96,7 @@ export class Extractor {
                             res("scc")
                         }
                         )
+                        entry.pipe(fss);
                     } else {
                         entry.autodrain();
                     }

@@ -92,7 +92,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
                 dataType: 'json',
                 contentType: "text/plain",
-                data: JSON.stringify({ ppid: _this.props.section.ppid }), // serializes the form's elements.
+                data: JSON.stringify({ ppid: _this.props.section.ppid }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
                 success: function (data) {
                     // alert(JSON.stringify(data))
                     console.log(JSON.stringify(data))
@@ -100,6 +100,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     let fns = []
                     for (let item of x) {
                         _this.role[`${item.pid}`] = item.deviceRole
+                        _this.model[`${item.pid}`] = item.deviceType
                         _this.pidQueueInfo[item.pid] = {}
                         _this.ppids[`${item.pid}`] = item.ppid
                         let tmp = {}
@@ -255,6 +256,9 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 sp.show()
                                 _this.judgeStatus[x.pid] = '1'
                             } else if (status == 'ACCEPT') {
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
                                 if (_this.judgeStatus[x.pid] == '1') { //9.27
@@ -263,6 +267,9 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
                             } else if (status == 'WRONG_ANSWER') {
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
                                 // alert(_this.judgeStatus[x.pid])
@@ -272,9 +279,15 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
                             } else if (status == 'TIMEOUT') {
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
                             } else {
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
                             }

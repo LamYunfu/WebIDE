@@ -89,12 +89,19 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
             () => {
                 $(document).on("click", "#submitSrcButton" + _this.props.sid,
                     async (e) => {
+                        $("[id*=connectButton]").attr("disabled", "true")
+                        $("[id*=submitSrcButton]").attr("disabled", "true")
+                        _this.context.props.setSubmitEnableWithJudgeTag(false)
                         await this.context.props.saveAll()
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")
-                        // if (_this.props.currentFocusCodingIndex[0] != index) {
-                        //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
-                        //     return
-                        // }
+                        if (_this.props.currentFocusCodingIndex[0] != index) {
+                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                            $("[id*=connectButton]").text("连接")
+                            await _this.context.props.disconnect()
+                            $("[id*=connectButton]").removeAttr("disabled")
+                            $("[id*=submitSrcButton]").removeAttr("disabled")
+                            return
+                        }
                         console.log("click submit:" + index + "#codingInfofArea" + this.props.sid)
                         index != undefined && _this.props.postSrcFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)

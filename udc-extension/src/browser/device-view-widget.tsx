@@ -9,6 +9,8 @@ import { UdcCommands } from "./udc-extension-contribution";
 import { View } from './component/renderView'
 import { UdcWatcher } from "../common/udc-watcher";
 import * as color from 'colors'
+import * as $ from "jquery"
+import { Logger } from "../node/util/logger";
 export interface DeviceViewSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode {
     iconClass: string;
 }
@@ -55,9 +57,8 @@ export class DeviceViewWidget extends TreeWidget {
         this.title.closable = true;
         this.title.iconClass = 'fa fa-gg';
         this.addClass('theia-udcdevice-view');
-
-
     }
+    submitEnableWithJudgeTag: boolean = false
     rootdir: string = "/home/project"
     setSize = (size: number) => {
         console.log("rendering")
@@ -96,10 +97,26 @@ export class DeviceViewWidget extends TreeWidget {
                 callUpdate={this.callUpdate}
                 openSrcFile={this.openSrcFile}
                 postSrcFile={this.postSrcFile}
-                saveAll={this.saveAll} 
-                />
+                saveAll={this.saveAll}
+                getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
+                setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
+            />
 
         )
+    }
+    setSubmitEnableWithJudgeTag = (val: boolean) => {
+        this.submitEnableWithJudgeTag = val
+    }
+    getSubmitEnableWithJudgeTag = () => {
+        return this.submitEnableWithJudgeTag
+    }
+    appproveClick() {
+        this.submitEnableWithJudgeTag = true
+    }
+    enableClick() {
+        Logger.info("enableclick")
+        Logger.info($("[id*=submitSrcButton]").removeAttr("disabled"))
+        $("[id*=connectButton]").removeAttr("disabled")
     }
     openShell = () => {
         // if (this.applicationShell.activateWidget("udc-shell")) {

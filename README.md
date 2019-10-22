@@ -1,15 +1,19 @@
-# AZFT-uDc-IoT-WebIDE
+#WEBIDE是基于Theia(一个基于typescript 版本react的框架)的Web程序
+##环境
+    安装npm
+    安装nvm
+    安装yarn
+    安装node11
+##启动
+    于项目根目录下yarn install 安装依赖
+    执行./b编译以及打包生成的js文件,并启动
+##开发
+    theia 支持两种形式的开发
+            1. plugin:theia 提供了一些系统函数,用户可调用进行plugin开发.
+            2. extension:主要是基于@theia/core下的预定义的一些类进行开发.
+##基础
+   typescript &  inversify & react &nodejs
 
-文件自动创建,
-在线编译,
-组件状态维护,
-文件下载,
-解压,
-判题
-登录
-服务：服务是一个给其他组件使用的绑定,及使用的函数
-贡献点：贡献点是其他组件能实现的接口
-贡献提供者：贡献提供者是贡献的容器
 
-添加ｅｘｔｅｎｓｉｏｎ
-注意浏览器缓存问题，先进extension yarn theia build 再入根目录下yarn 最后./b
+
+

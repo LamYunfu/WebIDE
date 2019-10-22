@@ -30,24 +30,50 @@ export class Controller {
         } = this.ut.getPidInfos(pid)
         let devType = getCompilerType(model)
         let _this = this
+        Logger.info("compiling")
         switch (loginType) {
             case "adhoc":
             case "queue":
             case "group":
                 return await _this.cm.compile(pid).then(async res => {
                     if (res == "scc") {
+                        Logger.info("compile scc")
                         // _this.ut.config({ name: "Markyuan1996", passwd: "Markyuan1996" })
                         // _this.ut.config(_this.ut.tinyLinkInfo)
                         if (devType == "alios")
                             return "scc";
-                        return _this.et.extract(pid)
+                        let eres = await _this.et.extract(pid)
+                        Logger.info("eres:" + eres)
+                        if (eres == 'scc') {
+                            _this.ut.outputResult("extract file scc")
+                            Logger.info("extract file scc")
+                        } else {
+                            _this.ut.outputResult("extract file err")
+                            Logger.info("extract file err")
+                        }
+                        return eres
+                        // return
                     }
+                    else
+                        return "err"
                 }).then(
                     async res => {
                         if (res == "scc") {
                             // if (devType == "alios")
                             //     return true;
-                            return _this.pm.program(pid)
+                            Logger.info("programming")
+                            let result = await _this.pm.program(pid)
+                            if (result != true) {
+                                Logger.info("program error")
+                                this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
+                            } else {
+                                Logger.info("program scc")
+                                this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnableWithJudge", passwd: "true" })
+                            }
+                        }
+                        else {
+                            Logger.info("compile error")
+                            this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
                         }
                     }
                 )

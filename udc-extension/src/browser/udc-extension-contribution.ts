@@ -139,11 +139,20 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
 
     ) {
         this.udcWatcher.onConfigLog((data: { name: string, passwd: string }) => {
-            let tmp = data
             if (data.name == "openSrcFile") {
                 this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, new URI(data.passwd))
                 return
             }
+            let tmp = data
+            if (data.name == "submitEnable") {
+                this.deviceViewService.enableClick()
+                return
+            }
+            if (data.name == "submitEnableWithJudge") {
+                this.deviceViewService.approveClick()
+                return
+            }
+        
             applicationShell.closeTabs("bottom")
             // applicationShell.closeTabs("left")
             console.log(JSON.stringify(data) + "::::::front ")
