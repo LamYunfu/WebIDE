@@ -43,6 +43,7 @@ export class Chapter extends React.Component<Chapter.Props>{
         let _this = this
         _this.context.props.setSize(9999)
         // alert("sidarry:" + _this.sidArray.join(";"))
+        // _this.context.showTheDefaultOptionView()
 
     }
     render(): JSX.Element {

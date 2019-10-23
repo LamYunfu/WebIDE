@@ -41,7 +41,7 @@ export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleW
     static options: ConsoleOptions = {
         id: 'udc-shell',
         title: {
-            label: 'udc shell',
+            label: 'LDC shell',
             iconClass: 'theia-debug-console-icon'
         },
         input: {
