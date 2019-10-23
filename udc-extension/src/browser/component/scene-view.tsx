@@ -102,7 +102,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                         }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
-                            alert(JSON.stringify(_this.pidQueueInfo))
+                            // alert(JSON.stringify(_this.pidQueueInfo))
                         })
                         _this.codingInfos[item.pid] = item.content
                         _this.pids.push(item.pid)

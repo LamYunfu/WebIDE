@@ -38,12 +38,12 @@ export class Chapter extends React.Component<Chapter.Props>{
         tmp[sid] = sectionData
         this.props.setChapterData(this.props.vid, tmp)
     }
-
     componentDidMount() {
         let _this = this
         _this.context.props.setSize(9999)
         // alert("sidarry:" + _this.sidArray.join(";"))
         // _this.context.showTheDefaultOptionView()
+        _this.context.showTheDefaultOptionView()
 
     }
     render(): JSX.Element {
@@ -78,7 +78,6 @@ export class Chapter extends React.Component<Chapter.Props>{
                 callUpdate={this.props.callUpdate}
                 postSrcFile={this.props.postSrcFile} />)
         }
-
         return (
             <div className="sections col-12">
                 {uiArray}

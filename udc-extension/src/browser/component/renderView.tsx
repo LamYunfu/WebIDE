@@ -47,8 +47,7 @@ export namespace View {
         sidIndex: number,
         qzid: string,
         type: string,//optionChoice type
-
-
+        defaultOptionViewToogle: boolean
     }
 }
 export class View extends React.Component<View.Props, View.State>{
@@ -59,14 +58,15 @@ export class View extends React.Component<View.Props, View.State>{
             optionDescription: "",
             ajaxNotFinish: true,
             sid: "",
-            pid: "",
+            pid: "1",
             viewType: "",
             scid: "",
             sidArray: [],
             isLast: false,
             sidIndex: 0,
             qzid: "",
-            type: "SC"
+            type: "SC",
+            defaultOptionViewToogle: false
         }
     }
     vid = ""
@@ -187,6 +187,7 @@ export class View extends React.Component<View.Props, View.State>{
                 success: async function (data) {
                     // let x = data.question.slice(0, 3)
                     console.log(JSON.stringify(data) + "****************************")
+                    let sidArray = _this.state.sidArray
                     if (data.message != "success") {
                         console.log("INFO:GET VIEW DETAIL FAILED!!!!!!!!!!!!!!!!!!!!!!!!!")
                         return
@@ -203,6 +204,7 @@ export class View extends React.Component<View.Props, View.State>{
                         _this.typeDataPool[_this.type][_this.vid] = {}
                     }
                     console.log(`"VID:${_this.vid}!!!!!!!!!!!!!!!!!!!!!!!!!"`)
+
                     switch (_this.type) {
                         case "4":
                         case "1": {//章节
@@ -213,6 +215,7 @@ export class View extends React.Component<View.Props, View.State>{
                                 sids.push(item.sid)
                                 _this.sectionData[item.sid] = item
                             }
+                            sidArray = sids
                             _this.setState({ "sidArray": sids })
                             break
                         }
@@ -233,7 +236,8 @@ export class View extends React.Component<View.Props, View.State>{
                     _this.setState((state) => ({
                         ajaxNotFinish: false
                         ,
-                        viewType: _this.type
+                        viewType: _this.type,
+                        sidArray: sidArray
                     }))
                 }
             })
@@ -674,10 +678,35 @@ export class View extends React.Component<View.Props, View.State>{
             )
         })
     }
-    showTheDefaultOptionView() {
+    async showTheDefaultExperimentView() {
+        while ($("[class*=codeItem]").length == 0)
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log("waitting data")
+                    resolve('scc')
+                }, 300);
+            })
+        console.log("show exprimentview:" + $("[class*=codeItem]").length)
+        $("[class*=codeItem]").trigger("click")
+    }
+    async showTheDefaultSceneView() {
+        $("[class*=codeItem]").first().trigger("click")
+    }
+    async showTheDefaultOptionView() {
         let _this = this
         let csid = _this.state.sidArray[0]
-        let pid = '1'
+        console.log("csid:" + csid)
+        while (_this.questionPool[csid] == undefined) {
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log("waitting data")
+                    resolve('scc')
+                }, 300);
+            })
+        }
+        $(".optionDescription").show()
+        $('.optionChocies').show()
+        let pid = Object.keys(_this.questionPool[csid]["choices"])[0]
         let options = []
         let choices = _this.questionPool[csid]["choices"][pid]
         for (let index in choices) {
@@ -720,6 +749,12 @@ export class View extends React.Component<View.Props, View.State>{
                     <MyContext.Provider value={{
                         setTypeData: (sid: string, types: any) => {
                             _this.typeData[sid] = types
+                        },
+                        showTheDefaultExperimentView: () => {
+                            _this.showTheDefaultExperimentView()
+                        },
+                        showTheDefaultOptionView: () => {
+                            _this.showTheDefaultOptionView()
                         },
                         setClickTime: () => {
                             _this.clickTime = new Date().getSeconds()
@@ -803,7 +838,7 @@ export class View extends React.Component<View.Props, View.State>{
                             <div className="optionDescription col-6" style={{
                                 backgroundColor: "#f8fafc",
                                 color: "black", float: "left", fontSize: `26px`, height: "100%"
-                            }} >    
+                            }} >
                                 {_this.state.optionDescription}
 
                             </div>
@@ -830,6 +865,9 @@ export class View extends React.Component<View.Props, View.State>{
                 :
                 this.state.viewType == "2" ?//实验题
                     <MyContext.Provider value={{
+                        showTheDefaultExperimentView: () => {
+                            _this.showTheDefaultExperimentView()
+                        },
                         setClickTime: () => {
                             _this.clickTime = new Date().getSeconds()
                         },
@@ -877,6 +915,9 @@ export class View extends React.Component<View.Props, View.State>{
                     :
                     this.state.viewType == "3" ?//场景模式
                         <MyContext.Provider value={{
+                            showTheDefaultExperimentView: () => {
+                                _this.showTheDefaultExperimentView()
+                            },
                             setClickTime: () => {
                                 _this.clickTime = new Date().getSeconds()
                             },

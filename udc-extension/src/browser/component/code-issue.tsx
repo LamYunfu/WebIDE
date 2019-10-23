@@ -2,7 +2,7 @@ import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { MyContext } from "./context";
-import { getCompilerType } from "../../node/globalconst";
+// import { getCompilerType } from "../../node/globalconst";
 // import { MyContext } from "./context";
 
 
@@ -30,6 +30,7 @@ export class CodeItem extends React.Component<CodeItem.Props>{
     public render(): JSX.Element {
         return (
             <li className={`codeItem${this.props.sid} list-group-item`} >
+                <span className="model" style={{ display: 'none' }}>{this.props.model}</span>
                 <span className="oi oi-terminal" aria-hidden="true"></span>
                 <a title={this.props.akey}>{this.props.codingTitles[this.props.akey]}</a>&nbsp;
                 <span className="oi" aria-hidden="true" style={{ display: "none", float: "right" }}></span>
@@ -146,7 +147,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             })
                             // alert(singleFileButtons.length)
                             _this.context.props.openSrcFile(tmp)
-                            if (getCompilerType(_this.props.coding_titles[tmp]) == "alios")
+                            if (_this.props.coding_titles[tmp].split("Alios").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1)
                                 $("#submitSimButton" + this.props.sid).hide()
 
                             // if (_this.props.roles[tmp] != undefined) {
@@ -218,6 +219,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
 
             }
         )
+        _this.context.showTheDefaultExperimentView()
     }
 
 
