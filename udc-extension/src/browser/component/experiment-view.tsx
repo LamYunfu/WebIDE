@@ -168,7 +168,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
     }
 
 
-    componentDidMount() {
+    async componentDidMount() {
         let _this = this
         $(document).ready(
             () => {
@@ -298,6 +298,13 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
             )
 
         }, 5000)
+        while (this.state.codingItems.length == 0)
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve()
+                }, 300)
+            })
+        this.context.showTheDefaultExperimentView()
     }
 
 

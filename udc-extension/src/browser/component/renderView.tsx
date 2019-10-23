@@ -679,15 +679,19 @@ export class View extends React.Component<View.Props, View.State>{
         })
     }
     async showTheDefaultExperimentView() {
-        while ($("[class*=codeItem]").length == 0)
+        let exitTag = true
+        setTimeout(() => {
+            exitTag = false
+        }, 20000);
+        while (exitTag && $("[class*=codeItem]").length == 0)
             await new Promise((resolve) => {
                 setTimeout(() => {
-                    console.log("waitting data")
+                    console.log("waiting data")
                     resolve('scc')
                 }, 300);
             })
-        console.log("show exprimentview:" + $("[class*=codeItem]").length)
-        $("[class*=codeItem]").trigger("click")
+        console.log("show experiment view:" + $("[class*=codeItem]").length)
+        exitTag && $("[class*=codeItem]").first().trigger("click")
     }
     async showTheDefaultSceneView() {
         $("[class*=codeItem]").first().trigger("click")
@@ -696,16 +700,22 @@ export class View extends React.Component<View.Props, View.State>{
         let _this = this
         let csid = _this.state.sidArray[0]
         console.log("csid:" + csid)
-        while (_this.questionPool[csid] == undefined) {
+        let exitTag = true
+        setTimeout(() => {
+            exitTag = false
+        }, 10000);
+        while (exitTag && _this.questionPool[csid] == undefined) {
             await new Promise((resolve) => {
                 setTimeout(() => {
-                    console.log("waitting data")
+                    console.log("waiting data")
                     resolve('scc')
                 }, 300);
             })
         }
+        if (!exitTag)
+            return
         $(".optionDescription").show()
-        $('.optionChocies').show()
+        $('.optionChoices').show()
         let pid = Object.keys(_this.questionPool[csid]["choices"])[0]
         let options = []
         let choices = _this.questionPool[csid]["choices"][pid]
@@ -842,7 +852,7 @@ export class View extends React.Component<View.Props, View.State>{
                                 {_this.state.optionDescription}
 
                             </div>
-                            <div className="optionChocies col-6" style={{
+                            <div className="optionChoices col-6" style={{
                                 backgroundColor: "#e7ebee", color: "green",
                                 fontSize: `20px`, float: "left", height: "100%"
                             }}>

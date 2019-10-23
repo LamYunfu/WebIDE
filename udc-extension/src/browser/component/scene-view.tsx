@@ -98,7 +98,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                         }
                         tmp = {
                             ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title, projectName: "helloworld"
-                            , boardType: "esp32devkitc", deviceRole: _this.role[`${item.pid}`],ppid:_this.ppids[`${item.pid}`]
+                            , boardType: "esp32devkitc", deviceRole: _this.role[`${item.pid}`], ppid: _this.ppids[`${item.pid}`]
                         }
                         _this.pidQueueInfo[item.pid] = tmp
                         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
@@ -130,7 +130,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
     }
 
 
-    componentDidMount() {
+    async componentDidMount() {
 
         let _this = this
         $(document).ready(
@@ -188,6 +188,13 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                 )
             }
         )
+        while (this.state.codingItems.length == 0)
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve()
+                }, 300)
+            })
+        this.context.showTheDefaultExperimentView()
     }
 
 

@@ -130,7 +130,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         _this.props.openShell()
                         let tmp = $(e.currentTarget).children("a").attr("title")
                         $(".optionDescription").hide()
-                        $(".optionChocies").hide()
+                        $(".optionChoices").hide()
                         _this.context.props.setSize(720)
                         if (tmp != undefined) {
                             let singleFileButtons = _this.state.singleFileButtons
@@ -219,7 +219,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
 
             }
         )
-        _this.context.showTheDefaultExperimentView()
+ 
     }
 
 

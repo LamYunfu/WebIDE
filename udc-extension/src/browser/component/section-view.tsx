@@ -346,7 +346,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         $(".codingInfos").hide()
                         $(".optionInfos").hide()
                         $(".optionDescription").show()
-                        $(".optionChocies").show()
+                        $(".optionChoices").show()
                         // $(".optionInfos." + _this.props.sid).show()
                         let x = $(e.currentTarget).children("a").attr("id")
                         if (x != undefined) {
@@ -531,13 +531,13 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     _this.props.closeTables()
                     console.log("video uri ..........." + index)
                     $(".optionDescription").hide()
-                    $(".optionChocies").hide()
+                    $(".optionChoices").hide()
                     index != undefined && _this.props.gotoVideo(_this.uris[parseInt(index)], _this.videoNames[parseInt(index)])
                     _this.context.props.setSize(500)
                 })
             }
         )
-
+        _this.props.section.qzid == null && _this.context.showTheDefaultExperimentView()
 
     }
     async recoveryState() {
