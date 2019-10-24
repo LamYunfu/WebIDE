@@ -127,7 +127,9 @@ span[class*=section] {
 .optionDescription {
     display: none;
 }
+.list-group-item:hover{
 
+}
 .optionChocies {
     display: none;
 }

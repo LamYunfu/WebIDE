@@ -309,11 +309,17 @@ export class View extends React.Component<View.Props, View.State>{
             })
 
         })
-        $(document).on("click", ".next", () => {
+        $(document).on("click", ".next", async () => {
             let csid = _this.state.sid
             let pid = _this.state.pid
             let newIsLast = _this.state.isLast
             let index = _this.state.sidIndex
+            $(".newSubmitButton").trigger("click")
+            await new Promise((resolve)=>{
+                setTimeout((    )=>{
+                    resolve()
+                },300)
+            })
             if (parseInt(pid) < Object.keys(_this.questionPool[csid].descriptions).length) {
                 pid = (parseInt(pid) + 1).toString()
                 // alert(`pid:${pid}`)
@@ -846,14 +852,14 @@ export class View extends React.Component<View.Props, View.State>{
                 
                             </div> */}
                             <div className="optionDescription col-6" style={{
-                                backgroundColor: "#f8fafc",
-                                color: "black", float: "left", fontSize: `26px`, height: "100%"
+                                backgroundColor: "#555555",
+                                color: "white", float: "left", fontSize: `26px`, height: "100%"
                             }} >
                                 {_this.state.optionDescription}
 
                             </div>
                             <div className="optionChoices col-6" style={{
-                                backgroundColor: "#e7ebee", color: "green",
+                                backgroundColor: "##262527", color: "white",
                                 fontSize: `20px`, float: "left", height: "100%"
                             }}>
                                 <div className="choices" > {_this.state.optionChoicesDecription}</div>

@@ -1031,14 +1031,23 @@ export class UdcTerminal {
     }
     async postSimFile(pid: string) {
         let _this = this
-        let { dirName, fns } = this.pidQueueInfo[pid]
-        let filename = JSON.parse(fns)[0].split(".")[0]
+        let tmpPath = ""
+        let { dirName, deviceRole } = this.pidQueueInfo[pid]
+        if (deviceRole == undefined) {
+            console.log("null device role ")
+            return
+        }
+        let fileDir = path.join(this.rootDir, dirName, deviceRole[0])
+        let fn = fs.readdirSync(fileDir)[0].split(".")[0]
+        tmpPath = path.join(fileDir, fn + ".cpp")
+        Logger.val(`tmpPath:${tmpPath}`)
+        let b = fs.readFileSync(tmpPath)
         _this.outputResult("try to build the connection with simulator")
         let tinySimRequest = new WebSocket(
             "ws://47.98.249.190:8004/", {
-            // "ws://localhost:8765/", {
+                // "ws://localhost:8765/", {
 
-        }
+            }
         )
         await new Promise(res => {
             tinySimRequest.on("message", (data: string) => {
@@ -1052,8 +1061,8 @@ export class UdcTerminal {
             tinySimRequest.on("open", async () => {
                 _this.outputResult("sending buffer to simulator......")
 
-                let buff = fs.readFileSync(`/home/project/${dirName}/${filename}.cpp`, { encoding: 'utf8' })
-                tinySimRequest.send(buff, () => {
+                // let buff = fs.readFileSync(`/home/project/${dirName}/${filename}.cpp`, { encoding: 'utf8' })
+                tinySimRequest.send(b, () => {
                     _this.outputResult("send buffer to simulator success")
                     tinySimRequest.send("quit", () => {
                         _this.outputResult("send quit")
