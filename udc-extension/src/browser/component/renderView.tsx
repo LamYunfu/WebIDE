@@ -80,7 +80,7 @@ export class View extends React.Component<View.Props, View.State>{
     questionPool: { [section: string]: any } = {}
     submitedAnswers: { [sid: string]: { [index: string]: { "uAnswer": string[] | undefined, "uRight": boolean | undefined, saved: boolean | undefined } } } = {}
     notForAll: boolean = true;
-    clickTime: number = new Date().getSeconds()
+    clickTime: number = new Date().getTime()
     sectionData: any = {}
     typeData: any = {}
 
@@ -305,133 +305,145 @@ export class View extends React.Component<View.Props, View.State>{
                 setTimeout((x) => {
                     $(x).removeAttr("disabled")
                     res()
-                }, 1500, sp);
+                }, 100, sp);
             })
 
         })
-        $(document).on("click", ".next", async () => {
+        $(document).on("click", ".next", async (el) => {
+            $(this).attr('disabled', 'true')
             let csid = _this.state.sid
             let pid = _this.state.pid
             let newIsLast = _this.state.isLast
             let index = _this.state.sidIndex
-            $(".newSubmitButton").trigger("click")
-            await new Promise((resolve)=>{
-                setTimeout((    )=>{
-                    resolve()
-                },300)
+            $(document).one("optionSubmitFail", '.newSubmitButton', (el) => {
+                $(document).off("optionSubmitScc", '.newSubmitButton')
+
             })
-            if (parseInt(pid) < Object.keys(_this.questionPool[csid].descriptions).length) {
-                pid = (parseInt(pid) + 1).toString()
-                // alert(`pid:${pid}`)
-                parseInt(pid) == Object.keys(_this.questionPool[csid].descriptions).length ?
-                    _this.state.sidIndex == _this.state.sidArray.length - 1 ?
-                        newIsLast = true
+            $(document).one("optionSubmitScc", '.newSubmitButton', (el) => {
+                $(el).removeAttr("disabled")
+                //  new Promise((resolve) => {
+                //     setTimeout(() => {
+                //         resolve()
+                //     }, 300)
+                // })
+                if (parseInt(pid) < Object.keys(_this.questionPool[csid].descriptions).length) {
+                    pid = (parseInt(pid) + 1).toString()
+                    // alert(`pid:${pid}`)
+                    parseInt(pid) == Object.keys(_this.questionPool[csid].descriptions).length ?
+                        _this.state.sidIndex == _this.state.sidArray.length - 1 ?
+                            newIsLast = true
+                            :
+                            newIsLast = false
                         :
                         newIsLast = false
-                    :
-                    newIsLast = false
 
-            }
-            else {
-                ////alert("no more answer")
-                index = _this.state.sidArray.findIndex((val, index) => {
-                    if (val == _this.state.sid)
-                        return true;
-                })
-                if (index >= _this.state.sidArray.length - 1) {
-                    alert("没有更多了！")
-                    return;
                 }
                 else {
-                    csid = _this.state.sidArray[++index]
-                    pid = "1"
-                }
+                    ////alert("no more answer")
+                    index = _this.state.sidArray.findIndex((val, index) => {
+                        if (val == _this.state.sid)
+                            return true;
+                    })
+                    if (index >= _this.state.sidArray.length - 1) {
+                        alert("没有更多了！")
+                        return;
+                    }
+                    else {
+                        csid = _this.state.sidArray[++index]
+                        pid = "1"
+                    }
 
-            }
-            let options = []
-            let choices = _this.questionPool[csid]["choices"][pid]
-            for (let index in choices) {
-                options.push(<div className="oneOptionDescription col-12" style={{
-                    height: "60px",
-                    borderStyle: "solid", borderColor: "grey",
-                    borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
-                    display: "inline-table", margin: "5px 10px"
-                }} title={(parseInt(index) + 1).toString()}>
-                    <div className="option-choice" style={{
-                        display: "table-cell", verticalAlign: "middle",
-                    }} >
-                        {choices[index]}
-                    </div>
-                </div>)
-            }
-            _this.setState({
-                sidIndex: index,
-                isLast: newIsLast,
-                sid: csid,
-                optionDescription: _this.questionPool[csid]["descriptions"][pid],
-                optionChoicesDecription: options,
-                pid: pid,
-                scid: _this.questionPool[csid]["scids"][pid],
-                type: _this.typeData[csid][pid]
-            }, () => {
-                $(".list-group-item").removeClass("list-group-item-primary")
-                $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
+                }
+                let options = []
+                let choices = _this.questionPool[csid]["choices"][pid]
+                for (let index in choices) {
+                    options.push(<div className="oneOptionDescription col-12" style={{
+                        height: "60px",
+                        borderStyle: "solid", borderColor: "grey",
+                        borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
+                        display: "inline-table", margin: "5px 10px"
+                    }} title={(parseInt(index) + 1).toString()}>
+                        <div className="option-choice" style={{
+                            display: "table-cell", verticalAlign: "middle",
+                        }} >
+                            {choices[index]}
+                        </div>
+                    </div>)
+                }
+                _this.setState({
+                    sidIndex: index,
+                    isLast: newIsLast,
+                    sid: csid,
+                    optionDescription: _this.questionPool[csid]["descriptions"][pid],
+                    optionChoicesDecription: options,
+                    pid: pid,
+                    scid: _this.questionPool[csid]["scids"][pid],
+                    type: _this.typeData[csid][pid]
+                }, () => {
+                    $(".list-group-item").removeClass("list-group-item-primary")
+                    $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
+                })
+                $(document).off("optionSubmitFail", '.newSubmitButton')
             })
+            $(".newSubmitButton").trigger("click")
         })
         $(document).on("click", ".last", () => {
             let csid = _this.state.sid
             let pid = _this.state.pid
             let newIsLast = _this.state.isLast
             let index = _this.state.sidIndex
-            if (parseInt(pid) > 1) {
-                pid = (parseInt(pid) - 1).toString()
-            }
-            else {
-                ////alert("no more answer")
-                index = _this.state.sidArray.findIndex((val, index) => {
-                    if (val == _this.state.sid)
-                        return true;
-                })
-                if (index == 0) {
-                    alert("没有更多了！")
-                    newIsLast = false
-                    return;
+            $(document).one("optionSubmitScc", '.newSubmitButton', () => {
+                if (parseInt(pid) > 1) {
+                    pid = (parseInt(pid) - 1).toString()
                 }
                 else {
-                    csid = _this.state.sidArray[--index]
-                    pid = Object.keys(_this.questionPool[csid].descriptions).length.toString()
-                }
+                    ////alert("no more answer")
+                    index = _this.state.sidArray.findIndex((val, index) => {
+                        if (val == _this.state.sid)
+                            return true;
+                    })
+                    if (index == 0) {
+                        alert("没有更多了！")
+                        newIsLast = false
+                        return;
+                    }
+                    else {
+                        csid = _this.state.sidArray[--index]
+                        pid = Object.keys(_this.questionPool[csid].descriptions).length.toString()
+                    }
 
-            }
-            let options = []
-            let choices = _this.questionPool[csid]["choices"][pid]
-            for (let index in choices) {
-                options.push(<div className="oneOptionDescription col-12" style={{
-                    height: "60px",
-                    borderStyle: "solid", borderColor: "grey",
-                    borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
-                    display: "inline-table", margin: "5px 10px"
-                }} title={(parseInt(index) + 1).toString()}>
-                    <div className="option-choice" style={{
-                        display: "table-cell", verticalAlign: "middle",
-                    }} >
-                        {choices[index]}
-                    </div>
-                </div>)
-            }
-            _this.setState({
-                sidIndex: index,
-                isLast: newIsLast,
-                sid: csid,
-                optionDescription: _this.questionPool[csid]["descriptions"][pid],
-                optionChoicesDecription: options,
-                pid: pid,
-                scid: _this.questionPool[csid]["scids"][pid],
-                type: _this.typeData[csid][pid]
-            }, () => {
-                $(".list-group-item").removeClass("list-group-item-primary")
-                $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
+                }
+                let options = []
+                let choices = _this.questionPool[csid]["choices"][pid]
+                for (let index in choices) {
+                    options.push(<div className="oneOptionDescription col-12" style={{
+                        height: "60px",
+                        borderStyle: "solid", borderColor: "grey",
+                        borderRadius: "8px", borderWidth: "2px", verticalAlign: "middle",
+                        display: "inline-table", margin: "5px 10px"
+                    }} title={(parseInt(index) + 1).toString()}>
+                        <div className="option-choice" style={{
+                            display: "table-cell", verticalAlign: "middle",
+                        }} >
+                            {choices[index]}
+                        </div>
+                    </div>)
+                }
+                _this.setState({
+                    sidIndex: index,
+                    isLast: newIsLast,
+                    sid: csid,
+                    optionDescription: _this.questionPool[csid]["descriptions"][pid],
+                    optionChoicesDecription: options,
+                    pid: pid,
+                    scid: _this.questionPool[csid]["scids"][pid],
+                    type: _this.typeData[csid][pid]
+                }, () => {
+                    $(".list-group-item").removeClass("list-group-item-primary")
+                    $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
+                })
             })
+            $(".newSubmitButton").trigger("click")
         })
 
 
@@ -448,13 +460,13 @@ export class View extends React.Component<View.Props, View.State>{
             }
             $(".stateProfile").toggle()
             $(".selectPanel").toggle()
-            // _this.clickTime = new Date().getSeconds()
+            // _this.clickTime = new Date().getTime()
             // await new Promise((res) => {
             //     setTimeout(() => {
             //         res()
             //     }, 5000);
             // })
-            // let gap = (new Date().getSeconds() - _this.clickTime)
+            // let gap = (new Date().getTime() - _this.clickTime)
 
             // if (gap >= 5 && $(".selectPanel").css("display") != "none") {
             //     let sp = $(".expander>span")
@@ -465,15 +477,15 @@ export class View extends React.Component<View.Props, View.State>{
             // }
         })
         $(document).on("click", ".optionItem", async () => {
-            _this.clickTime = new Date().getSeconds()
+            _this.clickTime = -3000
             await new Promise((res) => {
                 setTimeout(() => {
                     res()
-                }, 5000);
+                }, 3000);
             })
-            let gap = (new Date().getSeconds() - _this.clickTime)
+            let gap = (new Date().getTime() - _this.clickTime)
 
-            if (gap >= 5 && $(".selectPanel").css("display") != "none") {
+            if (gap >=1000 && $(".selectPanel").css("display") != "none") {
                 let sp = $(".expander>span")
                 sp.addClass("oi-chevron-right")
                 sp.removeClass("oi-chevron-left")
@@ -482,7 +494,8 @@ export class View extends React.Component<View.Props, View.State>{
 
             }
         })
-
+        $(document).on("mouseenter", ".selectPanel", () => { _this.clickTime =-3000 })
+        $(document).on("mouseout", ".selectPanel", () => { _this.clickTime = new Date().getTime() })
         $(document).on("click", ".newSubmitAll", async () => {
             if (_this.submitedAnswers[_this.state.sid] == undefined) {
                 _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
@@ -627,12 +640,13 @@ export class View extends React.Component<View.Props, View.State>{
             })
             if (answers.length == 0) {
                 if (confirm("提交的结果为空，确认继续？") == false) {
+                    $('.newSubmitButton').trigger("optionSubmitFail")
                     return
                 }
-
             }
             let uAnswers: any = {}
             uAnswers[_this.state.pid] = { uAnswer: answers, uRight: undefined }
+
             $.ajax(
                 {
                     headers: {
@@ -675,10 +689,9 @@ export class View extends React.Component<View.Props, View.State>{
                             ...tmp,
                             ...uAnswers
                         }
-                        _this.props.setLocal(_this.state.sid, store)
-
+                        await _this.props.setLocal(_this.state.sid, store)
+                        $('.newSubmitButton').trigger("optionSubmitScc")
                     }
-
                 }
 
             )
@@ -773,7 +786,7 @@ export class View extends React.Component<View.Props, View.State>{
                             _this.showTheDefaultOptionView()
                         },
                         setClickTime: () => {
-                            _this.clickTime = new Date().getSeconds()
+                            _this.clickTime = new Date().getTime()
                         },
                         setQuestionPool: (section: string, data: any) => {
                             _this.questionPool[section] = data
@@ -800,8 +813,16 @@ export class View extends React.Component<View.Props, View.State>{
                         props: _this.props
 
                     }}>
-                        <div className="selectPanel row col-3" style={{ minWidth: '450px', height: "90%", backgroundColor: "#262527", left: "10px", zIndex: 1, position: "absolute" }}>
-                            <div className="col-12" style={{ height: "100%", overflow: "scroll", backgroundColor: "#262527", zIndex: 1, }}>
+                        <div className="selectPanel row col-3" style={{
+                            minWidth: '450px', height: "90%",
+                            backgroundColor: "#262527", left: "10px",
+                            zIndex: 1, position: "absolute",
+                            paddingLeft: '0px'
+                        }}>
+                            <div className="col-12" style={{
+                                height: "98%", overflow: "scroll",
+                                boxShadow: '5px 5px 5px black', backgroundColor: "#262527", zIndex: 1,
+                            }}>
                                 <Chapter
                                     sectionData={_this.sectionData}
                                     viewType={_this.type}
@@ -864,13 +885,13 @@ export class View extends React.Component<View.Props, View.State>{
                             }}>
                                 <div className="choices" > {_this.state.optionChoicesDecription}</div>
                                 <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
-                                <div className="last btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>上一个</div>
-                                <div className="next btn btn-primary" style={{ left: '90px', bottom: '10px', position: "absolute" }}>下一个</div>
+                                <button className="last btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>上一个</button>
+                                <button className="next btn btn-primary" style={{ left: '90px', bottom: '10px', position: "absolute" }}>下一个</button>
                                 {this.state.viewType == "1" ? <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
                                     :
                                     this.state.isLast ? <button className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>//考试模式
                                         :
-                                        <div className="newSaveButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>保存</div>
+                                        <button className="newSaveButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>保存</button>
                                 }
                             </div>
 
@@ -885,7 +906,7 @@ export class View extends React.Component<View.Props, View.State>{
                             _this.showTheDefaultExperimentView()
                         },
                         setClickTime: () => {
-                            _this.clickTime = new Date().getSeconds()
+                            _this.clickTime = new Date().getTime()
                         },
                         setOptionDescription: (a: string) => {
                             _this.setOptionDescription(a)
@@ -935,7 +956,7 @@ export class View extends React.Component<View.Props, View.State>{
                                 _this.showTheDefaultExperimentView()
                             },
                             setClickTime: () => {
-                                _this.clickTime = new Date().getSeconds()
+                                _this.clickTime = new Date().getTime()
                             },
                             setQuestionPool: (section: string, data: any) => {
                                 _this.questionPool[section] = data

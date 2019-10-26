@@ -55,9 +55,9 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
 
     async initializeLayout(app: FrontendApplication): Promise<void> {
         await this.openView();
-        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx close tabs")
-        await this.applicationShell.collapsePanel("bottom")
-        await this.applicationShell.collapsePanel("right")
+        // console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx close tabs")
+        // await this.applicationShell.collapsePanel("bottom")
+        // await this.applicationShell.collapsePanel("right")
         // await this.applicationShell.save()
         // await this.shell.collapsePanel("main")
 

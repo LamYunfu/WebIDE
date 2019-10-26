@@ -147,7 +147,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             })
                             // alert(singleFileButtons.length)
                             _this.context.props.openSrcFile(tmp)
-                            if (_this.props.coding_titles[tmp].split("Alios").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1)
+                            if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1)
                                 $("#submitSimButton" + this.props.sid).hide()
 
                             // if (_this.props.roles[tmp] != undefined) {
