@@ -80,7 +80,7 @@ export class View extends React.Component<View.Props, View.State>{
     questionPool: { [section: string]: any } = {}
     submitedAnswers: { [sid: string]: { [index: string]: { "uAnswer": string[] | undefined, "uRight": boolean | undefined, saved: boolean | undefined } } } = {}
     notForAll: boolean = true;
-    clickTime: number = new Date().getTime()
+    clickTime: number = 9999999999999
     sectionData: any = {}
     typeData: any = {}
 
@@ -476,26 +476,30 @@ export class View extends React.Component<View.Props, View.State>{
             //     $(".selectPanel").hide()
             // }
         })
-        $(document).on("click", ".optionItem", async () => {
-            _this.clickTime = -3000
-            await new Promise((res) => {
-                setTimeout(() => {
-                    res()
-                }, 3000);
-            })
-            let gap = (new Date().getTime() - _this.clickTime)
+        // $(document).on("mouseenter", ".sections", () => { 
+        //     // alert('enter')
+        //     _this.clickTime = 9999999999999 })
+        // $(document).on("mouseleave", ".sections ", async () => {
+        //     if (_this.clickTime == 9999999999999)
+        //         _this.clickTime = new Date().getTime()
+        //     else return
+        //     await new Promise((res) => {
+        //         setTimeout(() => {
 
-            if (gap >=1000 && $(".selectPanel").css("display") != "none") {
-                let sp = $(".expander>span")
-                sp.addClass("oi-chevron-right")
-                sp.removeClass("oi-chevron-left")
-                $(".stateProfile").show()
-                $(".selectPanel").hide()
+        //             res()
+        //         }, 1300);
+        //     })
+        //     let gap = (new Date().getTime() - _this.clickTime)
+        //     // alert(gap)
+        //     if (gap >= 0 && $(".selectPanel").css("display") != "none") {
+        //         let sp = $(".expander>span")
+        //         sp.addClass("oi-chevron-right")
+        //         sp.removeClass("oi-chevron-left")
+        //         $(".stateProfile").show()
+        //         $(".selectPanel").hide()
 
-            }
-        })
-        $(document).on("mouseenter", ".selectPanel", () => { _this.clickTime =-3000 })
-        $(document).on("mouseout", ".selectPanel", () => { _this.clickTime = new Date().getTime() })
+        //     }
+        // })
         $(document).on("click", ".newSubmitAll", async () => {
             if (_this.submitedAnswers[_this.state.sid] == undefined) {
                 _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
