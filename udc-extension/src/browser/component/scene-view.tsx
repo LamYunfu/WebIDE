@@ -147,6 +147,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                 $("#connectButton" + _this.props.section.sid).click(
                     (e) => {
                         if ($(e.currentTarget).text() == "断开") {
+                            _this.currentFocusCodingIndex[0] = '-1'
                             _this.props.disconnect()
                             $(e.currentTarget).text("连接")
                         }

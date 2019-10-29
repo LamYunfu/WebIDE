@@ -143,6 +143,10 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, new URI(data.passwd))
                 return
             }
+            if (data.name == "openShell") {
+                this.deviceViewService.openShell()
+                return
+            }
             let tmp = data
             if (data.name == "submitEnable") {
                 this.deviceViewService.enableClick()
@@ -152,7 +156,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 this.deviceViewService.approveClick()
                 return
             }
-        
+
             applicationShell.closeTabs("bottom")
             // applicationShell.closeTabs("left")
             console.log(JSON.stringify(data) + "::::::front ")

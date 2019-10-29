@@ -43,6 +43,9 @@ export class DeviceViewService implements WidgetFactory {
         Logger.info(this.widget == null)
         this.widget!.enableClick()
     }
+    openShell() {
+        this.widget!.openShell()
+    }
     push(devices: { [key: string]: number }): void {
     }
 

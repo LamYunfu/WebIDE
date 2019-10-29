@@ -47,7 +47,8 @@ export namespace View {
         sidIndex: number,
         qzid: string,
         type: string,//optionChoice type
-        defaultOptionViewToogle: boolean
+        defaultOptionViewToogle: boolean,
+        redo: boolean
     }
 }
 export class View extends React.Component<View.Props, View.State>{
@@ -66,7 +67,8 @@ export class View extends React.Component<View.Props, View.State>{
             sidIndex: 0,
             qzid: "",
             type: "SC",
-            defaultOptionViewToogle: false
+            defaultOptionViewToogle: false,
+            redo: false
         }
     }
     vid = ""
@@ -78,7 +80,7 @@ export class View extends React.Component<View.Props, View.State>{
     typeDataPool: { [key: string]: { [key: string]: {} } } = {}
     answerPool: { [section: string]: { [index: string]: { "uAnswer": string | undefined, "isRight": boolean | undefined } } } = {}
     questionPool: { [section: string]: any } = {}
-    submitedAnswers: { [sid: string]: { [index: string]: { "uAnswer": string[] | undefined, "uRight": boolean | undefined, saved: boolean | undefined } } } = {}
+    submittedAnswers: { [sid: string]: { [index: string]: { "uAnswer": string[] | undefined, "uRight": boolean | undefined, saved: boolean | undefined } } } = {}
     notForAll: boolean = true;
     clickTime: number = 9999999999999
     sectionData: any = {}
@@ -250,31 +252,60 @@ export class View extends React.Component<View.Props, View.State>{
         }))
 
     }
+    toggleRedoButton() {
+        if ($(".newRedoButton:visible").length != 0) {
+            $(".newRedoButton").hide()
+            $(".newSubmitButton").show()
+        }
+        else {
+            $(".newRedoButton").show()
+            $(".newSubmitButton").hide()
+        }
+    }
+    showSubmitButton() {
+        $(".newRedoButton").hide()
+        $(".newSubmitButton").show()
+    }
+    showRedoButton() {
+        $(".newRedoButton").show()
+        $(".newSubmitButton").hide()
+    }
     async componentDidUpdate() {
 
-        if (this.submitedAnswers[this.state.sid] == undefined) {
-            this.submitedAnswers[this.state.sid] = await this.props.getLocal(this.state.sid, {})
-            //alert("getLocal:" + JSON.stringify(this.submitedAnswers[this.state.sid]))
+        if (this.submittedAnswers[this.state.sid] == undefined) {
+            this.submittedAnswers[this.state.sid] = await this.props.getLocal(this.state.sid, {})
+            //alert("getLocal:" + JSON.stringify(this.submittedAnswers[this.state.sid]))
         }
-        let sidData: any = this.submitedAnswers[this.state.sid]
+        let sidData: any = this.submittedAnswers[this.state.sid]
         ////alert(JSON.stringify(sidData))
         if (sidData != undefined && sidData[this.state.pid] != undefined) {
             // alert(`updata:${this.state.pid}`)
-            for (let item of sidData[this.state.pid].uAnswer) {
-                $(`.oneOptionDescription[title=${item}]`).addClass("skyblueItem")
-            }
+            if (sidData[this.state.pid].uAnswer != undefined)
+                for (let item of sidData[this.state.pid].uAnswer) {
+                    $(`.oneOptionDescription[title=${item}]`).addClass("skyblueItem")
+                }
             switch (sidData[this.state.pid].uRight) {
-                case true: $(".resultBoard").text("答案正确"); $(".resultBoard").css("color", "green"); break
-                case false: $(".resultBoard").text("答案错误"); $(".resultBoard").css("color", "red"); break
+                case true: $(".resultBoard").text("答案正确"); $(".resultBoard").css("color", "green");
+                    this.showRedoButton()
+                    break
+                case false: $(".resultBoard").text("答案错误"); $(".resultBoard").css("color", "red");
+                    this.showRedoButton()
+                    break
                 case undefined: {
                     if (sidData[this.state.pid].saved) {
-                        $(".resultBoard").text("已保存"); $(".resultBoard").css("color", "black");
+                        $(".resultBoard").text("已保存"); $(".resultBoard").css("color", "white");
                     }
-                    else
+                    else {
                         $(".resultBoard").text("")
+                        this.showSubmitButton()
+                    }
+
                     break
                 }
             }
+        }
+        else {
+            this.showSubmitButton()
         }
 
     }
@@ -315,11 +346,11 @@ export class View extends React.Component<View.Props, View.State>{
             let pid = _this.state.pid
             let newIsLast = _this.state.isLast
             let index = _this.state.sidIndex
-            $(document).one("optionSubmitFail", '.newSubmitButton', (el) => {
-                $(document).off("optionSubmitScc", '.newSubmitButton')
+            $(document).one("optionSubmitFail", 'body', (el) => {
+                $(document).off("optionSubmitScc", 'body')
 
             })
-            $(document).one("optionSubmitScc", '.newSubmitButton', (el) => {
+            $(document).one("optionSubmitScc", 'body', (el) => {
                 $(el).removeAttr("disabled")
                 //  new Promise((resolve) => {
                 //     setTimeout(() => {
@@ -383,16 +414,17 @@ export class View extends React.Component<View.Props, View.State>{
                     $(".list-group-item").removeClass("list-group-item-primary")
                     $(`a[id=${_this.state.pid}]`).parents(`.optionItem.${_this.state.sid}`).addClass("list-group-item-primary")
                 })
-                $(document).off("optionSubmitFail", '.newSubmitButton')
+                $(document).off("optionSubmitFail", 'body')
             })
             $(".newSubmitButton").trigger("click")
+            $(".newSaveButton").trigger("click")
         })
         $(document).on("click", ".last", () => {
             let csid = _this.state.sid
             let pid = _this.state.pid
             let newIsLast = _this.state.isLast
             let index = _this.state.sidIndex
-            $(document).one("optionSubmitScc", '.newSubmitButton', () => {
+            $(document).one("optionSubmitScc", "body", () => {
                 if (parseInt(pid) > 1) {
                     pid = (parseInt(pid) - 1).toString()
                 }
@@ -444,11 +476,14 @@ export class View extends React.Component<View.Props, View.State>{
                 })
             })
             $(".newSubmitButton").trigger("click")
+            $(".newSaveButton").trigger("click")
         })
 
 
 
         $(document).on("click", ".expander", async () => {
+            if (!$(".list-group-item-primary").hasClass('optionItem'))
+                return
             let sp = $(".expander>span")
             if (sp.hasClass("oi-chevron-right")) {
                 sp.removeClass("oi-chevron-right")
@@ -476,34 +511,36 @@ export class View extends React.Component<View.Props, View.State>{
             //     $(".selectPanel").hide()
             // }
         })
-        // $(document).on("mouseenter", ".sections", () => { 
-        //     // alert('enter')
-        //     _this.clickTime = 9999999999999 })
-        // $(document).on("mouseleave", ".sections ", async () => {
-        //     if (_this.clickTime == 9999999999999)
-        //         _this.clickTime = new Date().getTime()
-        //     else return
-        //     await new Promise((res) => {
-        //         setTimeout(() => {
+        $(document).on("mouseenter", ".sections", () => {
+            // alert('enter')
+            _this.clickTime = 9999999999999
+        })
+        $(document).on("mouseleave", ".sections ", async () => {
 
-        //             res()
-        //         }, 1300);
-        //     })
-        //     let gap = (new Date().getTime() - _this.clickTime)
-        //     // alert(gap)
-        //     if (gap >= 0 && $(".selectPanel").css("display") != "none") {
-        //         let sp = $(".expander>span")
-        //         sp.addClass("oi-chevron-right")
-        //         sp.removeClass("oi-chevron-left")
-        //         $(".stateProfile").show()
-        //         $(".selectPanel").hide()
+            _this.clickTime = new Date().getTime()
 
-        //     }
-        // })
+            await new Promise((res) => {
+                setTimeout(() => {
+
+                    res()
+                }, 1300);
+            })
+
+            let gap = (new Date().getTime() - _this.clickTime)
+            // alert(gap)
+            if ($(".selectPanel").css("display") != "none" && $(".list-group-item-primary").hasClass('optionItem') && gap >= 1000) {
+                let sp = $(".expander>span")
+                sp.addClass("oi-chevron-right")
+                sp.removeClass("oi-chevron-left")
+                $(".stateProfile").show()
+                $(".selectPanel").hide()
+
+            }
+        })
         $(document).on("click", ".newSubmitAll", async () => {
-            if (_this.submitedAnswers[_this.state.sid] == undefined) {
-                _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
-                //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            if (_this.submittedAnswers[_this.state.sid] == undefined) {
+                _this.submittedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
+                //alert("getLocal:" + JSON.stringify(_this.submittedAnswers[_this.state.sid]))
             }
             let answers: string[] = []
             $(".oneOptionDescription.skyblueItem").map((index, html) => {
@@ -518,30 +555,29 @@ export class View extends React.Component<View.Props, View.State>{
             }
             let uAnswers: any = {}
             uAnswers[_this.state.pid] = { answer: answers, uRight: undefined, saved: true }
-            _this.submitedAnswers[_this.state.sid][_this.state.pid] = uAnswers[_this.state.pid]
+            _this.submittedAnswers[_this.state.sid][_this.state.pid] = uAnswers[_this.state.pid]
             let pid = _this.state.pid
             let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next()
             sp.prop("class", "oi oi-pin")
             sp.show()
             $(".resultBoard").text("已保存")
-            $(".resultBoard").css("color", "black")
-            _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
-            //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            $(".resultBoard").css("color", "white")
+            _this.props.setLocal(_this.state.sid, _this.submittedAnswers[_this.state.sid])
             for (let index = 0; index < Object.keys(_this.questionPool[_this.state.sid].descriptions).length; index++) {
                 let indexStr = (index + 1).toString()
-                if (_this.submitedAnswers[_this.state.sid][indexStr] == undefined ||
-                    _this.submitedAnswers[_this.state.sid][indexStr].uAnswer == undefined ||
-                    _this.submitedAnswers[_this.state.sid][indexStr].uAnswer!.length == 0) {
+                if (_this.submittedAnswers[_this.state.sid][indexStr] == undefined ||
+                    _this.submittedAnswers[_this.state.sid][indexStr].uAnswer == undefined ||
+                    _this.submittedAnswers[_this.state.sid][indexStr].uAnswer!.length == 0) {
                     let toGo = _this.notForAll && confirm(`第${index + 1}题，答案为空，确认继续提交？`)
                     if (toGo == true) {
                         answers[index] = "X"
-                        _this.submitedAnswers[_this.state.sid][indexStr] = { uAnswer: [], uRight: false, saved: true }
+                        _this.submittedAnswers[_this.state.sid][indexStr] = { uAnswer: [], uRight: false, saved: true }
                         _this.notForAll && confirm(`提交全部不再提醒？`) ? _this.notForAll = false : _this.notForAll = true
                     }
                     else {
                         if (_this.notForAll == false) {
                             answers[index] = "X"
-                            _this.submitedAnswers[_this.state.sid][indexStr] = { uAnswer: [], uRight: false, saved: true }
+                            _this.submittedAnswers[_this.state.sid][indexStr] = { uAnswer: [], uRight: false, saved: true }
                         }
                         else {
                             return
@@ -550,7 +586,7 @@ export class View extends React.Component<View.Props, View.State>{
                     }
                 }
                 else
-                    answers[index] = _this.submitedAnswers[_this.state.sid][indexStr].uAnswer!.join(",")
+                    answers[index] = _this.submittedAnswers[_this.state.sid][indexStr].uAnswer!.join(",")
 
             }
             _this.notForAll = true
@@ -577,19 +613,19 @@ export class View extends React.Component<View.Props, View.State>{
                             ////alert(`.optionItem.${_this.state.sid} a[id=${pid}]`)
                             let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next()
                             if (correctItem[item] == "1") {
-                                _this.submitedAnswers[_this.state.sid][pid].uRight = true
+                                _this.submittedAnswers[_this.state.sid][pid].uRight = true
                                 sp.prop("class", "oi oi-check")
                                 sp.show()
                             }
                             else {
-                                _this.submitedAnswers[_this.state.sid][pid].uRight = false
+                                _this.submittedAnswers[_this.state.sid][pid].uRight = false
                                 sp.prop("class", "oi oi-x")
                                 sp.show()
                             }
                         }
 
-                        await _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
-                        //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+                        await _this.props.setLocal(_this.state.sid, _this.submittedAnswers[_this.state.sid])
+                        //alert("setLocal:" + JSON.stringify(_this.submittedAnswers[_this.state.sid]))
                         let crtCount = 0
                         for (let item of correctItem) {
                             if (item == '1')
@@ -603,9 +639,9 @@ export class View extends React.Component<View.Props, View.State>{
 
         })
         $(document).on("click", ".newSaveButton", async () => {
-            if (_this.submitedAnswers[_this.state.sid] == undefined) {
-                _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
-                //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            if (_this.submittedAnswers[_this.state.sid] == undefined) {
+                _this.submittedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
+                //alert("getLocal:" + JSON.stringify(_this.submittedAnswers[_this.state.sid]))
             }
             let answers: string[] = []
             $(".oneOptionDescription.skyblueItem").map((index, html) => {
@@ -614,28 +650,48 @@ export class View extends React.Component<View.Props, View.State>{
             })
             if (answers.length == 0) {
                 if (confirm("保存的结果为空，确认继续？") == false) {
+                    $('body').trigger("optionSubmitFail")
                     return
                 }
 
             }
             let uAnswers: any = {}
             uAnswers[_this.state.pid] = { uAnswer: answers, uRight: undefined, saved: true }
-            _this.submitedAnswers[_this.state.sid][_this.state.pid] = uAnswers[_this.state.pid]
+            _this.submittedAnswers[_this.state.sid][_this.state.pid] = uAnswers[_this.state.pid]
             let pid = _this.state.pid
             let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next()
             sp.prop("class", "oi oi-pin")
             sp.show()
             $(".resultBoard").text("已保存")
-            $(".resultBoard").css("color", "black")
-            await _this.props.setLocal(_this.state.sid, _this.submitedAnswers[_this.state.sid])
-            //alert("setLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+            $(".resultBoard").css("color", "white")
+            await _this.props.setLocal(_this.state.sid, _this.submittedAnswers[_this.state.sid])
+            $('body').trigger("optionSubmitScc")
+            //alert("setLocal:" + JSON.stringify(_this.submittedAnswers[_this.state.sid]))
         })
 
-
+        $(document).on("click", ".newRedoButton", async () => {
+            let uAnswers: any = {}
+            uAnswers[this.state.pid] = { uAnswer: [], uRight: undefined }
+            this.submittedAnswers[this.state.sid][this.state.pid] = {
+                ...uAnswers,
+                saved: undefined,
+            }
+            let tmp = await _this.props.getLocal(_this.state.sid, {})
+            let store = {
+                ...tmp,
+                ...uAnswers
+            }
+            await _this.props.setLocal(_this.state.sid, store)
+            this.showSubmitButton()
+            $(".resultBoard").text("")
+            $(".skyblueItem").removeClass("skyblueItem")
+            $(".list-group-item-primary>span[class*=oi-]:not(.oi-pencil)").attr("class", 'oi')
+        })
         $(document).on("click", ".newSubmitButton", async () => {
-            if (_this.submitedAnswers[_this.state.sid] == undefined) {
-                _this.submitedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
-                //alert("getLocal:" + JSON.stringify(_this.submitedAnswers[_this.state.sid]))
+
+            if (_this.submittedAnswers[_this.state.sid] == undefined) {
+                _this.submittedAnswers[_this.state.sid] = await _this.props.getLocal(_this.state.sid, {})
+                //alert("getLocal:" + JSON.stringify(_this.submittedAnswers[_this.state.sid]))
             }
             let answers: string[] = []
             $(".oneOptionDescription.skyblueItem").map((index, html) => {
@@ -644,7 +700,7 @@ export class View extends React.Component<View.Props, View.State>{
             })
             if (answers.length == 0) {
                 if (confirm("提交的结果为空，确认继续？") == false) {
-                    $('.newSubmitButton').trigger("optionSubmitFail")
+                    $('body').trigger("optionSubmitFail")
                     return
                 }
             }
@@ -674,7 +730,7 @@ export class View extends React.Component<View.Props, View.State>{
                         ////alert(`.optionItem.${_this.state.sid} a[id=${pid}]`)
                         if (correctItem == "1") {
                             uAnswers[_this.state.pid]["uRight"] = true
-                            _this.submitedAnswers[_this.state.sid][pid] = uAnswers[_this.state.pid]
+                            _this.submittedAnswers[_this.state.sid][pid] = uAnswers[_this.state.pid]
                             sp.prop("class", "oi oi-check")
                             $(".resultBoard").text("答案正确")
                             $(".resultBoard").css("color", "green")
@@ -682,7 +738,7 @@ export class View extends React.Component<View.Props, View.State>{
                         }
                         else {
                             uAnswers[_this.state.pid]["uRight"] = false
-                            _this.submitedAnswers[_this.state.sid][pid] = uAnswers[_this.state.pid]
+                            _this.submittedAnswers[_this.state.sid][pid] = uAnswers[_this.state.pid]
                             sp.prop("class", "oi oi-x")
                             $(".resultBoard").text("答案错误")
                             $(".resultBoard").css("color", "red")
@@ -694,7 +750,9 @@ export class View extends React.Component<View.Props, View.State>{
                             ...uAnswers
                         }
                         await _this.props.setLocal(_this.state.sid, store)
-                        $('.newSubmitButton').trigger("optionSubmitScc")
+                        _this.showRedoButton()
+                        $('body').trigger("optionSubmitScc")
+
                     }
                 }
 
@@ -821,11 +879,13 @@ export class View extends React.Component<View.Props, View.State>{
                             minWidth: '450px', height: "90%",
                             backgroundColor: "#262527", left: "10px",
                             zIndex: 1, position: "absolute",
+                            boxShadow: '5px 5px 5px black',
                             paddingLeft: '0px'
                         }}>
                             <div className="col-12" style={{
                                 height: "98%", overflow: "scroll",
-                                boxShadow: '5px 5px 5px black', backgroundColor: "#262527", zIndex: 1,
+
+                                backgroundColor: "#262527", zIndex: 1,
                             }}>
                                 <Chapter
                                     sectionData={_this.sectionData}
@@ -865,7 +925,8 @@ export class View extends React.Component<View.Props, View.State>{
                             left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", top: "5%", display: "none"
                         }}>
                             {/* {`第${_this.state.sidIndex + 1}部分，`} */}
-                            {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidIndex + 1}`).text()} 选择题${_this.state.pid}` : `error`}
+                            {/* {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidIndex + 1}`).text()} 选择题${_this.state.pid}` : `error`} */}
+                            {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidArray[_this.state.sidIndex]}`).text()} 选择题${_this.state.pid}` : `error`}
                         </div>
 
                         <div className="row col-12" style={{
@@ -891,7 +952,11 @@ export class View extends React.Component<View.Props, View.State>{
                                 <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
                                 <button className="last btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>上一个</button>
                                 <button className="next btn btn-primary" style={{ left: '90px', bottom: '10px', position: "absolute" }}>下一个</button>
-                                {this.state.viewType == "1" ? <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
+                                {this.state.viewType == "1" ?
+                                    <span>
+                                        <button className='newRedoButton btn btn-primary' style={{ right: '5px', bottom: '10px', position: "absolute" }}> 重做</button>
+                                        <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
+                                    </span>
                                     :
                                     this.state.isLast ? <button className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>//考试模式
                                         :

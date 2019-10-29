@@ -327,6 +327,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 $(document).off('click', ".optionItem." + _this.props.sid)
                 $(document).on('click', ".optionItem." + _this.props.sid,
                     (e) => {
+                        $('.selectPanel').css("box-shadow", "black 5px 5px 5px")
                         console.log("click.............................")
                         if ($(".selectPanel").hasClass("col-12")) {
                             $(".selectPanel").removeClass("col-12")
@@ -527,6 +528,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
             () => {
 
                 $(document).on("click", ".videoItem" + _this.props.sid, (e) => {
+                    $('.selectPanel').css("box-shadow", "")
                     let index = $(e.currentTarget).children('.videoName').attr("title")
                     _this.props.closeTables()
                     console.log("video uri ..........." + index)
@@ -599,7 +601,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                     postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                             </div>
                             <div className={`optionInfos ${this.props.sid} col-7`} >
-                                <OptionInfo submitStyle={"single"} getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.types} answersCollection={this.answers} contentsCollection={this.choices} titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers} setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
+                                <OptionInfo submitStyle={"single"} getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.types}
+                                    answersCollection={this.answers} contentsCollection={this.choices}
+                                    titlesCollection={this.optionIssues} submittedOptionAnswers={this.submittedOptionAnswers}
+                                    setSubmittedOptionAnswer={this.setSubmittedOptionAnswer}
                                     sid={this.props.sid} say={this.props.say} answers={this.answers} />
                             </div>
                         </div>

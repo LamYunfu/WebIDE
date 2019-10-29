@@ -115,10 +115,11 @@ span[class*=section] {
     cursor: pointer;
 }
 
-.oneOptionDescription:hover  {
+.oneOptionDescription:hover {
     border-color: skyblue;
     background-color: skyblue;
 }
+
 .skyblueItem {
     color: blue;
     background-color: skyblue;
@@ -127,21 +128,54 @@ span[class*=section] {
 .optionDescription {
     display: none;
 }
-.list-group-item:hover{
 
-}
+.list-group-item:hover {}
+
 .optionChocies {
     display: none;
 }
-.p-Widget > ul > li:nth-child(8){
+
+.p-Widget>ul>li:nth-child(8) {
     display: none
 }
-.p-Widget > ul > li:nth-child(6){
+
+.p-Widget>ul>li:nth-child(6) {
     display: none
 }
-.p-Widget > ul > li:nth-child(7){
+
+.p-Widget>ul>li:nth-child(7) {
     display: none
 }
+
+.oi-check {
+    color: green
+}
+
+.oi-x {
+    color: red;
+}
+
+.simInfo {
+    display: none;
+}
+
+button[class*=submitSimButton] {
+    display: none;
+}
+
+/* .newRedoButton {
+    content: 重做;
+    right: '5px';
+    bottom: '10px';
+    position: "absolute"
+}
+.newSubmitButton {
+    content: 提交;
+    right: '5px';
+    bottom: '10px';
+    position: "absolute"
+} */
+
 /* .sections {
     counter-reset: section 1;
 } */

@@ -14,6 +14,7 @@ export class Programer {
     }
     async program(pid: string) {
         let { loginType, fns, dirName, model, deviceRole } = this.ut.getPidInfos(pid)
+        let address = model == "developer_kit" ? '0x08000000' : '0x10000'
         let devArr = []
         let fnArr = JSON.parse(fns)
         if (getCompilerType(model) == "alios")
@@ -48,7 +49,8 @@ export class Programer {
             case "queue": {
                 for (let item of deviceRole!) {
                     let hexFile = hex[item.split(".")[0]]
-                    return await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
+                    console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
+                    return await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[0], pid)
                     // break
                 }
                 break
@@ -59,15 +61,34 @@ export class Programer {
                     let hexFile = hex[item.split(".")[0]]
                     console.log(item + ":hexFile:" + JSON.stringify(hex))
                     console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
-                    return await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
+                    return await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[0], pid)
                 }
                 break
             }
             case "group": {
-                for (let index in devArr) {
-                    let hexFile = hex[fnArr[index].split(".")[0]]
+                let fnArr: string[] = []
+                if (deviceRole == undefined)
+                    return false
+                else fnArr = deviceRole
+                // let devIndex: any = -1
+                let devStr=""
+                let lastStr = ""
+                for (let index in fnArr) {
 
-                    let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[index], pid)
+                    for (let seq in devArr) {
+                        if (devArr[seq].split("lora").length > 1 && devArr[seq].split(",")[1].split("|")[0] != lastStr) {
+                            // devIndex = seq
+                            lastStr = devArr[seq].split(",")[1].split("|")[0]
+                            this.ut.outputResult(lastStr)
+                            devStr=devArr[seq]
+                            break;
+                        }
+
+                    }
+                    let hexFile = hex[fnArr[index].split(".")[0]]
+                    console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
+                    // let bv = await this.ut.program_device_group(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[index], pid)
+                    let bv = await this.ut.program_device_group(path.join(rootDir, dirName, hexFileDir, hexFile), address,devStr, pid)
                     if (bv == false) {
                         return false
                     }
@@ -75,9 +96,12 @@ export class Programer {
                 break
             }
         }
+        return true
     }
     async programSingleFile(pid: string, fn: string) {
-        let { dirName } = this.ut.getPidInfos(pid)
+        let { dirName, model } = this.ut.getPidInfos(pid)
+
+        let address = model == "developer_kit" ? '0x08000000' : '0x10000'
         // let { fns, dirName } = this.ut.getPidInfos(pid)
         let devArr = []
         // let fnArr: string[] = JSON.parse(fns)
@@ -111,8 +135,8 @@ export class Programer {
         //     if (val.match(`${fn}|${fn}.cpp`))
         //         return true
         // })
-        // let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[index], pid)
-        let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), "0x10000", devArr[0], pid)
+        // let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[index], pid)
+        let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[0], pid)
         if (bv == false) {
             return false
         }

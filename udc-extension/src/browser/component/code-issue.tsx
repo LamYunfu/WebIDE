@@ -119,6 +119,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                 $(document).on("click", `.codeItem${_this.props.sid}`,
                     async (e) => {
                         // alert("click codeItem")
+                        $('.selectPanel').css("box-shadow","")
                         if ($(".selectPanel").hasClass("col-3")) {
                             $(".selectPanel").removeClass("col-3")
                         }
@@ -200,6 +201,9 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         $(`.codingRole${_this.props.sid}`).text(_this.focusFile)
                     }
                 })
+                $(document).on("click", `.simButton`, () => {
+                    $('.simInfo').hide()
+                })
                 $(document).on("click", `#singleFileSubmitButton` + _this.props.sid, async (e) => {
                     // alert("singleFileProgram")
                     await this.context.props.saveAll()
@@ -219,7 +223,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
 
             }
         )
- 
+
     }
 
 
@@ -245,7 +249,22 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></span>
                         <span><button className="btn btn-primary" id={"submitSimButton" + this.props.sid}>仿真</button></span>
                     </div>
-                </div>
+                    <div className="simInfo " style={{
+                        position: "absolute",
+                        top: "30%",
+                        backgroundColor: "orangered",
+                        borderStyle: 'solid',
+                        borderColor: 'blue',
+                        borderRadius: '10px',
+                        width: '300px',
+                        height: '200px'
+
+                    }}>
+                        <div>设备已占满，是否需要仿真支持？</div>
+                        <button className="newSimButton simButton btn btn-primary" style={{ position: "absolute", bottom: "10%", left: "10%" }}>是</button><button
+                            className=' simButton btn btn-primary' style={{ position: "absolute", bottom: "10%", right: "10%" }}> 否</button>
+                    </div>
+                </div >
                 :
                 <div className={`codingInfos ${this.props.sid} card text-white bg-secondary`}>
                     <span className={`codingRole${this.props.sid}`} style={{ display: 'none' }}></span>

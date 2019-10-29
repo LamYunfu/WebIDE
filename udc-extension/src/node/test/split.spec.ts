@@ -16,7 +16,8 @@ describe("a", () => {
         console.log("abc".black)
     })
     it("code", () => {
-        console.log(new Buffer("9999", 'utf8').toString("utf8"))
+        "0E12340E123".split("0E")
+        console.log( "0E12340E123".split("0E").slice(1).join(";"))
     })
 
 })

@@ -1,3 +1,4 @@
+import { getBoardType } from './../globalconst';
 import { FileMapper } from './../util/filemapper';
 import { UdcTerminal } from './../util/udc-terminal';
 import * as http from 'http'
@@ -25,6 +26,7 @@ export class NewAliosCompiler {
     }
     async  postSingleSrcFile(projectName: string, role: string, pid: string) {
         Logger.info("postSingleSrcFile")
+        let { model } = this.udc.getPidInfos(pid)
         let _this = this
         let st = fs.createWriteStream(`/home/project/${projectName}/${role}.zip`) //打包
         let achst = ach.create("zip").directory(`/home/project/${projectName}/${role}`, false)
@@ -70,7 +72,8 @@ export class NewAliosCompiler {
                     })
                     configRequest.write(JSON.stringify({
                         "examplename": "helloworld",
-                        "boardname": "esp32devkitc",
+                        // "boardname": "esp32devkitc",
+                        "boardname": getBoardType(model),
                         "filehash": hashVal
                     }))
                     configRequest.end()

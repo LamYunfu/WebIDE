@@ -344,7 +344,7 @@ export class UdcTerminal {
         //     rejectUnauthorized: false,
         //     // requestCert: true,
         // }
-        login_type = LOGINTYPE.QUEUE//temporary
+        // login_type = LOGINTYPE.QUEUE//temporary
         let uuid = this.uuid
         let _this = this
         return new Promise(function (resolve, reject) {
@@ -492,7 +492,14 @@ export class UdcTerminal {
             this.cmd_excute_state = (type === Packet.CMD_DONE ? 'done' : 'error');
             this.events.emit('cmd-response');
         } else if (type == Packet.DEVICE_LOG) {
-            this.outputResult(value.toString().split(':').slice(2).join(":"), "log")
+            let tmp = value.toString().split(':').slice(2).join(":")
+            let afterSplit = tmp.split("0E")
+            let tag = afterSplit.slice(0, 1)
+            Logger.info(tag[0], "tg_")
+            Logger.info(tmp, "tp_")
+            if (tag[0] == "")
+                return
+            this.outputResult(tmp, "log")
         } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
             this.outputResult(`burning ${value.split(":").pop()}......`, 'systemInfo')
         } else if (type == Packet.DEVICE_PROGRAM_QUEUE) {
@@ -578,13 +585,13 @@ export class UdcTerminal {
             return true
         }
         this.currentPid = pid
-
         let login_type = LOGINTYPE.QUEUE
         // model = `tinylink_lora`
 
         switch (loginType) {
             case "fixed": login_type = LOGINTYPE.FIXED; break
-            case "adhoc": login_type = LOGINTYPE.ADHOC; break
+            // case "adhoc": login_type = LOGINTYPE.ADHOC; break
+            case "adhoc": login_type = LOGINTYPE.QUEUE; break
             case "group": login_type = LOGINTYPE.GROUP; break
             case "queue": login_type = LOGINTYPE.QUEUE; break
 
@@ -680,7 +687,7 @@ export class UdcTerminal {
         }
         return true
     }
-    // async program_device(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
+    // async program_device_group(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
     //     let send_result = await this.send_file_to_client(filepath, devstr);
     //     if (send_result === false) {
     //         this.outputResult('send hex file to LDC err')
@@ -689,15 +696,18 @@ export class UdcTerminal {
     //     this.outputResult('send hex file to LDC success')
     //     let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
     //     this.outputResult('burning......')
+    //     this.outputResult('program content:' + content)
     //     this.send_packet(Packet.DEVICE_PROGRAM, content);
     //     await this.wait_cmd_excute_done(270000);
     //     if (this.cmd_excute_state === 'done') {
     //         this.outputResult('burn success ^.^')
+    //         return true
     //     }
     //     else {
     //         this.outputResult('burn error T.T')
+    //         return false
     //     }
-    //     return (this.cmd_excute_state === 'done' ? true : false);
+    //     // return (this.cmd_excute_state === 'done' ? true : false);
     // }
     async program_device(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         let _this = this
@@ -806,11 +816,131 @@ export class UdcTerminal {
             _this.outputResult("hexfile upload success")
         }
         let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
-        _this.outputResult('burning......')
+        _this.outputResult('burning......' + content)
         this.send_packet(Packet.DEVICE_WAIT, content);
         await this.wait_cmd_excute_done(270000);
         return (this.cmd_excute_state === 'done' ? true : false);
 
+    }
+
+    async program_device_group(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
+        let _this = this
+        let uploadResult = "scc"
+        let configResult = await new Promise((resolve) => {
+            Logger.info("configuring burning program")
+            let hash = crypto.createHash("sha1")
+            let buff = fs.readFileSync(filepath)
+            // let hashVal = hash.update(buff).digest("hex")
+            let hashVal = hash.update(buff).digest("hex")
+            Logger.info("hex hashval:" + hashVal)
+            let configRequest = http.request({//
+                method: "POST",
+                hostname: '47.97.253.23',
+                port: '8081',
+                path: "/config",
+                headers: {
+                    'Content-Type': "application/json"
+                }
+            }, (mesg) => {
+                let bf = ""
+                mesg.on("data", (b: Buffer) => {
+                    bf += b.toString("utf8")
+                })
+                mesg.on("end", () => {
+                    Logger.info("bf:" + bf)
+                    let res: any = JSON.parse(bf)
+                    if (!res.result) {
+                        Logger.info("config burning success")
+                        _this.outputResult("config burning success")
+                        Logger.info(res.status)
+                        resolve("scc")
+                    }
+                    else {
+                        Logger.info(res.status)//已经存在
+                        resolve("exist")
+                    }
+
+
+                })
+            })
+            configRequest.write(JSON.stringify({
+                "filehash": hashVal
+            }))
+            configRequest.end()
+        })
+
+        if (configResult == "scc") {
+            let fm = new FormData()
+            Logger.info("uploading hex file")
+            uploadResult = await new Promise(async (resolve) => {
+                let uploadRequest = http.request({//传zip
+                    method: "POST",
+                    hostname: '47.97.253.23',
+                    port: '8081',
+                    path: "/upload",
+                    // headers: {
+                    //     "Accept": "application/json",
+                    //     "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
+                    // },
+                    headers: fm.getHeaders()
+                }, (mesg) => {
+                    let bf = ""
+                    Logger.info("upload statuscode:" + mesg.statusCode)
+                    mesg.on("data", (b: Buffer) => {
+                        Logger.info("data comming")
+                        bf += b.toString("utf8")
+                    })
+                    mesg.on("error", () => {
+                        resolve("err")
+                    })
+                    mesg.on("end", () => {
+                        Logger.info("bf:" + bf)
+                        let res: any = JSON.parse(bf)
+                        if (res.result) {
+                            resolve("scc")
+                        }
+                        else {
+                            _this.outputResult(res.msg)
+                            resolve(res.msg)
+                        }
+                    })
+                })
+
+                // let blob = fs.readFileSync(filepath)
+                let st = fs.createReadStream(filepath)
+                Logger.info("append file")
+                // fm.append("file", blob, filepath.split("/").pop())
+                fm.append("file", st, filepath.split("/").pop())
+                fm.pipe(uploadRequest)
+                Logger.info("file append ok")
+            })
+        }
+        else {
+            _this.outputResult("file exist ")
+        }
+
+        if (uploadResult != "scc") {
+            Logger.info("uploading zip file err")
+            _this.outputResult("hexfile upload error")
+            return false
+        }
+        else {
+            Logger.info("uploading zip file scc")
+            _this.outputResult("hexfile upload success")
+        }
+        let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
+        this.outputResult('burning......')
+        this.outputResult('program content:' + content)
+        this.send_packet(Packet.DEVICE_PROGRAM, content);
+        await this.wait_cmd_excute_done(270000);
+        if (this.cmd_excute_state === 'done') {
+            this.outputResult('burn success ^.^')
+            return true
+        }
+        else {
+            this.outputResult('burn error T.T')
+            return false
+        }
     }
 
 
@@ -1027,7 +1157,7 @@ export class UdcTerminal {
 
             }
         })
-
+        this.udcClient && this.udcClient.onConfigLog({ name: 'openShell', passwd: "" })
     }
     async postSimFile(pid: string) {
         let _this = this
@@ -1045,9 +1175,9 @@ export class UdcTerminal {
         _this.outputResult("try to build the connection with simulator")
         let tinySimRequest = new WebSocket(
             "ws://47.98.249.190:8004/", {
-                // "ws://localhost:8765/", {
+            // "ws://localhost:8765/", {
 
-            }
+        }
         )
         await new Promise(res => {
             tinySimRequest.on("message", (data: string) => {

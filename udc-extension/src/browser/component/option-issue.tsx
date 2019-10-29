@@ -75,7 +75,8 @@ export class OptionInfo extends React.Component<OptionInfo.Props, OptionInfo.Sta
     public render() {
         return (
 
-            <ChoiceCollection submitStyle={this.props.submitStyle} getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.props.types} contentsCollection={this.props.contentsCollection}
+            <ChoiceCollection submitStyle={this.props.submitStyle} getLocal={this.props.getLocal} setLocal={this.props.setLocal} types={this.props.types}
+                contentsCollection={this.props.contentsCollection}
                 titlesCollection={this.props.titlesCollection} sid={this.props.sid} ></ChoiceCollection>
 
         )
@@ -276,14 +277,12 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
 
     async componentDidMount() {
         let _this = this
-        // let uAnswers = await _this.props.getLocal(_this.props.sid, {})
-        // alert(JSON.stringify(uAnswers))
         $(document).on('click', ".optionItem." + _this.props.sid, (e) => {
             let index = $(e.currentTarget).children(".index").text()
             let qzid = $(e.currentTarget).children(".qzid").text()
             let scid = $(e.currentTarget).children(".scid").text()
             console.log(index + ".............index")
-            console.log("types:::::::::"+ _this.props.types[index])
+            console.log("types:::::::::" + _this.props.types[index])
             _this.setState(() => ({
                 ..._this.state,
                 sid: _this.props.sid,
@@ -296,8 +295,6 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                 qzid: qzid,
                 scid: scid
             }))
-            
-
         })
         $(document).on('click', `.optionInfoSubmit${this.props.sid}`, (e) => {
             console.log("click!!!!!!!!!!!!!")

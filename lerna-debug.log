@@ -22,7 +22,7 @@
 11 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 11 error
 11 error npm ERR! A complete log of this run can be found in:
-11 error npm ERR!     /home/liang/.npm/_logs/2019-10-22T12_59_45_271Z-debug.log
+11 error npm ERR!     /home/liang/.npm/_logs/2019-10-28T08_43_36_070Z-debug.log
 11 error
 11 error
 11 error > udc-extension@0.0.0 prepare /home/liang/load/webIDE7.29/udc-extension
@@ -30,8 +30,7 @@
 11 error
 11 error $ rimraf lib
 11 error $ tsc  --jsx react
-11 error src/node/compilers/udc-compiler.ts(152,29): error TS2300: Duplicate identifier 'resolve'.
-11 error src/node/compilers/udc-compiler.ts(152,38): error TS2300: Duplicate identifier 'resolve'.
+11 error src/node/util/udc-terminal.ts(821,13): error TS6198: All destructured elements are unused.
 11 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 11 error
 11 error     at Promise.all.then.arr (/home/liang/load/webIDE7.29/node_modules/lerna/node_modules/execa/index.js:236:11)
