@@ -159,7 +159,7 @@ span[class*=section] {
     display: none;
 }
 
-button[class*=submitSimButton] {
+button[id*=submitSimButton] {
     display: none;
 }
 
