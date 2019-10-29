@@ -79,7 +79,7 @@ export class Programer {
                         if (devArr[seq].split("lora").length > 1 && devArr[seq].split(",")[1].split("|")[0] != lastStr) {
                             // devIndex = seq
                             lastStr = devArr[seq].split(",")[1].split("|")[0]
-                            this.ut.outputResult(lastStr)
+                            // this.ut.outputResult(lastStr)
                             devStr=devArr[seq]
                             break;
                         }

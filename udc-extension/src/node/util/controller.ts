@@ -45,10 +45,10 @@ export class Controller {
                         let eres = await _this.et.extract(pid)
                         Logger.info("eres:" + eres)
                         if (eres == 'scc') {
-                            _this.ut.outputResult("extract file scc")
+                            // _this.ut.outputResult("extract file scc")
                             Logger.info("extract file scc")
                         } else {
-                            _this.ut.outputResult("extract file err")
+                            // _this.ut.outputResult("extract file err")
                             Logger.info("extract file err")
                         }
                         return eres

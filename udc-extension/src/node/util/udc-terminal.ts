@@ -803,7 +803,7 @@ export class UdcTerminal {
             })
         }
         else {
-            _this.outputResult("file exist ")
+            // _this.outputResult("file exist ")
         }
 
         if (uploadResult != "scc") {
@@ -816,7 +816,7 @@ export class UdcTerminal {
             _this.outputResult("hexfile upload success")
         }
         let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
-        _this.outputResult('burning......' + content)
+        _this.outputResult('burning......')
         this.send_packet(Packet.DEVICE_WAIT, content);
         await this.wait_cmd_excute_done(270000);
         return (this.cmd_excute_state === 'done' ? true : false);
@@ -916,7 +916,7 @@ export class UdcTerminal {
             })
         }
         else {
-            _this.outputResult("file exist ")
+            // _this.outputResult("file exist ")
         }
 
         if (uploadResult != "scc") {
@@ -930,7 +930,7 @@ export class UdcTerminal {
         }
         let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
         this.outputResult('burning......')
-        this.outputResult('program content:' + content)
+        // this.outputResult('program content:' + content)
         this.send_packet(Packet.DEVICE_PROGRAM, content);
         await this.wait_cmd_excute_done(270000);
         if (this.cmd_excute_state === 'done') {
