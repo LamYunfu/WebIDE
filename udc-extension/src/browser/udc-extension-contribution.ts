@@ -156,6 +156,10 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 this.deviceViewService.approveClick()
                 return
             }
+            if (data.name == "executeSelectPanel") {
+                this.deviceViewService.openExecutePanel()
+                return
+            }
 
             applicationShell.closeTabs("bottom")
             // applicationShell.closeTabs("left")

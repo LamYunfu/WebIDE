@@ -92,6 +92,7 @@ export class Packet {
 
 
 export namespace Packet {
+    export const QUERY_IDLE_DEVICES = "QIDV"
     export const DEVICE_PROGRAM_QUEUE = 'DPGQ'
     export const DEVICE_PROGRAM_BEGIN = 'DPBG'
     export const TYPE_NONE = 'NONE'
@@ -137,6 +138,7 @@ export namespace Packet {
 
 
     export const packet_type: { [key: string]: string } = {
+        QUERY_IDLE_DEVICES: "QIDV",
         DEVICE_WAIT: 'DPWT',
         TYPE_NONE: 'NONE',
         CLIENT_DEV: 'CDEV',

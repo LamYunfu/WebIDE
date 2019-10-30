@@ -441,11 +441,14 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
                                 if (_this.judgeStatus[x.pid] == '1') {
+                                    if (x.wrongInfo != "")
+                                        _this.props.outputResult(x.wrongInfo)
                                     _this.props.outputResult("ACCEPT", "rightAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
                             } else if (status == 'WRONG_ANSWER') {
+
                                 exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                                 exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                                 exeTag && _this.context.props.setSubmitEnableWithJudgeTag(false)
@@ -453,7 +456,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
                                 // alert(_this.judgeStatus[x.pid])
                                 if (_this.judgeStatus[x.pid] == '1') {
-
+                                    if (x.wrongInfo != "")
+                                        _this.props.outputResult(x.wrongInfo)
                                     _this.props.outputResult("WRONG_ANSWER", "wrongAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
@@ -464,6 +468,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 exeTag && _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
+                                if (x.wrongInfo != "")
+                                    _this.props.outputResult(x.wrongInfo)
                             } else {
                                 exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                                 exeTag && _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")

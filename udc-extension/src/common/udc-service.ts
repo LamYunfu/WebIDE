@@ -25,6 +25,8 @@ export interface UdcService {
     programSingleFile: (pidAndFn: string) => void
     postSimFile: (pid: string) => void
     openPidFile: (pid: string) => void
+    continueExe: () => void
+    terminateExe: () => void
 
 }
 

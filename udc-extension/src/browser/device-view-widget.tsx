@@ -35,6 +35,7 @@ export type DeviceViewWidgetFactory = () => DeviceViewWidget;
 export const DeviceViewWidgetFactory = Symbol('DeviceViewWidgetFactory')
 @injectable()
 export class DeviceViewWidget extends TreeWidget {
+
     readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
     device_list?: { [key: string]: number }
 
@@ -75,6 +76,8 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <View
+                terminateExe={this.terminateExe}
+                continueExe={this.continueExe}
                 postSimFile={this.postSimFile}
                 isconnected={this.isconnected}
                 programSingleFile={this.programSingleFile}
@@ -113,10 +116,21 @@ export class DeviceViewWidget extends TreeWidget {
     appproveClick() {
         this.submitEnableWithJudgeTag = true
     }
+    openExecutePanel() {
+        Logger.info("showing", "showing")
+        // $(".simInfo").css("display","inline")
+        $(".simInfo").show()
+    }
     enableClick() {
         Logger.info("enableclick")
         Logger.info($("[id*=submitSrcButton]").removeAttr("disabled"))
         $("[id*=connectButton]").removeAttr("disabled")
+    }
+    continueExe = () => {
+        this.udcService.continueExe()
+    }
+    terminateExe = () => {
+        this.udcService.terminateExe()
     }
     openShell = () => {
         // if (this.applicationShell.activateWidget("udc-shell")) {

@@ -7,6 +7,8 @@ import { MyContext } from './context'
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        terminateExe: () => void
+        continueExe: () => void
         getData: (type: string) => Promise<string>
         storeData: (data: string) => void
         connect: (loginType: string, model: string, pid: string, timeout: string) => void

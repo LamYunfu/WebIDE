@@ -516,6 +516,18 @@ export class UdcTerminal {
         } else if (type == Packet.DEVICE_WAIT) {
             this.outputResult("program status:" + value.split(":").pop(), 'systemInfo')
         }
+        else if (type == Packet.QUERY_IDLE_DEVICES) {
+            let num = parseInt(value.split(":").pop())
+            this.outputResult("remaining device:" + num, 'systemInfo')
+            if (num <= 0) {
+                this.events.emit("goSim")
+            }
+            else {
+                this.events.emit("goDevice")
+            }
+
+            // this.setTinyLink("executeSelectPanel", "")
+        }
         this.udcServerClient.write(this.pkt.construct(Packet.HEARTBEAT, ""));
     }
     //{DPBG,00079,7194559383644183:499c6e072349991a:/dev/tinylink_platform_1-558343238323511002B1}
@@ -634,6 +646,14 @@ export class UdcTerminal {
         this.send_packet(Packet.DEVICE_ERASE, dev_str);
         await this.wait_cmd_excute_done(120000);
         return (this.cmd_excute_state === 'done' ? true : false);
+    }
+    continueExe() {
+        Logger.info("fw c")
+        this.events.emit("dev_fw")
+    }
+    terminateExe() {
+        Logger.info("term", 'term')
+        this.events.emit("sim_rt")
     }
 
     async wait_response(waitID: string, timeout: number) {
@@ -966,7 +986,13 @@ export class UdcTerminal {
         return (this.cmd_excute_state === 'done' ? true : false);
     }
 
-
+    async getIdleDeviceCount(pid: string) {
+        let { model } = this.getPidInfos(pid)
+        let content = model
+        this.send_packet(Packet.QUERY_IDLE_DEVICES, content)
+        await this.wait_cmd_excute_done(2000)
+        return (this.cmd_excute_state === 'done' ? true : false);
+    }
     async send_file_to_client(filepath: string, devstr: string): Promise<Boolean> {
         let filehash = await this.pkt.hash_of_file(filepath);
         let fullpath = filepath.split('/');
@@ -1190,18 +1216,20 @@ export class UdcTerminal {
             })
             tinySimRequest.on("open", async () => {
                 _this.outputResult("sending buffer to simulator......")
-
                 // let buff = fs.readFileSync(`/home/project/${dirName}/${filename}.cpp`, { encoding: 'utf8' })
                 tinySimRequest.send(b, () => {
                     _this.outputResult("send buffer to simulator success")
-                    tinySimRequest.send("quit", () => {
-                        _this.outputResult("send quit")
+                    tinySimRequest.send(new Buffer(`pid:${pid}:quit`), () => {
+                        _this.outputResult("quit")
                     })
 
                 })
             })
             tinySimRequest.on("error", () => {
                 _this.outputResult("bad connection with simulator")
+            })
+            tinySimRequest.on("close", () => {
+                this.udcClient!.onConfigLog({ name: "submitEnable", passwd: "" })
             })
 
         })

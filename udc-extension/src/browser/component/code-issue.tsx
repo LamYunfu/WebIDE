@@ -116,10 +116,24 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
                     }
                 )
+                $(document).on("click", ".submitSimButton" + _this.props.sid,
+                    async (e) => {
+                        _this.context.props.terminateExe()
+                        await this.context.props.saveAll()
+                        let index = $("#codingInfoArea" + this.props.sid).attr("title")
+                        index != undefined && _this.context.props.postSimFile(index)
+                        index != undefined && _this.props.addCodingSubmittedIssue(index)
+                    }
+                )
+                $(document).on("click", ".queueButton" + _this.props.sid,
+                    async (e) => {
+                        _this.context.props.continueExe()
+                    }
+                )
                 $(document).on("click", `.codeItem${_this.props.sid}`,
                     async (e) => {
                         // alert("click codeItem")
-                        $('.selectPanel').css("box-shadow","")
+                        $('.selectPanel').css("box-shadow", "")
                         if ($(".selectPanel").hasClass("col-3")) {
                             $(".selectPanel").removeClass("col-3")
                         }
@@ -257,12 +271,15 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         borderColor: 'blue',
                         borderRadius: '10px',
                         width: '300px',
-                        height: '200px'
+                        height: '200px',
+                        display: "none"
 
                     }}>
                         <div>设备已占满，是否需要仿真支持？</div>
-                        <button className="newSimButton simButton btn btn-primary" style={{ position: "absolute", bottom: "10%", left: "10%" }}>是</button><button
-                            className=' simButton btn btn-primary' style={{ position: "absolute", bottom: "10%", right: "10%" }}> 否</button>
+                        <button className={`submitSimButton${this.props.sid} simButton btn btn-primary`}
+                            style={{ position: "absolute", bottom: "10%", left: "10%" }}>仿真</button><button
+                                className={`queueButton${this.props.sid} simButton btn btn-primary`} style=
+                                {{ position: "absolute", bottom: "10%", right: "10%" }}> 排队</button>
                     </div>
                 </div >
                 :

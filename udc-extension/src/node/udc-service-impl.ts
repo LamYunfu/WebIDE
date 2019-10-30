@@ -151,4 +151,12 @@ export class UdcServiceImpl implements UdcService {
     postSimFile(pid: string) {
         this.udcTerminal.postSimFile(pid)
     }
+    continueExe() {
+        Logger.info("continue")
+        this.controller.events.emit("devfw")        
+    }
+    terminateExe() {
+        Logger.info("terminate")
+        this.controller.events.emit("simrt")      
+    }
 }
