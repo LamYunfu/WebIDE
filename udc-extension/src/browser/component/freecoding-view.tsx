@@ -1,11 +1,10 @@
 import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
-import { find } from "@phosphor/algorithm";
-import { CodeItem, CodingInfo } from "./code-issue"
+import { CodeItem } from "./code-issue"
 import { MyContext } from "./context";
 import { getCompilerType } from "../../node/globalconst";
-export namespace Experiment {
+export namespace FreeCoding {
     export interface Props {
         section: { [key: string]: any }
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
@@ -29,7 +28,7 @@ export namespace Experiment {
         codingItems: JSX.Element[]
     }
 }
-export class Experiment extends React.Component<Experiment.Props, Experiment.State> {
+export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.State> {
     timeout: { [pid: string]: string } = {}
     model: { [key: string]: string } = {}
     ppids: { [key: string]: string } = {}
@@ -67,7 +66,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
     addSubmittedCodingIssue = (issueIndex: string) => {
         this.submittedCodingIssue.push(issueIndex)
     }
-    constructor(props: Readonly<Experiment.Props>) {
+    constructor(props: Readonly<FreeCoding.Props>) {
         super(props)
         this.state = {
             codingItems: []
@@ -92,7 +91,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
                 dataType: 'json',
                 contentType: "text/plain",
-                data: JSON.stringify({ ppid: _this.props.section.ppid }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
+                data: JSON.stringify({ ppid: "" }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
                 success: function (data) {
                     // alert(JSON.stringify(data))
                     console.log(JSON.stringify(data))
@@ -163,6 +162,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
     async componentDidMount() {
         let _this = this
+        this.props.openShell()
         $(document).ready(
             () => {
                 $(document).on("click", ".section." + _this.props.section.sid, (e) => {
@@ -192,18 +192,6 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         }
                     }
                 )
-                $("#setQueue" + this.props.section.sid).click(
-                    () => {
-                        // let index = $("#codingInfoArea" + this.props.section.sid).attr("title")
-                        // if (_this.currentFocusCodingIndex[0] != index) {
-                        //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
-                        //     return
-                        // }
-                        _this.props.setQueue()
-                        _this.props.say("已设为排队模式")
-                        $("#setQueue" + this.props.section.sid).hide()
-                    }
-                )
                 $(document).on("click", ".list-group-item", (e) => {
                     $(".list-group-item").each((i, _this) => {
                         $(_this).removeClass("list-group-item-primary")
@@ -228,112 +216,75 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     contentType: "text/plain",
                     data: JSON.stringify({ pid: _this.pids.join().trim() }),
                     success: function (data) {
-                        // alert(JSON.stringify(data))
-                        if (data.code != "0") {
-                            _this.props.outputResult(data.message)
-                            window.location.replace("http://linklab.tinylink.cn")
-                            return
-                        }
-                        let tmp = [data.data]
-                        for (let x of tmp) {
-                            $(`.onlineCount.${x.pid}>span`).text(x.count)
-                            _this.codingStatus[x.pid] = x.status
-                            if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
-
-                                continue
-                            }
-                            let status = _this.statusCode[parseInt(x.status)];
-                            if (status == 'JUDGING') {
-                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
-                                let sp = $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next()
-                                console.log("judging.....................................")
-                                sp.attr("class", "oi oi-ellipses")
-                                sp.show()
-                                _this.judgeStatus[x.pid] = '1'
-                            } else if (status == 'ACCEPT') {
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
-                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
-                                if (_this.judgeStatus[x.pid] == '1') { //9.27
-                                    if (x.wrongInfo != "")
-                                        _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("ACCEPT"+`(${x.score})`, "rightAnswer")
-                                    _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
-                                    _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
-                                }
-                            } else if (status == 'WRONG_ANSWER') {
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
-                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
-                                // alert(_this.judgeStatus[x.pid])
-                                if (_this.judgeStatus[x.pid] == '1') {
-                                    if (x.wrongInfo != "")
-                                        _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("WRONG_ANSWER"+`(${x.score})`, "wrongAnswer")
-                                    _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
-                                    _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
-                                }
-                            } else if (status == 'TIMEOUT') {
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
-                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
-                            } else {
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
-                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
-                            }
-                        }
-
                     }
                 }
+
             )
 
-        }, 2000)
+        }, 5000)
         while (this.state.codingItems.length == 0)
             await new Promise((resolve) => {
                 setTimeout(() => {
                     resolve()
                 }, 300)
             })
-        this.context.showTheDefaultExperimentView()
+        this.context.showTheDefaultFreeCodingView()
     }
-
 
     render(): JSX.Element {
         return (
-            <div>
-                <div className="title_timer"><h4 className={`section experiment`}>编程测试</h4><span id='timer'></span></div>
-                <div className={`contentsAndInfos ${this.props.section.sid} container`}>
-                    <div className="row">
-                        <div className="contents col-5">
-                            <div className="row">
-                                <div className={`coding${this.props.section.sid} col-12`}>
-                                    <ul className="list-group">
-                                        {this.state.codingItems.length == 0 ? "" : this.codingItems}
-                                    </ul>
-                                </div>
-                            </div>
+            <div style={{ height: "100%" }}>
+                <div className="title_timer" style={{ height: "10%" }}><h4 className={`section experiment`}>自由编程</h4><span id='timer'></span></div>
+                <div className="row col-12" style={{ height: "80%" }} >
+                    <div className="col-12" style={{ fontSize: "30px", height: "20%" }}>
+                        项目:
+                        <div style={{ left: '100px', position: "absolute", fontSize: "28px" }} >
+                            这是一个关于...的项目
                         </div>
-                        <div className={`codingInfos ${this.props.section.sid} col-7`} >
-                            <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell}
-                                codeInfoType="coding" config={this.props.config} roles={this.role} sid={"experiment"}
-                                say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex}
-                                issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
-                                postSrcFile={this.props.postSrcFile}
-                                addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
+
+                        <img src="http://5b0988e595225.cdn.sohucs.com/images/20180721/0f6e106b88544c0b8b91fbf7d196898d.jpeg"
+                            style={{ "position": "absolute", "width": "200px", height: "200px", top: '0px', right: '0px', paddingLeft: "10px" }}></img>
+                    </div>
+                    <div className="col-12" style={{ fontSize: "30px", height: "30%" }}>
+                        可用设备：
+                     <div style={{ left: '100px', position: "absolute", fontSize: "28px" }} >
+                            <li>tinylink_lora</li>
+                            <li>esp32</li>
+                            <li>tinylink_platform</li>
+                            <li>developerkit</li>
                         </div>
                     </div>
+
+                    <div className="col-12" style={{ fontSize: "30px", height: "35%" }}>
+                        Config.json:
+                        <div style={{ left: '100px', height: '100%', width: '70%', position: "absolute", fontSize: "28px", }} >
+                            <textarea style={{
+                                height: '100%', width: '100%', position: "absolute", fontSize: "8px",
+                                borderStyle: "solid", borderWidth: "3px", borderRadius: "5px"
+                            }} >
+                                {`[
+    {
+        “
+        ProjectName”: “Gateway”,
+        “DeviceType”: “LoRa - gateway”,
+        “CompileType”: “Arduino”“ DeviceNum”: “1”
+    }, {
+        “
+        ProjectName”: “Node”,
+        “DeviceType”: “LoRa - node”,
+        “CompileType”: “Arduino”,
+        “DeviceNum”: “3”
+    }
+]`}
+                            </textarea>
+                        </div>
+                    </div>
+
                 </div>
+                <button className="btn btn-primary" style={{ position: 'absolute', bottom: '5px', right: '0%' }}>提交</button>
             </div>
+
         )
     }
 }
-Experiment.contextType = MyContext
+FreeCoding.contextType = MyContext

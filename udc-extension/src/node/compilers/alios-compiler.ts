@@ -84,24 +84,24 @@ export class AliosCompiler {
                         }
                         else {
                             _this.outputResult(`program without queue`)
-                            _this.udc.program_device(path.join(rootDir, dirName, 'sketch.ino.hex'), "0x10000", _this.devs[index], pid).then(
-                                (res) => {
-                                    if (res) {
-                                        _this.outputResult("program scc")
-                                        return new Promise((resolve) => {
-                                            resolve('scc')
-                                            Logger.info("process sucess")
-                                        })
-                                    }
-                                    else {
-                                        _this.outputResult("program failed")
-                                        return new Promise((resolve) => {
-                                            resolve("faild")
-                                            Logger.info("process faild")
-                                        })
-                                    }
-                                }
-                            )
+                            // _this.udc.program_device(path.join(rootDir, dirName, 'sketch.ino.hex'), "0x10000", _this.devs[index], pid).then(
+                            //     (res) => {
+                            //         if (res) {
+                            //             _this.outputResult("program scc")
+                            //             return new Promise((resolve) => {
+                            //                 resolve('scc')
+                            //                 Logger.info("process sucess")
+                            //             })
+                            //         }
+                            //         else {
+                            //             _this.outputResult("program failed")
+                            //             return new Promise((resolve) => {
+                            //                 resolve("faild")
+                            //                 Logger.info("process faild")
+                            //             })
+                            //         }
+                            //     }
+                            // )
 
                         }
 

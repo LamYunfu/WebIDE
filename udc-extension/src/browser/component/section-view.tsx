@@ -215,23 +215,17 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         _this.pidQueueInfo[item.pid] = {}
                         let tmp = {}
                         // { [pid: string]: { loginType: string, timeout: string, model: string, waitID: string, fns?: string, dirName?: string } } = {}
-                        if (item.deviceRole[0] == 'null') {
-                            _this.loginType[`${item.pid}`] = 'adhoc'
-                            _this.model[`${item.pid}`] = 'any'
-                            tmp = { ...tmp, loginType: 'adhoc', model: 'any' }
-                        }
-                        else if (item.deviceRole.length == 1) {
+                        if (item.deviceAmount == "1") {
                             // _this.loginType[`${item.pid}`] = 'fixed'
-                            _this.model[`${item.pid}`] = item.deviceType
                             _this.loginType[`${item.pid}`] = 'adhoc'
-                            tmp = { ...tmp, loginType: 'adhoc', model: item.deviceType }
-                            // _this.model[`${item.pid}`] = 'any'
-                        }
-                        else if (item.deviceRole.length > 1) {
-                            _this.loginType[`${item.pid}`] = 'group'
                             _this.model[`${item.pid}`] = item.deviceType
+                            tmp = { ...tmp, loginType: 'adhoc', model: item.deviceType }
+                        }
+                        else {
+                            _this.loginType[`${item.pid}`] = 'queue'
                             _this.role[`${item.pid}`] = item.deviceRole
-                            tmp = { ...tmp, loginType: 'group', model: item.deviceType }
+                            _this.model[`${item.pid}`] = item.deviceType
+                            tmp = { ...tmp, loginType: 'queue', model: item.deviceType }
                         }
                         // alert(item.timeout)
                         _this.timeout[item.pid] = item.timeout
@@ -327,7 +321,8 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 $(document).off('click', ".optionItem." + _this.props.sid)
                 $(document).on('click', ".optionItem." + _this.props.sid,
                     (e) => {
-                        $('.selectPanel').css("box-shadow", "black 5px 5px 5px")
+                        if (_this.context.getViewState())
+                            $('.selectPanel').css("box-shadow", "black 5px 5px 5px")
                         console.log("click.............................")
                         if ($(".selectPanel").hasClass("col-12")) {
                             $(".selectPanel").removeClass("col-12")
@@ -417,6 +412,11 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         // for (let x of _this.pids) {
                         //     console.log("pid:" + x + "!")
                         // }
+                        if (data.code != "0") {
+                            _this.props.outputResult(data.message)
+                            window.location.replace("http://linklab.tinylink.cn")
+                            return
+                        }
                         let tmp = data.problem
                         for (let x of tmp) {
                             let exeTag = _this.currentFocusCodingIndex[0] == x.pid
@@ -443,7 +443,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("ACCEPT", "rightAnswer")
+                                    _this.props.outputResult("ACCEPT"+`(${x.score})`, "rightAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
@@ -458,7 +458,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("WRONG_ANSWER", "wrongAnswer")
+                                    _this.props.outputResult("WRONG_ANSWER"+`(${x.score})`, "wrongAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
@@ -483,7 +483,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 }
             )
 
-        }, 5000)
+        }, 2000)
 
         $(document).ready(
             () => {

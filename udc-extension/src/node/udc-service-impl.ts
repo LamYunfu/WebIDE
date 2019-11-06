@@ -66,8 +66,8 @@ export class UdcServiceImpl implements UdcService {
     program(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         return new Promise<Boolean>((resolve, rejects) => {
             // console.log(filepath, " ", devstr);
-            let result = this.udcTerminal.program_device(filepath, address, devstr, pid);
-            resolve(result);
+            // let result = this.udcTerminal.program_device(filepath, address, devstr, pid);
+            // resolve(result);
         });
     }
 

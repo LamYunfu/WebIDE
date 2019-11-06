@@ -729,112 +729,18 @@ export class UdcTerminal {
     //     }
     //     // return (this.cmd_excute_state === 'done' ? true : false);
     // }
-    async program_device(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
+    async program_device(pid: string, setJson: string): Promise<Boolean> {
+        let _this = this
+        // let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
+        _this.outputResult('burning......')
+        this.send_packet(Packet.MULTI_DEVICE_PROGRAM, setJson);
+        await this.wait_cmd_excute_done(270000);
+        return (this.cmd_excute_state === 'done' ? true : false);
+
+    }
+    async program_device_scene(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
         let _this = this
         let { timeout, model, waitID } = this.pidQueueInfo[pid]
-        let uploadResult = "scc"
-        let configResult = await new Promise((resolve) => {
-            Logger.info("configuring burning program")
-            let hash = crypto.createHash("sha1")
-            let buff = fs.readFileSync(filepath)
-            // let hashVal = hash.update(buff).digest("hex")
-            let hashVal = hash.update(buff).digest("hex")
-            Logger.info("hex hashval:" + hashVal)
-            let configRequest = http.request({//
-                method: "POST",
-                hostname: '47.97.253.23',
-                port: '8081',
-                path: "/config",
-                headers: {
-                    'Content-Type': "application/json"
-                }
-            }, (mesg) => {
-                let bf = ""
-                mesg.on("data", (b: Buffer) => {
-                    bf += b.toString("utf8")
-                })
-                mesg.on("end", () => {
-                    Logger.info("bf:" + bf)
-                    let res: any = JSON.parse(bf)
-                    if (!res.result) {
-                        Logger.info("config burning success")
-                        _this.outputResult("config burning success")
-                        Logger.info(res.status)
-                        resolve("scc")
-                    }
-                    else {
-                        Logger.info(res.status)//已经存在
-                        resolve("exist")
-                    }
-
-
-                })
-            })
-            configRequest.write(JSON.stringify({
-                "filehash": hashVal
-            }))
-            configRequest.end()
-        })
-
-        if (configResult == "scc") {
-            let fm = new FormData()
-            Logger.info("uploading hex file")
-            uploadResult = await new Promise(async (resolve) => {
-                let uploadRequest = http.request({//传zip
-                    method: "POST",
-                    hostname: '47.97.253.23',
-                    port: '8081',
-                    path: "/upload",
-                    // headers: {
-                    //     "Accept": "application/json",
-                    //     "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
-                    // },
-                    headers: fm.getHeaders()
-                }, (mesg) => {
-                    let bf = ""
-                    Logger.info("upload statuscode:" + mesg.statusCode)
-                    mesg.on("data", (b: Buffer) => {
-                        Logger.info("data comming")
-                        bf += b.toString("utf8")
-                    })
-                    mesg.on("error", () => {
-                        resolve("err")
-                    })
-                    mesg.on("end", () => {
-                        Logger.info("bf:" + bf)
-                        let res: any = JSON.parse(bf)
-                        if (res.result) {
-                            resolve("scc")
-                        }
-                        else {
-                            _this.outputResult(res.msg)
-                            resolve(res.msg)
-                        }
-                    })
-                })
-
-                // let blob = fs.readFileSync(filepath)
-                let st = fs.createReadStream(filepath)
-                Logger.info("append file")
-                // fm.append("file", blob, filepath.split("/").pop())
-                fm.append("file", st, filepath.split("/").pop())
-                fm.pipe(uploadRequest)
-                Logger.info("file append ok")
-            })
-        }
-        else {
-            // _this.outputResult("file exist ")
-        }
-
-        if (uploadResult != "scc") {
-            Logger.info("uploading zip file err")
-            _this.outputResult("hexfile upload error")
-            return false
-        }
-        else {
-            Logger.info("uploading zip file scc")
-            _this.outputResult("hexfile upload success")
-        }
         let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
         _this.outputResult('burning......')
         this.send_packet(Packet.DEVICE_WAIT, content);

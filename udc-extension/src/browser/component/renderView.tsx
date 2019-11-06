@@ -1,5 +1,6 @@
 import React = require("react");
 import { Experiment } from "./experiment-view"
+import{FreeCoding} from './freecoding-view'
 import { Chapter } from './chapter-view'
 import { Scene } from './scene-view'
 import * as $ from "jquery"
@@ -50,7 +51,8 @@ export namespace View {
         qzid: string,
         type: string,//optionChoice type
         defaultOptionViewToogle: boolean,
-        redo: boolean
+        redo: boolean,
+        viewState: boolean
     }
 }
 export class View extends React.Component<View.Props, View.State>{
@@ -70,7 +72,8 @@ export class View extends React.Component<View.Props, View.State>{
             qzid: "",
             type: "SC",
             defaultOptionViewToogle: false,
-            redo: false
+            redo: false,
+            viewState: false
         }
     }
     vid = ""
@@ -149,7 +152,7 @@ export class View extends React.Component<View.Props, View.State>{
         this.typeDataPool[this.type][this.vid] = chapterData
     }
 
-    componentWillMount() {
+    async componentWillMount() {
 
         let _this = this
         $.ajax(
@@ -236,6 +239,13 @@ export class View extends React.Component<View.Props, View.State>{
 
                             break
                         }
+                        case "5": {
+                            _this.title = data.data.title
+                            _this.ppid = data.data.ppid
+                            console.log(`ppid.......................................${_this.ppid}`)
+
+                            break
+                        }
                     }
                     _this.setState((state) => ({
                         ajaxNotFinish: false
@@ -247,12 +257,14 @@ export class View extends React.Component<View.Props, View.State>{
             })
 
         console.log("rendering......................................")
-
+        let viewState = await this.props.getLocal("viewState", {})
+        if (viewState["viewState"] == undefined)
+            viewState['viewState'] = false
         this.setState((state) => ({
             ...state,
-            ajaxNotFinish: true
+            ajaxNotFinish: true,
+            viewState: viewState["viewState"]
         }))
-
     }
     toggleRedoButton() {
         if ($(".newRedoButton:visible").length != 0) {
@@ -421,6 +433,11 @@ export class View extends React.Component<View.Props, View.State>{
             $(".newSubmitButton").trigger("click")
             $(".newSaveButton").trigger("click")
         })
+        $(document).on("click", ".displayStyle", async () => {
+            await this.props.setLocal("viewState", { viewState: !this.state.viewState })
+            parent.location.reload()
+            // alert("ok")
+        })
         $(document).on("click", ".last", () => {
             let csid = _this.state.sid
             let pid = _this.state.pid
@@ -514,10 +531,14 @@ export class View extends React.Component<View.Props, View.State>{
             // }
         })
         $(document).on("mouseenter", ".sections", () => {
+            if (this.state.viewState == false)
+                return
             // alert('enter')
             _this.clickTime = 9999999999999
         })
         $(document).on("mouseleave", ".sections ", async () => {
+            if (this.state.viewState == false)
+                return
 
             _this.clickTime = new Date().getTime()
 
@@ -832,143 +853,277 @@ export class View extends React.Component<View.Props, View.State>{
 
     }
 
-
     render(): JSX.Element {
         let _this = this
         return (
             this.state.viewType == "1" || this.state.viewType == "4" ?//选择 &&考试
-                <div style={{ height: "100%", zIndex: 0 }}>
-                    <div className="title_timer col-12"><h4> {_this.title}</h4><span id='timer'></span></div>
-                    <MyContext.Provider value={{
-                        setTypeData: (sid: string, types: any) => {
-                            _this.typeData[sid] = types
-                        },
-                        showTheDefaultExperimentView: () => {
-                            _this.showTheDefaultExperimentView()
-                        },
-                        showTheDefaultOptionView: () => {
-                            _this.showTheDefaultOptionView()
-                        },
-                        setClickTime: () => {
-                            _this.clickTime = new Date().getTime()
-                        },
-                        setQuestionPool: (section: string, data: any) => {
-                            _this.questionPool[section] = data
-                        },
-                        setOptionDescription: (a: string) => {
-                            _this.setOptionDescription(a)
-                        },
-                        setOptionChoicesDescription: (a: JSX.Element[]) => {
-                            _this.setOptionChoicesDescription(a)
-                        },
-                        setState: (tmp: object) => {
-                            _this.setState({
-                                ...tmp
-                            })
+                this.state.viewState == true ?
+                    <div style={{ height: "100%", zIndex: 0 }}>
+                        <div className="title_timer col-12" ><h4> {_this.title}</h4><span id='timer'></span></div>
+                        <button className="displayStyle" style={{
+                            position: 'fixed', top: '10%', right: '50px', borderRadius: '10px',
+                            backgroundColor: 'silver'
+                        }}>change style</button>
+                        <MyContext.Provider value={{
+                            setTypeData: (sid: string, types: any) => {
+                                _this.typeData[sid] = types
+                            },
+                            getViewState: () => {
+                                return _this.state.viewState
+                            },
+                            showTheDefaultExperimentView: () => {
+                                _this.showTheDefaultExperimentView()
+                            },
+                            showTheDefaultOptionView: () => {
+                                _this.showTheDefaultOptionView()
+                            },
+                            setClickTime: () => {
+                                _this.clickTime = new Date().getTime()
+                            },
+                            setQuestionPool: (section: string, data: any) => {
+                                _this.questionPool[section] = data
+                            },
+                            setOptionDescription: (a: string) => {
+                                _this.setOptionDescription(a)
+                            },
+                            setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                _this.setOptionChoicesDescription(a)
+                            },
+                            setState: (tmp: object) => {
+                                _this.setState({
+                                    ...tmp
+                                })
 
-                        },
-                        getState: (key: string) => {
-                            let tmp: any = this.state
-                            return tmp[key]
-                        },
-                        get sidArray() {
-                            return _this.state.sidArray
-                        },
-                        props: _this.props
+                            },
+                            getState: (key: string) => {
+                                let tmp: any = this.state
+                                return tmp[key]
+                            },
+                            get sidArray() {
+                                return _this.state.sidArray
+                            },
+                            props: _this.props
 
-                    }}>
-                        <div className="selectPanel row col-3" style={{
-                            minWidth: '450px', height: "90%",
-                            backgroundColor: "#262527", left: "10px",
-                            zIndex: 1, position: "absolute",
-                            boxShadow: '5px 5px 5px black',
-                            paddingLeft: '0px'
                         }}>
-                            <div className="col-12" style={{
-                                height: "98%", overflow: "scroll",
-
-                                backgroundColor: "#262527", zIndex: 1,
+                            <div className="selectPanel row col-3" style={{
+                                minWidth: '450px', height: "90%",
+                                backgroundColor: "#262527", left: "10px",
+                                zIndex: 1, position: "absolute",
+                                boxShadow: '5px 5px 5px black',
+                                paddingLeft: '0px'
                             }}>
-                                <Chapter
-                                    sectionData={_this.sectionData}
-                                    viewType={_this.type}
-                                    programSingleFile={_this.props.programSingleFile}
-                                    setLocal={_this.props.setLocal}
-                                    getLocal={_this.props.getLocal}
-                                    config={_this.props.config}
-                                    openShell={_this.props.openShell}
-                                    closeTables={_this.props.closeTabs}
-                                    initPidQueueInfo={_this.props.initPidQueueInfo}
-                                    setQueue={_this.props.setQueue}
-                                    vid={_this.vid}
-                                    chapterData={_this.typeDataPool[_this.type][_this.vid]}
-                                    setChapterData={_this.setChapterData}
-                                    sections={_this.sections}
-                                    outputResult={_this.props.outputResult}
-                                    say={_this.props.say}
-                                    gotoVideo={_this.props.gotoVideo}
-                                    disconnect={_this.props.disconnect}
-                                    connect={_this.props.connect}
-                                    callUpdate={_this.props.callUpdate}
-                                    postSrcFile={_this.props.postSrcFile}
-                                />
+                                <div className="col-12" style={{
+                                    height: "98%", overflow: "scroll",
+
+                                    backgroundColor: "#262527", zIndex: 1,
+                                }}>
+                                    <Chapter
+                                        sectionData={_this.sectionData}
+                                        viewType={_this.type}
+                                        programSingleFile={_this.props.programSingleFile}
+                                        setLocal={_this.props.setLocal}
+                                        getLocal={_this.props.getLocal}
+                                        config={_this.props.config}
+                                        openShell={_this.props.openShell}
+                                        closeTables={_this.props.closeTabs}
+                                        initPidQueueInfo={_this.props.initPidQueueInfo}
+                                        setQueue={_this.props.setQueue}
+                                        vid={_this.vid}
+                                        chapterData={_this.typeDataPool[_this.type][_this.vid]}
+                                        setChapterData={_this.setChapterData}
+                                        sections={_this.sections}
+                                        outputResult={_this.props.outputResult}
+                                        say={_this.props.say}
+                                        gotoVideo={_this.props.gotoVideo}
+                                        disconnect={_this.props.disconnect}
+                                        connect={_this.props.connect}
+                                        callUpdate={_this.props.callUpdate}
+                                        postSrcFile={_this.props.postSrcFile}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="expander row col-3" style={{
-                            width: '30px', height: "30px", fontSize: '30px', color: "blue",
-                            left: "10px", backgroundColor: "rgb(38, 37, 39,0)", zIndex: 1, position: "absolute", bottom: "50%"
-                        }}>
-                            <span className="oi oi-chevron-left"></span>
-                        </div>
-                        <div className="stateProfile row col-3" style={{
-                            minWidth: '450px', height: "30px", fontSize: "20px",
-                            // color: "black",
-                            left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", top: "5%", display: "none"
-                        }}>
-                            {/* {`第${_this.state.sidIndex + 1}部分，`} */}
-                            {/* {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidIndex + 1}`).text()} 选择题${_this.state.pid}` : `error`} */}
-                            {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidArray[_this.state.sidIndex]}`).text()} 选择题${_this.state.pid}` : `error`}
-                        </div>
+                            <div className="expander row col-3" style={{
+                                width: '30px', height: "30px", fontSize: '30px', color: "blue",
+                                left: "10px", backgroundColor: "rgb(38, 37, 39,0)", zIndex: 1, position: "absolute", bottom: "50%"
+                            }}>
+                                <span className="oi oi-chevron-left"></span>
+                            </div>
+                            <div className="stateProfile row col-3" style={{
+                                minWidth: '450px', height: "30px", fontSize: "20px",
+                                // color: "black",
+                                left: "10px", backgroundColor: "rgba(0,0,0,0)", zIndex: 1, position: "absolute", top: "5%", display: "none"
+                            }}>
+                                {/* {`第${_this.state.sidIndex + 1}部分，`} */}
+                                {/* {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidIndex + 1}`).text()} 选择题${_this.state.pid}` : `error`} */}
+                                {(_this.state.sidIndex + 1) > 0 ? `${$(`.section${_this.state.sidArray[_this.state.sidIndex]}`).text()} 选择题${_this.state.pid}` : `error`}
+                            </div>
 
-                        <div className="row col-12" style={{
-                            height: "90%", zIndex: 0, margin: 0,
-                            padding: 0,
-                        }}>
-                            {/* <hr /> */}
-                            {/* <div className="row col-3" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "100%" }} >
+                            <div className="row col-12" style={{
+                                height: "90%", margin: 0,
+                                padding: 0,
+                            }}>
+                                {/* <hr /> */}
+                                {/* <div className="row col-3" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "100%" }} >
                 
                             </div> */}
-                            <div className="optionDescription col-6" style={{
-                                backgroundColor: "#555555",
-                                color: "white", float: "left", fontSize: `26px`, height: "100%"
-                            }} >
-                                {_this.state.optionDescription}
+                                <div className="optionDescription col-6" style={{
+                                    backgroundColor: "#555555",
+                                    color: "white", float: "left", fontSize: `26px`, height: "100%"
+                                }} >
+                                    {_this.state.optionDescription}
 
-                            </div>
-                            <div className="optionChoices col-6" style={{
-                                backgroundColor: "##262527", color: "white",
-                                fontSize: `20px`, float: "left", height: "100%"
-                            }}>
-                                <div className="choices" > {_this.state.optionChoicesDecription}</div>
-                                <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
-                                <button className="last btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>上一个</button>
-                                <button className="next btn btn-primary" style={{ left: '90px', bottom: '10px', position: "absolute" }}>下一个</button>
-                                {this.state.viewType == "1" ?
-                                    <span>
-                                        <button className='newRedoButton btn btn-primary' style={{ right: '5px', bottom: '10px', position: "absolute" }}> 重做</button>
-                                        <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
-                                    </span>
-                                    :
-                                    this.state.isLast ? <button className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>//考试模式
+                                </div>
+                                <div className="optionChoices col-6" style={{
+                                    backgroundColor: "##262527", color: "white",
+                                    fontSize: `20px`, float: "left", height: "100%"
+                                }}>
+                                    <div className="choices" > {_this.state.optionChoicesDecription}</div>
+                                    <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
+                                    <button className="last btn btn-primary" style={{ left: '5px', bottom: '10px', position: "absolute" }}>上一个</button>
+                                    <button className="next btn btn-primary" style={{ left: '90px', bottom: '10px', position: "absolute" }}>下一个</button>
+                                    {this.state.viewType == "1" ?
+                                        <span>
+                                            <button className='newRedoButton btn btn-primary' style={{ right: '5px', bottom: '10px', position: "absolute" }}> 重做</button>
+                                            <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
+                                        </span>
                                         :
-                                        <button className="newSaveButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>保存</button>
-                                }
-                            </div>
+                                        this.state.isLast ? <button className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>//考试模式
+                                            :
+                                            <button className="newSaveButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>保存</button>
+                                    }
+                                </div>
 
-                        </div>
-                    </MyContext.Provider >
-                </div >
+                            </div>
+                        </MyContext.Provider >
+                    </div >
+                    //view2d
+                    :
+                    <div style={{ height: "100%" }}>
+                        <div className="title_timer col-12" style={{ height: "10%" }}><h4> {_this.title}</h4><span id='timer'></span></div>
+                        <button className="displayStyle" style={{
+                            position: 'fixed', top: '10%', right: '50px', borderRadius: '10px',
+                            backgroundColor: 'silver'
+                        }}>change style</button>
+                        <MyContext.Provider value={{
+                            setTypeData: (sid: string, types: any) => {
+                                _this.typeData[sid] = types
+                            },
+                            getViewState: () => {
+                                return _this.state.viewState
+                            },
+                            showTheDefaultExperimentView: () => {
+                                _this.showTheDefaultExperimentView()
+                            },
+                            showTheDefaultOptionView: () => {
+                                _this.showTheDefaultOptionView()
+                            },
+                            setClickTime: () => {
+                                _this.clickTime = new Date().getTime()
+                            },
+                            setQuestionPool: (section: string, data: any) => {
+                                _this.questionPool[section] = data
+                            },
+                            setOptionDescription: (a: string) => {
+                                _this.setOptionDescription(a)
+                            },
+                            setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                _this.setOptionChoicesDescription(a)
+                            },
+                            setState: (tmp: object) => {
+                                _this.setState({
+                                    ...tmp
+                                })
+
+                            },
+                            getState: (key: string) => {
+                                let tmp: any = this.state
+                                return tmp[key]
+                            },
+                            get sidArray() {
+                                return _this.state.sidArray
+                            },
+                            props: _this.props
+
+                        }}>
+                            <div className="row col-12" style={{ height: '90%' }}>
+                                <div className="selectPanel row col-4" style={{
+                                    minWidth: '450px', height: "98%",
+                                    backgroundColor: "#262527", left: "10px",
+                                    //   position: "absolute",
+                                    paddingLeft: '0px'
+                                }}>
+                                    <div className="col-12" style={{
+                                        height: "100%", overflow: "scroll",
+
+                                        backgroundColor: "#262527"
+                                    }}>
+                                        <Chapter
+                                            sectionData={_this.sectionData}
+                                            viewType={_this.type}
+                                            programSingleFile={_this.props.programSingleFile}
+                                            setLocal={_this.props.setLocal}
+                                            getLocal={_this.props.getLocal}
+                                            config={_this.props.config}
+                                            openShell={_this.props.openShell}
+                                            closeTables={_this.props.closeTabs}
+                                            initPidQueueInfo={_this.props.initPidQueueInfo}
+                                            setQueue={_this.props.setQueue}
+                                            vid={_this.vid}
+                                            chapterData={_this.typeDataPool[_this.type][_this.vid]}
+                                            setChapterData={_this.setChapterData}
+                                            sections={_this.sections}
+                                            outputResult={_this.props.outputResult}
+                                            say={_this.props.say}
+                                            gotoVideo={_this.props.gotoVideo}
+                                            disconnect={_this.props.disconnect}
+                                            connect={_this.props.connect}
+                                            callUpdate={_this.props.callUpdate}
+                                            postSrcFile={_this.props.postSrcFile}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="row col-8" style={{
+                                    height: "100%", margin: 0,
+                                    paddingLeft: '70px',
+                                }}>
+                                    {/* <hr /> */}
+                                    {/* <div className="row col-3" style={{ backgroundColor: "#f8fafc", color: "black", float: "left", fontSize: `20px`, height: "100%" }} >
+                
+                            </div> */}
+
+                                    <div className="optionChoices col-12" style={{
+                                        backgroundColor: "##262527", color: "white",
+                                        fontSize: `20px`, float: "left", height: "100%",
+                                        // left: '450px'
+
+
+                                    }}>
+                                        <div style={{
+                                            fontSize: '30px'
+                                        }}>
+                                            {_this.state.optionDescription}
+                                        </div>
+                                        <div className="choices" style={{ paddingTop: "20px", width: "98%" }}> {_this.state.optionChoicesDecription}</div>
+                                        <div className="resultBoard" style={{ textAlign: "center", fontSize: `30px`, marginTop: `80px` }}></div>
+                                        <button className="last btn btn-primary" style={{ left: '25px', bottom: '10px', position: "absolute" }}>上一个</button>
+                                        <button className="next btn btn-primary" style={{ left: '105px', bottom: '10px', position: "absolute" }}>下一个</button>
+                                        {this.state.viewType == "1" ?
+                                            <span>
+                                                <button className='newRedoButton btn btn-primary' style={{ right: '5px', bottom: '10px', position: "absolute" }}> 重做</button>
+                                                <button className="newSubmitButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>
+                                            </span>
+                                            :
+                                            this.state.isLast ? <button className="newSubmitAll btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>提交</button>//考试模式
+                                                :
+                                                <button className="newSaveButton btn btn-primary" style={{ right: '5px', bottom: '10px', position: "absolute" }}>保存</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </MyContext.Provider >
+                    </div>
 
                 :
                 this.state.viewType == "2" ?//实验题
@@ -1076,6 +1231,55 @@ export class View extends React.Component<View.Props, View.State>{
                             </div>
                         </MyContext.Provider >
                         :
+                        this.state.viewType == "5"?
+                        <MyContext.Provider value={{
+                            showTheDefaultFreeCodingView: () => {
+                              
+                            },
+                            setClickTime: () => {
+                                _this.clickTime = new Date().getTime()
+                            },
+                            setOptionDescription: (a: string) => {
+                                _this.setOptionDescription(a)
+                            },
+                            setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                _this.setOptionChoicesDescription(a)
+                            },
+                            setState: (tmp: object) => {
+                                _this.setState({
+                                    ...tmp
+                                })
+    
+                            },
+                            getState: (key: string) => {
+                                let tmp: any = this.state
+                                return tmp[key]
+                            },
+                            props: _this.props
+    
+                        }}>
+                                    {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+                                    <FreeCoding
+                                        programSingleFile={_this.props.programSingleFile}
+                                        config={_this.props.config}
+                                        openShell={_this.props.openShell}
+                                        initPidQueueInfo={_this.props.initPidQueueInfo}
+                                        closeTabs={_this.props.closeTabs}
+                                        setQueue={_this.props.setQueue}
+                                        section={{ ppid: [_this.ppid], sid: "experiment" }}
+                                        outputResult={_this.props.outputResult}
+                                        say={_this.props.say}
+                                        setCookie={_this.props.setCookie}
+                                        disconnect={_this.props.disconnect}
+                                        connect={_this.props.connect}
+                                        callUpdate={_this.props.callUpdate}
+                                        postSrcFile={_this.props.postSrcFile}
+                                    />
+                            
+                        </MyContext.Provider >
+                        :
+                        
+                        
                         <div></div>
         )
     }
