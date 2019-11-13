@@ -579,17 +579,23 @@ export class UdcTerminal {
         tmp[type] = this.dataStorage[type]
         return new Promise(res => res(JSON.stringify(tmp)))
     }
-    async connect(loginType: string, model: string, pid: string, timeout: string = `20`): Promise<Boolean | string> {
+    async connect(loginTypeNotUse: string, modelNotUse: string, pid: string, timeout: string = `20`): Promise<Boolean | string> {
         // loginType = LOGINTYPE.QUEUE
         // model = `alios-esp32`
+        Logger.info("start connecting backending "+pid+`:${timeout}`)
+        let { loginType ,model} = this.pidQueueInfo[pid]
+        if (loginType == undefined || loginType == "") {
+            Logger.info("the backend doesn't config now!")
+            return false
+        }
         Logger.val(`timeout: ${timeout}`)
         this.pidQueueInfo[pid] = {
             ...  this.pidQueueInfo[pid],
             // fns: JSON.stringify(["helloworld", "helloworld", 'README.md', 'ucube.py']),
             // dirName: "helloworld",
             // loginType: loginType,
-            loginType: loginType,
-            model: model,
+            // loginType: loginType,
+            // model: model,
             waitID: (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString()
         }
         if (this.currentPid == pid && await this.is_connected) {

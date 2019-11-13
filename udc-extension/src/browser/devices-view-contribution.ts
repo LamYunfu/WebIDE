@@ -30,6 +30,7 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
     }
     async onStart(app: FrontendApplication) {
         this.applicationState.onStateChanged(async (e) => {
+            
             if (e == 'initialized_layout') {
                 console.log(" close tabs")
                 await this.applicationShell.closeTabs("main")
@@ -49,7 +50,6 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
             // }
 
         })
-
         // await this.shell.collapsePanel("main")
     }
 

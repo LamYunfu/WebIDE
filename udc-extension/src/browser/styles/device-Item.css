@@ -135,7 +135,7 @@ span[class*=section] {
     display: none;
 }
 
-.p-Widget>ul>li:nth-child(8) {
+/* .p-Widget>ul>li:nth-child(8) {
     display: none
 }
 
@@ -145,7 +145,7 @@ span[class*=section] {
 
 .p-Widget>ul>li:nth-child(7) {
     display: none
-}
+} */
 
 .oi-check {
     color: green

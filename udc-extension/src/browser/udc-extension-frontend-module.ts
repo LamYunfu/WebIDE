@@ -1,4 +1,4 @@
-
+import { FileTreeWidget, FileTreeModel, FileTree } from '@theia/filesystem/lib/browser';
 import { UdcConsoleContribution } from './udc-console-contribution';
 import { DeviceViewDecoratorService, DeviceTreeDecorator } from './decorator-view-service';
 import { UdcWatcher } from './../common/udc-watcher';
@@ -37,6 +37,9 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     // bind(ApplicationShell).toSelf().inSingletonScope()//
     bind(FrontendApplicationContribution).toService(DeviceViewContribution);
     UdcConsoleContribution.bindContribution(bind);
+    bind(FileTreeWidget).toSelf().inSingletonScope();
+    bind(FileTreeModel).toSelf().inSingletonScope();
+    bind(FileTree).toSelf().inSingletonScope()
 });
 
 

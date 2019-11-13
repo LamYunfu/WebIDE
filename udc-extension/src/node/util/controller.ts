@@ -33,61 +33,7 @@ export class Controller {
         } = this.ut.getPidInfos(pid)
         let devType = getCompilerType(model)
         let _this = this
-        _this.ut.getIdleDeviceCount(pid)
-        let res = ""
-        res = await new Promise<string>((resolve) => {
-            setTimeout(() => {
-                resolve("get idle device count timeout")
-                _this.ut.events.removeAllListeners("goSim")
-                _this.ut.events.removeAllListeners("goDevice")
-            }, 3000)
-            _this.ut.events.once("goSim", () => {
-                if (getCompilerType(model) == 'alios') {
-                    resolve("fw")
-                    return
-                }
-                _this.ut.udcClient && _this.ut.udcClient.onConfigLog({ name: 'executeSelectPanel', passwd: "" })
-                _this.ut.events.removeAllListeners("goSim")
-                _this.ut.events.removeAllListeners("goDevice")
-                resolve("no idle device,what about tiny sim?")
-
-            })
-            _this.ut.events.once("goDevice", () => {
-                _this.ut.events.removeAllListeners("goSim")
-                _this.ut.events.removeAllListeners("goDevice")
-                resolve("fw")
-            })
-        })
-
-        if (res != "fw") {
-            this.ut.outputResult(res)
-            res = await new Promise<string>((resolve) => {
-                setTimeout(() => {
-                    resolve("get idle device count timeout")
-                    _this.events.removeAllListeners("dev_fw")
-                    _this.events.removeAllListeners("sim_rt")
-                }, 20000)
-                _this.events.once("simrt", () => {
-                    Logger.info("fw", "rt")
-                    _this.events.removeAllListeners("dev_fw")
-                    _this.events.removeAllListeners("sim_rt")
-                    resolve("rt")
-
-                })
-                _this.events.once("devfw", () => {
-                    Logger.info("fw", "fw")
-                    _this.events.removeAllListeners("devfw")
-                    _this.events.removeAllListeners("sim_rt")
-                    resolve("fw")
-                })
-            })
-
-        }
-
-        if (res != "fw") {
-            Logger.info("fail:" + res)
-            return "fail"
-        }
+     
         Logger.info("compiling")
         switch (loginType) {
             case "adhoc":
@@ -119,6 +65,61 @@ export class Controller {
                         if (res == "scc") {
                             // if (devType == "alios")
                             //     return true;
+                            _this.ut.getIdleDeviceCount(pid)
+                            let res = ""
+                            res = await new Promise<string>((resolve) => {
+                                setTimeout(() => {
+                                    resolve("get idle device count timeout")
+                                    _this.ut.events.removeAllListeners("goSim")
+                                    _this.ut.events.removeAllListeners("goDevice")
+                                }, 3000)
+                                _this.ut.events.once("goSim", () => {
+                                    if (getCompilerType(model) == 'alios') {
+                                        resolve("fw")
+                                        return
+                                    }
+                                    _this.ut.udcClient && _this.ut.udcClient.onConfigLog({ name: 'executeSelectPanel', passwd: "" })
+                                    _this.ut.events.removeAllListeners("goSim")
+                                    _this.ut.events.removeAllListeners("goDevice")
+                                    resolve("no idle device,what about tiny sim?")
+                    
+                                })
+                                _this.ut.events.once("goDevice", () => {
+                                    _this.ut.events.removeAllListeners("goSim")
+                                    _this.ut.events.removeAllListeners("goDevice")
+                                    resolve("fw")
+                                })
+                            })
+                    
+                            if (res != "fw") {
+                                this.ut.outputResult(res)
+                                res = await new Promise<string>((resolve) => {
+                                    setTimeout(() => {
+                                        resolve("get idle device count timeout")
+                                        _this.events.removeAllListeners("dev_fw")
+                                        _this.events.removeAllListeners("sim_rt")
+                                    }, 20000)
+                                    _this.events.once("simrt", () => {
+                                        Logger.info("fw", "rt")
+                                        _this.events.removeAllListeners("dev_fw")
+                                        _this.events.removeAllListeners("sim_rt")
+                                        resolve("rt")
+                    
+                                    })
+                                    _this.events.once("devfw", () => {
+                                        Logger.info("fw", "fw")
+                                        _this.events.removeAllListeners("devfw")
+                                        _this.events.removeAllListeners("sim_rt")
+                                        resolve("fw")
+                                    })
+                                })
+                    
+                            }
+                    
+                            if (res != "fw") {
+                                Logger.info("fail:" + res)
+                                return "fail"
+                            }
                             Logger.info("programming")
                             let result = await _this.pm.program(pid)
                             if (result != true) {

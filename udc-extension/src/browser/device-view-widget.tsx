@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { TreeWidget, TreeProps, TreeModel, ContextMenuRenderer, CompositeTreeNode, SelectableTreeNode, TreeNode, ApplicationShell, LocalStorageService } from "@theia/core/lib/browser";
+import { TreeWidget, TreeProps, TreeModel, ContextMenuRenderer, CompositeTreeNode, SelectableTreeNode, TreeNode, ApplicationShell, LocalStorageService, WidgetManager } from "@theia/core/lib/browser";
 import React = require("react");
 import { Emitter } from "vscode-jsonrpc";
 import { UdcService } from "../common/udc-service";
@@ -11,6 +11,10 @@ import { UdcWatcher } from "../common/udc-watcher";
 import * as color from 'colors'
 import * as $ from "jquery"
 import { Logger } from "../node/util/logger";
+// import { Workspace } from "@theia/languages/lib/browser";
+import { WorkspaceService } from "@theia/workspace/lib/browser";
+import URI from "@theia/core/lib/common/uri";
+import { FileTreeWidget } from "@theia/filesystem/lib/browser";
 export interface DeviceViewSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode {
     iconClass: string;
 }
@@ -49,7 +53,10 @@ export class DeviceViewWidget extends TreeWidget {
         @inject(CommandRegistry) protected readonly commandRegistry: CommandRegistry,
         @inject(ApplicationShell) protected applicationShell: ApplicationShell,
         @inject(LocalStorageService) protected readonly lss: LocalStorageService,
-        @inject(UdcWatcher) protected readonly uwc: UdcWatcher
+        @inject(UdcWatcher) protected readonly uwc: UdcWatcher,
+        @inject(WorkspaceService) protected readonly ws: WorkspaceService,
+        @inject(WidgetManager) protected readonly wm: WidgetManager,
+        @inject(FileTreeWidget) protected readonly ftw: FileTreeWidget,
     ) {
         super(treePros, model, contextMenuRenderer);
         this.id = 'device-view';
@@ -76,6 +83,8 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <View
+                openFileView={this.openFileView}
+                openWorkSpace={this.openWorkSpace}
                 terminateExe={this.terminateExe}
                 continueExe={this.continueExe}
                 postSimFile={this.postSimFile}
@@ -121,6 +130,21 @@ export class DeviceViewWidget extends TreeWidget {
         // $(".simInfo").css("display","inline")
         $(".simInfo").show()
     }
+    submitOnMenu() {
+        // alert($("textarea").text())    
+        $(document).on(".freeCodingSubmit", () => {
+        })
+        let val = $("pre[id*=codingInfoArea]").attr("title")
+        Logger.info("start connecting from fronted end")
+        if (val == undefined)
+            return
+        this.connect("a", "b", val!, "20")
+        //_this.props.callUpdate()
+        // this.ws.open(new URI("file:/home/project/串口打印"))
+    }
+    openWorkSpace = (urlStr: string) => {
+        this.ws.open(new URI(`${urlStr}`), { preserveWindow: true })
+    }
     enableClick() {
         Logger.info("enableclick")
         Logger.info($("[id*=submitSrcButton]").removeAttr("disabled"))
@@ -144,6 +168,21 @@ export class DeviceViewWidget extends TreeWidget {
         await this.applicationShell.closeTabs("main")
         await this.applicationShell.closeTabs("bottom")
         await this.applicationShell.closeTabs("right")
+    }
+    openFileView = () => {
+        let wds = this.applicationShell.widgets
+        for (let item of wds) {
+            console.log(item.id)
+        }
+        this.wm.getWidget("device-view").then(res => {
+            res!.hide()
+        })
+        this.wm.getWidget("files").then(res => {
+            res!.show()
+            //    this.wm.getWidget("device-view").then(res=>{
+            //     // res!.close()
+            // })
+        })
     }
     outputResult = (res: string, types?: string) => {
         // this.udcService.outputResult(res,types)
@@ -249,4 +288,5 @@ export class DeviceViewWidget extends TreeWidget {
         await this.applicationShell.saveAll()
 
     }
+
 }

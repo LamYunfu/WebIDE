@@ -1,6 +1,6 @@
 import React = require("react");
 import { Experiment } from "./experiment-view"
-import{FreeCoding} from './freecoding-view'
+import { FreeCoding } from './freecoding-view'
 import { Chapter } from './chapter-view'
 import { Scene } from './scene-view'
 import * as $ from "jquery"
@@ -8,6 +8,7 @@ import { MyContext } from './context'
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        openFileView: () => void
         terminateExe: () => void
         continueExe: () => void
         getData: (type: string) => Promise<string>
@@ -36,6 +37,7 @@ export namespace View {
         saveAll: () => void
         setSubmitEnableWithJudgeTag: (val: boolean) => void
         getSubmitEnableWithJudgeTag: () => boolean
+        openWorkSpace: (urlStr: string) => void
     }
     export interface State {
         ajaxNotFinish: boolean,
@@ -328,6 +330,7 @@ export class View extends React.Component<View.Props, View.State>{
         $(".resultBoard").text("")
 
     }
+
     componentDidMount() {
         let _this = this
         $(".oneOptionDescription").removeClass("skyblueItem")
@@ -1231,56 +1234,57 @@ export class View extends React.Component<View.Props, View.State>{
                             </div>
                         </MyContext.Provider >
                         :
-                        this.state.viewType == "5"?
-                        <MyContext.Provider value={{
-                            showTheDefaultFreeCodingView: () => {
-                              
-                            },
-                            setClickTime: () => {
-                                _this.clickTime = new Date().getTime()
-                            },
-                            setOptionDescription: (a: string) => {
-                                _this.setOptionDescription(a)
-                            },
-                            setOptionChoicesDescription: (a: JSX.Element[]) => {
-                                _this.setOptionChoicesDescription(a)
-                            },
-                            setState: (tmp: object) => {
-                                _this.setState({
-                                    ...tmp
-                                })
-    
-                            },
-                            getState: (key: string) => {
-                                let tmp: any = this.state
-                                return tmp[key]
-                            },
-                            props: _this.props
-    
-                        }}>
-                                    {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
-                                    <FreeCoding
-                                        programSingleFile={_this.props.programSingleFile}
-                                        config={_this.props.config}
-                                        openShell={_this.props.openShell}
-                                        initPidQueueInfo={_this.props.initPidQueueInfo}
-                                        closeTabs={_this.props.closeTabs}
-                                        setQueue={_this.props.setQueue}
-                                        section={{ ppid: [_this.ppid], sid: "experiment" }}
-                                        outputResult={_this.props.outputResult}
-                                        say={_this.props.say}
-                                        setCookie={_this.props.setCookie}
-                                        disconnect={_this.props.disconnect}
-                                        connect={_this.props.connect}
-                                        callUpdate={_this.props.callUpdate}
-                                        postSrcFile={_this.props.postSrcFile}
-                                    />
-                            
-                        </MyContext.Provider >
-                        :
-                        
-                        
-                        <div></div>
+                        this.state.viewType == "5" ?
+                            <MyContext.Provider value={{
+                                showTheDefaultFreeCodingView: () => {
+
+                                },
+                                setClickTime: () => {
+                                    _this.clickTime = new Date().getTime()
+                                },
+                                setOptionDescription: (a: string) => {
+                                    _this.setOptionDescription(a)
+                                },
+                                setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                    _this.setOptionChoicesDescription(a)
+                                },
+                                setState: (tmp: object) => {
+                                    _this.setState({
+                                        ...tmp
+                                    })
+
+                                },
+                                getState: (key: string) => {
+                                    let tmp: any = this.state
+                                    return tmp[key]
+                                },
+                                props: _this.props
+
+                            }}>
+                                {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+                                <FreeCoding
+                                    title={this.title}
+                                    programSingleFile={_this.props.programSingleFile}
+                                    config={_this.props.config}
+                                    openShell={_this.props.openShell}
+                                    initPidQueueInfo={_this.props.initPidQueueInfo}
+                                    closeTabs={_this.props.closeTabs}
+                                    setQueue={_this.props.setQueue}
+                                    section={{ ppid: [_this.ppid], sid: "experiment" }}
+                                    outputResult={_this.props.outputResult}
+                                    say={_this.props.say}
+                                    setCookie={_this.props.setCookie}
+                                    disconnect={_this.props.disconnect}
+                                    connect={_this.props.connect}
+                                    callUpdate={_this.props.callUpdate}
+                                    postSrcFile={_this.props.postSrcFile}
+                                />
+
+                            </MyContext.Provider >
+                            :
+
+
+                            <div></div>
         )
     }
 }

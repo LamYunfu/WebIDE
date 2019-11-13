@@ -6,6 +6,7 @@ import { MyContext } from "./context";
 import { getCompilerType } from "../../node/globalconst";
 export namespace FreeCoding {
     export interface Props {
+        title: string
         section: { [key: string]: any }
         connect: (loginType: string, model: string, pid: string, timeout: string) => void
         disconnect: () => void
@@ -77,6 +78,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
     componentWillMount() {
         this.context.props.setSize(720)
         let _this = this
+        _this.context.props.openFileView()
         _this.props.section.ppid != 'null' && $.ajax(
             {
                 headers: {
@@ -91,7 +93,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
 
                 dataType: 'json',
                 contentType: "text/plain",
-                data: JSON.stringify({ ppid: "" }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
+                data: JSON.stringify({ ppid: _this.props.section["ppid"][0] }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
                 success: function (data) {
                     // alert(JSON.stringify(data))
                     console.log(JSON.stringify(data))
@@ -152,17 +154,18 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
                         ...state,
                         codingItems: _this.codingItems
                     }))
-                    //_this.props.callUpdate()
-
                 }
             }
         )
     }
-
-
     async componentDidMount() {
         let _this = this
         this.props.openShell()
+        if (decodeURI(window.location.href).split("/").pop() != "自由编程") {
+            _this.context.props.openWorkSpace(`file:/home/project/自由编程`)
+            return
+        }
+
         $(document).ready(
             () => {
                 $(document).on("click", ".section." + _this.props.section.sid, (e) => {
@@ -229,21 +232,22 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
                 }, 300)
             })
         this.context.showTheDefaultFreeCodingView()
+
     }
 
     render(): JSX.Element {
         return (
             <div style={{ height: "100%" }}>
-                <div className="title_timer" style={{ height: "10%" }}><h4 className={`section experiment`}>自由编程</h4><span id='timer'></span></div>
+                <div className="title_timer" style={{ height: "10%" }}><h4 className={`section experiment`}>自由实验</h4><span id='timer'></span></div>
                 <div className="row col-12" style={{ height: "80%" }} >
                     <div className="col-12" style={{ fontSize: "30px", height: "20%" }}>
-                        项目:
-                        <div style={{ left: '100px', position: "absolute", fontSize: "28px" }} >
-                            这是一个关于...的项目
+                        项目:{this.props.title}
+                        <div style={{ left: '40px', position: "absolute", fontSize: "28px" }} >
+                            这是一个关于{this.props.title}的项目
                         </div>
 
-                        <img src="http://5b0988e595225.cdn.sohucs.com/images/20180721/0f6e106b88544c0b8b91fbf7d196898d.jpeg"
-                            style={{ "position": "absolute", "width": "200px", height: "200px", top: '0px', right: '0px', paddingLeft: "10px" }}></img>
+                        {/* <img src="http://5b0988e595225.cdn.sohucs.com/images/20180721/0f6e106b88544c0b8b91fbf7d196898d.jpeg"
+                            style={{ "position": "absolute", "width": "200px", height: "200px", top: '0px', right: '0px', paddingLeft: "10px" }}></img> */}
                     </div>
                     <div className="col-12" style={{ fontSize: "30px", height: "30%" }}>
                         可用设备：
@@ -255,7 +259,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
                         </div>
                     </div>
 
-                    <div className="col-12" style={{ fontSize: "30px", height: "35%" }}>
+                    {/* <div className="col-12" style={{ fontSize: "30px", height: "35%" }}>
                         Config.json:
                         <div style={{ left: '100px', height: '100%', width: '70%', position: "absolute", fontSize: "28px", }} >
                             <textarea style={{
@@ -278,10 +282,10 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
 ]`}
                             </textarea>
                         </div>
-                    </div>
+                    </div> */}
 
                 </div>
-                <button className="btn btn-primary" style={{ position: 'absolute', bottom: '5px', right: '0%' }}>提交</button>
+                {/* <button className="btn btn-primary" style={{ position: 'absolute', bottom: '5px', right: '0%' }}>提交</button> */}
             </div>
 
         )

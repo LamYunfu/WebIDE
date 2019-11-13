@@ -8,12 +8,11 @@ import { LanguageGrammarDefinitionContribution, TextmateRegistry } from '@theia/
 import { WorkspaceService } from "@theia/workspace/lib/browser/"
 import { FileDialogService } from "@theia/filesystem/lib/browser"
 import { FileSystem } from '@theia/filesystem/lib/common';
-import { QuickOpenService, QuickOpenModel, QuickOpenItem, QuickOpenItemOptions, ApplicationShell } from '@theia/core/lib/browser';
+import { QuickOpenService, QuickOpenModel, QuickOpenItem, QuickOpenItemOptions, ApplicationShell, KeybindingRegistry } from '@theia/core/lib/browser';
 import { UdcConsoleSession } from './udc-console-session';
 import { DeviceViewService } from './device-view-service';
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager } from '@theia/editor/lib/browser';
-
 export const UdcExtensionCommand = {
     id: 'UdcExtension.command',
     label: "test node server"
@@ -96,6 +95,10 @@ export namespace UdcCommands {
         id: "openViewPanel",
         label: "no label"
     };
+    export const SubmitOnMenu: Command = {
+        id: "submitonmenu",
+        label: "connect"
+    };
 }
 
 @injectable()
@@ -135,6 +138,9 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         @inject(InMemoryResources) protected imr: InMemoryResources,
         @inject(CommandRegistry) protected readonly commandRegistry: CommandRegistry,
         @inject(ApplicationShell) protected applicationShell: ApplicationShell,
+        @inject(KeybindingRegistry) protected kr: KeybindingRegistry,
+        @inject(DeviceViewService) protected ds: DeviceViewService,
+        
 
 
     ) {
@@ -187,8 +193,15 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
             }
         })
         registry.registerCommand(UdcCommands.OpenCommand, {
-            execute: async (uri: URI) => {
+            execute: async (uri: URI | string) => {
                 // this.imr.add(uri,"")
+        
+                console.log("Exec uri open ")
+                if (typeof (uri) == 'string'){
+                    console.log(uri)
+                    uri = new URI(uri)
+    
+                }
                 this.em.open(uri).then(res =>
                     console.log("openscc"), err => console.log(err)
                 )
@@ -255,6 +268,11 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 })
             }
         })
+        registry.registerCommand(UdcCommands.SubmitOnMenu, {
+            execute: () => {
+                this.ds.submitOnMenu()
+            }
+        })
         registry.registerCommand(UdcCommands.Reset, {
             execute: async () => {
                 let dev_list = await this.udcService.get_devices();
@@ -271,6 +289,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 })
             }
         })
+        this.kr.registerKeybinding({command:"submitonmenu",keybinding:"ctrl+m"})
     }
 }
 
@@ -279,8 +298,17 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
 @injectable()
 export class UdcExtensionMenuContribution implements MenuContribution {
     registerMenus(menus: MenuModelRegistry): void {
+        menus.registerSubmenu(UdcMenus.UDC, "linklab")
+
+        // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
+        menus.registerMenuAction([...UdcMenus.UDC],
+            { commandId: UdcCommands.SubmitOnMenu.id, label: "connect", icon: "x", order: "a_1" })
+
+        // menus.registerMenuAction([...UdcMenus.UDC], { commandId:UdcCommands.OpenCommand.id });
     }
+
 }
+
 
 
 

@@ -51,8 +51,13 @@ export class DeviceViewService implements WidgetFactory {
     }
     push(devices: { [key: string]: number }): void {
     }
-
+    submitOnMenu() {
+        this.widget!.submitOnMenu()
+    }
     public clearDevices(): void {
+    }
+    close(){
+        this.widget!.close()
     }
 
 }
