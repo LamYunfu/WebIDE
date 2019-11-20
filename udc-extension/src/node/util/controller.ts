@@ -26,14 +26,32 @@ export class Controller {
     }
     rootDir: string = "/home/project"
     events = new events.EventEmitter()
+    async processFreeCoding(pid: string) {
+        Logger.info("start process issue")
+        this.ut.refreshConfiguration(pid);
+        for (let i = 4; ; i--) {
+            let devInfo = this.ut.get_devlist()
+            if (devInfo != undefined) {
+                break
+            }
+            if (i == 0) {
+                return "fail"
+            }
+            Logger.info("waiting for allocate device")
+            await new Promise(res => {
+                setTimeout(() => {
+                    res()
+                }, 1000)
+            })
+        }
+        this.processIssue(pid);
+    }
     async processIssue(pid: string) {
-        console.log("entering pi")
         let { loginType,
             model
         } = this.ut.getPidInfos(pid)
         let devType = getCompilerType(model)
         let _this = this
-     
         Logger.info("compiling")
         switch (loginType) {
             case "adhoc":
@@ -82,7 +100,7 @@ export class Controller {
                                     _this.ut.events.removeAllListeners("goSim")
                                     _this.ut.events.removeAllListeners("goDevice")
                                     resolve("no idle device,what about tiny sim?")
-                    
+
                                 })
                                 _this.ut.events.once("goDevice", () => {
                                     _this.ut.events.removeAllListeners("goSim")
@@ -90,7 +108,7 @@ export class Controller {
                                     resolve("fw")
                                 })
                             })
-                    
+
                             if (res != "fw") {
                                 this.ut.outputResult(res)
                                 res = await new Promise<string>((resolve) => {
@@ -104,7 +122,7 @@ export class Controller {
                                         _this.events.removeAllListeners("dev_fw")
                                         _this.events.removeAllListeners("sim_rt")
                                         resolve("rt")
-                    
+
                                     })
                                     _this.events.once("devfw", () => {
                                         Logger.info("fw", "fw")
@@ -113,9 +131,9 @@ export class Controller {
                                         resolve("fw")
                                     })
                                 })
-                    
+
                             }
-                    
+
                             if (res != "fw") {
                                 Logger.info("fail:" + res)
                                 return "fail"

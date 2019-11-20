@@ -266,7 +266,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                     <div className="simInfo " style={{
                         position: "absolute",
                         top: "30%",
-                        backgroundColor: "orangered",
+                        backgroundColor: "#525252",
                         borderStyle: 'solid',
                         borderColor: 'blue',
                         borderRadius: '10px',

@@ -27,6 +27,7 @@ export interface UdcService {
     openPidFile: (pid: string) => void
     continueExe: () => void
     terminateExe: () => void
+    postFreeCodingFile: (pid: string) => void
 
 }
 

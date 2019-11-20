@@ -15,6 +15,7 @@ import { Logger } from "../node/util/logger";
 import { WorkspaceService } from "@theia/workspace/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { FileTreeWidget } from "@theia/filesystem/lib/browser";
+import { ViewContainer } from "@theia/core/lib/browser/view-container"
 export interface DeviceViewSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode {
     iconClass: string;
 }
@@ -57,6 +58,7 @@ export class DeviceViewWidget extends TreeWidget {
         @inject(WorkspaceService) protected readonly ws: WorkspaceService,
         @inject(WidgetManager) protected readonly wm: WidgetManager,
         @inject(FileTreeWidget) protected readonly ftw: FileTreeWidget,
+        @inject(ViewContainer) protected readonly vc: ViewContainer,
     ) {
         super(treePros, model, contextMenuRenderer);
         this.id = 'device-view';
@@ -68,6 +70,7 @@ export class DeviceViewWidget extends TreeWidget {
     }
     submitEnableWithJudgeTag: boolean = false
     rootdir: string = "/home/project"
+    viewType: string = ""
     setSize = (size: number) => {
         console.log("rendering")
         // this.applicationShell.activateWidget(this.id)
@@ -83,6 +86,7 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <View
+                openExplorer={this.openExplorer}
                 openFileView={this.openFileView}
                 openWorkSpace={this.openWorkSpace}
                 terminateExe={this.terminateExe}
@@ -134,16 +138,21 @@ export class DeviceViewWidget extends TreeWidget {
         // alert($("textarea").text())    
         $(document).on(".freeCodingSubmit", () => {
         })
-        let val = $("pre[id*=codingInfoArea]").attr("title")
-        Logger.info("start connecting from fronted end")
-        if (val == undefined)
+        let val = $(".title_timer").attr("title")
+        Logger.info("start connecting from frontend")
+        if (val == undefined) {
+            Logger.info("val is undefined")
             return
-        this.connect("a", "b", val!, "20")
+        }
+        this.postFreeCodingFile(val)
+        this.openExplorer()
+        // this.connect("a", "b", val!, "20")
         //_this.props.callUpdate()
         // this.ws.open(new URI("file:/home/project/串口打印"))
     }
     openWorkSpace = (urlStr: string) => {
-        this.ws.open(new URI(`${urlStr}`), { preserveWindow: true })
+        if (decodeURI(window.location.href).split("/").pop() != urlStr.split("/").pop())
+            this.ws.open(new URI(`${urlStr}`), { preserveWindow: true })
     }
     enableClick() {
         Logger.info("enableclick")
@@ -170,19 +179,16 @@ export class DeviceViewWidget extends TreeWidget {
         await this.applicationShell.closeTabs("right")
     }
     openFileView = () => {
+        let _this = this
         let wds = this.applicationShell.widgets
         for (let item of wds) {
             console.log(item.id)
         }
-        this.wm.getWidget("device-view").then(res => {
-            res!.hide()
-        })
-        this.wm.getWidget("files").then(res => {
-            res!.show()
-            //    this.wm.getWidget("device-view").then(res=>{
-            //     // res!.close()
-            // })
-        })
+        // _this.commandRegistry.executeCommand("UDC devices")
+        _this.applicationShell.activateWidget("files")
+        // _this.applicationShell.leftPanelHandler.dockPanel.addClass("theia-maximized")
+        // _this.applicationShell.leftPanelHandler.setLayoutData({})
+        // _this.applicationShell.closeTabs("left")
     }
     outputResult = (res: string, types?: string) => {
         // this.udcService.outputResult(res,types)
@@ -219,7 +225,15 @@ export class DeviceViewWidget extends TreeWidget {
     callUpdate = () => {
         this.update()
     }
+    openExplorer = () => {
+        this.viewType = "freeCoding"
+        // this.applicationShell.activateWidget("files")
+        // console.log("click file")
+        // setTimeout(() => {
+        //     $("#shell-tab-files").trigger("click")
 
+        // }, 9000);
+    }
 
     setCookie = (cookie: string) => {
         this.udcService.setCookie(`JSESSIONID=${cookie}; Path=/; HttpOnly`);
@@ -229,6 +243,10 @@ export class DeviceViewWidget extends TreeWidget {
 
     postSrcFile = (fn: string) => {
         this.udcService.postSrcFile(fn)
+    }
+
+    postFreeCodingFile = (pid: string) => {
+        this.udcService.postFreeCodingFile(pid)
     }
 
 

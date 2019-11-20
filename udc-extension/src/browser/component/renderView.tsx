@@ -8,6 +8,7 @@ import { MyContext } from './context'
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        openExplorer: () => void
         openFileView: () => void
         terminateExe: () => void
         continueExe: () => void
@@ -335,7 +336,7 @@ export class View extends React.Component<View.Props, View.State>{
         let _this = this
         $(".oneOptionDescription").removeClass("skyblueItem")
         $(".resultBoard").text("")
-        setInterval(() => $("#timer").text(new Date().toLocaleString()), 1)
+        setInterval(() => $("#timer").text(new Date().toLocaleString()), 1000)
         $(document).on("click", ".oneOptionDescription", (e) => {
             if (_this.state.type == "SC") {
                 $(".oneOptionDescription").removeClass("skyblueItem")

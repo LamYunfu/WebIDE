@@ -10,7 +10,6 @@
 
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     entry: './src/tinylink-frontend.ts',
@@ -27,14 +26,9 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
-        new HtmlWebpackPlugin({
-            filename: 'example.html',
-            template: 'src/example.html',
-            chunks: ['exampleEntry']
-        })
     ],
     resolve: {
-        extensions: ['.ts', '.js','html']
+        extensions: ['.ts', '.js']
     },
     output: {
         filename: 'tinylink-frontend.js',

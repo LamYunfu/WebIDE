@@ -106,7 +106,9 @@ export class UdcServiceImpl implements UdcService {
 
     // }
 
-
+    postFreeCodingFile(pid: string): void {
+        this.controller.processFreeCoding(pid);
+    }
     postSrcFile(pid: string): void {
         this.controller.processIssue(pid)
     }
@@ -153,10 +155,10 @@ export class UdcServiceImpl implements UdcService {
     }
     continueExe() {
         Logger.info("continue")
-        this.controller.events.emit("devfw")        
+        this.controller.events.emit("devfw")
     }
     terminateExe() {
         Logger.info("terminate")
-        this.controller.events.emit("simrt")      
+        this.controller.events.emit("simrt")
     }
 }

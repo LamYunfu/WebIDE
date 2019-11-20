@@ -13,7 +13,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    entry: './src/tinylink-frontend.ts',
+    entry: './src/unity-frontend.ts',
     devtool: 'source-map',
     mode: 'production',
     module: {
@@ -32,15 +32,15 @@ module.exports = {
         extensions: ['.ts', '.js','html']
     },
     output: {
-        filename: 'tinylink-frontend.js',
+        filename: 'unity-frontend.js',
         libraryTarget: "var",
-        library: "theia_tinylink",
+        library: "theia_unity",
 
         path: path.resolve(__dirname, 'dist')
     },
     externals: {
 
-        "@theia/plugin": "theia.theia_tinylink"
+        "@theia/plugin": "theia.theia_unity"
 
     }
 };

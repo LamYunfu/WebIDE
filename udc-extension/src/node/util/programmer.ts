@@ -127,7 +127,7 @@ export class Programer {
         }
     }
     async program(pid: string) {
-        let { loginType, fns, dirName, model, deviceRole, 
+        let { loginType, fns, dirName, model, deviceRole,
             // waitID, 
             timeout } = this.ut.getPidInfos(pid)
         let address = model == "developer_kit" ? '0x08000000' : '0x10000'
@@ -256,9 +256,10 @@ export class Programer {
                 break
             }
             if (i == 0) {
+                this.ut.outputResult("can't get device info,retry latter")
                 return "fail"
             }
-            Logger.info("waitting for allocate device")
+            Logger.info("waiting for allocate device")
             await new Promise(res => {
                 setTimeout(() => {
                     res()

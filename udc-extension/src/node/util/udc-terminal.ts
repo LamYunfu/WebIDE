@@ -48,7 +48,7 @@ export class UdcTerminal {
             boardType: string | undefined, timeout: string,
             model: string, waitID: string, fns: string,
             dirName: string, deviceRole?: string[] | undefined,
-            ppid?: string
+            ppid?: string, type?: string
         }
     } = {}
     currentPid: string = ``
@@ -225,6 +225,29 @@ export class UdcTerminal {
 
         //         }
     }
+    async   refreshConfiguration(pid: string) {
+        let { dirName } = this.getPidInfos(pid)
+        let infoRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
+        let info = JSON.parse(infoRaw.toString("utf8")).projects
+        let preModel = this.pidQueueInfo[pid].model
+        this.pidQueueInfo[pid].loginType = "queue"
+        this.pidQueueInfo[pid].model = info[0].deviceType
+        this.pidQueueInfo[pid].boardType = info[0].compilationMethod
+        // this.pidQueueInfo[pid].timeout = info[0].timeout
+        this.pidQueueInfo[pid].timeout = '30'
+        let deviceRole = []
+        for (let item of info) {
+            deviceRole.push(item.projectName)
+        }
+        this.pidQueueInfo[pid].fns = JSON.stringify(deviceRole)
+        this.pidQueueInfo[pid].deviceRole = deviceRole
+        if (preModel != this.pidQueueInfo[pid].model) {
+            if (this.is_connected)
+                await this.disconnect()
+            this.connect("", "", pid, this.pidQueueInfo[pid].timeout)
+        }
+        console.log(JSON.stringify(this.pidQueueInfo[pid!]))
+    }
     async  initPidQueueInfo(infos: string): Promise<string> {
         Logger.info(infos, 'info')
         let _this = this
@@ -257,12 +280,18 @@ export class UdcTerminal {
                                     if (!fs.existsSync(path.join(_this.rootDir, dirName, "hexFiles")))
                                         fs.mkdirSync(path.join(_this.rootDir, dirName, "hexFiles"))
                                     if (!fs.existsSync(path.join(_this.rootDir, dirName, item))) {
+                                        if (item == "config.json") {
+                                            fs.writeFileSync(path.join(_this.rootDir, dirName, item), res.template[item])
+                                            this.refreshConfiguration(ppid!)
+                                            continue
+                                        }
                                         fs.mkdirSync(path.join(_this.rootDir, dirName, item))
                                         for (let file of Object.keys(res.template[item])) {
                                             fs.writeFileSync(path.join(_this.rootDir, dirName, item, file), res.template[item][file])
                                         }
                                     }
                                 }
+
                                 resolve("scc")
                             }
                             else {
@@ -284,6 +313,9 @@ export class UdcTerminal {
                     resolve("scc")
                 }
             })
+            if (this.pidQueueInfo[index]["type"] == "freecoding")
+                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/home/project/${dirName}` })
+            this.udcClient!.onConfigLog({ name: "openShell", passwd: "" })
             // if (fileRequestResult != "scc") {
             //     console.log("create file fail")
             //     return "err"
@@ -582,11 +614,16 @@ export class UdcTerminal {
     async connect(loginTypeNotUse: string, modelNotUse: string, pid: string, timeout: string = `20`): Promise<Boolean | string> {
         // loginType = LOGINTYPE.QUEUE
         // model = `alios-esp32`
-        Logger.info("start connecting backending "+pid+`:${timeout}`)
-        let { loginType ,model} = this.pidQueueInfo[pid]
+        Logger.info("start connecting backend" + pid + `:${timeout}`)
+        let { loginType, model } = this.pidQueueInfo[pid]
         if (loginType == undefined || loginType == "") {
             Logger.info("the backend doesn't config now!")
-            return false
+            this.refreshConfiguration(pid)
+            loginType = this.pidQueueInfo[pid].loginType
+            model = this.pidQueueInfo[pid].model
+            if (loginType == undefined || loginType == "") {
+                return false
+            }
         }
         Logger.val(`timeout: ${timeout}`)
         this.pidQueueInfo[pid] = {

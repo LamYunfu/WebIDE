@@ -1,3 +1,4 @@
+import { ViewContainer } from '@theia/core/lib/browser/view-container';
 import { FileTreeWidget, FileTreeModel, FileTree } from '@theia/filesystem/lib/browser';
 import { UdcConsoleContribution } from './udc-console-contribution';
 import { DeviceViewDecoratorService, DeviceTreeDecorator } from './decorator-view-service';
@@ -40,6 +41,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(FileTreeWidget).toSelf().inSingletonScope();
     bind(FileTreeModel).toSelf().inSingletonScope();
     bind(FileTree).toSelf().inSingletonScope()
+    bind(ViewContainer).toSelf().inSingletonScope()
 });
 
 

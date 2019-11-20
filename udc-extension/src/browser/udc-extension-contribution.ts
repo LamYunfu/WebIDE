@@ -1,3 +1,4 @@
+import { WidgetManager } from '@theia/core/lib/browser';
 import { CommandRegistry, InMemoryResources } from '@theia/core';
 import { UdcWatcher } from './../common/udc-watcher';
 import { AboutDialog } from './about-dailog';
@@ -140,13 +141,18 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         @inject(ApplicationShell) protected applicationShell: ApplicationShell,
         @inject(KeybindingRegistry) protected kr: KeybindingRegistry,
         @inject(DeviceViewService) protected ds: DeviceViewService,
-        
+        @inject(WidgetManager) protected wm: WidgetManager
+
 
 
     ) {
         this.udcWatcher.onConfigLog((data: { name: string, passwd: string }) => {
             if (data.name == "openSrcFile") {
                 this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, new URI(data.passwd))
+                return
+            }
+            if (data.name == 'openWorkspace') {
+                this.ds.openWorkspace(data.passwd)
                 return
             }
             if (data.name == "openShell") {
@@ -170,7 +176,8 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
             applicationShell.closeTabs("bottom")
             // applicationShell.closeTabs("left")
             console.log(JSON.stringify(data) + "::::::front ")
-            this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.config", "http://tinylink.cn:12352/tinylink/tinylinkApp/login.php", tmp.name, tmp.passwd)
+            this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.config",
+                "http://tinylink.cn:12352/tinylink/tinylinkApp/login.php", tmp.name, tmp.passwd)
             this.commandRegistry.executeCommand("iot.plugin.tinylink.scence.node", tmp.name, tmp.passwd)
         })
         this.udcWatcher.onDeviceLog((data: string) => {
@@ -195,12 +202,12 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         registry.registerCommand(UdcCommands.OpenCommand, {
             execute: async (uri: URI | string) => {
                 // this.imr.add(uri,"")
-        
+
                 console.log("Exec uri open ")
-                if (typeof (uri) == 'string'){
+                if (typeof (uri) == 'string') {
                     console.log(uri)
                     uri = new URI(uri)
-    
+
                 }
                 this.em.open(uri).then(res =>
                     console.log("openscc"), err => console.log(err)
@@ -270,7 +277,10 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         })
         registry.registerCommand(UdcCommands.SubmitOnMenu, {
             execute: () => {
+                // this.applicationShell.activateWidget("files")
+                this.applicationShell.saveAll()
                 this.ds.submitOnMenu()
+
             }
         })
         registry.registerCommand(UdcCommands.Reset, {
@@ -289,7 +299,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 })
             }
         })
-        this.kr.registerKeybinding({command:"submitonmenu",keybinding:"ctrl+m"})
+        this.kr.registerKeybinding({ command: "submitonmenu", keybinding: "ctrl+m" })
     }
 }
 
@@ -299,13 +309,21 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
 export class UdcExtensionMenuContribution implements MenuContribution {
     registerMenus(menus: MenuModelRegistry): void {
         menus.registerSubmenu(UdcMenus.UDC, "linklab")
-
         // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
         menus.registerMenuAction([...UdcMenus.UDC],
-            { commandId: UdcCommands.SubmitOnMenu.id, label: "connect", icon: "x", order: "a_1" })
+            { commandId: UdcCommands.SubmitOnMenu.id, label: "freeCodingSubmit", icon: "x", order: "a_1" })
+        // console.log(menus.getMenu(['menubar']).children.length)
+        // for(let item of menus.getMenu(['menubar']).children ){
+        //     console.log(item.id)
+        // }
+        let menuBar = menus.getMenu(['menubar'])
+        menuBar.removeNode("9_help")
+        menuBar.removeNode("7_terminal")
+        menuBar.removeNode("6_debug")
 
         // menus.registerMenuAction([...UdcMenus.UDC], { commandId:UdcCommands.OpenCommand.id });
     }
+
 
 }
 

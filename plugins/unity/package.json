@@ -1,5 +1,5 @@
 {
-  "name": "tinylink",
+  "name": "unity",
   "publisher": "theia",
   "keywords": [
     "theia-plugin"
@@ -31,6 +31,6 @@
     "theiaPlugin": "latest"
   },
   "theiaPlugin": {
-    "frontend": "dist/tinylink-frontend.js"
+    "frontend": "dist/unity-frontend.js"
   }
 }

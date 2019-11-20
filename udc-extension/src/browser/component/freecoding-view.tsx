@@ -1,9 +1,7 @@
 import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
-import { CodeItem } from "./code-issue"
 import { MyContext } from "./context";
-import { getCompilerType } from "../../node/globalconst";
 export namespace FreeCoding {
     export interface Props {
         title: string
@@ -78,93 +76,18 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
     componentWillMount() {
         this.context.props.setSize(720)
         let _this = this
-        _this.context.props.openFileView()
-        _this.props.section.ppid != 'null' && $.ajax(
-            {
-                headers: {
-                    "accept": "application/json",
-                },
-                crossDomain: true,
-                xhrFields: {
-                    withCredentials: true
-                },
-                method: "POST",
-                url: "http://api.tinylink.cn/problem/detail",
-
-                dataType: 'json',
-                contentType: "text/plain",
-                data: JSON.stringify({ ppid: _this.props.section["ppid"][0] }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
-                success: function (data) {
-                    // alert(JSON.stringify(data))
-                    console.log(JSON.stringify(data))
-                    let x = data.data; // show response from the php script.
-                    let fns = []
-                    for (let item of x) {
-                        _this.role[`${item.pid}`] = item.deviceRole
-                        _this.model[`${item.pid}`] = item.deviceType
-                        _this.pidQueueInfo[item.pid] = {}
-                        _this.ppids[`${item.pid}`] = item.ppid
-                        let tmp = {}
-                        if (item.deviceAmount == "1") {
-                            // _this.loginType[`${item.pid}`] = 'fixed'
-                            _this.loginType[`${item.pid}`] = 'adhoc'
-                            _this.model[`${item.pid}`] = item.deviceType
-                            tmp = { ...tmp, loginType: 'adhoc', model: item.deviceType }
-                        }
-                        else {
-                            _this.loginType[`${item.pid}`] = 'queue'
-                            _this.role[`${item.pid}`] = item.deviceRole
-                            _this.model[`${item.pid}`] = item.deviceType
-                            tmp = { ...tmp, loginType: 'queue', model: item.deviceType }
-                        }
-                        console.log("login type is :" + _this.loginType[`${item.pid}`])
-                        _this.timeout[item.pid] = item.timeout
-                        _this.codingIssues[item.pid] = item.title
-                        if (_this.role[`${item.pid}`] == undefined)
-                            fns.push("helloworld")
-                        else {
-                            for (let r of _this.role[`${item.pid}`]) {
-                                fns.push("helloworld" + "_" + r)
-
-                            }
-                        }
-                        if (getCompilerType(item.deviceType) == "alios") {
-                            fns.push("helloworld" + ".mk")
-                            fns.push("ucube.py")
-                            fns.push("README.md")
-                        }
-                        tmp = {
-                            ...tmp, fns: JSON.stringify(fns), timeout: item.timeout, dirName: item.title,
-                            projectName: 'helloworld', boardType: "esp32devkitc", deviceRole: _this.role[`${item.pid}`], ppid: _this.ppids[`${item.pid}`]
-                        }
-                        _this.pidQueueInfo[item.pid] = tmp
-                        _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo)).then(() => {
-                            console.log("initpidqueue scc")
-                        })
-                        _this.codingInfos[item.pid] = item.content
-                        _this.pids.push(item.pid)
-                    }
-
-                    for (let entry in _this.codingIssues)
-                        _this.codingItems.push(<CodeItem loginType={_this.loginType[entry]} model={_this.model[entry]}
-                            role={_this.role[entry]} sid={_this.props.section.sid} akey={entry} key={entry}
-                            codingTitles={_this.codingIssues}
-                            codingStatus={_this.codingStatus} />)
-                    _this.setState((state) => ({
-                        ...state,
-                        codingItems: _this.codingItems
-                    }))
-                }
-            }
-        )
+        _this.pidQueueInfo[_this.props.section["ppid"][0]] = { dirName: this.props.title, ppid: _this.props.section["ppid"][0], type: "freecoding" }
+        _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
     }
     async componentDidMount() {
+        this.context.props.openExplorer()
         let _this = this
-        this.props.openShell()
-        if (decodeURI(window.location.href).split("/").pop() != "自由编程") {
-            _this.context.props.openWorkSpace(`file:/home/project/自由编程`)
-            return
-        }
+        // this.props.openShell()
+        // _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
+        // if (decodeURI(window.location.href).split("/").pop() != "自由编程") {
+        //     _this.context.props.openWorkSpace(`file:/home/project/自由编程`)
+        //     return
+        // }
 
         $(document).ready(
             () => {
@@ -225,12 +148,12 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
             )
 
         }, 5000)
-        while (this.state.codingItems.length == 0)
-            await new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve()
-                }, 300)
-            })
+        // while (this.state.codingItems.length == 0)
+        //     await new Promise((resolve) => {
+        //         setTimeout(() => {
+        //             resolve()
+        //         }, 300)
+        //     })
         this.context.showTheDefaultFreeCodingView()
 
     }
@@ -238,11 +161,11 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
     render(): JSX.Element {
         return (
             <div style={{ height: "100%" }}>
-                <div className="title_timer" style={{ height: "10%" }}><h4 className={`section experiment`}>自由实验</h4><span id='timer'></span></div>
+                <div className="title_timer" title={this.props.section["ppid"][0]} style={{ height: "10%" }}><h4 className={`section experiment`}>自由实验</h4><span id='timer'></span></div>
                 <div className="row col-12" style={{ height: "80%" }} >
                     <div className="col-12" style={{ fontSize: "30px", height: "20%" }}>
                         项目:{this.props.title}
-                        <div style={{ left: '40px', position: "absolute", fontSize: "28px" }} >
+                        <div style={{ left: '10px', position: "absolute", fontSize: "28px" }} >
                             这是一个关于{this.props.title}的项目
                         </div>
 

@@ -1,6 +1,6 @@
 import { Logger } from './../node/util/logger';
 import { injectable, inject } from "inversify";
-import { WidgetFactory, Widget } from "@theia/core/lib/browser";
+import { WidgetFactory, Widget, ApplicationShell } from "@theia/core/lib/browser";
 import { DeviceViewWidgetFactory, DeviceViewWidget, DeviceViewSymbolInformationNode } from "./device-view-widget";
 // import { IssueViewWidgetFactory, IssueViewWidget, IssueViewSymbolInformationNode } from "./issue-view-widget";
 import { DisposableCollection } from "@theia/core/lib/common/disposable";
@@ -19,6 +19,7 @@ export class DeviceViewService implements WidgetFactory {
 
     constructor(
         @inject(DeviceViewWidgetFactory) protected factory: DeviceViewWidgetFactory,
+        @inject(ApplicationShell) protected shell: ApplicationShell
 
     ) { }
     openExecutePanel() {
@@ -51,12 +52,19 @@ export class DeviceViewService implements WidgetFactory {
     }
     push(devices: { [key: string]: number }): void {
     }
+    openWorkspace(url: string) {
+        this.widget!.openWorkSpace(url)
+    }
+    openExplorer() {
+        this.widget!.viewType != "" && this.shell.revealWidget("files")
+    }
     submitOnMenu() {
+        // this.widget!.openFileView()
         this.widget!.submitOnMenu()
     }
     public clearDevices(): void {
     }
-    close(){
+    close() {
         this.widget!.close()
     }
 
