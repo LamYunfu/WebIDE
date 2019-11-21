@@ -42,6 +42,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(FileTreeModel).toSelf().inSingletonScope();
     bind(FileTree).toSelf().inSingletonScope()
     bind(ViewContainer).toSelf().inSingletonScope()
+
 });
 
 

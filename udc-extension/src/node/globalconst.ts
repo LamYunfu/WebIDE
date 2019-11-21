@@ -11,12 +11,16 @@ export const getCompilerType = (model: string): string => {
     if (model.startsWith("tinylink") || TinylinkType.indexOf(model) != -1) {
         return "tinylink"
     }
+    if (model == "contiki-telosb")
+        return "contiki"
     Logger.info("get compiler type failed")
     return "No this type"
 }
 export const getBoardType = (model: string): string => {
     if (model == "developer_kit")
         return 'developerkit'
+    else if (model == "contiki-telosb")
+        return 'sky'
     else
         return 'esp32devkitc'
 }

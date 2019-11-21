@@ -22,7 +22,7 @@
 11 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 11 error
 11 error npm ERR! A complete log of this run can be found in:
-11 error npm ERR!     /home/liang/.npm/_logs/2019-11-20T08_23_34_874Z-debug.log
+11 error npm ERR!     /home/liang/.npm/_logs/2019-11-21T04_58_12_020Z-debug.log
 11 error
 11 error
 11 error > udc-extension@0.0.0 prepare /home/liang/webide/udc-extension
@@ -30,7 +30,8 @@
 11 error
 11 error $ rimraf lib
 11 error $ tsc  --jsx react
-11 error src/browser/udc-extension-contribution.ts(155,22): error TS2339: Property 'dvw' does not exist on type 'UdcExtensionCommandContribution'.
+11 error src/browser/udc-extension-contribution.ts(388,9): error TS2322: Type 'string[][]' is not assignable to type 'IAutoClosingPair[]'.
+11 error   Type 'string[]' is missing the following properties from type 'IAutoClosingPair': open, close
 11 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 11 error
 11 error     at Promise.all.then.arr (/home/liang/webide/node_modules/lerna/node_modules/execa/index.js:236:11)

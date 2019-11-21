@@ -28,6 +28,7 @@ export interface UdcService {
     continueExe: () => void
     terminateExe: () => void
     postFreeCodingFile: (pid: string) => void
+    literalAnalysis: (pid: string) => void
 
 }
 

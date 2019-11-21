@@ -161,4 +161,7 @@ export class UdcServiceImpl implements UdcService {
         Logger.info("terminate")
         this.controller.events.emit("simrt")
     }
+    literalAnalysis(pid: string) {
+        this.udcTerminal.literalAnalysis(pid)
+    }
 }

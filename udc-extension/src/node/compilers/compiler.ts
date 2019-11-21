@@ -1,3 +1,4 @@
+import { NewContikiCompiler } from './contiki-complier';
 import { NewAliosCompiler } from './new-alios-compiler';
 import { Logger } from '../util/logger';
 import { UdcTerminal } from '../util/udc-terminal';
@@ -15,6 +16,7 @@ export class Compiler {
         @inject(UdcCompiler) protected readonly udcCompiler: UdcCompiler,
         // @inject(AliosCompiler) protected readonly aliosCompiler: AliosCompiler,
         @inject(NewAliosCompiler) protected readonly newAliosCompiler: NewAliosCompiler,
+        @inject(NewContikiCompiler) protected readonly newContikiCompiler: NewContikiCompiler,
         @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal
     ) {
     }
@@ -29,6 +31,10 @@ export class Compiler {
             // await this.aliosCompiler.postNameAndType(pid)
             return await this.newAliosCompiler.postNameAndType(pid)
         }
+        if (getCompilerType(model) == "contiki") {
+            Logger.info("use contiki compiler")
+            return await this.newContikiCompiler.postNameAndType(pid)
+        }
         if (getCompilerType(model) == "tinylink") {
             // this.udcCompiler.outputResult("use tinylink compiler")
             Logger.info("use tinylink compiler")
@@ -37,6 +43,7 @@ export class Compiler {
                 return "fail"
             return 'scc'
         }
+
         Logger.info("no this type")
         return "fail"
     }

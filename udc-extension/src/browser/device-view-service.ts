@@ -67,5 +67,8 @@ export class DeviceViewService implements WidgetFactory {
     close() {
         this.widget!.close()
     }
+    literalAnalysis() {
+        this.widget!.literalAnalysis()
+    }
 
 }

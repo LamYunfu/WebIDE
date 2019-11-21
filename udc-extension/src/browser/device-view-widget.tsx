@@ -126,6 +126,15 @@ export class DeviceViewWidget extends TreeWidget {
     getSubmitEnableWithJudgeTag = () => {
         return this.submitEnableWithJudgeTag
     }
+    literalAnalysis() {
+        let val = $("pre[id*=codingInfoArea]").attr("title")
+        if (val == undefined) {
+            this.outputResult("invalid html title")
+            return
+        }
+        this.udcService.literalAnalysis(val!)
+
+    }
     appproveClick() {
         this.submitEnableWithJudgeTag = true
     }
@@ -145,7 +154,7 @@ export class DeviceViewWidget extends TreeWidget {
             return
         }
         this.postFreeCodingFile(val)
-        this.openExplorer()
+        // this.openExplorer()
         // this.connect("a", "b", val!, "20")
         //_this.props.callUpdate()
         // this.ws.open(new URI("file:/home/project/串口打印"))
@@ -248,8 +257,6 @@ export class DeviceViewWidget extends TreeWidget {
     postFreeCodingFile = (pid: string) => {
         this.udcService.postFreeCodingFile(pid)
     }
-
-
     openSrcFile = (pid: string) => {
         // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
         this.udcService.openPidFile(pid)
@@ -277,6 +284,10 @@ export class DeviceViewWidget extends TreeWidget {
     }
     initPidQueueInfo = (infos: string): Promise<string> => {
         console.log(infos + "....................................info")
+        let infoObj = JSON.parse(infos)
+        if (infoObj.type == undefined)
+            infoObj["type"] = ""
+        infos = JSON.stringify(infoObj)
         return this.udcService.initPidQueueInfo(infos)
     }
     setTinyLink = (name: string, passwd: string) => {

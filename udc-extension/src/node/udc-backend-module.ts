@@ -1,3 +1,4 @@
+import { NewContikiCompiler } from './compilers/contiki-complier';
 import { ConfigSetter } from './util/configsetter';
 import { Programer } from './util/programmer';
 import { Extractor } from './util/extractor';
@@ -42,6 +43,6 @@ export default new ContainerModule(bind => {
     bind(Extractor).toSelf().inSingletonScope();
     bind(Programer).toSelf().inSingletonScope();
     bind(ConfigSetter).toSelf().inSingletonScope();
-
+    bind(NewContikiCompiler).toSelf().inSingletonScope()
     // bind(Controller).toSelf().inSingletonScope();
 });

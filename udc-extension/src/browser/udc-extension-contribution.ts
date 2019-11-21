@@ -5,7 +5,7 @@ import { AboutDialog } from './about-dailog';
 import { UdcService } from '../common/udc-service';
 import { injectable, inject } from "inversify";
 import { CommandContribution, MenuContribution, MenuModelRegistry, MessageService, MAIN_MENU_BAR, Command } from "@theia/core/lib/common";
-import { LanguageGrammarDefinitionContribution, TextmateRegistry } from '@theia/monaco/lib/browser/textmate';
+import { LanguageGrammarDefinitionContribution, TextmateRegistry, GrammarDefinition } from '@theia/monaco/lib/browser/textmate';
 import { WorkspaceService } from "@theia/workspace/lib/browser/"
 import { FileDialogService } from "@theia/filesystem/lib/browser"
 import { FileSystem } from '@theia/filesystem/lib/common';
@@ -81,6 +81,11 @@ export namespace UdcCommands {
         id: "udc.menu.postsrcfile",
         category: UDC_MENU_CATEGORY,
         label: "postsrcfile"
+    }
+    export const literalAnalysis: Command = {
+        id: "udc.menu.Analysis",
+        category: UDC_MENU_CATEGORY,
+        label: "codeLiteralAnalysis"
     }
     export const QueryStatus: Command = {
         id: "udc.menu.querystatus",
@@ -242,6 +247,11 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 })
             }
         })
+        registry.registerCommand(UdcCommands.literalAnalysis, {
+            execute: (pid) => {
+                this.ds.literalAnalysis()
+            }
+        })
         registry.registerCommand(UdcCommands.openViewPanel, {
             execute: async (uri: string, videoName: string) => {
                 console.log("<<<<<<<<<<<<<<<<<<<<=video name" + videoName)
@@ -311,7 +321,9 @@ export class UdcExtensionMenuContribution implements MenuContribution {
         menus.registerSubmenu(UdcMenus.UDC, "linklab")
         // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
         menus.registerMenuAction([...UdcMenus.UDC],
-            { commandId: UdcCommands.SubmitOnMenu.id, label: "freeCodingSubmit", icon: "x", order: "a_1" })
+            { commandId: UdcCommands.SubmitOnMenu.id, label: "Submit", icon: "x", order: "a_1" })
+        menus.registerMenuAction([...UdcMenus.UDC],
+            { commandId: UdcCommands.literalAnalysis.id, label: "LiteralAnalysis", icon: "x", order: "a_2" })
         // console.log(menus.getMenu(['menubar']).children.length)
         // for(let item of menus.getMenu(['menubar']).children ){
         //     console.log(item.id)
@@ -366,10 +378,45 @@ export class UdcExtensionHighlightContribution implements LanguageGrammarDefinit
             }
         }
     };
+    readonly pyId = 'python';
+    readonly pyConfig: monaco.languages.LanguageConfiguration = {
+        comments: {
+            lineComment: '#'
+        },
+        brackets: [
+            ['{', '}'],
+            ['[', ']'],
+            ['(', ')']
+        ],
+        autoClosingPairs: [
+            { open: '[', close: ']' },
+            { open: '{', close: '}' },
+            { open: '(', close: ')' },
+            { open: '\'', close: '\'', notIn: ['string', 'comment'] },
+            { open: '"', close: '"', notIn: ['string'] },
+        ],
+        surroundingPairs: [
+            { open: '{', close: '}' },
+            { open: '[', close: ']' },
+            { open: '(', close: ')' },
+            { open: '"', close: '"' },
+            { open: '\'', close: '\'' },
+        ],
+        folding: {
+            markers: {
+                start: new RegExp('^\\s*#pragma\\s+region\\b'),
+                end: new RegExp('^\\s*#pragma\\s+endregion\\b')
+            }
+        },
+        onEnterRules: [
+            {
+                beforeText: /^\s*(?:def|class|for|if|elif|else|while|try|with|finally|except|async).*?:\s*$/,
+                action: { indentAction: monaco.languages.IndentAction.Indent }
+            }
+        ]
+    };
 
-
-
-    registerTextmateLanguage(registry: TextmateRegistry) {
+    registerTextmateLanguage(registry: TextmateRegistry): void {
         monaco.languages.register({
             id: this.id,
             extensions: ['.cpp', '.cc', '.cxx', '.hpp', '.hh', '.hxx', '.h', '.ino', '.inl', '.ipp', 'cl', '.c'],
@@ -385,5 +432,34 @@ export class UdcExtensionHighlightContribution implements LanguageGrammarDefinit
             }
         });
         registry.mapLanguageIdToTextmateGrammar(this.id, this.scopeName);
+        monaco.languages.register({
+            id: this.pyId,
+            extensions: ['.py', '.rpy', '.pyw', '.cpy', '.gyp', '.gypi', '.snakefile', '.smk'],
+            aliases: ['Python', 'py'],
+            firstLine: '^#!\\s*/.*\\bpython[0-9.-]*\\b',
+        });
+
+        monaco.languages.setLanguageConfiguration(this.pyId, this.pyConfig);
+
+        const platformGrammar = require('../../data/MagicPython.tmLanguage.json');
+        registry.registerTextmateGrammarScope('source.python', {
+            async getGrammarDefinition(): Promise<GrammarDefinition> {
+                return {
+                    format: 'json',
+                    content: platformGrammar
+                };
+            }
+        });
+
+        const cGrammar = require('../../data/MagicRegExp.tmLanguage.json');
+        registry.registerTextmateGrammarScope('source.regexp.python', {
+            async getGrammarDefinition(): Promise<GrammarDefinition> {
+                return {
+                    format: 'json',
+                    content: cGrammar
+                };
+            }
+        });
+        registry.mapLanguageIdToTextmateGrammar(this.pyId, 'source.python');
     }
 }

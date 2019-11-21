@@ -228,7 +228,14 @@ export class UdcTerminal {
     async   refreshConfiguration(pid: string) {
         let { dirName } = this.getPidInfos(pid)
         let infoRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
-        let info = JSON.parse(infoRaw.toString("utf8")).projects
+        let info: any
+        try {
+            info = JSON.parse(infoRaw.toString("utf8")).projects
+        }
+        catch{
+            this.outputResult("the config.json is not set correctly")
+            return
+        }
         let preModel = this.pidQueueInfo[pid].model
         this.pidQueueInfo[pid].loginType = "queue"
         this.pidQueueInfo[pid].model = info[0].deviceType
@@ -315,6 +322,8 @@ export class UdcTerminal {
             })
             if (this.pidQueueInfo[index]["type"] == "freecoding")
                 this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/home/project/${dirName}` })
+            else
+                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/home/project` })
             this.udcClient!.onConfigLog({ name: "openShell", passwd: "" })
             // if (fileRequestResult != "scc") {
             //     console.log("create file fail")
@@ -1182,5 +1191,46 @@ export class UdcTerminal {
             })
 
         })
+    }
+    literalAnalysis(pid: string) {
+        let { dirName } = this.pidQueueInfo[pid]
+        let src: string = ""
+        try {
+            src = fs.readFileSync(path.join(this.rootDir, dirName, "device", "device.cpp")).toString("utf8")
+        }
+        catch{
+            this.outputResult("file read err, check you file structure please")
+        }
+        let dataStr = ""
+        let fileRequest = http.request({//
+            method: "POST",
+            hostname: 'judge.tinylink.cn',
+            path: "/problem/literal/judge",
+            headers: {
+                'Content-Type': "application/json"
+            }
+        }, (mesg) => {
+            mesg.on("data", (b: Buffer) => {
+                dataStr += b.toString("utf8")
+            })
+            mesg.on("end", () => {
+
+                let res: any
+                try {
+                    res = JSON.parse(dataStr)
+                }
+                catch{
+                    Logger.info("err json structure")
+                    return
+                }
+                this.outputResult(res.msg)
+            })
+        })
+        fileRequest.write(JSON.stringify({
+            pid: pid,
+            src: src
+        }))
+        fileRequest.end()
+
     }
 }

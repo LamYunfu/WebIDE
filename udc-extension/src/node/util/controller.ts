@@ -31,7 +31,7 @@ export class Controller {
         this.ut.refreshConfiguration(pid);
         for (let i = 4; ; i--) {
             let devInfo = this.ut.get_devlist()
-            if (devInfo != undefined) {
+            if (devInfo != undefined && devInfo != null) {
                 break
             }
             if (i == 0) {
@@ -62,7 +62,7 @@ export class Controller {
                         Logger.info("compile scc")
                         // _this.ut.config({ name: "Markyuan1996", passwd: "Markyuan1996" })
                         // _this.ut.config(_this.ut.tinyLinkInfo)
-                        if (devType == "alios")
+                        if (devType == "alios" || devType == "contiki")
                             return "scc";
                         let eres = await _this.et.extract(pid)
                         Logger.info("eres:" + eres)
