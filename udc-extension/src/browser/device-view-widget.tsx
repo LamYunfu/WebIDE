@@ -285,8 +285,6 @@ export class DeviceViewWidget extends TreeWidget {
     initPidQueueInfo = (infos: string): Promise<string> => {
         console.log(infos + "....................................info")
         let infoObj = JSON.parse(infos)
-        if (infoObj.type == undefined)
-            infoObj["type"] = ""
         infos = JSON.stringify(infoObj)
         return this.udcService.initPidQueueInfo(infos)
     }
