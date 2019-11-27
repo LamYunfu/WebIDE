@@ -1,0 +1,44 @@
+import { ContainerModule, interfaces } from 'inversify';
+import { DrawboardViewService } from './drawboard-view-service';
+import { DrawboardViewContribution } from './drawboard-view-contribution';
+import { WidgetFactory } from '@theia/core/lib/browser/widget-manager';
+import {
+    FrontendApplicationContribution,
+    createTreeContainer,
+    TreeWidget,
+    bindViewContribution,
+    TreeProps,
+    defaultTreeProps,
+    TreeDecoratorService
+} from '@theia/core/lib/browser';
+import { DrawboardViewWidgetFactory, DrawboardViewWidget } from './drawboard-view-widget';
+import '../../src/browser/styles/index.css';
+import { bindContributionProvider } from '@theia/core/lib/common/contribution-provider';
+import { DrawboardDecoratorService, DrawboardTreeDecorator } from './drawboard-decorator-service';
+
+export default new ContainerModule(bind => {
+    bind(DrawboardViewWidgetFactory).toFactory(ctx =>
+        () => createDrawboardViewWidget(ctx.container)
+    );
+
+    bind(DrawboardViewService).toSelf().inSingletonScope();
+    bind(WidgetFactory).toService(DrawboardViewService);
+
+    bindViewContribution(bind, DrawboardViewContribution);
+    bind(FrontendApplicationContribution).toService(DrawboardViewContribution);
+});
+
+function createDrawboardViewWidget(parent: interfaces.Container): DrawboardViewWidget {
+    const child = createTreeContainer(parent);
+
+    child.rebind(TreeProps).toConstantValue({ ...defaultTreeProps, search: true });
+
+    child.unbind(TreeWidget);
+    child.bind(DrawboardViewWidget).toSelf();
+
+    child.bind(DrawboardDecoratorService).toSelf().inSingletonScope();
+    child.rebind(TreeDecoratorService).toDynamicValue(ctx => ctx.container.get(DrawboardDecoratorService)).inSingletonScope();
+    bindContributionProvider(child, DrawboardTreeDecorator);
+
+    return child.get(DrawboardViewWidget);
+}

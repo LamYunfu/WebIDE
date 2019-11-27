@@ -85,6 +85,7 @@ export class DeviceViewWidget extends TreeWidget {
     }
     protected renderTree(): React.ReactNode {
         return (
+            <div>
             <View
                 openExplorer={this.openExplorer}
                 openFileView={this.openFileView}
@@ -117,6 +118,8 @@ export class DeviceViewWidget extends TreeWidget {
                 getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
                 setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
             />
+            {/* <iframe src='https://ashok.tanka.la/assets/examples/mnist/mnist.html'/> */}
+            </div>
 
         )
     }

@@ -1,5 +1,5 @@
 {
-  "name": "udc-extension",
+  "name": "drawboard-extension",
   "keywords": [
     "theia-extension"
   ],
@@ -28,8 +28,7 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/udc-extension-frontend-module",
-      "backend": "lib/node/index"
+      "frontend": "lib/browser/drawboard-view-frontend-module"
     }
   ]
 }

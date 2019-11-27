@@ -39,6 +39,11 @@ export class Programer {
                 }
             }, (mesg) => {
                 let bf = ""
+                mesg.on("error", (err) => {
+                    _this.ut.outputResult("something error happened when configuring burning.")
+                    Logger.info(err, "config")
+                    resolve("err")
+                })
                 mesg.on("data", (b: Buffer) => {
                     bf += b.toString("utf8")
                 })
@@ -86,13 +91,16 @@ export class Programer {
                         Logger.info("data comming")
                         bf += b.toString("utf8")
                     })
-                    mesg.on("error", () => {
+                    mesg.on("error", (err) => {
+                        _this.ut.outputResult("something error happened when uploading binary file.")
+                        Logger.info(err, "upload")
                         resolve("err")
                     })
                     mesg.on("end", () => {
                         Logger.info("bf:" + bf)
                         let res: any = JSON.parse(bf)
                         if (res.result) {
+                            this.ut.outputResult("upload a file to ldc file server.")
                             resolve("scc")
                         }
                         else {
@@ -101,8 +109,6 @@ export class Programer {
                         }
                     })
                 })
-
-                // let blob = fs.readFileSync(filepath)
                 let st = fs.createReadStream(filepath)
                 Logger.info("append file")
                 // fm.append("file", blob, filepath.split("/").pop())
@@ -116,13 +122,13 @@ export class Programer {
         }
 
         if (uploadResult != "scc") {
-            Logger.info("uploading zip file err")
-            _this.ut.outputResult("hexfile upload error")
+            Logger.info("uploading binary file error")
+            _this.ut.outputResult("binary file uploading error")
             return "err"
         }
         else {
-            Logger.info("uploading zip file scc")
-            _this.ut.outputResult("hexfile upload success")
+            // Logger.info("uploading zip file scc")
+            // _this.ut.outputResult("hexfile upload success")
             return gHash
         }
     }
@@ -185,7 +191,6 @@ export class Programer {
 
                 }
                 return await this.ut.program_device(pid, JSON.stringify(setJson))
-                break
             }
             case "adhoc": {
                 for (let item of deviceRole!) {
@@ -207,7 +212,6 @@ export class Programer {
                 }
                 // setJson['program']=setJson['program'].reverse()
                 return await this.ut.program_device(pid, JSON.stringify(setJson))
-                break
             }
             case "group": {
                 let fnArr: string[] = []
@@ -242,7 +246,7 @@ export class Programer {
         }
         return true
     }
-    async programSingleFile(pid: string, fn: string) {
+    async programSingleFile(pid: string, fn: string) {//提交单个文件，适用场景编程
         let { dirName, model } = this.ut.getPidInfos(pid)
 
         let address = model == "developer_kit" ? '0x08000000' : '0x10000'

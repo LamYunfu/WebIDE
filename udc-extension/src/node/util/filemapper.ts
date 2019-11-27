@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 
 @injectable()
-export class FileMapper {
+export class FileMapper {//提取文件名与文件地址映射关系
     private fileNameStorage: { [pid: string]: { [rawName: string]: string } } = {}
     private fileDeviceStorage: { [pid: string]: { [fileName: string]: string } } = {}
     getFileNameMapper(pid: string, rawName?: string) {

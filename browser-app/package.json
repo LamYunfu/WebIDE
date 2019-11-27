@@ -17,7 +17,8 @@
     "@theia/messages": "latest",
     "@theia/plugin-ext": "latest",
     "@theia/mini-browser":"latest",
-    "udc-extension": "0.0.0"    
+    "drawboard-extension":"0.0.0",
+    "udc-extension":"0.0.0"
   },
   "devDependencies": {
     "@theia/cli": "latest"

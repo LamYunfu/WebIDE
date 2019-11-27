@@ -152,32 +152,26 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
 
     ) {
         this.udcWatcher.onConfigLog((data: { name: string, passwd: string }) => {
+            let tmp = data
             if (data.name == "openSrcFile") {
                 this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, new URI(data.passwd))
                 return
-            }
-            if (data.name == 'openWorkspace') {
+            } else if (data.name == 'openWorkspace') {
                 this.ds.openWorkspace(data.passwd)
                 return
-            }
-            if (data.name == "openShell") {
+            } else if (data.name == "openShell") {
                 this.deviceViewService.openShell()
                 return
-            }
-            let tmp = data
-            if (data.name == "submitEnable") {
+            } else if (data.name == "submitEnable") {
                 this.deviceViewService.enableClick()
                 return
-            }
-            if (data.name == "submitEnableWithJudge") {
+            } else if (data.name == "submitEnableWithJudge") {
                 this.deviceViewService.approveClick()
                 return
-            }
-            if (data.name == "executeSelectPanel") {
+            } else if (data.name == "executeSelectPanel") {
                 this.deviceViewService.openExecutePanel()
                 return
             }
-
             applicationShell.closeTabs("bottom")
             // applicationShell.closeTabs("left")
             console.log(JSON.stringify(data) + "::::::front ")

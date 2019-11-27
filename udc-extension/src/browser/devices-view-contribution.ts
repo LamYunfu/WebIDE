@@ -58,6 +58,9 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
                     return false
                 }) && this.registry.executeCommand("UDC devices")
                 await this.applicationShell.revealWidget("device-view")
+                ld=this.applicationShell.getLayoutData()
+                ld.rightPanel!["size"]=660
+                this.applicationShell.setLayoutData(ld)
                 // this.registry.executeCommand("UDC devices")
 
                 //

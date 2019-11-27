@@ -12181,6 +12181,11 @@ ts-md5@^1.2.2:
   resolved "https://registry.npm.taobao.org/ts-md5/download/ts-md5-1.2.4.tgz#7030d7ba9134449deedf6f609d4b4509b94a5712"
   integrity sha1-cDDXupE0RJ3u329gnUtFCblKVxI=
 
+tsc@^1.20150623.0:
+  version "1.20150623.0"
+  resolved "https://registry.npm.taobao.org/tsc/download/tsc-1.20150623.0.tgz#4ebc3c774e169148cbc768a7342533f082c7a6e5"
+  integrity sha1-Trw8d04WkUjLx2inNCUz8ILHpuU=
+
 tslib@^1.9.0:
   version "1.10.0"
   resolved "https://registry.npm.taobao.org/tslib/download/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"

@@ -29,12 +29,13 @@ export class Controller {
     async processFreeCoding(pid: string) {
         Logger.info("start process issue")
         this.ut.refreshConfiguration(pid);
-        for (let i = 4; ; i--) {
+        for (let i = 4; ; i--) {//等待四秒分配设备
             let devInfo = this.ut.get_devlist()
             if (devInfo != undefined && devInfo != null) {
                 break
             }
             if (i == 0) {
+                this.ut.outputResult("LDC doesn't give the information of devices.please disconnect and retry.")
                 return "fail"
             }
             Logger.info("waiting for allocate device")
@@ -47,113 +48,121 @@ export class Controller {
         this.processIssue(pid);
     }
     async processIssue(pid: string) {
-        let { loginType,
-            model
-        } = this.ut.getPidInfos(pid)
-        let devType = getCompilerType(model)
-        let _this = this
-        Logger.info("compiling")
-        switch (loginType) {
-            case "adhoc":
-            case "queue":
-            case "group":
-                return await _this.cm.compile(pid).then(async res => {
-                    if (res == "scc") {
-                        Logger.info("compile scc")
-                        // _this.ut.config({ name: "Markyuan1996", passwd: "Markyuan1996" })
-                        // _this.ut.config(_this.ut.tinyLinkInfo)
-                        if (devType == "alios" || devType == "contiki")
-                            return "scc";
-                        let eres = await _this.et.extract(pid)
-                        Logger.info("eres:" + eres)
-                        if (eres == 'scc') {
-                            // _this.ut.outputResult("extract file scc")
-                            Logger.info("extract file scc")
-                        } else {
-                            // _this.ut.outputResult("extract file err")
-                            Logger.info("extract file err")
-                        }
-                        return eres
-                        // return
-                    }
-                    else
-                        return "err"
-                }).then(
-                    async res => {
+        try {
+            let { loginType,
+                model
+            } = this.ut.getPidInfos(pid)
+            let devType = getCompilerType(model)
+            let _this = this
+            Logger.info("compiling")
+            switch (loginType) {
+                case "adhoc":
+                case "queue":
+                case "group":
+                    return await _this.cm.compile(pid).then(async res => {
                         if (res == "scc") {
-                            // if (devType == "alios")
-                            //     return true;
-                            _this.ut.getIdleDeviceCount(pid)
-                            let res = ""
-                            res = await new Promise<string>((resolve) => {
-                                setTimeout(() => {
-                                    resolve("get idle device count timeout")
-                                    _this.ut.events.removeAllListeners("goSim")
-                                    _this.ut.events.removeAllListeners("goDevice")
-                                }, 3000)
-                                _this.ut.events.once("goSim", () => {
-                                    if (getCompilerType(model) == 'alios') {
-                                        resolve("fw")
-                                        return
-                                    }
-                                    _this.ut.udcClient && _this.ut.udcClient.onConfigLog({ name: 'executeSelectPanel', passwd: "" })
-                                    _this.ut.events.removeAllListeners("goSim")
-                                    _this.ut.events.removeAllListeners("goDevice")
-                                    resolve("no idle device,what about tiny sim?")
-
-                                })
-                                _this.ut.events.once("goDevice", () => {
-                                    _this.ut.events.removeAllListeners("goSim")
-                                    _this.ut.events.removeAllListeners("goDevice")
-                                    resolve("fw")
-                                })
-                            })
-
-                            if (res != "fw") {
-                                this.ut.outputResult(res)
+                            Logger.info("compile scc")
+                            if (devType == "alios" || devType == "contiki")//alios 不需要解压
+                                return "scc";
+                            let eres = await _this.et.extract(pid)//文件提取结果
+                            Logger.info("eres:" + eres)
+                            if (eres == 'scc') {
+                                // _this.ut.outputResult("extract file scc")
+                                Logger.info("extract file scc")
+                            } else {
+                                // _this.ut.outputResult("extract file err")
+                                Logger.info("extract file err")
+                            }
+                            return eres
+                            // return
+                        }
+                        else {
+                            return "err"
+                        }
+                    }).then(
+                        async res => {
+                            if (res == "scc") {
+                                // if (devType == "alios")
+                                //     return true;
+                                _this.ut.getIdleDeviceCount(pid) //查询空闲设备
+                                let res = ""
                                 res = await new Promise<string>((resolve) => {
                                     setTimeout(() => {
                                         resolve("get idle device count timeout")
-                                        _this.events.removeAllListeners("dev_fw")
-                                        _this.events.removeAllListeners("sim_rt")
-                                    }, 20000)
-                                    _this.events.once("simrt", () => {
-                                        Logger.info("fw", "rt")
-                                        _this.events.removeAllListeners("dev_fw")
-                                        _this.events.removeAllListeners("sim_rt")
-                                        resolve("rt")
+                                        _this.ut.events.removeAllListeners("goSim")
+                                        _this.ut.events.removeAllListeners("goDevice")
+                                    }, 3000)
+                                    _this.ut.events.once("goSim", () => {// terminal 收包时触发该事件
+                                        if (getCompilerType(model) == 'alios') {//如果是Alios继续执行
+                                            resolve("fw")
+                                            return
+                                        }
+                                        _this.ut.udcClient && _this.ut.udcClient.onConfigLog({ name: 'executeSelectPanel', passwd: "" })//进入tinysim选择界面
+                                        _this.ut.events.removeAllListeners("goSim")
+                                        _this.ut.events.removeAllListeners("goDevice")
+                                        resolve("no idle device,what about tiny sim?")
 
                                     })
-                                    _this.events.once("devfw", () => {
-                                        Logger.info("fw", "fw")
-                                        _this.events.removeAllListeners("devfw")
-                                        _this.events.removeAllListeners("sim_rt")
+                                    _this.ut.events.once("goDevice", () => {// 继续执行
+                                        _this.ut.events.removeAllListeners("goSim")
+                                        _this.ut.events.removeAllListeners("goDevice")
                                         resolve("fw")
                                     })
                                 })
 
-                            }
+                                if (res != "fw") { //判断查询后的结果
+                                    this.ut.outputResult(res)
+                                    res = await new Promise<string>((resolve) => {
+                                        setTimeout(() => {
+                                            resolve("get idle device count timeout")
+                                            _this.events.removeAllListeners("dev_fw")
+                                            _this.events.removeAllListeners("sim_rt")
+                                        }, 20000)
+                                        _this.events.once("simrt", () => {
+                                            Logger.info("fw", "rt")
+                                            _this.events.removeAllListeners("dev_fw")
+                                            _this.events.removeAllListeners("sim_rt")
+                                            resolve("rt")
 
-                            if (res != "fw") {
-                                Logger.info("fail:" + res)
-                                return "fail"
+                                        })
+                                        _this.events.once("devfw", () => {
+                                            Logger.info("fw", "fw")
+                                            _this.events.removeAllListeners("devfw")
+                                            _this.events.removeAllListeners("sim_rt")
+                                            resolve("fw")
+                                        })
+                                    })
+
+                                }
+
+                                if (res != "fw") {
+                                    Logger.info("fail:" + res)
+                                    this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })//解除提交连接按钮禁用状态
+                                    return "fail"
+                                }
+                                Logger.info("programming")
+                                // this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnableWithJudge", passwd: "true" })
+                                let result = await _this.pm.program(pid)
+                                if (result != true) {
+                                    Logger.info("program error")
+                                    // this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
+                                } else {
+                                    Logger.info("program scc")
+                                    // this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnableWithJudge", passwd: "true" })
+                                }
                             }
-                            Logger.info("programming")
-                            let result = await _this.pm.program(pid)
-                            if (result != true) {
-                                Logger.info("program error")
-                                this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
-                            } else {
-                                Logger.info("program scc")
-                                this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnableWithJudge", passwd: "true" })
+                            else {
+                                Logger.info("compile error")
+                                // this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
                             }
-                        }
-                        else {
-                            Logger.info("compile error")
                             this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
                         }
-                    }
-                )
+
+                    )
+            }
+        }
+        catch{
+            this.ut.outputResult("something error happened when backend process the submit")
         }
 
     }

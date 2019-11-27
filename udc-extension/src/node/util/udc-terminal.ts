@@ -786,7 +786,7 @@ export class UdcTerminal {
         // let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
         _this.outputResult('burning......')
         this.send_packet(Packet.MULTI_DEVICE_PROGRAM, setJson);
-        await this.wait_cmd_excute_done(270000);
+        await this.wait_cmd_excute_done(27000);
         return (this.cmd_excute_state === 'done' ? true : false);
 
     }
@@ -796,7 +796,7 @@ export class UdcTerminal {
         let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
         _this.outputResult('burning......')
         this.send_packet(Packet.DEVICE_WAIT, content);
-        await this.wait_cmd_excute_done(270000);
+        await this.wait_cmd_excute_done(27000);
         return (this.cmd_excute_state === 'done' ? true : false);
 
     }
