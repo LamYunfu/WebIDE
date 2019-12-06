@@ -43,6 +43,7 @@ export class DeviceViewWidget extends TreeWidget {
 
     readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
     device_list?: { [key: string]: number }
+    ppid: string | undefined
 
 
     constructor(
@@ -86,39 +87,40 @@ export class DeviceViewWidget extends TreeWidget {
     protected renderTree(): React.ReactNode {
         return (
             <div>
-            <View
-                openExplorer={this.openExplorer}
-                openFileView={this.openFileView}
-                openWorkSpace={this.openWorkSpace}
-                terminateExe={this.terminateExe}
-                continueExe={this.continueExe}
-                postSimFile={this.postSimFile}
-                isconnected={this.isconnected}
-                programSingleFile={this.programSingleFile}
-                getLocal={this.getLocal}
-                setLocal={this.saveLocal}
-                config={this.config}
-                setTinyLink={this.setTinyLink}
-                openShell={this.openShell}
-                initPidQueueInfo={this.initPidQueueInfo}
-                closeTabs={this.closeTabs}
-                setQueue={this.setQueue}
-                setSize={this.setSize}
-                storeData={this.storeData}
-                getData={this.getData}
-                outputResult={this.outputResult}
-                say={this.say}
-                gotoVideo={this.gotoVideo}
-                setCookie={this.setCookie}
-                disconnect={this.disconnect} connect={this.connect}
-                callUpdate={this.callUpdate}
-                openSrcFile={this.openSrcFile}
-                postSrcFile={this.postSrcFile}
-                saveAll={this.saveAll}
-                getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
-                setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
-            />
-            {/* <iframe src='https://ashok.tanka.la/assets/examples/mnist/mnist.html'/> */}
+                <View
+                    train={this.train}
+                    openExplorer={this.openExplorer}
+                    openFileView={this.openFileView}
+                    openWorkSpace={this.openWorkSpace}
+                    terminateExe={this.terminateExe}
+                    continueExe={this.continueExe}
+                    postSimFile={this.postSimFile}
+                    isconnected={this.isconnected}
+                    programSingleFile={this.programSingleFile}
+                    getLocal={this.getLocal}
+                    setLocal={this.saveLocal}
+                    config={this.config}
+                    setTinyLink={this.setTinyLink}
+                    openShell={this.openShell}
+                    initPidQueueInfo={this.initPidQueueInfo}
+                    closeTabs={this.closeTabs}
+                    setQueue={this.setQueue}
+                    setSize={this.setSize}
+                    storeData={this.storeData}
+                    getData={this.getData}
+                    outputResult={this.outputResult}
+                    say={this.say}
+                    gotoVideo={this.gotoVideo}
+                    setCookie={this.setCookie}
+                    disconnect={this.disconnect} connect={this.connect}
+                    callUpdate={this.callUpdate}
+                    openSrcFile={this.openSrcFile}
+                    postSrcFile={this.postSrcFile}
+                    saveAll={this.saveAll}
+                    getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
+                    setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
+                />
+                {/* <iframe src='https://ashok.tanka.la/assets/examples/mnist/mnist.html'/> */}
             </div>
 
         )
@@ -262,7 +264,15 @@ export class DeviceViewWidget extends TreeWidget {
     }
     openSrcFile = (pid: string) => {
         // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
+        this.ppid = pid
         this.udcService.openPidFile(pid)
+    }
+    gotoCode(file: string) {
+        if (this.ppid == undefined) {
+            this.outputResult("err happened,try to refresh the page")
+            return
+        }
+        this.openSrcFile(this.ppid!)
     }
 
     gotoVideo = (uri: string, videoName: string) => {
@@ -317,6 +327,9 @@ export class DeviceViewWidget extends TreeWidget {
     saveAll = async () => {
         await this.applicationShell.saveAll()
 
+    }
+    train = (pid: string) => {
+        this.udcService.train(pid)
     }
 
 }

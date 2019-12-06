@@ -32,6 +32,11 @@ export namespace UdcCommands {
         category: UDC_MENU_CATEGORY,
         label: "no label"
     };
+    export const GotoCommand: Command = {
+        id: "gotoCode",
+        category: UDC_MENU_CATEGORY,
+        label: "no label"
+    };
     export const Connect: Command = {
         id: "udc.menu.connect",
         category: UDC_MENU_CATEGORY,
@@ -244,6 +249,11 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         registry.registerCommand(UdcCommands.literalAnalysis, {
             execute: (pid) => {
                 this.ds.literalAnalysis()
+            }
+        })
+        registry.registerCommand(UdcCommands.GotoCommand, {
+            execute: (file: string) => {
+                this.ds.gotoCode(file)
             }
         })
         registry.registerCommand(UdcCommands.openViewPanel, {

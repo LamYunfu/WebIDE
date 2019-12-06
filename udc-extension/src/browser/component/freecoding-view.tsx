@@ -81,6 +81,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
     }
     async componentDidMount() {
         this.context.props.openExplorer()
+        this.context.props.openSrcFile(this.props.section["ppid"][0])
         let _this = this
         // this.props.openShell()
         // _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
@@ -165,7 +166,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
                 <div className="row col-12" style={{ height: "80%" }} >
                     <div className="col-12" style={{ fontSize: "30px", height: "20%" }}>
                         项目:{this.props.title}
-                        <div style={{ left: '10px', position: "absolute", fontSize: "28px" }} >
+                        <div style={{ marginLeft: '0px', fontSize: "30px" }} >
                             这是一个关于{this.props.title}的项目
                         </div>
 
@@ -174,7 +175,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
                     </div>
                     <div className="col-12" style={{ fontSize: "30px", height: "30%" }}>
                         可用设备：
-                     <div style={{ left: '100px', position: "absolute", fontSize: "28px" }} >
+                     <div style={{ marginLeft: '100px', fontSize: "25px" }} >
                             <li>tinylink_lora</li>
                             <li>esp32</li>
                             <li>tinylink_platform</li>

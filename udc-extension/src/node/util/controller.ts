@@ -77,7 +77,7 @@ export class Controller {
                             // return
                         }
                         else {
-                            return "err"
+                            throw "error happened"
                         }
                     }).then(
                         async res => {
@@ -155,7 +155,6 @@ export class Controller {
                                 Logger.info("compile error")
                                 // this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
                             }
-                            this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
                         }
 
                     )
@@ -163,6 +162,7 @@ export class Controller {
         }
         catch{
             this.ut.outputResult("something error happened when backend process the submit")
+            this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
         }
 
     }

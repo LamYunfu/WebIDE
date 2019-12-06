@@ -168,6 +168,8 @@ export class Programer {
         }
         let arr: Object[] = []
         let setJson = {
+            "type":"QUEUE",
+            "groupId":(Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString(),
             "pid": pid,
             "program": arr
         }

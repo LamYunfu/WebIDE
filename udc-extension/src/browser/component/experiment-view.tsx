@@ -64,6 +64,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
     }
     pids: string[] = []
     codingItems: JSX.Element[] = []
+    lastSubmitCount: { [pid: string]: any } = {}
     addSubmittedCodingIssue = (issueIndex: string) => {
         this.submittedCodingIssue.push(issueIndex)
     }
@@ -236,6 +237,9 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         }
                         let tmp = [data.data]
                         for (let x of tmp) {
+                            if (_this.lastSubmitCount[x.pid] == undefined) {
+                                _this.lastSubmitCount = x.submit
+                            }
                             $(`.onlineCount.${x.pid}>span`).text(x.count)
                             _this.codingStatus[x.pid] = x.status
                             if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
@@ -243,6 +247,10 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 continue
                             }
                             let status = _this.statusCode[parseInt(x.status)];
+                            if (_this.lastSubmitCount != undefined && _this.lastSubmitCount[x.pid] != undefined &&
+                                _this.lastSubmitCount[x.pid] != x.submit) {
+                                _this.judgeStatus[x.pid] == '1'
+                            }
                             if (status == 'JUDGING') {
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
                                 let sp = $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next()
@@ -251,21 +259,25 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 sp.show()
                                 _this.judgeStatus[x.pid] = '1'
                             } else if (status == 'ACCEPT') {
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
                                 if (_this.judgeStatus[x.pid] == '1') { //9.27
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("ACCEPT"+`(${x.score})`, "rightAnswer")
+                                    _this.props.outputResult("ACCEPT" + `(${x.score})`, "rightAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
+                                    $("[id*=connectButton]").removeAttr("disabled")
+                                    $("[id*=submitSrcButton]").removeAttr("disabled")
+                                    _this.judgeStatus[x.pid] == '0'
                                 }
+                              
                             } else if (status == 'WRONG_ANSWER') {
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
@@ -273,16 +285,25 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("WRONG_ANSWER"+`(${x.score})`, "wrongAnswer")
+                                    _this.props.outputResult("WRONG_ANSWER" + `(${x.score})`, "wrongAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
+                                    $("[id*=connectButton]").removeAttr("disabled")
+                                    $("[id*=submitSrcButton]").removeAttr("disabled")
+                                    _this.judgeStatus[x.pid] == '0'
                                 }
                             } else if (status == 'TIMEOUT') {
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
+                                if (_this.judgeStatus[x.pid] == '1') {
+                                    $("[id*=connectButton]").removeAttr("disabled")
+                                    $("[id*=submitSrcButton]").removeAttr("disabled")
+                                    _this.judgeStatus[x.pid] == '0'
+                                }
+
                             } else {
                                 _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                                 _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")

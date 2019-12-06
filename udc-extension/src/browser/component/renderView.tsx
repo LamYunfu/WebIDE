@@ -5,6 +5,8 @@ import { Chapter } from './chapter-view'
 import { Scene } from './scene-view'
 import * as $ from "jquery"
 import { MyContext } from './context'
+import { AIView } from "./ai-view";
+import { VirtualSceneView } from "./virtualscene-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
@@ -39,6 +41,7 @@ export namespace View {
         setSubmitEnableWithJudgeTag: (val: boolean) => void
         getSubmitEnableWithJudgeTag: () => boolean
         openWorkSpace: (urlStr: string) => void
+        train: (pid: string) => void
     }
     export interface State {
         ajaxNotFinish: boolean,
@@ -246,16 +249,27 @@ export class View extends React.Component<View.Props, View.State>{
                             _this.title = data.data.title
                             _this.ppid = data.data.ppid
                             console.log(`ppid.......................................${_this.ppid}`)
-
+                            break
+                        }
+                        case "8": {
+                            _this.title = data.data.title
+                            _this.ppid = data.data.ppid
+                            console.log(`ppid.......................................${_this.ppid}`)
+                            break
+                        }
+                        case "9": {
+                            _this.title = data.data.title
+                            _this.ppid = data.data.ppid
+                            console.log(`ppid.......................................${_this.ppid}`)
                             break
                         }
                     }
                     _this.setState((state) => ({
-                        ajaxNotFinish: false
-                        ,
+                        ajaxNotFinish: false,
                         viewType: _this.type,
                         sidArray: sidArray
                     }))
+                    console.log("view type :" + _this.type)
                 }
             })
 
@@ -1283,9 +1297,86 @@ export class View extends React.Component<View.Props, View.State>{
 
                             </MyContext.Provider >
                             :
+                            this.state.viewType == "8" ?
+                                <MyContext.Provider value={{
+                                    showTheDefaultFreeCodingView: () => {
 
+                                    },
+                                    setClickTime: () => {
+                                        _this.clickTime = new Date().getTime()
+                                    },
+                                    setOptionDescription: (a: string) => {
+                                        _this.setOptionDescription(a)
+                                    },
+                                    setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                        _this.setOptionChoicesDescription(a)
+                                    },
+                                    setState: (tmp: object) => {
+                                        _this.setState({
+                                            ...tmp
+                                        })
 
-                            <div></div>
+                                    },
+                                    getState: (key: string) => {
+                                        let tmp: any = this.state
+                                        return tmp[key]
+                                    },
+                                    props: _this.props
+
+                                }}>
+                                    <AIView
+                                        title={this.title}
+                                        config={_this.props.config}
+                                        initPidQueueInfo={_this.props.initPidQueueInfo}
+                                        section={{ ppid: [_this.ppid], sid: "experiment" }}
+                                        outputResult={_this.props.outputResult}
+                                        say={_this.props.say}
+
+                                    />
+
+                                </MyContext.Provider >
+                                :
+                                this.state.viewType == "9" ?
+                                    <MyContext.Provider value={{
+                                        showTheDefaultFreeCodingView: () => {
+
+                                        },
+                                        setClickTime: () => {
+                                            _this.clickTime = new Date().getTime()
+                                        },
+                                        setOptionDescription: (a: string) => {
+                                            _this.setOptionDescription(a)
+                                        },
+                                        setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                            _this.setOptionChoicesDescription(a)
+                                        },
+                                        setState: (tmp: object) => {
+                                            _this.setState({
+                                                ...tmp
+                                            })
+
+                                        },
+                                        getState: (key: string) => {
+                                            let tmp: any = this.state
+                                            return tmp[key]
+                                        },
+                                        props: _this.props
+
+                                    }}>
+                                        <VirtualSceneView
+                                            title={this.title}
+                                            config={_this.props.config}
+                                            initPidQueueInfo={_this.props.initPidQueueInfo}
+                                            section={{ ppid: [_this.ppid], sid: "experiment" }}
+                                            outputResult={_this.props.outputResult}
+                                            say={_this.props.say}
+
+                                        />
+
+                                    </MyContext.Provider >
+                                    :
+
+                                    <div></div>
         )
     }
 }

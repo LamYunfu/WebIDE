@@ -90,6 +90,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     pidQueueInfo: { [pid: string]: {} } = {};
     types: { [pid: string]: string } = {};
     scids: { [pid: string]: string } = {};
+    lastSubmitCount: { [pid: string]: any } = {}
     // ctx: React.ContextType< typeof()> = this.context
     static contextType = MyContext
     get submittedOptionAnswers() {
@@ -419,14 +420,21 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         }
                         let tmp = data.problem
                         for (let x of tmp) {
-                            let exeTag = _this.currentFocusCodingIndex[0] == x.pid
+                            if (_this.lastSubmitCount[x.pid] == undefined) {
+                                _this.lastSubmitCount = x.submit
+                            }
+                            let exeTag = _this.currentFocusCodingIndex[0] == x.pid//是否为当前关注的pid
                             $(`.onlineCount.${x.pid}>span`).text(x.count)
                             _this.codingStatus[x.pid] = x.status
-                            if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
+                            if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {//如果不存在这个pid退出
 
                                 continue
                             }
                             let status = _this.statusCode[parseInt(x.status)];
+                            if (_this.lastSubmitCount != undefined && _this.lastSubmitCount[x.pid] != undefined &&
+                                _this.lastSubmitCount[x.pid] != x.submit) {
+                                _this.judgeStatus[x.pid] == '1'
+                            }
                             if (status == 'JUDGING') {
                                 //$(`.codeItem${_this.props.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
                                 let sp = $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next()
@@ -443,7 +451,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("ACCEPT"+`(${x.score})`, "rightAnswer")
+                                    _this.props.outputResult("ACCEPT" + `(${x.score})`, "rightAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
@@ -458,7 +466,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("WRONG_ANSWER"+`(${x.score})`, "wrongAnswer")
+                                    _this.props.outputResult("WRONG_ANSWER" + `(${x.score})`, "wrongAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                 }
@@ -478,7 +486,6 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 $(`.codeItem${_this.props.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
                             }
                         }
-
                     }
                 }
             )

@@ -70,5 +70,8 @@ export class DeviceViewService implements WidgetFactory {
     literalAnalysis() {
         this.widget!.literalAnalysis()
     }
+    gotoCode(file: string) {
+        this.widget!.gotoCode(file)
+    }
 
 }

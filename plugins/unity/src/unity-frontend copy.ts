@@ -32,24 +32,19 @@ namespace IoTWebview {
          }
          
          window.onload = function () {
-             var fr=document.querySelector("iframe")
-             fr.addEventListener("message", (ev) => {
-                console.log("frame:"+ev.data)
-            })
+             var btn = document.getElementById("postbtn");
+             btn.onclick = function () {
+                 messagePost()
+             }
              window.addEventListener("message", (ev) => {
                 console.log("frame:"+ev.data)
-                vscode.postMessage(ev.data)
             })
          }
           
           </script>        
         <body>
-          <iframe id="iframe"
-           src="http://localhost:8089/publish/index.html"
-            frameborder="0" 
-            style="display: block;
-             margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"
-              sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+          <div> script has been loaded</div>
+          <button id="postbtn">click to go to abc.c</button>
         </body>
         </html>
                            `;
@@ -75,8 +70,8 @@ export function start(context: theia.PluginContext) {
                 );
                 panel.webview.onDidReceiveMessage((e) => {
                     console.log("mesg:" + e.command)
-                    if (e.command == "openUri") {
-                        theia.commands.executeCommand("gotoCode", e.text)
+                    if(e.command=="openUri"){
+                        theia.commands.executeCommand("OpenCommand",`/home/project/abc.c`)
                     }
                 })
                 panel.webview.html = IoTWebview.generateHTML(

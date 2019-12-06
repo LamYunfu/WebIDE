@@ -17,6 +17,7 @@ import * as WebSocket from 'ws'
 // import { getCompilerType } from '../globalconst';
 import * as crypto from "crypto"
 import * as FormData from "form-data"
+import * as ach from 'archiver'
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -51,6 +52,7 @@ export class UdcTerminal {
             ppid?: string, type?: string
         }
     } = {}
+    aiConfig: any = {}
     currentPid: string = ``
     rootDir: string = "/home/project"
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
@@ -63,7 +65,68 @@ export class UdcTerminal {
         this.hpp = new HalfPackProcess()
         Logger.val("current path:" + process.cwd())
     }
+    parseAIConfig(pid: string) {
+        let { dirName } = this.getPidInfos(pid)
+        let infoRaw: any
+        let info: any
+        try {
+            infoRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
 
+            info = JSON.parse(infoRaw.toString("utf8")).projects[0]
+            console.log(JSON.stringify(info))
+            this.aiConfig["projectName"] = info.projectName
+            this.aiConfig["trainServer"] = info.trainServer
+            this.aiConfig["exeServer"] = info.exeServer
+        }
+        catch{
+            this.outputResult("the config.json is not set correctly")
+            return
+        }
+    }
+    async train(pid: string) {
+        this.parseAIConfig(pid)
+        console.log("enter training" + pid)
+        let _this = this
+        let { dirName } = this.getPidInfos(pid)
+        let trainServer = this.aiConfig["trainServer"]
+        let st = fs.createWriteStream(`/home/project/${dirName}/src.zip`) //打包
+        let achst = ach.create("zip").directory(`/home/project/${dirName}`, false)
+        let hash = crypto.createHash("sha1")
+        let hashVal = ""
+        let p = new Promise(resolve => {
+            st.on("close", () => {
+                console.log('compress file scc')
+                resolve("scc")
+            }
+            )
+        })
+        achst.pipe(st)
+        achst.finalize()
+        await p
+        let rb = fs.readFileSync(`/home/project/${dirName}/src.zip`, { encoding: "base64" })//base64转码文件
+        hashVal = hash.update(rb).digest("hex")
+        let data = {
+            hash: hashVal,
+            data: rb
+        }
+
+        console.log("train server" + trainServer + JSON.stringify(data))
+        let ws = new WebSocket(trainServer)
+        ws.on("open", () => {
+            _this.outputResult("open the port of server")
+            let content = _this.pkt.construct("file", rb.toString())
+            console.log(content)
+            ws.send(content, (err) => {
+                console.log(err)
+            })
+        })
+        ws.on("message", (res) => {
+            _this.outputResult(res.toString("utf8"))
+        })
+
+
+
+    }
     creatSrcFile(fnJSON: string, dirName: string, type?: string, deviceRole?: string[]) {
         //         let rootdir = this.rootDir
         //         new Promise((resolve) => {
@@ -1123,24 +1186,61 @@ export class UdcTerminal {
         this.tinyLinkInfo.passwd = passwd
         console.log("userName&passwd:" + JSON.stringify(this.tinyLinkInfo) + ".........................................")
     }
-    openPidFile(pid: string) {
+    async openPidFile(pid: string) {
         console.log("openFile")
         let { dirName } = this.pidQueueInfo[pid]
-        let fileArr = fs.readdirSync(path.join(this.rootDir, dirName))
-        fileArr.forEach((val) => {
-            if (fs.statSync(path.join(this.rootDir, dirName, val)).isDirectory()) {
-                let chidFileArr = fs.readdirSync(path.join(this.rootDir, dirName, val))
-                chidFileArr.forEach((file) => {
-                    console.log(file)
-                    if (fs.statSync(path.join(this.rootDir, dirName, val, file)).isFile() && (file.split('.').pop() == "c" || file.split('.').pop() == "cpp") &&
-                        file.split('.')[0] != "app_entry") {
-                        console.log("openfile:" + path.join(this.rootDir, dirName, val, file))
-                        this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: path.join(this.rootDir, dirName, val, file) })
-                    }
-                })
-
+        if (this.pidQueueInfo[pid].type == "freecoding" || this.pidQueueInfo[pid].type == "ai") {
+            let tag = 2
+            let configRaw: any
+            while (tag != 0) {
+                try {
+                    configRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
+                    break;
+                }
+                catch (e) {
+                    await new Promise((res) => {
+                        setTimeout(() => {
+                            res()
+                        }, 2000);
+                        tag--;
+                    })
+                }
             }
-        })
+            if (tag == 0) {
+                this.outputResult("file not ready, please wait for refresh")
+                return;
+            }
+            try {
+                let config = JSON.parse(configRaw)
+                for (let item of config["projects"]) {
+                    let srcDir = item["projectName"]
+                    let fileArr = fs.readdirSync(path.join(this.rootDir, dirName, srcDir))
+                    for (let file of fileArr) {
+                        this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: path.join(this.rootDir, dirName, srcDir, file) })
+                    }
+                }
+            }
+            catch (e) {
+                this.outputResult("config.json is not set correctly")
+                return
+            }
+        }
+        else {
+            let fileArr = fs.readdirSync(path.join(this.rootDir, dirName))
+            fileArr.forEach((val) => {
+                if (fs.statSync(path.join(this.rootDir, dirName, val)).isDirectory()) {
+                    let chidFileArr = fs.readdirSync(path.join(this.rootDir, dirName, val))
+                    chidFileArr.forEach((file) => {
+                        console.log(file)
+                        if (fs.statSync(path.join(this.rootDir, dirName, val, file)).isFile() && (file.split('.').pop() == "c" || file.split('.').pop() == "cpp") &&
+                            file.split('.')[0] != "app_entry") {
+                            console.log("openfile:" + path.join(this.rootDir, dirName, val, file))
+                            this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: path.join(this.rootDir, dirName, val, file) })
+                        }
+                    })
+                }
+            })
+        }
         this.udcClient && this.udcClient.onConfigLog({ name: 'openShell', passwd: "" })
     }
     async postSimFile(pid: string) {

@@ -16,7 +16,7 @@ export class View extends React.Component<View.Props>{
         script.async = true;
         script.innerHTML = `
         // Variables for referencing the canvas and 2dcanvas context
-        var canvas, ctx;
+        var canvas, ctx,canvashide, ctxhide;
 
         // Variables to keep track of the mouse position and left-button status 
         var mouseX, mouseY, mouseDown = 0;
@@ -29,9 +29,10 @@ export class View extends React.Component<View.Props>{
         var lastX, lastY = -1;
         console.log("script is running")
         pb = document.getElementById("predictbutton")
-        cb = document.getElementById("clearbutton")
-        // pb.addEventListener("click", predict)
+        cb = document.getElementById("clearbutton")        
+        pb.addEventListener("click", predict)
         cb.addEventListener("click", wrap = function () {
+            document.getElementsByClassName("res")[0].innerHTML = ""
             clearCanvas(canvas, ctx)
         })
         init()
@@ -79,10 +80,31 @@ export class View extends React.Component<View.Props>{
 
         // Clear the canvas context using the canvas width and height
         function clearCanvas(canvas, ctx) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            document.getElementById('rightside').innerHTML = '';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-
+        function predict() {
+            document.getElementsByClassName("res")[0].innerHTML = ""
+            webSocket = new WebSocket("ws://47.98.249.190:8005/")
+            webSocket.onopen = () => {
+                img = document.getElementById("imgtag")
+                img.width = 28
+                img.height = 28
+                img.src = canvas.toDataURL()
+                // img.src = "http://localhost:8089/abc.jpeg"
+                img.onload = function (){
+                    ctxhide.drawImage(img, 0, 0, 28, 28);
+                    str = canvashide.toDataURL().split(",").pop()
+                    len = str.length.toString()
+                    content = '{' + "imgs" + "," + len.padStart(5, '0') + "," + str + "}"
+                    webSocket.send(content)
+                }
+            }
+            webSocket.onmessage = (mesg) => {
+                document.getElementsByClassName("res")[0].innerHTML = mesg.data;
+            }
+            // document.body.append(cd);
+        
+        }
         // Keep track of the mouse button being pressed and draw a dot at current location
         function sketchpad_mouseDown() {
             mouseDown = 1;
@@ -176,11 +198,13 @@ export class View extends React.Component<View.Props>{
         async function init() {
             // Get the specific canvas element from the HTML document
             canvas = document.getElementById('sketchpad');
-
+            canvashide = document.getElementById('sketchpadhide');
+            ctxhide = canvashide.getContext('2d');
             // If the browser supports the canvas tag, get the 2d drawing context for this canvas
             if (canvas.getContext)
                 ctx = canvas.getContext('2d');
-
+            ctx.fillStyle = "black"
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
             // Check that we have a valid context to draw on/with before adding event handlers
             if (ctx) {
                 // React to mouse events on the canvas, and mouseup on the entire document
@@ -201,25 +225,24 @@ export class View extends React.Component<View.Props>{
         return (
 
             <div id="mnistapp" style={{ width: '100%' }}>
-                <h4 style={{ marginLeft: "10px" }}>mnist handwritten digit recognition</h4>
+                <h4 style={{ marginLeft: "10px" }}>手写数字识别</h4>
                 <div className="leftside" style={{ position: "relative", width: '100%' }}>
                     <div style={{ position: "relative", width: "90%", borderRadius: "20px", float: "right" }}>
                         <canvas id="sketchpad" height="400px" width="400px" style={{ display: "table", position: "relative", margin: "auto", borderStyle: "solid", left: 0, right: 0 }} ></canvas>
                         <div style={{ width: '30%', position: 'relative', margin: "auto", display: "table", left: 0, right: 0 }}>
-                            <input type="submit" value="Predict" id="predictbutton" />
-                            <input type="submit" value="Clear" id="clearbutton" />
+                            <input type="submit" value="识别" id="predictbutton" />
+                            <input type="submit" value="重置" id="clearbutton" />
                         </div>
                     </div>
-                    <div style={{ width: '10%', position: 'relative', marginLeft: '20px' }}>
-                        result:
-                                1:80%;
-                                2:10%;
-                                3:5%;
+                    <div>
+                    识别结果:
                     </div>
-
-
-
-
+                    <div className="res" style={{ width: '10%', position: 'relative', marginLeft: '20px',fontSize:'40px' }}>
+                    </div>
+                    <div style={{ "display": "none" }}>
+                        <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
+                        <img id='imgtag' />
+                    </div>
                 </div>
             </div>
 

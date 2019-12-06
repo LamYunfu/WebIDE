@@ -105,6 +105,9 @@ export class UdcServiceImpl implements UdcService {
     //     this.udcTerminal.createSrcFile(filnames)
 
     // }
+    train(pid: string) {
+        this.udcTerminal.train(pid)
+    }
 
     postFreeCodingFile(pid: string): void {
         this.controller.processFreeCoding(pid);
