@@ -10,6 +10,9 @@ import { VirtualSceneView } from "./virtualscene-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        gotoVirtualScene: () => void
+        virtualOpen: () => void
+        virtualSubmit: (pid: string) => void
         openExplorer: () => void
         openFileView: () => void
         terminateExe: () => void

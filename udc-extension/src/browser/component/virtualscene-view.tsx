@@ -34,8 +34,20 @@ export class VirtualSceneView extends React.Component<VirtualScene.Props, Virtua
         let _this = this
         _this.context.props.openSrcFile(this.props.section["ppid"][0])
         $("#submitSrcButton").click(() => {
-            _this.context.props.train(_this.props.section["ppid"][0])
+            _this.context.props.gotoVirtualScene()
+            _this.context.props.virtualSubmit(_this.props.section["ppid"][0])
         })
+        console.log("waiting")
+
+        setTimeout(() => {
+            console.log("start unity")
+            let a = () => {
+                _this.props.outputResult("start unity")
+                _this.context.props.virtualOpen()
+            }
+            a()
+        }, 3000);
+
     }
     render(): JSX.Element {
         return (

@@ -45,8 +45,9 @@ namespace IoTWebview {
           </script>        
         <body>
           <iframe id="iframe"
-           src="http://47.97.253.23:12359/publish/index.html"
+           src="http://localhost:8089/publish/index.html"
             frameborder="0" 
+            scrolling="no"
             style="display: block;
              margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"
               sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
@@ -57,6 +58,7 @@ namespace IoTWebview {
 
 }
 export function start(context: theia.PluginContext) {
+    // src="http://47.97.253.23:12359/publish/index.html"
     context.subscriptions.push(
         theia.commands.registerCommand(
             IoTCommands.TINYLINK_COMPILE,

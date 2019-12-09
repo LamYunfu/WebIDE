@@ -88,6 +88,9 @@ export class DeviceViewWidget extends TreeWidget {
         return (
             <div>
                 <View
+                    gotoVirtualScene={this.gotoVirtualScene}
+                    virtualOpen={this.virtualOpen}
+                    virtualSubmit={this.virtualSubmit}
                     train={this.train}
                     openExplorer={this.openExplorer}
                     openFileView={this.openFileView}
@@ -331,5 +334,28 @@ export class DeviceViewWidget extends TreeWidget {
     train = (pid: string) => {
         this.udcService.train(pid)
     }
+    virtualSubmit = (pid: string) => {
+        this.udcService.virtualSubmit(pid)
+    }
+    virtualOpen = () => {
+        this.commandRegistry.executeCommand("iot.plugin.tinylink.unity")
+    }
+    gotoVirtualScene = () => {
+        if (this.applicationShell.getTabBarFor("main")!.titles.some((w, i) => {
+            if (w.label == "unity") {
+                this.applicationShell.revealWidget(w.owner.id)
+                return true;
+            }
+            else {
+                return false
+            }
+        })) {
+            // this.applicationShell.getTabBarFor("main")!.
+        }
+        else {
+            // this.outputResult("no find unity")
+            this.virtualOpen()
+        }
 
+    }
 }

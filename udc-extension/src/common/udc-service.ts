@@ -30,6 +30,7 @@ export interface UdcService {
     postFreeCodingFile: (pid: string) => void
     literalAnalysis: (pid: string) => void
     train: (pid: string) => void
+    virtualSubmit: (pid: string) => void
 }
 
 

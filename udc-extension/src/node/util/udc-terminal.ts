@@ -53,6 +53,7 @@ export class UdcTerminal {
         }
     } = {}
     aiConfig: any = {}
+    virtualConfig: any = {}
     currentPid: string = ``
     rootDir: string = "/home/project"
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
@@ -123,9 +124,63 @@ export class UdcTerminal {
         ws.on("message", (res) => {
             _this.outputResult(res.toString("utf8"))
         })
+    }
+    parseVirtualConfig(pid: string) {
+        let { dirName } = this.getPidInfos(pid)
+        let infoRaw: any
+        let info: any
+        try {
+            infoRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
+            info = JSON.parse(infoRaw.toString("utf8")).projects[0]
+            console.log(JSON.stringify(info))
+            this.virtualConfig["projectName"] = info.projectName
+            this.virtualConfig["simServer"] = info.simServer
+        }
+        catch{
+            this.outputResult("the config.json is not set correctly")
+            return
+        }
+    }
+    async virtualSubmit(pid: string) {
+        this.parseVirtualConfig(pid)
+        console.log("virtual submit" + pid)
+        let _this = this
+        let { dirName } = this.getPidInfos(pid)
+        let simServer = this.virtualConfig["simServer"]
+        let st = fs.createWriteStream(`/home/project/${dirName}/src.zip`) //打包
+        let achst = ach.create("zip").directory(`/home/project/${dirName}`, false)
+        let hash = crypto.createHash("sha1")
+        let hashVal = ""
+        let p = new Promise(resolve => {
+            st.on("close", () => {
+                console.log('compress file scc')
+                resolve("scc")
+            }
+            )
+        })
+        achst.pipe(st)
+        achst.finalize()
+        await p
+        let rb = fs.readFileSync(`/home/project/${dirName}/src.zip`, { encoding: "base64" })//base64转码文件
+        hashVal = hash.update(rb).digest("hex")
+        let data = {
+            hash: hashVal,
+            data: rb
+        }
 
-
-
+        console.log("sim server" + simServer + JSON.stringify(data))
+        let ws = new WebSocket(simServer)
+        ws.on("open", () => {
+            _this.outputResult("open the port of server")
+            let content = _this.pkt.construct("file", rb.toString())
+            console.log(content)
+            ws.send(content, (err) => {
+                console.log(err)
+            })
+        })
+        ws.on("message", (res) => {
+            _this.outputResult(res.toString("utf8"))
+        })
     }
     creatSrcFile(fnJSON: string, dirName: string, type?: string, deviceRole?: string[]) {
         //         let rootdir = this.rootDir

@@ -108,7 +108,7 @@ export class View extends React.Component<View.Props>{
         // Keep track of the mouse button being pressed and draw a dot at current location
         function sketchpad_mouseDown() {
             mouseDown = 1;
-            drawLine(ctx, mouseX, mouseY, 12);
+            drawLine(ctx, mouseX, mouseY, 42);
         }
 
         // Keep track of the mouse button being released
@@ -127,7 +127,7 @@ export class View extends React.Component<View.Props>{
 
             // Draw a dot if the mouse button is currently being pressed
             if (mouseDown == 1) {
-                drawLine(ctx, mouseX, mouseY, 12);
+                drawLine(ctx, mouseX, mouseY, 42);
             }
         }
 
@@ -152,7 +152,7 @@ export class View extends React.Component<View.Props>{
             // Update the touch co-ordinates
             getTouchPos();
 
-            drawLine(ctx, touchX, touchY, 12);
+            drawLine(ctx, touchX, touchY, 42);
 
             // Prevents an additional mousedown event being triggered
             event.preventDefault();
@@ -170,7 +170,7 @@ export class View extends React.Component<View.Props>{
             getTouchPos(e);
 
             // During a touchmove event, unlike a mousemove event, we don't need to check if the touch is engaged, since there will always be contact with the screen by definition.
-            drawLine(ctx, touchX, touchY, 12);
+            drawLine(ctx, touchX, touchY, 42);
 
             // Prevent a scrolling action as a result of this touchmove triggering.
             event.preventDefault();

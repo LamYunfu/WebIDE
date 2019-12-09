@@ -32,6 +32,7 @@ export namespace UdcCommands {
         category: UDC_MENU_CATEGORY,
         label: "no label"
     };
+    
     export const GotoCommand: Command = {
         id: "gotoCode",
         category: UDC_MENU_CATEGORY,
