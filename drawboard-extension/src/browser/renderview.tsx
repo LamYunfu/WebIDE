@@ -1,5 +1,6 @@
 import React = require("react");
 import { MyContext } from "./context";
+import * as $ from "jquery"
 
 
 export namespace View {
@@ -8,13 +9,25 @@ export namespace View {
     }
 }
 export class View extends React.Component<View.Props>{
+    boardType: string | undefined
+    title: string | undefined
+    componentWillMount() {
+        this.title = $("#coding_title").text().trim()
+        if (this.title == "手写数字识别")
+            this.boardType = "digit"
+        else if (this.title == "人脸图像识别应用")
+            this.boardType = "practice"
+        else if (this.title == "实时拍照人脸识别应用")
+            this.boardType = "application"
+    }
     componentDidMount() {
 
         const script = document.createElement("script", {
 
         });
         script.async = true;
-        script.innerHTML = `
+        script.innerHTML = this.boardType == "digit" ?
+            `
         // Variables for referencing the canvas and 2dcanvas context
         var canvas, ctx,canvashide, ctxhide;
 
@@ -219,33 +232,179 @@ export class View extends React.Component<View.Props>{
             }
         }
         `
+            :
+            this.boardType == "practice" ?
+
+
+
+                `/* eslint-disable no-undef */
+          /* eslint-disable no-unused-vars */
+          // Variables for referencing the canvas and 2dcanvas context
+          var canvas, ctx, canvashide, ctxhide, input;
+          var connection;
+          ini()
+          function ini() {
+              init()
+              console.log("script is running")
+              pb = document.getElementById("predictbutton")
+              cb = document.getElementById("clearbutton")
+              // pb.addEventListener("click", predict)
+              cb.addEventListener("click", wrap = function () {
+                  console.log("clean")
+                  document.getElementsByClassName("res")[0].innerHTML = ""
+                  clearCanvas(canvas, ctx)
+              })
+              pb.addEventListener("click", wrap = function () {
+                predict()
+            })
+          }
+          
+          function clearCanvas(canvas, ctx) {
+              input.value = ""
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              // document.getElementById('rightside').innerHTML = '';
+          }
+          
+          function predict() {
+              if (connection == undefined) {
+                  //connection = new WebSocket("ws://localhost:8240")
+                  connection = new WebSocket("ws://47.98.249.190:8005")
+                  connection.onopen = () => {
+                      str = canvas.toDataURL().split(",").pop()
+                      len = str.length.toString()
+                      content = '{' + "imgs" + "," + len.padStart(5, '0') + "," + str + "}"
+                      connection.send(content)
+                      connection.onmessage = async (mesg) => {
+                          var img = document.createElement("img")
+                          x = 10
+                          y = 30
+                          width = 0.3 * canvas.width
+                          height = 0.2 * canvas.height
+                          user="陈思培"
+                          var mesgArr = mesg.data.split(",")
+                            var type = mesgArr[0].slice(1)
+                            var data = mesgArr.pop().split("}")[0]
+                            var infoArr
+                            if (type == "infos") {
+                                infoArr = data.split(":")
+                                x = parseInt(infoArr[0])
+                                y = parseInt(infoArr[1])
+                                width = parseInt(infoArr[2])
+                                height = parseInt(infoArr[3])
+                                user = infoArr[4]
+                              ctx.save()
+                              // document.body.appendChild(img)
+                              ctx.rect(x, y, width, height);
+                              ctx.strokeStyle = 'red';
+                              ctx.font = 'bold 19px serif';
+                              ctx.fillStyle = 'red';
+                              ctx.stroke();
+                              ctx.fillText(user, x+width*0.3, y+height*0.9);
+                              ctx.restore()
+                              // img.onload = () => ctx.drawImage(img, 31, 31, canvas.width, canvas.height)
+                          } 
+                      }
+                  }
+              } else {
+                  str = canvas.toDataURL().split(",").pop()
+                  len = str.length.toString()
+                  content = '{' + "imgs" + "," + len.padStart(5, '0') + "," + str + "}"
+                  connection.send(content)
+              }
+          
+          }
+          
+          function loadImage() {
+              str = URL.createObjectURL(input.files[0])
+              var img = document.createElement("img")
+              img.src = str
+              img.onload = () => {
+                  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+              }
+          }
+          async function init() {
+              canvas = document.getElementById('sketchpad');
+              input = document.getElementById("uploadbutton")
+              if (canvas.getContext)
+                  ctx = canvas.getContext('2d');
+              ctx.fillRect(0, 0, canvas.width, canvas.height)
+              if (ctx) {
+                  input.addEventListener("input", loadImage)
+              }
+          }`
+                :
+                ``
         document.head.appendChild(script);
     }
     render(): JSX.Element {
         return (
+            this.boardType == "digit" ?
+                < div id="mnistapp" style={{ width: '100%' }}>
+                    <h4 style={{ marginLeft: "10px" }}>{this.title}</h4>
+                    <div className="leftside" style={{ position: "relative", width: '100%' }}>
+                        <div style={{ position: "relative", width: "90%", borderRadius: "20px", float: "right" }}>
+                            <canvas id="sketchpad" height="400px" width="400px" style={{ display: "table", position: "relative", margin: "auto", borderStyle: "solid", left: 0, right: 0 }} ></canvas>
+                            <div style={{ width: '30%', position: 'relative', margin: "auto", display: "table", left: 0, right: 0 }}>
+                                <div><label htmlFor="predictbutton" style={{
+                                    float: "left", cursor: "pointer", padding: "0 10px",
+                                    borderStyle: "double", borderWidth: "1px"
+                                }}>识别</label></div>
+                                <div><label htmlFor="clearbutton" style={{
+                                    float: "left", cursor: "pointer", padding: "0 10px",
+                                    borderStyle: "double", borderWidth: "1px"
+                                }}>重置</label></div>
+                                <input type="submit" value="识别" id="predictbutton" style={{ display: "none" }} />
+                                <input type="submit" value="重置" id="clearbutton" style={{ display: "none" }} />
+                            </div>
 
-            <div id="mnistapp" style={{ width: '100%' }}>
-                <h4 style={{ marginLeft: "10px" }}>手写数字识别</h4>
-                <div className="leftside" style={{ position: "relative", width: '100%' }}>
-                    <div style={{ position: "relative", width: "90%", borderRadius: "20px", float: "right" }}>
-                        <canvas id="sketchpad" height="400px" width="400px" style={{ display: "table", position: "relative", margin: "auto", borderStyle: "solid", left: 0, right: 0 }} ></canvas>
-                        <div style={{ width: '30%', position: 'relative', margin: "auto", display: "table", left: 0, right: 0 }}>
-                            <input type="submit" value="识别" id="predictbutton" />
-                            <input type="submit" value="重置" id="clearbutton" />
+                        </div>
+                        <div>
+                            识别结果:
+                    </div>
+                        <div className="res" style={{ width: '10%', position: 'relative', marginLeft: '20px', fontSize: '40px' }}>
+                        </div>
+                        <div style={{ "display": "none" }}>
+                            <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
+                            <img id='imgtag' />
                         </div>
                     </div>
-                    <div>
-                    识别结果:
-                    </div>
-                    <div className="res" style={{ width: '10%', position: 'relative', marginLeft: '20px',fontSize:'40px' }}>
-                    </div>
-                    <div style={{ "display": "none" }}>
-                        <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
-                        <img id='imgtag' />
-                    </div>
-                </div>
-            </div>
-
+                </div >
+                :
+                this.boardType == "practice" ?
+                    < div id="mnistapp" style={{ width: '100%' }}>
+                        <h4 style={{ marginLeft: "10px" }}>{this.title}</h4>
+                        <div className="leftside" style={{ position: "relative", width: '100%' }}>
+                            <div style={{ position: "relative", width: "90%", borderRadius: "20px", float: "right" }}>
+                                <canvas id="sketchpad" height="400px" width="400px" style={{ display: "table", position: "relative", margin: "auto", borderStyle: "solid", left: 0, right: 0 }} ></canvas>
+                                <div style={{ width: '30%', position: 'relative', margin: "auto", display: "table", left: 0, right: 0 }}>
+                                    <div><label htmlFor="predictbutton" style={{
+                                        float: "left", cursor: "pointer", padding: "0 10px",
+                                        borderStyle: "double", borderWidth: "1px"
+                                    }}>识别</label></div>
+                                    <div><label htmlFor="clearbutton" style={{
+                                        float: "left", cursor: "pointer", padding: "0 10px",
+                                        borderStyle: "double", borderWidth: "1px"
+                                    }}>重置</label></div>
+                                    <div><label htmlFor="uploadbutton" style={{
+                                        float: "left", cursor: "pointer", padding: "0 10px",
+                                        borderStyle: "double", borderWidth: "1px"
+                                    }}>上传</label></div>
+                                    <input type="submit" value="识别" id="predictbutton" style={{ display: "none" }} />
+                                    <input type="submit" value="重置" id="clearbutton" style={{ display: "none" }} />
+                                    <input type='file' id='uploadbutton' style={{ display: "none" }} />
+                                </div>
+                            </div>
+                            <div className="res" style={{ width: '10%', position: 'relative', marginLeft: '20px', fontSize: '40px' }}>
+                            </div>
+                            <div style={{ "display": "none" }}>
+                                <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
+                                <img id='imgtag' />
+                            </div>
+                        </div>
+                    </div >
+                    :
+                    <div>not for this problem</div>
 
         )
     }

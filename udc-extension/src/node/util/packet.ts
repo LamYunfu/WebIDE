@@ -21,7 +21,7 @@ export class Packet {
     construct(type: string, value: string): string {
         if (!this.is_valid_type(type)) {
             return ''
-        } else if (value.length > 99999) {
+        } else if (value.length > 9999999999) {
             Logger.info('warning: data size larger than permited');
             return ''
         } else {
