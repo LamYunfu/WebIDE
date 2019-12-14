@@ -13,9 +13,9 @@ export class View extends React.Component<View.Props>{
     title: string | undefined
     componentWillMount() {
         this.title = $("#coding_title").text().trim()
-        if (this.title == "手写数字识别")
+        if (this.title == "画板数字识别")
             this.boardType = "digit"
-        else if (this.title == "人脸图像识别应用")
+        else if (this.title == "图像人脸识别")
             this.boardType = "practice"
         else if (this.title == "实时拍照人脸识别应用")
             this.boardType = "application"
@@ -295,8 +295,9 @@ export class View extends React.Component<View.Props>{
                                 user = infoArr[4]
                               ctx.save()
                               // document.body.appendChild(img)
-                              ctx.rect(x, y, width, height);
+                              ctx.beginPath()
                               ctx.strokeStyle = 'red';
+                              ctx.strokeRect(x, y, width, height);                             
                               ctx.font = 'bold 19px serif';
                               ctx.fillStyle = 'red';
                               ctx.stroke();
@@ -341,42 +342,59 @@ export class View extends React.Component<View.Props>{
     render(): JSX.Element {
         return (
             this.boardType == "digit" ?
-                < div id="mnistapp" style={{ width: '100%' }}>
-                    <h4 style={{ marginLeft: "10px" }}>{this.title}</h4>
-                    <div className="leftside" style={{ position: "relative", width: '100%' }}>
-                        <div style={{ position: "relative", width: "90%", borderRadius: "20px", float: "right" }}>
-                            <canvas id="sketchpad" height="400px" width="400px" style={{ display: "table", position: "relative", margin: "auto", borderStyle: "solid", left: 0, right: 0 }} ></canvas>
-                            <div style={{ width: '30%', position: 'relative', margin: "auto", display: "table", left: 0, right: 0 }}>
-                                <div><label htmlFor="predictbutton" style={{
-                                    float: "left", cursor: "pointer", padding: "0 10px",
-                                    borderStyle: "double", borderWidth: "1px"
-                                }}>识别</label></div>
-                                <div><label htmlFor="clearbutton" style={{
-                                    float: "left", cursor: "pointer", padding: "0 10px",
-                                    borderStyle: "double", borderWidth: "1px"
-                                }}>重置</label></div>
-                                <input type="submit" value="识别" id="predictbutton" style={{ display: "none" }} />
-                                <input type="submit" value="重置" id="clearbutton" style={{ display: "none" }} />
+                < div id="mnistapp" style={{ width: '100%', height: "95%", fontFamily: "KaiTi" }}>
+                    <h4 style={{height:'20%%' ,padding: '15% 0 0%' }}>{this.title}</h4>
+                    <div className="leftside" style={{ position: "relative", width: '100%', height: "55%" }}>
+                        <div style={{ position: "relative", float: "right", width: "70%", paddingRight: "60px" }}>
+                            <canvas id="sketchpad" height="400px" width="400px" style={{
+                                display: "table", borderRadius: "20px",
+                                position: "relative"
+                            }} ></canvas>
+                        </div>
+                        <div style={{ position: "relative", width: "30%", height: "400px", display: "flex", justifyContent: "center", alignItems: "center", }}>
+                            <div style={{ width: "100%" }}>
+                                <div style={{ fontSize: "25px" }}>
+                                    识别结果:
+                                 </div>
+                                <div style={{
+                                    width: "92%", height: "0", padding: '46%', border: "solid", margin: "20px 0px"
+                                }}>
+                                    <div className="res" style={{
+                                        display: "flex", justifyContent: "center", alignItems: "center",
+                                       width:"100%",height:"100%", fontSize: '60px',
+                                    }}>
+                                        9
+                                </div>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-around",padding:"0 20px" }}>
+                                    <div><label htmlFor="predictbutton" style={{
+                                        float: "left", cursor: "pointer", padding: "0 10px",
+                                        borderStyle: "double", borderWidth: "1px"
+                                    }}>识别</label></div>
+                                    <div><label htmlFor="clearbutton" style={{
+                                        float: "left", cursor: "pointer", padding: "0 10px",
+                                        borderStyle: "double", borderWidth: "1px"
+                                    }}>重置</label></div>
+                                    <input type="submit" value="识别" id="predictbutton" style={{ display: "none" }} />
+                                    <input type="submit" value="重置" id="clearbutton" style={{ display: "none" }} />
+                                </div>
+                                <div style={{ "display": "none" }}>
+                                    <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
+                                    <img id='imgtag' />
+                                </div>
                             </div>
-
-                        </div>
-                        <div>
-                            识别结果:
-                    </div>
-                        <div className="res" style={{ width: '10%', position: 'relative', marginLeft: '20px', fontSize: '40px' }}>
-                        </div>
-                        <div style={{ "display": "none" }}>
-                            <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
-                            <img id='imgtag' />
                         </div>
                     </div>
+                    {/* <div style={{ borderStyle: "solid", borderWidth: "2px", width: "80%", height: "20%", marginBottom: "auto" }}>
+                        识别中
+                    </div> */}
                 </div >
                 :
                 this.boardType == "practice" ?
-                    < div id="mnistapp" style={{ width: '100%' }}>
-                        <h4 style={{ marginLeft: "10px" }}>{this.title}</h4>
+                    < div id="mnistapp" style={{ width: '100%',height:"100%" }}>
+                        <h4 style={{ height:"15%",padding: "13% 0 0" }}>{this.title}</h4>
                         <div className="leftside" style={{ position: "relative", width: '100%' }}>
-                            <div style={{ position: "relative", width: "90%", borderRadius: "20px", float: "right" }}>
+                            <div style={{ position: "relative", width: "90%", borderRadius: "20px",margin:"auto" }}>
                                 <canvas id="sketchpad" height="400px" width="400px" style={{ display: "table", position: "relative", margin: "auto", borderStyle: "solid", left: 0, right: 0 }} ></canvas>
                                 <div style={{ width: '30%', position: 'relative', margin: "auto", display: "table", left: 0, right: 0 }}>
                                     <div><label htmlFor="predictbutton" style={{

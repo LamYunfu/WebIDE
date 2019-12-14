@@ -1,6 +1,8 @@
 cd udc-extension
 echo "compile watching"
 (yarn watch &)
+cd ../drawboard-extension
+(yarn watch &)
 cd ../browser-app
 echo "web pack watching"
 (yarn watch &)
