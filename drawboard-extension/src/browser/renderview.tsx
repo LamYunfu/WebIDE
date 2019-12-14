@@ -363,7 +363,7 @@ export class View extends React.Component<View.Props>{
                                         display: "flex", justifyContent: "center", alignItems: "center",
                                        width:"100%",height:"100%", fontSize: '60px',
                                     }}>
-                                        9
+                                        
                                 </div>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-around",padding:"0 20px" }}>
