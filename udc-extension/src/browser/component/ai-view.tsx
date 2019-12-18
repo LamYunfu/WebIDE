@@ -34,6 +34,36 @@ export class AIView extends React.Component<AI.Props, AI.State> {
 
     async componentDidMount() {
         let _this = this
+        if (this.props.title == "画板数字识别")
+            $("#aiDSP").attr("src", `http://47.97.253.23:12311/static/doc/digit.html`)
+        else if (this.props.title == "图像人脸识别")
+            $("#aiDSP").attr("src", `http://47.97.253.23:12311/static/doc/face.html`)
+        else if (this.props.title == "视频人脸识别") {
+            $("#aiDSP").attr("src", `http://47.97.253.23:12311/static/doc/face_recognition.html`)
+            let sp = document.createElement("script")
+            sp.innerHTML = `
+            db = document.getElementById("downloadButton")         
+            db.addEventListener("click", wrap = function () {
+            console.log("click download button")
+            // connection = new WebSocket("ws://localhost:8240")
+            connection = new WebSocket("ws://47.98.249.190:8005")
+            connection.onopen = async () => {                        
+                                    content = "{download,0,0}"
+                                    connection.send(content)
+                                    connection.onmessage = async (mesg) => {
+                                                                link = document.getElementById("downloadlink")
+                                                                file = mesg.data.split(",").pop().split("}")[0]                                         
+                                                                link.href = "data:application/octet-stream;base64,"+file
+                                                                link.download = "model.zip";
+                                                                link.click()
+                                                            }               
+                                 }
+            })
+            document.getElementById("submitSrcButton").
+            `
+            document.head.appendChild(sp)
+
+        }
         _this.context.props.openSrcFile(_this.props.section["ppid"][0])
         $("#submitSrcButton").click(() => {
             _this.context.props.train(_this.props.section["ppid"][0])
@@ -41,14 +71,30 @@ export class AIView extends React.Component<AI.Props, AI.State> {
     }
     render(): JSX.Element {
         return (
-            <div>
-                <h5 id="titleAndStatus" className="card-title">
-        <span id={"coding_title"}>{this.props.title}</span>
+            <div style={{ width: "100%", height: "100%" }}>
+                <h5 id="titleAndStatus" className="card-title" style={{ display: "none" }}>
+                    <span id={"coding_title"}>{this.props.title}</span>
                 </h5>
-                <div id="codingInfoAreaContainer">
-                    <pre className="card-text" id={"codingInfoArea"} title="1">这是一个关于{this.props.title}的AI实验</pre>
+                <div style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'darkgray'
+                }}>
+                    <iframe id="aiDSP" src="" style={{
+                        width: " 100%",
+                        height: '99%',
+                        borderWidth: '0',
+                        background: 'darkgray',
+                        paddingBottom: "50px"
+                    }}></iframe>
                 </div>
-                <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>submit</button></span>
+
+                <a id="downloadlink" style={{ "display": "none" }}></a>
+                {this.props.title != "视频人脸识别" ?
+                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>submit</button></span>
+                    :
+                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"downloadButton"}>download</button></span>
+                }
             </div >
         )
     }

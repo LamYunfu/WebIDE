@@ -162,7 +162,7 @@ export class View extends React.Component<View.Props, View.State>{
     }
 
     async componentWillMount() {
-
+        $("title").html("WebIDE")
         let _this = this
         $.ajax(
             {
@@ -1252,7 +1252,7 @@ export class View extends React.Component<View.Props, View.State>{
                             </div>
                         </MyContext.Provider >
                         :
-                        this.state.viewType == "5" ?
+                        this.state.viewType == "5" ?//自由编程
                             <MyContext.Provider value={{
                                 showTheDefaultFreeCodingView: () => {
 
@@ -1300,7 +1300,8 @@ export class View extends React.Component<View.Props, View.State>{
 
                             </MyContext.Provider >
                             :
-                            this.state.viewType == "8" ?
+                            this.state.viewType == "8" ?//人工智能
+
                                 <MyContext.Provider value={{
                                     showTheDefaultFreeCodingView: () => {
 
@@ -1326,7 +1327,9 @@ export class View extends React.Component<View.Props, View.State>{
                                     },
                                     props: _this.props
 
+
                                 }}>
+
                                     <AIView
                                         title={this.title}
                                         config={_this.props.config}
@@ -1334,10 +1337,10 @@ export class View extends React.Component<View.Props, View.State>{
                                         section={{ ppid: [_this.ppid], sid: "experiment" }}
                                         outputResult={_this.props.outputResult}
                                         say={_this.props.say}
-
                                     />
 
                                 </MyContext.Provider >
+
                                 :
                                 this.state.viewType == "9" ?
                                     <MyContext.Provider value={{

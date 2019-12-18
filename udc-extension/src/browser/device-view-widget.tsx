@@ -86,7 +86,7 @@ export class DeviceViewWidget extends TreeWidget {
     }
     protected renderTree(): React.ReactNode {
         return (
-            <div>
+           
                 <View
                     gotoVirtualScene={this.gotoVirtualScene}
                     virtualOpen={this.virtualOpen}
@@ -122,9 +122,7 @@ export class DeviceViewWidget extends TreeWidget {
                     saveAll={this.saveAll}
                     getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
                     setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
-                />
-                {/* <iframe src='https://ashok.tanka.la/assets/examples/mnist/mnist.html'/> */}
-            </div>
+                />     
 
         )
     }
