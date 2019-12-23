@@ -41,8 +41,8 @@ export class DrawboardViewWidget extends TreeWidget {
         super(treeProps, model, contextMenuRenderer);
 
         this.id = 'drawboard-view';
-        this.title.label = 'Drawboard';
-        this.title.caption = 'Drawboard';
+        this.title.label = ' ';
+        this.title.caption = ' ';
         this.title.closable = true;
         this.title.iconClass = 'fa drawboard-view-tab-icon';
         this.addClass('theia-drawboard-view');

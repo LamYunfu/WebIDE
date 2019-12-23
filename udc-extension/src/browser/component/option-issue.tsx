@@ -1,6 +1,7 @@
 import React = require("react");
 import * as $ from "jquery"
 import { Logger } from "../../node/util/logger";
+import { QUIZE_JUDGE_URL, CHOICE_JUDGE_URL } from "../../setting/front-end-config";
 export namespace OptionItem {
     export interface Props {
         type: string,
@@ -360,7 +361,7 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                         withCredentials: true
                     },
                     method: "POST",
-                    url: "http://api.tinylink.cn/problem/quiz/judge",
+                    url: QUIZE_JUDGE_URL,
                     dataType: 'json',
                     contentType: "text/javascript",
                     data: JSON.stringify({
@@ -414,7 +415,7 @@ export class ChoiceCollection extends React.Component<ChoiceCollection.Props, Ch
                         withCredentials: true
                     },
                     method: "POST",
-                    url: "http://judge.tinylink.cn/quiz/choices/judge",
+                    url: CHOICE_JUDGE_URL,
                     dataType: 'json',
                     contentType: "text/javascript",
                     data: JSON.stringify({

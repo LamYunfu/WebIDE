@@ -2,6 +2,7 @@ import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { MyContext } from "./context";
+import { PROBLEM_STATUS_URL } from "../../setting/front-end-config";
 export namespace FreeCoding {
     export interface Props {
         title: string
@@ -138,7 +139,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
                         withCredentials: true
                     },
                     method: "POST",
-                    url: "http://api.tinylink.cn/problem/status",
+                    url: PROBLEM_STATUS_URL,
 
                     contentType: "text/plain",
                     data: JSON.stringify({ pid: _this.pids.join().trim() }),

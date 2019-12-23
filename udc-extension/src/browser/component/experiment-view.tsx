@@ -5,6 +5,7 @@ import { find } from "@phosphor/algorithm";
 import { CodeItem, CodingInfo } from "./code-issue"
 import { MyContext } from "./context";
 import { getCompilerType } from "../../node/globalconst";
+import { DETAIL_ISSUE_URL, LINK_LAB_HOMEPAGE_URL, PROBLEM_STATUS_URL } from "../../setting/front-end-config"
 export namespace Experiment {
     export interface Props {
         section: { [key: string]: any }
@@ -89,7 +90,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                     withCredentials: true
                 },
                 method: "POST",
-                url: "http://api.tinylink.cn/problem/detail",
+                url: DETAIL_ISSUE_URL,
 
                 dataType: 'json',
                 contentType: "text/plain",
@@ -224,7 +225,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         withCredentials: true
                     },
                     method: "POST",
-                    url: "http://api.tinylink.cn/problem/status",
+                    url: PROBLEM_STATUS_URL,
 
                     contentType: "text/plain",
                     data: JSON.stringify({ pid: _this.pids.join().trim() }),
@@ -232,7 +233,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         // alert(JSON.stringify(data))
                         if (data.code != "0") {
                             _this.props.outputResult(data.message)
-                            window.location.replace("http://linklab.tinylink.cn")
+                            window.location.replace(LINK_LAB_HOMEPAGE_URL)
                             return
                         }
                         let tmp = [data.data]
@@ -274,7 +275,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                     $("[id*=submitSrcButton]").removeAttr("disabled")
                                     _this.judgeStatus[x.pid] == '0'
                                 }
-                              
+
                             } else if (status == 'WRONG_ANSWER') {
                                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")

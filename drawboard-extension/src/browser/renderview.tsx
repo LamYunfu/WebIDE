@@ -1,8 +1,7 @@
 import React = require("react");
 import { MyContext } from "./context";
 import * as $ from "jquery"
-
-
+import { ModelTestAddress } from "../settings/aiconfig";
 export namespace View {
     export interface Props {
 
@@ -46,7 +45,7 @@ export class View extends React.Component<View.Props>{
         pb.addEventListener("click", predict)
         cb.addEventListener("click", wrap = function () {
             document.getElementsByClassName("res")[0].innerHTML = ""
-            document.getElementById("submitIndicator").innerHTML=""
+            document.getElementById("submitIndicator").style.display="none"
             clearCanvas(canvas, ctx)
         })
         init()
@@ -98,9 +97,9 @@ export class View extends React.Component<View.Props>{
         }
         function predict() {
             document.getElementById("predictbutton").disabled=true
-            document.getElementById("submitIndicator").innerHTML="识别中..."
+            document.getElementById("submitIndicator").style.display="flex"
             document.getElementsByClassName("res")[0].innerHTML = ""
-            webSocket = new WebSocket("ws://47.98.249.190:8005/")
+            webSocket = new WebSocket("${ModelTestAddress}")
             webSocket.onopen = () => {
                 img = document.getElementById("imgtag")
                 img.width = 28
@@ -118,7 +117,7 @@ export class View extends React.Component<View.Props>{
             webSocket.onmessage = (mesg) => {
                 document.getElementsByClassName("res")[0].innerHTML = mesg.data;
                 document.getElementById("predictbutton").disabled=false
-                document.getElementById("submitIndicator").innerHTML=""
+                document.getElementById("submitIndicator").style.display="none"
             }
             // document.body.append(cd);
         
@@ -257,7 +256,7 @@ export class View extends React.Component<View.Props>{
               cb.addEventListener("click", wrap = function () {
                   console.log("clean")
                   document.getElementsByClassName("res")[0].innerHTML = ""
-                  document.getElementById("submitIndicator").innerHTML=""
+                  document.getElementById("submitIndicator").style.display="none"
                   clearCanvas(canvas, ctx)
               })
               pb.addEventListener("click", wrap = function () {
@@ -273,10 +272,14 @@ export class View extends React.Component<View.Props>{
           }
           
           function predict() {
-              document.getElementById("submitIndicator").innerHTML="识别中..."
+            if (input.files[0] == undefined) {
+                alert("请先上传图片")
+                return
+            }
+              document.getElementById("submitIndicator").style.display="flex"
               if (connection == undefined) {
                 //   connection = new WebSocket("ws://localhost:8240")
-                  connection = new WebSocket("ws://47.98.249.190:8005")
+                  connection = new WebSocket("${ModelTestAddress}")
                   connection.onopen = () => {
                       str = canvas.toDataURL().split(",").pop()
                       len = str.length.toString()
@@ -310,7 +313,7 @@ export class View extends React.Component<View.Props>{
                               ctx.stroke();
                               ctx.fillText(user, x+width*0.3, y+height*0.9);
                               ctx.restore()
-                              document.getElementById("submitIndicator").innerHTML=""
+                              document.getElementById("submitIndicator").style.display="none"
                               // img.onload = () => ctx.drawImage(img, 31, 31, canvas.width, canvas.height)
                           } 
                       }
@@ -325,12 +328,15 @@ export class View extends React.Component<View.Props>{
           }
           
           function loadImage() {
-             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            //   cb.click()
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
               str = URL.createObjectURL(input.files[0])
               var img = document.createElement("img")
               img.src = str
               img.onload = () => {
-                  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                rate = img.height / img.width
+                rate > 1 ? ctx.drawImage(img, canvas.width*0.5*(1-rate), 0, canvas.width / rate, canvas.height) :
+                    ctx.drawImage(img, 0, canvas.width*0.5*(1-rate), canvas.width, canvas.height * rate)
               }
           }
           async function init() {
@@ -345,6 +351,7 @@ export class View extends React.Component<View.Props>{
           }`
                 :
                 ``
+        // console.log(script.innerHTML)
         document.head.appendChild(script);
         //         let markdownLib = document.createElement("script")
         //         markdownLib.src = `//simonwaldherr.github.io/micromarkdown.js/dist/micromarkdown.min.js`
@@ -400,10 +407,12 @@ export class View extends React.Component<View.Props>{
     render(): JSX.Element {
         return (
             this.boardType == "digit" ?
-                < div id="mnistapp" style={{ width: '100%', height: "100%", fontFamily: "KaiTi" }}>
+                < div id="mnistapp" style={{ width: '100%', height: "100%" }}>
                     <div style={{
-                        height: '15%', fontSize: "3em", textAlign: "center", padding: '8%', margin: '0', border: "solid", borderWidth: '0 0 2px'
-                    }}>{this.title}</div>
+                        height: '15%', fontSize: "3em", textAlign: "center", padding: '4%', margin: '0', border: "solid", borderWidth: '0 0 2px'
+                    }}>{this.title}
+                        <div style={{ fontSize: "15px" }}>尽量画满后识别</div>
+                    </div>
                     <div className="leftside" style={{ position: "relative", width: '100%', height: "55%", display: "flex", justifyContent: "center", paddingTop: "20px" }}>
                         <div style={{ position: "relative" }}>
                             <canvas id="sketchpad" height="400px" width="400px" style={{
@@ -439,49 +448,52 @@ export class View extends React.Component<View.Props>{
                                 </tr>
                             </table>
                             <div style={{ width: "100%", display: "flex", justifyContent: "space-around", padding: "0 20px" }}>
-                                <div><label htmlFor="predictbutton" className="predictbutton btn btn-primary" style={{
+                                <div style={{ width: "20%" }} ><label htmlFor="predictbutton" className="predictbutton btn btn-primary" style={{
                                     float: "left", cursor: "pointer", padding: "0 10px",
                                     borderStyle: "double", borderWidth: "1px",
-                                    width: "60px", fontSize: "15px"
+                                    width: "100%", fontSize: "15px",
+                                    margin: "6px"
                                 }}>识别</label></div>
-                                <div><label htmlFor="clearbutton" className="clearbutton btn btn-primary" style={{
+                                <div style={{ width: "20%" }} ><label htmlFor="clearbutton" className="clearbutton btn btn-primary" style={{
                                     float: "left", cursor: "pointer", padding: "0 10px",
                                     borderStyle: "double", borderWidth: "1px",
-                                    width: "60px", fontSize: "15px"
+                                    width: "100%", fontSize: "15px",
+                                    margin: "6px"
                                 }}>重置</label></div>
                                 <input type="submit" value="识别" id="predictbutton" style={{ display: "none" }} />
                                 <input type="submit" value="重置" id="clearbutton" style={{ display: "none" }} />
                             </div>
                         </div>
                     </div>
-                    <span id="submitIndicator"></span>
+
+
                     <div style={{
-                        position: "relative", width: "100%", height: "20%",
-                        display: "flex", justifyContent: "center", alignItems: "center",
+                        position: "relative", width: "100%", height: "30%",
                         border: "solid", borderWidth: "2px 0 0 0"
                     }}>
-                        <div style={{ width: "30%" }}>
-                            {/* <div style={{ fontSize: "25px" }}>
-                                识别结果:
-                                 </div> */}
-                            <div style={{
-                                height: "100", padding: '50%',
-                                margin: "20px 0px"
-                            }}>
-                                <div className="res" style={{
-                                    display: "flex", justifyContent: "center", alignItems: "center",
-                                    width: "100%", height: "100%", fontSize: '80px',
-                                }}>
-
-                                </div>
+                        <div id="submitIndicator" style={{
+                            width: "100%", height: "100%", position: "absolute",
+                            display: "none", justifyContent: "center", alignItems: "center"
+                        }}>
+                            <div className="spinner-border" role="status" style={{ width: "130px", height: "130px", position: "absolute" }}>
+                                <span className="sr-only">Loading...</span>
                             </div>
+                            <div >识别中...</div>
+                        </div>
+                        <div className="res" style={{
+                            display: "flex", justifyContent: "center", alignItems: "center",
+                            width: "100%", height: "100%", fontSize: '130px',
+                        }}>
+                            9
+                              </div>
 
-                            <div style={{ "display": "none" }}>
-                                <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
-                                <img id='imgtag' />
-                            </div>
+
+                        <div style={{ "display": "none" }}>
+                            <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
+                            <img id='imgtag' />
                         </div>
                     </div>
+
                     {/* <div style={{ borderStyle: "solid", borderWidth: "2px", width: "80%", height: "20%", marginBottom: "auto" }}>
                         识别中
                     </div> */}
@@ -490,8 +502,10 @@ export class View extends React.Component<View.Props>{
                 this.boardType == "practice" ?
                     < div id="mnistapp" style={{ width: '100%', height: "100%" }}>
                         <div style={{
-                            height: '15%', fontSize: "3em", textAlign: "center", padding: '8%', margin: '0', border: "solid", borderWidth: '0 0 2px'
-                        }}>{this.title}</div>
+                            height: '15%', fontSize: "3em", textAlign: "center", padding: '4%', margin: '0', border: "solid", borderWidth: '0 0 2px'
+                        }}>{this.title}
+                            <div style={{ fontSize: "15px" }}>请上传图片后识别</div>
+                        </div>
                         <div className="leftside" style={{ position: "relative", width: '100%' }}>
                             <div style={{ position: "relative", width: "100%", borderRadius: "20px", margin: "auto", textAlign: "center", paddingTop: "20px" }}>
                                 <canvas id="sketchpad" height="400px" width="400px" style={{ display: "table", position: "relative", margin: "auto", borderStyle: "solid", left: 0, right: 0 }} ></canvas>
@@ -500,36 +514,47 @@ export class View extends React.Component<View.Props>{
                                 <div><label htmlFor="predictbutton" className="predictbutton btn btn-primary" style={{
                                     float: "left", cursor: "pointer", padding: "0 10px",
                                     borderStyle: "double", borderWidth: "1px",
-                                    width: "60px", fontSize: "15px"
+                                    width: "60px", fontSize: "15px",
+                                    margin: "6px"
                                 }}>识别</label></div>
                                 <div><label htmlFor="clearbutton" className="clearbutton btn btn-primary" style={{
                                     float: "left", cursor: "pointer", padding: "0 10px",
                                     borderStyle: "double", borderWidth: "1px",
-                                    width: "60px", fontSize: "15px"
+                                    width: "60px", fontSize: "15px",
+                                    margin: "6px"
                                 }}>重置</label></div>
                                 <div><label htmlFor="uploadbutton" className="uploadbutton btn btn-primary" style={{
                                     float: "left", cursor: "pointer", padding: "0 10px",
                                     borderStyle: "double", borderWidth: "1px",
-                                    width: "60px", fontSize: "15px"
+                                    width: "60px", fontSize: "15px",
+                                    margin: "6px"
                                 }}>上传</label></div>
                                 <input type="submit" value="识别" id="predictbutton" style={{ display: "none" }} />
                                 <input type="submit" value="重置" id="clearbutton" style={{ display: "none" }} />
                                 <input type='file' id='uploadbutton' style={{ display: "none" }} />
                             </div>
-                            <span id="submitIndicator"></span>
                             <div style={{
                                 position: "relative", width: "100%", height: "20%",
-                                display: "flex", justifyContent: "center", alignItems: "center",
                                 border: "solid", borderWidth: "2px 0 0 0"
                             }}>
-                                <div className="res" style={{ width: '10%', position: 'relative', marginLeft: '20px', fontSize: '40px' }}>
+                                <div className="res" style={{ display: "none", justifyContent: "center", alignItems: "center", width: '10%', position: 'relative', marginLeft: '20px', fontSize: '40px' }}>
                                 </div>
                                 <div style={{ "display": "none" }}>
                                     <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
                                     <img id='imgtag' />
                                 </div>
+
                             </div>
                         </div >
+                        <div id="submitIndicator" style={{
+                            width: "100%", height: "30%", position: "absolute",
+                            display: "none", justifyContent: "center", alignItems: "center"
+                        }}>
+                            <div className="spinner-border" role="status" style={{ width: "130px", height: "130px", position: "absolute" }}>
+                                <span className="sr-only">Loading...</span>
+                            </div>
+                            <div >识别中...</div>
+                        </div>
                     </div>
                     :
                     <div>not for this problem</div>

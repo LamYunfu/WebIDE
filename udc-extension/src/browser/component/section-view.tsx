@@ -7,6 +7,7 @@ import { OptionItem, OptionInfo, } from './option-issue'
 import { CodeItem, CodingInfo } from './code-issue'
 import { MyContext } from './context'
 import { getCompilerType } from "../../node/globalconst";
+import { VIDEO_URL, QUIZ_CONTENT_URL, DETAIL_ISSUE_URL, LINK_LAB_HOMEPAGE_URL, MULTIPLY_PROBLEM_STATUS_URL } from "../../setting/front-end-config";
 
 export namespace SectionUI {
     export interface Props {
@@ -123,7 +124,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     async componentWillMount() {
         let _this = this
         this.videoNames = [this.props.section.video]
-        this.uris = [`http://linklab.tinylink.cn/${this.props.section.video}`]
+        this.uris = [`${VIDEO_URL}${this.props.section.video}`]
         this.setState((state) => ({
             ...state,
             optionItems: _this.optionItems,
@@ -139,7 +140,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     withCredentials: true
                 },
                 method: "POST",
-                url: "http://judge.tinylink.cn/quiz/content",
+                url: QUIZ_CONTENT_URL,
                 dataType: 'json',
                 contentType: "text/plain",
                 data: JSON.stringify({ qzid: _this.props.section.qzid }),
@@ -193,8 +194,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                     withCredentials: true
                 },
                 method: "POST",
-                url: "http://api.tinylink.cn/problem/detail",
-
+                url: DETAIL_ISSUE_URL,
                 dataType: 'json',
                 contentType: "text/plain",
                 data: JSON.stringify({ ppid: _this.props.section.ppid }), // serializes the form's elements.
@@ -394,110 +394,110 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
             })
 
-            setInterval(() => {
-                _this.pids.length != 0 && $.ajax(
-                    {
-                        headers: {
-                            "accept": "application/json",
-                        },
-                        crossDomain: true,
-                        xhrFields: {
-                            withCredentials: true
-                        },
-                        method: "POST",
-                        url: "http://judge.tinylink.cn/problem/status",
-    
-                        contentType: "text/plain",
-                        data: JSON.stringify({ pid: _this.pids }),
-                        success: function (data) {
-                            // alert(JSON.stringify(data))
-                            if (data.msg != "success") {
-                                _this.props.outputResult(data.message)
-                                window.location.replace("http://linklab.tinylink.cn")
-                                return
-                            }
-                            let tmp = data.problem
-                            for (let x of tmp) {
-                                if (_this.lastSubmitCount[x.pid] == undefined) {
-                                    _this.lastSubmitCount = x.submit
-                                }
-                                $(`.onlineCount.${x.pid}>span`).text(x.count)
-                                _this.codingStatus[x.pid] = x.status
-                                if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {    
-                                    continue
-                                }
-                                let status = _this.statusCode[parseInt(x.status)];
-                                if (_this.lastSubmitCount != undefined && _this.lastSubmitCount[x.pid] != undefined &&
-                                    _this.lastSubmitCount[x.pid] != x.submit) {
-                                    _this.judgeStatus[x.pid] == '1'
-                                }
-                                if (status == 'JUDGING') {
-                                    //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
-                                    let sp = $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next()
-                                    console.log("judging.....................................")
-                                    sp.attr("class", "oi oi-ellipses")
-                                    sp.show()
-                                    _this.judgeStatus[x.pid] = '1'
-                                } else if (status == 'ACCEPT') {
-                                    // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                    // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                    _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                    //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
-                                    $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
-                                    if (_this.judgeStatus[x.pid] == '1') { //9.27
-                                        if (x.wrongInfo != "")
-                                            _this.props.outputResult(x.wrongInfo)
-                                        _this.props.outputResult("ACCEPT" + `(${x.score})`, "rightAnswer")
-                                        _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
-                                        _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
-                                        $("[id*=connectButton]").removeAttr("disabled")
-                                        $("[id*=submitSrcButton]").removeAttr("disabled")
-                                        _this.judgeStatus[x.pid] == '0'
-                                    }
-                                  
-                                } else if (status == 'WRONG_ANSWER') {
-                                    // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                    // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                    _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                    //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
-                                    $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
-                                    // alert(_this.judgeStatus[x.pid])
-                                    if (_this.judgeStatus[x.pid] == '1') {
-                                        if (x.wrongInfo != "")
-                                            _this.props.outputResult(x.wrongInfo)
-                                        _this.props.outputResult("WRONG_ANSWER" + `(${x.score})`, "wrongAnswer")
-                                        _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
-                                        _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
-                                        $("[id*=connectButton]").removeAttr("disabled")
-                                        $("[id*=submitSrcButton]").removeAttr("disabled")
-                                        _this.judgeStatus[x.pid] == '0'
-                                    }
-                                } else if (status == 'TIMEOUT') {
-                                    // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                    // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                    _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                    //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
-                                    $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
-                                    if (_this.judgeStatus[x.pid] == '1') {
-                                        $("[id*=connectButton]").removeAttr("disabled")
-                                        $("[id*=submitSrcButton]").removeAttr("disabled")
-                                        _this.judgeStatus[x.pid] == '0'
-                                    }
-    
-                                } else {
-                                    _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
-                                    _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
-                                    _this.context.props.setSubmitEnableWithJudgeTag(false)
-                                    //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
-                                    $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
-                                }
-                            }
-    
+        setInterval(() => {
+            _this.pids.length != 0 && $.ajax(
+                {
+                    headers: {
+                        "accept": "application/json",
+                    },
+                    crossDomain: true,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    method: "POST",
+                    url: MULTIPLY_PROBLEM_STATUS_URL,
+
+                    contentType: "text/plain",
+                    data: JSON.stringify({ pid: _this.pids }),
+                    success: function (data) {
+                        // alert(JSON.stringify(data))
+                        if (data.msg != "success") {
+                            _this.props.outputResult(data.message)
+                            window.location.replace(LINK_LAB_HOMEPAGE_URL)
+                            return
                         }
+                        let tmp = data.problem
+                        for (let x of tmp) {
+                            if (_this.lastSubmitCount[x.pid] == undefined) {
+                                _this.lastSubmitCount = x.submit
+                            }
+                            $(`.onlineCount.${x.pid}>span`).text(x.count)
+                            _this.codingStatus[x.pid] = x.status
+                            if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
+                                continue
+                            }
+                            let status = _this.statusCode[parseInt(x.status)];
+                            if (_this.lastSubmitCount != undefined && _this.lastSubmitCount[x.pid] != undefined &&
+                                _this.lastSubmitCount[x.pid] != x.submit) {
+                                _this.judgeStatus[x.pid] == '1'
+                            }
+                            if (status == 'JUDGING') {
+                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
+                                let sp = $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next()
+                                console.log("judging.....................................")
+                                sp.attr("class", "oi oi-ellipses")
+                                sp.show()
+                                _this.judgeStatus[x.pid] = '1'
+                            } else if (status == 'ACCEPT') {
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
+                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
+                                if (_this.judgeStatus[x.pid] == '1') { //9.27
+                                    if (x.wrongInfo != "")
+                                        _this.props.outputResult(x.wrongInfo)
+                                    _this.props.outputResult("ACCEPT" + `(${x.score})`, "rightAnswer")
+                                    _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
+                                    _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
+                                    $("[id*=connectButton]").removeAttr("disabled")
+                                    $("[id*=submitSrcButton]").removeAttr("disabled")
+                                    _this.judgeStatus[x.pid] == '0'
+                                }
+
+                            } else if (status == 'WRONG_ANSWER') {
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
+                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
+                                // alert(_this.judgeStatus[x.pid])
+                                if (_this.judgeStatus[x.pid] == '1') {
+                                    if (x.wrongInfo != "")
+                                        _this.props.outputResult(x.wrongInfo)
+                                    _this.props.outputResult("WRONG_ANSWER" + `(${x.score})`, "wrongAnswer")
+                                    _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
+                                    _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
+                                    $("[id*=connectButton]").removeAttr("disabled")
+                                    $("[id*=submitSrcButton]").removeAttr("disabled")
+                                    _this.judgeStatus[x.pid] == '0'
+                                }
+                            } else if (status == 'TIMEOUT') {
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
+                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
+                                if (_this.judgeStatus[x.pid] == '1') {
+                                    $("[id*=connectButton]").removeAttr("disabled")
+                                    $("[id*=submitSrcButton]").removeAttr("disabled")
+                                    _this.judgeStatus[x.pid] == '0'
+                                }
+
+                            } else {
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
+                                _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                                _this.context.props.setSubmitEnableWithJudgeTag(false)
+                                //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
+                            }
+                        }
+
                     }
-                )
-    
-            }, 2000)
+                }
+            )
+
+        }, 2000)
 
         $(document).ready(
             () => {

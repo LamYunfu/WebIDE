@@ -3,6 +3,7 @@ import React = require("react");
 import * as $ from "jquery"
 import { CodeItem, CodingInfo } from "./code-issue"
 import { MyContext } from "./context";
+import { DETAIL_ISSUE_URL } from "../../setting/front-end-config";
 export namespace Scene {
     export interface Props {
         section: { [key: string]: any }
@@ -69,7 +70,7 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
                     withCredentials: true
                 },
                 method: "POST",
-                url: "http://api.tinylink.cn/problem/detail",
+                url: DETAIL_ISSUE_URL,
 
                 dataType: 'json',
                 contentType: "text/plain",

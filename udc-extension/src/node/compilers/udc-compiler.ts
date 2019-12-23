@@ -5,6 +5,7 @@ import { UdcTerminal } from '../util/udc-terminal'
 import * as http from 'http'
 import { Logger } from '../util/logger'
 import { injectable, inject, LazyServiceIdentifer } from 'inversify';
+import { TINYLINK_HOST } from '../../setting/backend-config';
 @injectable()
 export class UdcCompiler {
     constructor(
@@ -16,7 +17,7 @@ export class UdcCompiler {
     rootDir: string = "/home/project"
 
     tinyLinkAPIs: { [key: string]: string } = {
-        hostname: "api.tinylink.cn",
+        hostname: TINYLINK_HOST,
         port: "80",
         srcPostPath: "/tinylink/withFile",//post file data return download uri
         downloadHexPath: "/tinylink/downloadHex",

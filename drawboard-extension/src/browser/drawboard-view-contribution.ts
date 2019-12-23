@@ -11,7 +11,7 @@ export class DrawboardViewContribution extends AbstractViewContribution<Drawboar
     constructor() {
         super({
             widgetId: OUTLINE_WIDGET_FACTORY_ID,
-            widgetName: 'Drawboard',
+            widgetName: ' ',
             defaultWidgetOptions: {
                 area: 'right',
 

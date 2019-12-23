@@ -2,6 +2,7 @@ import React = require("react");
 import * as $ from "jquery"
 // import URI from "@theia/core/lib/common/uri";
 import { MyContext } from "./context";
+import { AI1DOC, AI2DOC, AI3DOC, MODEL_DOWNLOAD_URL } from '../../setting/front-end-config'
 export namespace AI {
     export interface Props {
         section: { [key: string]: any }
@@ -22,8 +23,6 @@ export class AIView extends React.Component<AI.Props, AI.State> {
     constructor(props: Readonly<AI.Props>) {
         super(props)
     }
-
-
     componentWillMount() {
         this.context.props.setSize(520)
         let _this = this
@@ -35,18 +34,18 @@ export class AIView extends React.Component<AI.Props, AI.State> {
     async componentDidMount() {
         let _this = this
         if (this.props.title == "画板数字识别")
-            $("#aiDSP").attr("src", `http://47.97.253.23:12311/static/doc/digit.html`)
+            $("#aiDSP").attr("src", AI1DOC)
         else if (this.props.title == "图像人脸识别")
-            $("#aiDSP").attr("src", `http://47.97.253.23:12311/static/doc/face.html`)
+            $("#aiDSP").attr("src", AI2DOC)
         else if (this.props.title == "视频人脸识别") {
-            $("#aiDSP").attr("src", `http://47.97.253.23:12311/static/doc/face_recognition.html`)
+            $("#aiDSP").attr("src", AI3DOC)
             let sp = document.createElement("script")
             sp.innerHTML = `
             db = document.getElementById("downloadButton")         
             db.addEventListener("click", wrap = function () {
             console.log("click download button")
-            // connection = new WebSocket("ws://localhost:8240")
-            connection = new WebSocket("ws://47.98.249.190:8005")
+            connection = new WebSocket("ws://localhost:8240")
+            // connection = new WebSocket("${MODEL_DOWNLOAD_URL}")
             connection.onopen = async () => {                        
                                     content = "{download,0,0}"
                                     connection.send(content)
@@ -59,7 +58,6 @@ export class AIView extends React.Component<AI.Props, AI.State> {
                                                             }               
                                  }
             })
-            document.getElementById("submitSrcButton").
             `
             document.head.appendChild(sp)
 
@@ -91,9 +89,9 @@ export class AIView extends React.Component<AI.Props, AI.State> {
 
                 <a id="downloadlink" style={{ "display": "none" }}></a>
                 {this.props.title != "视频人脸识别" ?
-                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>submit</button></span>
+                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>提交</button></span>
                     :
-                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"downloadButton"}>download</button></span>
+                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"downloadButton"}>下载</button></span>
                 }
             </div >
         )

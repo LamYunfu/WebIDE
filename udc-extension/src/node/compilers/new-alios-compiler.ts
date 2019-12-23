@@ -8,6 +8,7 @@ import * as crypto from "crypto"
 import * as FormData from "form-data"
 import { injectable, inject } from 'inversify';
 import { Logger } from '../util/logger';
+import { ALIOS_IP, ALIOS_PORT } from '../../setting/backend-config';
 @injectable()
 export class NewAliosCompiler {
     constructor(@inject(UdcTerminal) protected readonly udc: UdcTerminal,
@@ -46,8 +47,8 @@ export class NewAliosCompiler {
                 return new Promise((resolve) => {
                     let configRequest = http.request({//
                         method: "POST",
-                        hostname: '47.97.253.23',
-                        port: '12305',
+                        hostname: ALIOS_IP,
+                        port: ALIOS_PORT,
                         path: "/config",
                         headers: {
                             'Content-Type': "application/json"
@@ -87,8 +88,8 @@ export class NewAliosCompiler {
                 return new Promise((resolve) => {
                     let uploadRequest = http.request({//传zip
                         method: "POST",
-                        hostname: '47.97.253.23',
-                        port: '12305',
+                        hostname: ALIOS_IP,
+                        port: ALIOS_PORT,
                         path: "/upload",
                         headers: fm.getHeaders(),
                     }, (mesg) => {
@@ -123,8 +124,8 @@ export class NewAliosCompiler {
                     return new Promise((resolve => {
                         let downloadRequest = http.request({//下载
                             method: "POST",
-                            hostname: '47.97.253.23',
-                            port: '12305',
+                            hostname: ALIOS_IP,
+                            port: ALIOS_PORT,
                             path: "/download",
                             headers: {
                                 'Content-Type': "application/json"

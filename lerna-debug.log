@@ -24,7 +24,7 @@
 13 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 13 error
 13 error npm ERR! A complete log of this run can be found in:
-13 error npm ERR!     /home/liang/.npm/_logs/2019-12-07T09_11_46_855Z-debug.log
+13 error npm ERR!     /home/liang/.npm/_logs/2019-12-19T13_19_12_812Z-debug.log
 13 error
 13 error
 13 error > udc-extension@0.0.0 prepare /home/liang/webide/udc-extension
@@ -32,7 +32,14 @@
 13 error
 13 error $ rimraf lib
 13 error $ tsc  --jsx react
-13 error src/browser/component/virtualscene-view.tsx(41,17): error TS6133: 'a' is declared but its value is never read.
+13 error src/node/compilers/contiki-complier.ts(11,42): error TS2307: Cannot find module '../setting/backend-config'.
+13 error src/node/util/programmer.ts(12,10): error TS2305: Module '"../../setting/front-end-config"' has no exported member 'PROGRAM_SERVER_IP'.
+13 error src/node/util/programmer.ts(12,29): error TS2305: Module '"../../setting/front-end-config"' has no exported member 'PROGRAM_SERVER_PORT'.
+13 error src/node/util/udc-terminal.ts(21,10): error TS2305: Module '"../../setting/front-end-config"' has no exported member 'SENCE_SERVER_URL'.
+13 error src/node/util/udc-terminal.ts(21,28): error TS2305: Module '"../../setting/front-end-config"' has no exported member 'LDC_SERVER_IP'.
+13 error src/node/util/udc-terminal.ts(21,43): error TS2305: Module '"../../setting/front-end-config"' has no exported member 'LDC_SERVER_PORT'.
+13 error src/node/util/udc-terminal.ts(21,60): error TS2305: Module '"../../setting/front-end-config"' has no exported member 'PROGRAM_SERVER_IP'.
+13 error src/node/util/udc-terminal.ts(21,79): error TS2305: Module '"../../setting/front-end-config"' has no exported member 'PROGRAM_SERVER_PORT'.
 13 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 13 error
 13 error     at Promise.all.then.arr (/home/liang/webide/node_modules/lerna/node_modules/execa/index.js:236:11)

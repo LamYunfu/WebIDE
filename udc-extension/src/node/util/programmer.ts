@@ -9,6 +9,7 @@ import * as http from 'http'
 import * as fs from 'fs-extra';
 import * as crypto from "crypto"
 import * as FormData from "form-data"
+import { PROGRAM_SERVER_IP, PROGRAM_SERVER_PORT } from '../../setting/backend-config'
 // import { networkInterfaces } from 'os';
 @injectable()
 export class Programer {
@@ -31,7 +32,7 @@ export class Programer {
             Logger.info("hex hashval:" + hashVal)
             let configRequest = http.request({//
                 method: "POST",
-                hostname: '47.97.253.23',
+                hostname: PROGRAM_SERVER_IP,
                 port: '8081',
                 path: "/config",
                 headers: {
@@ -76,8 +77,8 @@ export class Programer {
             uploadResult = await new Promise(async (resolve) => {
                 let uploadRequest = http.request({//传zip
                     method: "POST",
-                    hostname: '47.97.253.23',
-                    port: '8081',
+                    hostname: PROGRAM_SERVER_IP,
+                    port: PROGRAM_SERVER_PORT,
                     path: "/upload",
                     // headers: {
                     //     "Accept": "application/json",
@@ -168,8 +169,8 @@ export class Programer {
         }
         let arr: Object[] = []
         let setJson = {
-            "type":"QUEUE",
-            "groupId":(Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString(),
+            "type": "QUEUE",
+            "groupId": (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString(),
             "pid": pid,
             "program": arr
         }

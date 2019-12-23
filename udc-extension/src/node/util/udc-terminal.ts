@@ -18,6 +18,7 @@ import * as WebSocket from 'ws'
 import * as crypto from "crypto"
 import * as FormData from "form-data"
 import * as ach from 'archiver'
+import { SENCE_SERVER_URL, LDC_SERVER_IP, LDC_SERVER_PORT, PROGRAM_SERVER_IP, PROGRAM_SERVER_PORT } from '../../setting/backend-config'
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -509,8 +510,8 @@ export class UdcTerminal {
         return new Promise(function (resolve, reject) {
             // let server_ip = "118.31.76.36"
             // let server_port = 2000
-            let server_ip = "47.97.253.23"
-            let server_port = 5000
+            let server_ip = LDC_SERVER_IP
+            let server_port = LDC_SERVER_PORT
             // let server_ip = "192.168.1.233"
             // let server_port = 2000
             // let ctrFd = tls.connect(server_port, server_ip, options, () => {
@@ -877,28 +878,6 @@ export class UdcTerminal {
         }
         return true
     }
-    // async program_device_group(filepath: string, address: string, devstr: string, pid: string): Promise<Boolean> {
-    //     let send_result = await this.send_file_to_client(filepath, devstr);
-    //     if (send_result === false) {
-    //         this.outputResult('send hex file to LDC err')
-    //         return false;
-    //     }
-    //     this.outputResult('send hex file to LDC success')
-    //     let content = `${devstr},${address},${await this.pkt.hash_of_file(filepath)},${pid}`
-    //     this.outputResult('burning......')
-    //     this.outputResult('program content:' + content)
-    //     this.send_packet(Packet.DEVICE_PROGRAM, content);
-    //     await this.wait_cmd_excute_done(270000);
-    //     if (this.cmd_excute_state === 'done') {
-    //         this.outputResult('burn success ^.^')
-    //         return true
-    //     }
-    //     else {
-    //         this.outputResult('burn error T.T')
-    //         return false
-    //     }
-    //     // return (this.cmd_excute_state === 'done' ? true : false);
-    // }
     async program_device(pid: string, setJson: string): Promise<Boolean> {
         let _this = this
         // let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
@@ -931,8 +910,8 @@ export class UdcTerminal {
             Logger.info("hex hashval:" + hashVal)
             let configRequest = http.request({//
                 method: "POST",
-                hostname: '47.97.253.23',
-                port: '8081',
+                hostname: PROGRAM_SERVER_IP,
+                port: PROGRAM_SERVER_PORT,
                 path: "/config",
                 headers: {
                     'Content-Type': "application/json"
@@ -971,8 +950,8 @@ export class UdcTerminal {
             uploadResult = await new Promise(async (resolve) => {
                 let uploadRequest = http.request({//传zip
                     method: "POST",
-                    hostname: '47.97.253.23',
-                    port: '8081',
+                    hostname: PROGRAM_SERVER_IP,
+                    port: PROGRAM_SERVER_PORT,
                     path: "/upload",
                     // headers: {
                     //     "Accept": "application/json",
@@ -1239,7 +1218,7 @@ export class UdcTerminal {
     setTinyLink(name: string, passwd: string): void {
         this.tinyLinkInfo.name = name
         this.tinyLinkInfo.passwd = passwd
-        console.log("userName&passwd:" + JSON.stringify(this.tinyLinkInfo) + ".........................................")
+        console.log("userName&passwd:" + JSON.stringify(this.tinyLinkInfo))
     }
     async openPidFile(pid: string) {
         console.log("openFile")
@@ -1313,7 +1292,7 @@ export class UdcTerminal {
         let b = fs.readFileSync(tmpPath)
         _this.outputResult("try to build the connection with simulator")
         let tinySimRequest = new WebSocket(
-            "ws://47.98.249.190:8004/", {
+            SENCE_SERVER_URL, {
             // "ws://localhost:8765/", {
 
         }

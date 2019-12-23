@@ -7,6 +7,7 @@ import * as $ from "jquery"
 import { MyContext } from './context'
 import { AIView } from "./ai-view";
 import { VirtualSceneView } from "./virtualscene-view";
+import { USER_INFO_URL, VIEW_DETAIL_URL, QUIZE_JUDGE_URL, CHOICE_JUDGE_URL } from "../../setting/front-end-config";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
@@ -174,7 +175,7 @@ export class View extends React.Component<View.Props, View.State>{
                     withCredentials: true
                 },
                 method: "GET",
-                url: "http://api.tinylink.cn/user/info",
+                url: USER_INFO_URL,
                 // processData: false,
                 dataType: 'json',
                 contentType: "text/plain",
@@ -196,7 +197,7 @@ export class View extends React.Component<View.Props, View.State>{
                     withCredentials: true
                 },
                 method: "GET",
-                url: "http://api.tinylink.cn/view/active/detail",
+                url: VIEW_DETAIL_URL,
                 dataType: 'json',
                 contentType: "text/plain",
                 data: '',
@@ -643,7 +644,7 @@ export class View extends React.Component<View.Props, View.State>{
                         withCredentials: true
                     },
                     method: "POST",
-                    url: "http://api.tinylink.cn/problem/quiz/judge",
+                    url: QUIZE_JUDGE_URL,
                     dataType: 'json',
                     contentType: "text/javascript",
                     data: JSON.stringify({
@@ -760,7 +761,7 @@ export class View extends React.Component<View.Props, View.State>{
                         withCredentials: true
                     },
                     method: "POST",
-                    url: "http://judge.tinylink.cn/quiz/choices/judge",
+                    url: CHOICE_JUDGE_URL,
                     dataType: 'json',
                     contentType: "text/javascript",
                     data: JSON.stringify({
