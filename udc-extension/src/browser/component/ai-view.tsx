@@ -83,7 +83,8 @@ export class AIView extends React.Component<AI.Props, AI.State> {
                         height: '99%',
                         borderWidth: '0',
                         background: 'darkgray',
-                        paddingBottom: "50px"
+                        paddingBottom: "50px",
+                        pointerEvents:"none"
                     }}></iframe>
                 </div>
 

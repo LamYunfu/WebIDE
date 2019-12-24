@@ -44,6 +44,7 @@ export class View extends React.Component<View.Props>{
         cb = document.getElementById("clearbutton")        
         pb.addEventListener("click", predict)
         cb.addEventListener("click", wrap = function () {
+            document.getElementById("errorMesg").innerHTML = ""
             document.getElementsByClassName("res")[0].innerHTML = ""
             document.getElementById("submitIndicator").style.display="none"
             clearCanvas(canvas, ctx)
@@ -95,7 +96,7 @@ export class View extends React.Component<View.Props>{
         function clearCanvas(canvas, ctx) {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        function predict() {
+        function predict() { 
             document.getElementById("predictbutton").disabled=true
             document.getElementById("submitIndicator").style.display="flex"
             document.getElementsByClassName("res")[0].innerHTML = ""
@@ -115,10 +116,26 @@ export class View extends React.Component<View.Props>{
                 }
             }
             webSocket.onmessage = (mesg) => {
+                msgArr=mesg.data.split(",")
+                if(msgArr[0].split("{").pop()=="error"){
+                    if(msgArr.pop().split("}")[0]=="no model")
+                      document.getElementById("errorMesg").innerHTML="无模型，请先训练"
+                }
+                else{
+                document.getElementById("errorMesg").innerHTML=""
                 document.getElementsByClassName("res")[0].innerHTML = mesg.data;
+                }
                 document.getElementById("predictbutton").disabled=false
                 document.getElementById("submitIndicator").style.display="none"
+                
+                
             }
+            webSocket.onerror=()=>{
+                document.getElementById("submitIndicator").style.display="none"
+                document.getElementsByClassName("res")[0].style.display="none"
+                document.getElementById("errorMesg").innerHTML="网络错误"
+                document.getElementById("predictbutton").disabled=false
+              }
             // document.body.append(cd);
         
         }
@@ -257,6 +274,7 @@ export class View extends React.Component<View.Props>{
                   console.log("clean")
                   document.getElementsByClassName("res")[0].innerHTML = ""
                   document.getElementById("submitIndicator").style.display="none"
+                  document.getElementById("errorMesg").innerHTML = ""
                   clearCanvas(canvas, ctx)
               })
               pb.addEventListener("click", wrap = function () {
@@ -272,14 +290,22 @@ export class View extends React.Component<View.Props>{
           }
           
           function predict() {
+
             if (input.files[0] == undefined) {
                 alert("请先上传图片")
                 return
             }
+              document.getElementById("errorMesg").innerHTML = ""
               document.getElementById("submitIndicator").style.display="flex"
-              if (connection == undefined) {
+              if (connection == undefined||connection.readyState==3) {
                 //   connection = new WebSocket("ws://localhost:8240")
                   connection = new WebSocket("${ModelTestAddress}")
+                  connection.onerror=()=>{
+                    console.log("connection error")
+                    document.getElementById("submitIndicator").style.display="none"
+                    document.getElementsByClassName("res")[0].style.display="none"
+                    document.getElementById("errorMesg").innerHTML="网络错误"
+                  }
                   connection.onopen = () => {
                       str = canvas.toDataURL().split(",").pop()
                       len = str.length.toString()
@@ -297,6 +323,7 @@ export class View extends React.Component<View.Props>{
                             var data = mesgArr.pop().split("}")[0]
                             var infoArr
                             if (type == "infos") {
+                                document.getElementById("errorMesg").innerHTML="识别完成"
                                 infoArr = data.split(":")
                                 x = parseInt(infoArr[0])
                                 y = parseInt(infoArr[1])
@@ -317,6 +344,7 @@ export class View extends React.Component<View.Props>{
                               // img.onload = () => ctx.drawImage(img, 31, 31, canvas.width, canvas.height)
                           } 
                       }
+                     
                   }
               } else {
                   str = canvas.toDataURL().split(",").pop()
@@ -471,6 +499,12 @@ export class View extends React.Component<View.Props>{
                         position: "relative", width: "100%", height: "30%",
                         border: "solid", borderWidth: "2px 0 0 0"
                     }}>
+                        <div style={{
+                            width: "100%", height: "100%", position: "absolute",
+                            display: "flex", justifyContent: "center", alignItems: "center"
+                        }}>
+                            <div id="errorMesg" style={{ fontSize: "30px" }}></div>
+                        </div>
                         <div id="submitIndicator" style={{
                             width: "100%", height: "100%", position: "absolute",
                             display: "none", justifyContent: "center", alignItems: "center"
@@ -484,10 +518,8 @@ export class View extends React.Component<View.Props>{
                             display: "flex", justifyContent: "center", alignItems: "center",
                             width: "100%", height: "100%", fontSize: '130px',
                         }}>
-                            9
+                            
                               </div>
-
-
                         <div style={{ "display": "none" }}>
                             <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
                             <img id='imgtag' />
@@ -546,6 +578,14 @@ export class View extends React.Component<View.Props>{
 
                             </div>
                         </div >
+                        <div style={{
+                            width: "100%", height: "30%", position: "absolute",
+                            display: "flex", justifyContent: "center", alignItems: "center"
+                        }}>
+                            <div id="errorMesg" style={{ fontSize: "30px" }}>
+                                
+                            </div>
+                        </div>
                         <div id="submitIndicator" style={{
                             width: "100%", height: "30%", position: "absolute",
                             display: "none", justifyContent: "center", alignItems: "center"

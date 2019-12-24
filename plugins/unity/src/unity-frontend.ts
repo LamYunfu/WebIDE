@@ -37,17 +37,21 @@ namespace IoTWebview {
                 console.log("frame:"+ev.data)
             })
              window.addEventListener("message", (ev) => {
-                console.log("frame:"+ev.data)
+                console.log("frame:"+JSON.stringify(ev.data))
                 vscode.postMessage(ev.data)
+                unityInstance.Quit(function() {
+                    console.log("done!");
+                });
+                unityInstance = null;
             })
          }
           
           </script>        
         <body>
           <iframe id="iframe"
-           src="http://localhost:8089/publish/index.html"
+           src="http://47.97.253.23:12311/static/publish/index.html"
             frameborder="0" 
-            scrolling="no"
+            scrolling="yes"
             style="display: block;
              margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"
               sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
@@ -72,10 +76,12 @@ export function start(context: theia.PluginContext) {
                     {
                         enableFindWidget: true,
                         retainContextWhenHidden: true,
-                        enableScripts: true
+                        enableScripts: true,
+                        enableCommandUris:true
                     }
                 );
                 panel.webview.onDidReceiveMessage((e) => {
+                    console.log(JSON.stringify(e))
                     console.log("mesg:" + e.command)
                     if (e.command == "openUri") {
                         theia.commands.executeCommand("gotoCode", e.text)
