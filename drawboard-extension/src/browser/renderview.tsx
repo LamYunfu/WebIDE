@@ -312,6 +312,7 @@ export class View extends React.Component<View.Props>{
                     document.getElementsByClassName("res")[0].style.display="none"
                     document.getElementById("errorMesg").innerHTML="网络错误"
 
+                    
                   }
                   connection.onopen = () => {
                       str = canvas.toDataURL().split(",").pop()
