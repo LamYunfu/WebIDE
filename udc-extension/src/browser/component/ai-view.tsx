@@ -37,7 +37,7 @@ export class AIView extends React.Component<AI.Props, AI.State> {
             $("#aiDSP").attr("src", AI1DOC)
         else if (this.props.title == "图像人脸识别")
             $("#aiDSP").attr("src", AI2DOC)
-        else if (this.props.title == "视频人脸识别") {
+        else if (this.props.title == "相机人脸识别") {
             $("#aiDSP").attr("src", AI3DOC)
             let sp = document.createElement("script")
             sp.innerHTML = `
@@ -66,10 +66,14 @@ export class AIView extends React.Component<AI.Props, AI.State> {
         $("#submitSrcButton").click(() => {
             _this.context.props.train(_this.props.section["ppid"][0])
         })
+        $("#openDrawBoard").click(() => {
+            _this.context.props.openDrawBoard()
+        })
     }
+
     render(): JSX.Element {
         return (
-            <div style={{ width: "100%", height: "100%" }}>
+            <div style={{ width: "95%", height: "100%" }}>
                 <h5 id="titleAndStatus" className="card-title" style={{ display: "none" }}>
                     <span id={"coding_title"}>{this.props.title}</span>
                 </h5>
@@ -80,19 +84,20 @@ export class AIView extends React.Component<AI.Props, AI.State> {
                 }}>
                     <iframe id="aiDSP" src="" style={{
                         width: " 100%",
-                        height: '99%',
+                        height: '100%',
                         borderWidth: '0',
                         background: 'darkgray',
                         paddingBottom: "50px",
-                        pointerEvents:"none"
                     }}></iframe>
                 </div>
 
                 <a id="downloadlink" style={{ "display": "none" }}></a>
-                {this.props.title != "视频人脸识别" ?
+                {this.props.title != "相机人脸识别" ? <div>
+                    <span style={{ position: "absolute", left: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"openDrawBoard"}>开关画板</button></span>
                     <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>提交</button></span>
-                    :
-                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"downloadButton"}>下载</button></span>
+                </div> :
+                    // <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"downloadButton"}>下载</button></span>
+                    <div />
                 }
             </div >
         )

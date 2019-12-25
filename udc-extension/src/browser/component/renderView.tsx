@@ -11,6 +11,7 @@ import { USER_INFO_URL, VIEW_DETAIL_URL, QUIZE_JUDGE_URL, CHOICE_JUDGE_URL } fro
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        openDrawBoard: () => void
         gotoVirtualScene: () => void
         virtualOpen: () => void
         virtualSubmit: (pid: string) => void

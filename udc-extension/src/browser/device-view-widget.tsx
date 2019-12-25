@@ -86,43 +86,44 @@ export class DeviceViewWidget extends TreeWidget {
     }
     protected renderTree(): React.ReactNode {
         return (
-           
-                <View
-                    gotoVirtualScene={this.gotoVirtualScene}
-                    virtualOpen={this.virtualOpen}
-                    virtualSubmit={this.virtualSubmit}
-                    train={this.train}
-                    openExplorer={this.openExplorer}
-                    openFileView={this.openFileView}
-                    openWorkSpace={this.openWorkSpace}
-                    terminateExe={this.terminateExe}
-                    continueExe={this.continueExe}
-                    postSimFile={this.postSimFile}
-                    isconnected={this.isconnected}
-                    programSingleFile={this.programSingleFile}
-                    getLocal={this.getLocal}
-                    setLocal={this.saveLocal}
-                    config={this.config}
-                    setTinyLink={this.setTinyLink}
-                    openShell={this.openShell}
-                    initPidQueueInfo={this.initPidQueueInfo}
-                    closeTabs={this.closeTabs}
-                    setQueue={this.setQueue}
-                    setSize={this.setSize}
-                    storeData={this.storeData}
-                    getData={this.getData}
-                    outputResult={this.outputResult}
-                    say={this.say}
-                    gotoVideo={this.gotoVideo}
-                    setCookie={this.setCookie}
-                    disconnect={this.disconnect} connect={this.connect}
-                    callUpdate={this.callUpdate}
-                    openSrcFile={this.openSrcFile}
-                    postSrcFile={this.postSrcFile}
-                    saveAll={this.saveAll}
-                    getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
-                    setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
-                />     
+
+            <View
+                openDrawBoard={this.openDrawBoard}
+                gotoVirtualScene={this.gotoVirtualScene}
+                virtualOpen={this.virtualOpen}
+                virtualSubmit={this.virtualSubmit}
+                train={this.train}
+                openExplorer={this.openExplorer}
+                openFileView={this.openFileView}
+                openWorkSpace={this.openWorkSpace}
+                terminateExe={this.terminateExe}
+                continueExe={this.continueExe}
+                postSimFile={this.postSimFile}
+                isconnected={this.isconnected}
+                programSingleFile={this.programSingleFile}
+                getLocal={this.getLocal}
+                setLocal={this.saveLocal}
+                config={this.config}
+                setTinyLink={this.setTinyLink}
+                openShell={this.openShell}
+                initPidQueueInfo={this.initPidQueueInfo}
+                closeTabs={this.closeTabs}
+                setQueue={this.setQueue}
+                setSize={this.setSize}
+                storeData={this.storeData}
+                getData={this.getData}
+                outputResult={this.outputResult}
+                say={this.say}
+                gotoVideo={this.gotoVideo}
+                setCookie={this.setCookie}
+                disconnect={this.disconnect} connect={this.connect}
+                callUpdate={this.callUpdate}
+                openSrcFile={this.openSrcFile}
+                postSrcFile={this.postSrcFile}
+                saveAll={this.saveAll}
+                getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
+                setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
+            />
 
         )
     }
@@ -222,7 +223,11 @@ export class DeviceViewWidget extends TreeWidget {
         this.messageService.info(verbose)
     }
 
+    openDrawBoard = () => {
 
+        this.commandRegistry.executeCommand("drawboardView:toggle")
+
+    }
     connect = async (loginType: string, model: string, pid: string, timeout: string) => {
         await this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
     }

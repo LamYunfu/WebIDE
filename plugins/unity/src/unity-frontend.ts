@@ -47,13 +47,13 @@ namespace IoTWebview {
          }
           
           </script>        
-        <body>
+        <body style="margin:0">
           <iframe id="iframe"
-           src="http://47.97.253.23:12311/static/publish/index.html"
+           src="http://47.97.253.23:12311/static/publish/index.html"        
             frameborder="0" 
-            scrolling="yes"
+            scrolling="no"
             style="display: block;
-             margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"
+             margin: 0px; overflow: hidden; position: absolute; width: 1600px; height: 900px; visibility: visible;"
               sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
         </body>
         </html>

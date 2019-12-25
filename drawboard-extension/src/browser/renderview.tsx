@@ -261,7 +261,8 @@ export class View extends React.Component<View.Props>{
                 `/* eslint-disable no-undef */
           /* eslint-disable no-unused-vars */
           // Variables for referencing the canvas and 2dcanvas context
-          var canvas, ctx, canvashide, ctxhide, input;
+          var canvas, ctx, canvashide, ctxhide, input
+          var disabled=false;
           var connection;
           ini()
           function ini() {
@@ -284,6 +285,7 @@ export class View extends React.Component<View.Props>{
           
           function clearCanvas(canvas, ctx) {
               input.value = ""
+              disabled=false
               ctx.clearRect(0, 0, canvas.width, canvas.height);
               ctx.fillRect(0, 0, canvas.width, canvas.height);
               // document.getElementById('rightside').innerHTML = '';
@@ -293,6 +295,10 @@ export class View extends React.Component<View.Props>{
 
             if (input.files[0] == undefined) {
                 alert("请先上传图片")
+                return
+            }
+            if(disabled){
+                alert("请先重新上传图片")
                 return
             }
               document.getElementById("errorMesg").innerHTML = ""
@@ -305,6 +311,7 @@ export class View extends React.Component<View.Props>{
                     document.getElementById("submitIndicator").style.display="none"
                     document.getElementsByClassName("res")[0].style.display="none"
                     document.getElementById("errorMesg").innerHTML="网络错误"
+
                   }
                   connection.onopen = () => {
                       str = canvas.toDataURL().split(",").pop()
@@ -315,6 +322,7 @@ export class View extends React.Component<View.Props>{
                           var img = document.createElement("img")
                           x = 10
                           y = 30
+                          disabled=true
                           width = 0.3 * canvas.width
                           height = 0.2 * canvas.height
                           user="陈思培"
@@ -337,8 +345,9 @@ export class View extends React.Component<View.Props>{
                               ctx.strokeRect(x, y, width, height);                             
                               ctx.font = 'bold 19px serif';
                               ctx.fillStyle = 'red';
+                              ctx.fillRect( x + width * 0.3, y+height+20,user.length*19,5);
                               ctx.stroke();
-                              ctx.fillText(user, x+width*0.3, y+height*0.9);
+                              ctx.fillText(user, x+width*0.3, y+height+20);
                               ctx.restore()
                               document.getElementById("submitIndicator").style.display="none"
                               // img.onload = () => ctx.drawImage(img, 31, 31, canvas.width, canvas.height)
@@ -357,6 +366,7 @@ export class View extends React.Component<View.Props>{
           
           function loadImage() {
             //   cb.click()
+              disabled=false
               ctx.clearRect(0, 0, canvas.width, canvas.height);
               str = URL.createObjectURL(input.files[0])
               var img = document.createElement("img")
@@ -459,20 +469,20 @@ export class View extends React.Component<View.Props>{
 
                             }} >
                                 <tr>
-                                    <td style={{ border: "solid" }}></td>
-                                    <td style={{ border: "solid" }}></td>
-                                    <td style={{ border: "solid" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
                                 </tr>
                                 <tr>
-                                    <td style={{ border: "solid" }}></td>
-                                    <td style={{ border: "solid" }}></td>
-                                    <td style={{ border: "solid" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
                                 </tr>
 
                                 <tr>
-                                    <td style={{ border: "solid" }}></td>
-                                    <td style={{ border: "solid" }}></td>
-                                    <td style={{ border: "solid" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
+                                    <td style={{ border: "solid", borderWidth: "1px" }}></td>
                                 </tr>
                             </table>
                             <div style={{ width: "100%", display: "flex", justifyContent: "space-around", padding: "0 20px" }}>
@@ -518,8 +528,8 @@ export class View extends React.Component<View.Props>{
                             display: "flex", justifyContent: "center", alignItems: "center",
                             width: "100%", height: "100%", fontSize: '130px',
                         }}>
-                            
-                              </div>
+
+                        </div>
                         <div style={{ "display": "none" }}>
                             <canvas id='sketchpadhide' height='28px' width='28px'></canvas>
                             <img id='imgtag' />
@@ -583,7 +593,7 @@ export class View extends React.Component<View.Props>{
                             display: "flex", justifyContent: "center", alignItems: "center"
                         }}>
                             <div id="errorMesg" style={{ fontSize: "30px" }}>
-                                
+
                             </div>
                         </div>
                         <div id="submitIndicator" style={{
