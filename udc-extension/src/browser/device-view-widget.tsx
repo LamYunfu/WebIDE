@@ -228,8 +228,9 @@ export class DeviceViewWidget extends TreeWidget {
         this.commandRegistry.executeCommand("drawboardView:toggle")
 
     }
-    connect = async (loginType: string, model: string, pid: string, timeout: string) => {
-        await this.commandRegistry.executeCommand(UdcCommands.Connect.id, loginType, model, pid, timeout);
+    connect = async (loginType: string, model: string, pid: string, timeout: string): Promise<boolean> => {
+        let res = await this.commandRegistry.executeCommand<boolean>(UdcCommands.Connect.id, loginType, model, pid, timeout)
+        return res!;
     }
     isconnected = async () => {
         return this.udcService.is_connected()

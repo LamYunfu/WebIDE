@@ -58,6 +58,11 @@ export class NewContikiCompiler {
                         mesg.on("data", (b: Buffer) => {
                             bf += b.toString("utf8")
                         })
+                        mesg.on("error", () => {
+                            Logger.info("error happened while config in contiki")
+                            _this.udc.outputResult("network error")
+                            resolve("err")
+                        })
                         mesg.on("end", () => {
                             let res: any = JSON.parse(bf)
                             if (res.result) {
@@ -77,6 +82,10 @@ export class NewContikiCompiler {
                         "boardname": getBoardType(model),
                         "filehash": hashVal
                     }))
+                    configRequest.on("error", () => {
+                        _this.udc.outputResult("network error")
+                        resolve("err")
+                    })
                     configRequest.end()
 
                 })
@@ -99,6 +108,11 @@ export class NewContikiCompiler {
                             bf += b.toString("utf8")
                             console.log(bf)
                         })
+                        mesg.on("error", () => {
+                            Logger.info("error happened while upload in contiki")
+                            _this.udc.outputResult("network error")
+                            resolve("err")
+                        })
                         mesg.on("end", () => {
                             console.log(bf)
                             let res: any = JSON.parse(bf)
@@ -111,6 +125,10 @@ export class NewContikiCompiler {
                                 _this.udc.outputResult(`Contiki Post Upload Err:${res.status}`)
                             }
                         })
+                    })
+                    uploadRequest.on("error", () => {
+                        _this.udc.outputResult("network error")
+                        resolve("err")
                     })
                     let blob = fs.readFileSync(`/home/project/${projectName}/${role}.zip`)
                     fm.append("file", blob, "install.zip")
@@ -164,7 +182,16 @@ export class NewContikiCompiler {
                                 })
 
                             }
+                            mesg.on("error", () => {
+                                Logger.info("error happened while downloading in contiki")
+                                _this.udc.outputResult("network error")
+                                resolve("err")
+                            })
 
+                        })
+                        downloadRequest.on("error", () => {
+                            _this.udc.outputResult("network error")
+                            resolve("err")
                         })
                         downloadRequest.write(JSON.stringify({
                             filehash: hashVal

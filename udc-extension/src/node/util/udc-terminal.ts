@@ -37,7 +37,7 @@ export class UdcTerminal {
     dev_list?: { [key: string]: number }
     cmd_excute_state = "idle"
     cmd_excute_return: any = ""
-    udcServerClient: any = null
+    udcServerClient: any
     udcClient?: UdcClient
     events = new events.EventEmitter();
     event: any
@@ -58,6 +58,7 @@ export class UdcTerminal {
     currentPid: string = ``
     rootDir: string = "/home/project"
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
+    initTag: boolean = true
 
 
     constructor(
@@ -122,6 +123,10 @@ export class UdcTerminal {
                 console.log(err)
             })
         })
+        ws.on("error", () => {
+            Logger.info("error happened in train function")
+            _this.outputResult("network error")
+        })
         ws.on("message", (res) => {
             _this.outputResult(res.toString("utf8"))
         })
@@ -178,6 +183,10 @@ export class UdcTerminal {
             ws.send(content, (err) => {
                 console.log(err)
             })
+        })
+        ws.on("error", () => {
+            Logger.info("error happened in virtualSubmit")
+            _this.outputResult("network error")
         })
         ws.on("message", (res) => {
             _this.outputResult(res.toString("utf8"))
@@ -375,6 +384,7 @@ export class UdcTerminal {
         console.log(JSON.stringify(this.pidQueueInfo[pid!]))
     }
     async  initPidQueueInfo(infos: string): Promise<string> {
+        this.initTag = false;
         Logger.info(infos, 'info')
         let _this = this
         this.pidQueueInfo = JSON.parse(infos)
@@ -392,9 +402,19 @@ export class UdcTerminal {
                             'Content-Type': "application/json"
                         }
                     }, (mesg) => {
+                        if (mesg == undefined) {
+                            _this.outputResult("network error")
+                            Logger.info("error happened while get template")
+                            return;
+                        }
                         let bf = ""
                         mesg.on("data", (b: Buffer) => {
                             bf += b.toString("utf8")
+                        })
+                        mesg.on("error", () => {
+                            Logger.info("error happened in initPidQueueInfo")
+                            _this.outputResult("network error")
+                            resolve("err")
                         })
                         mesg.on("end", () => {
                             let res: any = JSON.parse(bf)
@@ -422,9 +442,15 @@ export class UdcTerminal {
                             }
                             else {
                                 console.log(res.mes)
+                                resolve("err")
                             }
-                            resolve("err")
+
                         })
+
+                    })
+                    fileRequest.on("error", () => {
+                        this.outputResult("network error")
+                        resolve("err")
                     })
                     console.log("ppid::::" + JSON.stringify({
                         ppid: ppid
@@ -439,11 +465,12 @@ export class UdcTerminal {
                     resolve("scc")
                 }
             })
+            this.udcClient!.onConfigLog({ name: "openShell", passwd: "" })
             if (this.pidQueueInfo[index]["type"] == "freecoding")
                 this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/home/project/${dirName}` })
             else
                 this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/home/project` })
-            this.udcClient!.onConfigLog({ name: "openShell", passwd: "" })
+
             // if (fileRequestResult != "scc") {
             //     console.log("create file fail")
             //     return "err"
@@ -456,9 +483,8 @@ export class UdcTerminal {
             //     this.creatSrcFile(fns, dirName)
 
         }
-        return new Promise((res) => {
-            res("scc")
-        })
+        this.initTag = true
+        return "scc"
     }
     setPidInfos(pid: string, content: {
         loginType: string, projectName: string | undefined, boardType: string | undefined,
@@ -467,7 +493,6 @@ export class UdcTerminal {
         this.pidQueueInfo[pid] = content
     }
     getPidInfos(pid: string) {
-        Logger.info(JSON.stringify(this.pidQueueInfo[pid]), 'pidq')
         return this.pidQueueInfo[pid]
     }
     setClient(client: UdcClient) {
@@ -519,17 +544,24 @@ export class UdcTerminal {
                 Logger.info("connect scc")
             })
             ctrFd.on('error', () => {
+                Logger.info("error happened with the connection to controller")
+                _this.outputResult("network error")
                 reject('error')
             });
             ctrFd.on('close', () => {
-                Logger.info('Connection to Udc Server Closed!');
+                Logger.info('Connection to Controller Closed!');
             });
             ctrFd.on("data", (data: Buffer) => {
                 let d = data.toString('utf8').substr(1, data.length).split(',')
                 let serverData = d.slice(2, d.length)
+                Logger.val("d:" + d)
                 Logger.val("serverData:" + serverData)
-                if (serverData.join() == `no available device}`) {
+                if (serverData.join().trim() == `no available device}`) {
                     _this.outputResult("device allocate err: no more device in server")
+                    reject('error')
+                } else if (serverData.pop()!.trim() == `all this model type are working!}`) {
+                    _this.outputResult("there is no more this kind of server")
+                    reject('error')
                 }
                 resolve(serverData)
             });
@@ -565,13 +597,27 @@ export class UdcTerminal {
         return new Promise(function (resolve, reject) {
             // _this.udcServerClient = tls.connect(server_port, server_ip, options, () => {
             _this.udcServerClient = net.connect(server_port, server_ip, () => {
-
                 resolve('success')
             })
+            _this.udcServerClient.setNoDelay(true)
             _this.udcServerClient.on('error', () => {
+                // _this.udcServerClient!.destroy()
+                _this.udcServerClient = null
+                _this.dev_list = undefined
+                _this.outputResult("network error")
+                Logger.info("error happened with the connection to server")
                 reject('fail')
             });
+            // _this.udcControlerClient.on("timeout", () => {
+            //     _this.outputResult("connection to server timeout")
+
+            // })
             _this.udcServerClient.on('close', () => {
+                // _this.outputResult("udc server interrupts this connection,please try to reconnect")
+                _this.udcServerClient!.destroy()
+                _this.udcServerClient = null
+                _this.dev_list = undefined
+                _this.outputResult("connection is disconnected")
                 Logger.info('Connection to Udc Server Closed!');
             });
             Logger.val("server pid:" + pid)
@@ -585,9 +631,10 @@ export class UdcTerminal {
                 _this.onUdcServerData(data, pid)
             })
 
-            _this.udcServerClient.setTimeout(10000);
-            _this.udcServerClient.on('timeout', () => {
-                _this.send_packet(Packet.HEARTBEAT, '');
+            _this.udcServerClient.setTimeout(3000);
+            _this.udcServerClient.on('timeout', () => {//超时后将导致socket关闭
+                _this.send_packet(Packet.HEARTBEAT, '')
+
             })
         })
     }
@@ -688,7 +735,7 @@ export class UdcTerminal {
 
             // this.setTinyLink("executeSelectPanel", "")
         }
-        this.udcServerClient.write(this.pkt.construct(Packet.HEARTBEAT, ""));
+        this.udcServerClient!.write(this.pkt.construct(Packet.HEARTBEAT, ""));
     }
     //{DPBG,00079,7194559383644183:499c6e072349991a:/dev/tinylink_platform_1-558343238323511002B1}
     // {DPGQ,00024,7194559383644183,success}
@@ -708,7 +755,8 @@ export class UdcTerminal {
 
 
     get is_connected(): Boolean {
-        return (this.udcServerClient != null);
+        // return (this.udcServerClient.destroyed != null);
+        return (this.udcServerClient != null && !this.udcServerClient.destroyed);
     }
     setQueue() {
         let _this = this
@@ -729,8 +777,6 @@ export class UdcTerminal {
         let tmp = JSON.parse(data)
         for (let index in tmp)
             this.dataStorage[index] = tmp[index]
-
-
     }
     // 39d16c10bbef0000
     getState(type: string): Promise<string> {
@@ -739,7 +785,7 @@ export class UdcTerminal {
         tmp[type] = this.dataStorage[type]
         return new Promise(res => res(JSON.stringify(tmp)))
     }
-    async connect(loginTypeNotUse: string, modelNotUse: string, pid: string, timeout: string = `20`): Promise<Boolean | string> {
+    async connect(loginTypeNotUse: string, modelNotUse: string, pid: string, timeout: string = `20`): Promise<boolean> {
         // loginType = LOGINTYPE.QUEUE
         // model = `alios-esp32`
         Logger.info("start connecting backend" + pid + `:${timeout}`)
@@ -801,14 +847,13 @@ export class UdcTerminal {
 
     async disconnect(): Promise<Boolean> {
         if (this.udcServerClient === null) {
-            this.outputResult('disconnect server success')
             return true;
         }
         this.hpp.removeAllListeners("data")
-        await this.udcServerClient.destroy();
-        this.udcServerClient = null;
-        this.dev_list = undefined
-        this.outputResult('disconnect server success')
+        // await this.udcServerClient.destroy();
+        // this.udcServerClient = null;
+        // this.dev_list = undefined
+        await this.udcServerClient.end();
         return true;
     }
 
@@ -918,8 +963,18 @@ export class UdcTerminal {
                 }
             }, (mesg) => {
                 let bf = ""
+                if (mesg == undefined) {
+                    _this.outputResult("network error")
+                    Logger.info("error happened while config")
+                    return;
+                }
                 mesg.on("data", (b: Buffer) => {
                     bf += b.toString("utf8")
+                })
+                mesg.on("error", () => {
+                    Logger.info("error happened while config")
+                    _this.outputResult("network error")
+                    resolve("err")
                 })
                 mesg.on("end", () => {
                     Logger.info("bf:" + bf)
@@ -937,6 +992,10 @@ export class UdcTerminal {
 
 
                 })
+            })
+            configRequest.on("error", () => {
+                this.outputResult("network error")
+                resolve("err")
             })
             configRequest.write(JSON.stringify({
                 "filehash": hashVal
@@ -959,6 +1018,12 @@ export class UdcTerminal {
                     // },
                     headers: fm.getHeaders()
                 }, (mesg) => {
+                    if (mesg == undefined) {
+                        _this.outputResult("network error")
+                        Logger.info("error happened while upload")
+                        resolve("err")
+                        return
+                    }
                     let bf = ""
                     Logger.info("upload statuscode:" + mesg.statusCode)
                     mesg.on("data", (b: Buffer) => {
@@ -966,6 +1031,8 @@ export class UdcTerminal {
                         bf += b.toString("utf8")
                     })
                     mesg.on("error", () => {
+                        Logger.info("error happened while upload")
+                        _this.outputResult("network error")
                         resolve("err")
                     })
                     mesg.on("end", () => {
@@ -980,7 +1047,10 @@ export class UdcTerminal {
                         }
                     })
                 })
-
+                uploadRequest.on("error", () => {
+                    this.outputResult("network error")
+                    resolve("err")
+                })
                 // let blob = fs.readFileSync(filepath)
                 let st = fs.createReadStream(filepath)
                 Logger.info("append file")
@@ -989,6 +1059,7 @@ export class UdcTerminal {
                 fm.pipe(uploadRequest)
                 Logger.info("file append ok")
             })
+
         }
         else {
             // _this.outputResult("file exist ")
@@ -1168,8 +1239,10 @@ export class UdcTerminal {
         // if (type == Packet.TERMINAL_LOGIN)
         //     Logger.log(this.udcServerClient)
         // Logger.log("---------------------type right: "+type+content)
+        this.udcServerClient!.write(this.pkt.construct(type, content), (err: any) => {
+        })
 
-        this.udcServerClient.write(this.pkt.construct(type, content));
+
     }
 
 
@@ -1222,28 +1295,28 @@ export class UdcTerminal {
     }
     async openPidFile(pid: string) {
         console.log("openFile")
+        let i = 0
+        for (i = 0; i < 5; i++) {
+            if (this.initTag == false) {
+                this.outputResult("wait for config file templates")
+                await new Promise((res) => {
+                    setTimeout(() => {
+                        res()
+                    }, 3000);
+
+                })
+            } else {
+                break
+            }
+        }
+        if (i == 5) {
+            this.outputResult("something wrong with the file templates server")
+            return
+        }
         let { dirName } = this.pidQueueInfo[pid]
         if (this.pidQueueInfo[pid].type == "freecoding" || this.pidQueueInfo[pid].type == "ai") {
-            let tag = 2
             let configRaw: any
-            while (tag != 0) {
-                try {
-                    configRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
-                    break;
-                }
-                catch (e) {
-                    await new Promise((res) => {
-                        setTimeout(() => {
-                            res()
-                        }, 2000);
-                        tag--;
-                    })
-                }
-            }
-            if (tag == 0) {
-                this.outputResult("file not ready, please wait for refresh")
-                return;
-            }
+            configRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
             try {
                 let config = JSON.parse(configRaw)
                 for (let item of config["projects"]) {
@@ -1329,6 +1402,7 @@ export class UdcTerminal {
     literalAnalysis(pid: string) {
         let { dirName } = this.pidQueueInfo[pid]
         let src: string = ""
+        let _this = this
         try {
             src = fs.readFileSync(path.join(this.rootDir, dirName, "device", "device.cpp")).toString("utf8")
         }
@@ -1344,6 +1418,11 @@ export class UdcTerminal {
                 'Content-Type': "application/json"
             }
         }, (mesg) => {
+            if (mesg == undefined) {
+                _this.outputResult("network error")
+                Logger.info("error happened while judge")
+                return
+            }
             mesg.on("data", (b: Buffer) => {
                 dataStr += b.toString("utf8")
             })
@@ -1359,6 +1438,9 @@ export class UdcTerminal {
                 }
                 this.outputResult(res.msg)
             })
+        })
+        fileRequest.on("error", () => {
+            this.outputResult("network error")
         })
         fileRequest.write(JSON.stringify({
             pid: pid,

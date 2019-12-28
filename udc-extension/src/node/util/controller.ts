@@ -77,6 +77,7 @@ export class Controller {
                             // return
                         }
                         else {
+                            _this.ut.outputResult("error happend while compiling")
                             throw "error happened"
                         }
                     }).then(
@@ -160,7 +161,8 @@ export class Controller {
                     )
             }
         }
-        catch{
+        catch (e) {
+            Logger.err(e)
             this.ut.outputResult("something error happened when backend process the submit")
             this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" })
         }

@@ -5,7 +5,7 @@ export enum LOGINTYPE { ADHOC = 'adhoc', FIXED = 'fixed', GROUP = 'group', QUEUE
 
 export interface UdcService {
     is_connected(): Promise<Boolean>;
-    connect(type: string, model: string, pid: string, timeout: string): Promise<string>;
+    connect(type: string, model: string, pid: string, timeout: string): Promise<boolean>;
     disconnect(): Promise<string>;
     list_models(): Promise<Array<string>>;
     get_devices(): Promise<{ [key: string]: number } | undefined>;

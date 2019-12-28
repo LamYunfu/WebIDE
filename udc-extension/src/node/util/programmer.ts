@@ -39,6 +39,12 @@ export class Programer {
                     'Content-Type': "application/json"
                 }
             }, (mesg) => {
+                if (mesg == undefined) {
+                    _this.ut.outputResult("network error")
+                    Logger.info("error happened while config")
+                    resolve("err")
+                    return
+                }
                 let bf = ""
                 mesg.on("error", (err) => {
                     _this.ut.outputResult("something error happened when configuring burning.")
@@ -65,6 +71,12 @@ export class Programer {
 
                 })
             })
+            configRequest.on("error", () => {
+                _this.ut.outputResult("network error")
+                Logger.info("error happened while config")
+                resolve("err")
+                return
+            })
             configRequest.write(JSON.stringify({
                 "filehash": hashVal
             }))
@@ -86,6 +98,12 @@ export class Programer {
                     // },
                     headers: fm.getHeaders()
                 }, (mesg) => {
+                    if (mesg == undefined) {
+                        _this.ut.outputResult("network error")
+                        Logger.info("error happened while upload")
+                        resolve("err")
+                        return
+                    }
                     let bf = ""
                     Logger.info("upload statuscode:" + mesg.statusCode)
                     mesg.on("data", (b: Buffer) => {
@@ -110,6 +128,12 @@ export class Programer {
                         }
                     })
                 })
+                uploadRequest.on("error", () => {
+                    _this.ut.outputResult("network error")
+                    Logger.info("error happened while upload")
+                    resolve("err")
+                    return
+                })
                 let st = fs.createReadStream(filepath)
                 Logger.info("append file")
                 // fm.append("file", blob, filepath.split("/").pop())
@@ -126,6 +150,7 @@ export class Programer {
             Logger.info("uploading binary file error")
             _this.ut.outputResult("binary file uploading error")
             return "err"
+
         }
         else {
             // Logger.info("uploading zip file scc")

@@ -21,7 +21,7 @@ export namespace View {
         continueExe: () => void
         getData: (type: string) => Promise<string>
         storeData: (data: string) => void
-        connect: (loginType: string, model: string, pid: string, timeout: string) => void
+        connect: (loginType: string, model: string, pid: string, timeout: string) => Promise<boolean>
         isconnected: () => Promise<Boolean>
         disconnect: () => void
         callUpdate: () => void

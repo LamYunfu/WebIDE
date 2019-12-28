@@ -74,11 +74,24 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
     }
 
 
-    componentWillMount() {
+    async   componentWillMount() {
         this.context.props.setSize(720)
         let _this = this
+        // let uriArr = decodeURI(window.location.href).split("/")
+        // console.log("abcde")
+
+        // if (uriArr[uriArr.length - 1]!.trim() != this.props.title) {
+        //     uriArr.pop()
+        //     console.log(uriArr.join("/") + this.props.title)
+
+        //     // _this.context.props.openWorkSpace(uriArr.join("/") + this.props.title)
+        // }
+        // // while (true);
+
         _this.pidQueueInfo[_this.props.section["ppid"][0]] = { dirName: this.props.title, ppid: _this.props.section["ppid"][0], type: "freecoding" }
-        _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
+        await _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
+
+
     }
     async componentDidMount() {
         this.context.props.openExplorer()
@@ -93,11 +106,11 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
 
         $(document).ready(
             () => {
-                $(document).on("click", ".section." + _this.props.section.sid, (e) => {
-                    console.log("section click...................")
-                    _this.props.closeTabs()
-                    $(".contentsAndInfos." + _this.props.section.sid).toggle()
-                })
+                // $(document).on("click", ".section." + _this.props.section.sid, (e) => {
+                //     console.log("section click...................")
+                //     _this.props.closeTabs()
+                //     $(".contentsAndInfos." + _this.props.section.sid).toggle()
+                // })
             }
         )
         $(document).ready(
@@ -162,7 +175,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
 
     render(): JSX.Element {
         return (
-            <div style={{ height: "100%" }}>
+            <div style={{ height: "100%", display: "none" }}>
                 <div className="title_timer" title={this.props.section["ppid"][0]} style={{ height: "10%" }}><h4 className={`section experiment`}>自由实验</h4><span id='timer'></span></div>
                 <div className="row col-12" style={{ height: "80%" }} >
                     <div className="col-12" style={{ fontSize: "30px", height: "20%" }}>

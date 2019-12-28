@@ -27,16 +27,12 @@ export class UdcServiceImpl implements UdcService {
     }
 
 
-    async connect(login_type: LOGINTYPE, model: string, pid: string, timeout: string): Promise<string> {
+    async connect(login_type: LOGINTYPE, model: string, pid: string, timeout: string): Promise<boolean> {
         try {
             let result = await this.udcTerminal.connect(login_type, model, pid, timeout);
-            if (result === true) {
-                return "连接成功"
-            } else {
-                return "连接失败";
-            }
+            return result
         } catch (e) {
-            return e;
+            return false;
         }
     }
 

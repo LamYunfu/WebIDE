@@ -55,7 +55,7 @@ export class UdcCompiler {
                     _this.tinyLinkAPIs["port"],
                     _this.tinyLinkAPIs["srcPostPath"],
                     "POST").then(res => {
-                        if (res == null || res == undefined || res == '') {
+                        if (res == null || res == undefined || res == ''||res=="err") {
                             Logger.info("Compile No Data Back,Mabye your login info expired,try login again")
                             _this.outputResult("there are no Response from Compiler ")
                             resolve("failed")
@@ -94,15 +94,33 @@ export class UdcCompiler {
                                     Cookie: this.cookie
                                 }
                             }, (mesg) => {
+                                if (mesg == undefined) {
+                                    _this.udc.outputResult("network error")
+                                    Logger.info("error happened while download hex")
+                                    resolve("error")
+                                    return;
+                                }
                                 let ws = fs.createWriteStream(path.join(this.rootDir, dirName, fn + 'Install.zip'))
                                 let count = 0
+
                                 // let x = new Buffer("")
 
+                                mesg.setTimeout(1, () => {
+                                    _this.outputResult("print scc")
+                                })
                                 mesg.on("data", (b: Buffer) => {
                                     if (count++ % 60 == 0)
                                         Logger.info("downloading")
                                     // x.write(b.toString("hex"))
                                     ws.write(b)
+                                })
+
+                                mesg.on("timeout", () => {
+                                    _this.outputResult("download hex failed ")
+                                })
+                                mesg.on("error", () => {
+                                    _this.outputResult("download hex error ")
+
                                 })
                                 mesg.on("end", async () => {
                                     // ws.write(x)
@@ -112,7 +130,15 @@ export class UdcCompiler {
                                     return
                                 })
                             })
+                            downloadFd.on("error", () => {
+                                _this.outputResult("network error")
+
+                                downloadFd.abort()
+                                resolve("err")
+                            })
+
                             downloadFd.write("")
+
                             downloadFd.end()
                         }
                     }, err => console.log("err"))
@@ -131,7 +157,13 @@ export class UdcCompiler {
             let datastr = JSON.stringify(data)
             let respData = ''
             Logger.val("the cookie in postData:" + this.cookie)
+            let _this = this
             let req = http.request({ method: "POST", host: host, port: port, path: path, headers: { Cookie: this.cookie } }, (res) => {
+                if (res == undefined) {
+                    _this.udc.outputResult("network error")
+                    Logger.info("error happened while post data")
+                    resolve("err")
+                }
                 res.on('data', (b: Buffer) => {
                     respData += b.toString("UTF-8")
                 })
@@ -141,6 +173,10 @@ export class UdcCompiler {
                 res.on('error', err => console.log(err))
             })
             if (req != null) {
+                req.on("error", () => {
+                    _this.udc.outputResult("network error")
+                    resolve("err")
+                })
                 req.write(datastr)
                 req.end()
             }
@@ -162,6 +198,12 @@ export class UdcCompiler {
                     "Cookie": _this.cookie
                 },
             }, (err, res) => {
+                if (res == undefined) {
+                    _this.udc.outputResult("network error")
+                    Logger.info("error happened while submit form")
+                    resolve("err")
+                    return
+                }
                 if (this.DEBUG)
                     Logger.val(res.statusCode)
                 let content = ''

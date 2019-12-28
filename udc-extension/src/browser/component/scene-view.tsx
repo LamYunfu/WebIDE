@@ -136,11 +136,11 @@ export class Scene extends React.Component<Scene.Props, Scene.State> {
         let _this = this
         $(document).ready(
             () => {
-                $(document).on("click", ".section." + _this.props.section.sid, (e) => {
-                    console.log("section click...................")
-                    _this.props.closeTabs()
-                    $(".contentsAndInfos." + _this.props.section.sid).toggle()
-                })
+                // $(document).on("click", ".section." + _this.props.section.sid, (e) => {
+                //     console.log("section click...................")
+                //     _this.props.closeTabs()
+                //     $(".contentsAndInfos." + _this.props.section.sid).toggle()
+                // })
             }
         )
         $(document).ready(

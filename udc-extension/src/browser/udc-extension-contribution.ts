@@ -32,7 +32,7 @@ export namespace UdcCommands {
         category: UDC_MENU_CATEGORY,
         label: "no label"
     };
-    
+
     export const GotoCommand: Command = {
         id: "gotoCode",
         category: UDC_MENU_CATEGORY,
@@ -228,7 +228,8 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 // if (connected === true) {
                 //     this.messageService.info('Already Connected');
                 // } else {
-                this.udcService.connect(loginType, model, pid, timeout)
+                let res = await this.udcService.connect(loginType, model, pid, timeout)
+                return res
                 // .then(async re => {
                 // this.messageService.info(re)
                 //     }).catch(err => {

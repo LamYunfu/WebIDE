@@ -9,7 +9,8 @@ import { DETAIL_ISSUE_URL, LINK_LAB_HOMEPAGE_URL, PROBLEM_STATUS_URL } from "../
 export namespace Experiment {
     export interface Props {
         section: { [key: string]: any }
-        connect: (loginType: string, model: string, pid: string, timeout: string) => void
+        connect: (loginType: string, model: string, pid: string, timeout: string) => Promise<boolean>
+
         disconnect: () => void
         callUpdate: () => void
         postSrcFile: (fn: string) => void
@@ -165,19 +166,19 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
 
     async componentDidMount() {
         let _this = this
-        $(document).ready(
-            () => {
-                $(document).on("click", ".section." + _this.props.section.sid, (e) => {
-                    console.log("section click...................")
-                    _this.props.closeTabs()
-                    $(".contentsAndInfos." + _this.props.section.sid).toggle()
-                })
-            }
-        )
+        // $(document).ready(
+        //     () => {
+        //         $(document).on("click", ".section." + _this.props.section.sid, (e) => {
+        //             console.log("section click...................")
+        //             _this.props.closeTabs()
+        //             $(".contentsAndInfos." + _this.props.section.sid).toggle()
+        //         })
+        //     }
+        // )
         $(document).ready(
             () => {
                 $("#connectButton" + _this.props.section.sid).click(
-                    (e) => {
+                    async (e) => {
                         if ($(e.currentTarget).text() == "断开") {
                             _this.currentFocusCodingIndex[0] = '-1'
                             _this.props.disconnect()
@@ -186,10 +187,15 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         }
                         else {
                             let val = $("#codingInfoArea" + _this.props.section.sid).attr("title")
+                            let res = ""
                             // alert(val)
+                            if (val != undefined && (!await _this.props.connect(_this.loginType[val], _this.model[val], val, _this.timeout[val]))) {
+                                console.log(res)
+                                return;
+                            }
                             val != undefined && (_this.currentFocusCodingIndex[0] = val)
                             console.log("<<<<<<<<<set current coding index:" + _this.currentFocusCodingIndex[0])
-                            val != undefined && _this.props.connect(_this.loginType[val], _this.model[val], val, _this.timeout[val])
+
                             $(e.currentTarget).text("断开")
                         }
                     }

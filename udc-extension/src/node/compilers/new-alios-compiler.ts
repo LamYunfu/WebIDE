@@ -45,6 +45,7 @@ export class NewAliosCompiler {
                 let buff = new Buffer(fs.readFileSync(`/home/project/${projectName}/${role}.zip`))//初始化
                 hashVal = hash.update(buff).digest("hex")
                 return new Promise((resolve) => {
+
                     let configRequest = http.request({//
                         method: "POST",
                         hostname: ALIOS_IP,
@@ -54,10 +55,16 @@ export class NewAliosCompiler {
                             'Content-Type': "application/json"
                         }
                     }, (mesg) => {
+                        if (mesg == null) {
+                            _this.udc.outputResult("network error")
+                            resolve("err")
+                            return;
+                        }
                         let bf = ""
                         mesg.on("data", (b: Buffer) => {
                             bf += b.toString("utf8")
                         })
+
                         mesg.on("end", () => {
                             let res: any = JSON.parse(bf)
                             if (res.result) {
@@ -78,6 +85,10 @@ export class NewAliosCompiler {
                         "filehash": hashVal
                     }))
                     configRequest.end()
+                    configRequest.on("error", () => {
+                        _this.udc.outputResult("network error")
+                        resolve("err")
+                    })
 
                 })
             }
@@ -93,11 +104,21 @@ export class NewAliosCompiler {
                         path: "/upload",
                         headers: fm.getHeaders(),
                     }, (mesg) => {
+                        if (mesg == null) {
+                            _this.udc.outputResult("network error")
+                            resolve("err")
+                            return;
+                        }
                         let bf = ""
                         mesg.on("data", (b: Buffer) => {
 
                             bf += b.toString("utf8")
                             console.log(bf)
+                        })
+                        mesg.on("error", () => {
+                            Logger.info("error happened while upload in Alios")
+                            _this.udc.outputResult("network error")
+                            resolve("err")
                         })
                         mesg.on("end", () => {
                             console.log(bf)
@@ -111,6 +132,10 @@ export class NewAliosCompiler {
                                 _this.udc.outputResult(`Alios Post Upload Err:${res.status}`)
                             }
                         })
+                    })
+                    uploadRequest.on("error", () => {
+                        _this.udc.outputResult("network error")
+                        resolve("err")
                     })
                     let blob = fs.readFileSync(`/home/project/${projectName}/${role}.zip`)
                     fm.append("file", blob, "install.zip")
@@ -131,6 +156,12 @@ export class NewAliosCompiler {
                                 'Content-Type': "application/json"
                             }
                         }, async (mesg) => {
+                            if (mesg == undefined) {
+                                _this.udc.outputResult("network error")
+                                Logger.info("error happened while downloading")
+                                resolve("err")
+                                return
+                            }
                             let bufferStore = ""
                             if (mesg.headers["content-type"] == "application/octet-stream") {
                                 let ws = fs.createWriteStream(`/home/project/${projectName}/hexFiles/${new Buffer(`${role}`).toString("hex")}.hex`, {
@@ -166,7 +197,16 @@ export class NewAliosCompiler {
                                 })
 
                             }
+                            mesg.on("error", () => {
+                                Logger.info("error happened while download in Alios")
+                                _this.udc.outputResult("network error")
+                                resolve("err")
+                            })
 
+                        })
+                        downloadRequest.on("error", () => {
+                            _this.udc.outputResult("network error")
+                            resolve("err")
                         })
                         downloadRequest.write(JSON.stringify({
                             filehash: hashVal

@@ -28,6 +28,7 @@ export class AIView extends React.Component<AI.Props, AI.State> {
         let _this = this
         _this.pidQueueInfo[_this.props.section["ppid"][0]] = { dirName: this.props.title, ppid: _this.props.section["ppid"][0], type: "ai" }
         _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
+
     }
 
 
