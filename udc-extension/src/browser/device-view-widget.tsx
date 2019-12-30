@@ -194,6 +194,9 @@ export class DeviceViewWidget extends TreeWidget {
         await this.applicationShell.closeTabs("bottom")
         await this.applicationShell.closeTabs("right")
     }
+    openFile(pid: string, filename: string) {
+        this.udcService.openFile(pid, filename)
+    }
     openFileView = () => {
         let _this = this
         let wds = this.applicationShell.widgets
@@ -279,7 +282,7 @@ export class DeviceViewWidget extends TreeWidget {
             this.outputResult("err happened,try to refresh the page")
             return
         }
-        this.openSrcFile(this.ppid!)
+        this.openFile(this.ppid, file)
     }
 
     gotoVideo = (uri: string, videoName: string) => {

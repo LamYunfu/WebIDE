@@ -1286,12 +1286,25 @@ export class UdcTerminal {
         }
     }
     config() {
+
         this.udcClient && this.udcClient.onConfigLog(this.tinyLinkInfo)
     }
     setTinyLink(name: string, passwd: string): void {
         this.tinyLinkInfo.name = name
         this.tinyLinkInfo.passwd = passwd
         console.log("userName&passwd:" + JSON.stringify(this.tinyLinkInfo))
+    }
+    openFile(pid: string, filename: string) {
+        this.parseVirtualConfig(pid)
+        let { dirName } = this.pidQueueInfo[pid]
+        let url = path.join(this.rootDir, dirName, this.virtualConfig["projectName"], filename + ".cpp")
+        Logger.info(url)
+        if (fs.existsSync(url)) {
+            this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: url })
+        }
+        else {
+            this.outputResult("no this source file,please check you file structure and config")
+        }
     }
     async openPidFile(pid: string) {
         console.log("openFile")

@@ -117,7 +117,9 @@ export class UdcServiceImpl implements UdcService {
     openPidFile(pid: string): void {
         this.udcTerminal.openPidFile(pid)
     }
-
+    openFile(pid: string, filename: string) {
+        this.udcTerminal.openFile(pid, filename)
+    }
     setCookie(cookie: string): boolean {
         return this.udcTerminal.setCookie(cookie)
     }

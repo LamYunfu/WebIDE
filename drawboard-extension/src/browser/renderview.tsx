@@ -373,8 +373,8 @@ export class View extends React.Component<View.Props>{
               var img = document.createElement("img")
               img.src = str
               img.onload = () => {
-                rate = img.height / img.width
-                rate > 1 ? ctx.drawImage(img, canvas.width*0.5*(1-rate), 0, canvas.width / rate, canvas.height) :
+                rate = img.height*1.0 / img.width
+                rate > 1 ? ctx.drawImage(img, canvas.width*0.5*(1-1/rate), 0, canvas.width / rate, canvas.height) :
                     ctx.drawImage(img, 0, canvas.width*0.5*(1-rate), canvas.width, canvas.height * rate)
               }
           }

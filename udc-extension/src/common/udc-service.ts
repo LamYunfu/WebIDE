@@ -31,6 +31,7 @@ export interface UdcService {
     literalAnalysis: (pid: string) => void
     train: (pid: string) => void
     virtualSubmit: (pid: string) => void
+    openFile: (pid: string, filename: string) => void
 }
 
 

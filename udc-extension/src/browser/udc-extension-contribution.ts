@@ -107,6 +107,10 @@ export namespace UdcCommands {
         id: "openViewPanel",
         label: "no label"
     };
+    export const openFile: Command = {
+        id: "openFile",
+        label: "no label"
+    };
     export const SubmitOnMenu: Command = {
         id: "submitonmenu",
         label: "connect"
@@ -217,6 +221,13 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 this.em.open(uri).then(res =>
                     console.log("openscc"), err => console.log(err)
                 )
+            }
+        }
+        )
+        registry.registerCommand(UdcCommands.openFile, {
+            execute: async (pid: string, filename: string) => {
+                // this.imr.add(uri,"")
+                this.udcService.openFile(pid, filename)
             }
         }
         )
