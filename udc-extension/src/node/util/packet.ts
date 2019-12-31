@@ -92,6 +92,7 @@ export class Packet {
 
 
 export namespace Packet {
+    export const LOG_JSON = "LGPD"
     export const MULTI_DEVICE_PROGRAM = "MDPG"
     export const QUERY_IDLE_DEVICES = "QIDV"
     export const DEVICE_PROGRAM_QUEUE = 'DPGQ'
@@ -139,7 +140,8 @@ export namespace Packet {
 
 
     export const packet_type: { [key: string]: string } = {
-        MULTI_DEVICE_PROGRAM : "MDPG",
+
+        MULTI_DEVICE_PROGRAM: "MDPG",
         QUERY_IDLE_DEVICES: "QIDV",
         DEVICE_WAIT: 'DPWT',
         TYPE_NONE: 'NONE',

@@ -735,6 +735,15 @@ export class UdcTerminal {
 
             // this.setTinyLink("executeSelectPanel", "")
         }
+        else if (type == Packet.LOG_JSON) {
+            let logObj = JSON.parse(value)
+            for (let item of logObj['logs']) {
+                this.outputResult(item, 'log')
+            }
+            if (logObj["isEnd"] != true) {
+                this.outputResult('error happened when checking your answer,review your code to see if you code is terminated by a "end" output')
+            }
+        }
         this.udcServerClient!.write(this.pkt.construct(Packet.HEARTBEAT, ""));
     }
     //{DPBG,00079,7194559383644183:499c6e072349991a:/dev/tinylink_platform_1-558343238323511002B1}
