@@ -18,7 +18,7 @@ export class Programer {
         @inject(Extractor) protected readonly et: Extractor) {
 
     }
-    async fileUpload(filepath: string, address: string, pid: string) {
+    async fileUpload(filepath: string) {
         let _this = this
         let uploadResult = "scc"
         let gHash = ""
@@ -158,6 +158,55 @@ export class Programer {
             return gHash
         }
     }
+    getHexName(fn: string) {
+
+        return new Buffer(fn).toString("hex")
+    }
+    async freeCodingProgram(pid: string) {
+        Logger.info("use freecodingprogram", "/")
+        let { dirName } = this.ut.pidQueueInfo[pid]
+        let projects: any[] = this.ut.freeCodingConfig['projects']
+        // this.ut.outputResult(JSON.stringify(this.ut.freeCodingConfig))
+        let hexFileDir = this.ut.freeCodingConfig["hexFileDir"]
+        let absHexFileDir = path.join(this.ut.rootDir, dirName, hexFileDir)
+        let deviceUsage = this.ut.freeCodingConfig["deviceUsage"]
+        let burnOption = deviceUsage == 'QUEUE'
+            ? this.ut.freeCodingConfig['burningDataQueue']
+            : this.ut.freeCodingConfig['burningDataAdhoc']
+        deviceUsage == 'QUEUE' ? this.ut.outputResult("multiplexing model ")
+            : this.ut.outputResult("monopoly model")
+        burnOption = {
+            ...burnOption
+            , pid: pid,
+            "groupId": (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString(),
+        }
+        let index = 0
+        try {
+            for (let item of projects) {
+                let absHexPath = path.join(absHexFileDir, 'B' + this.getHexName(item["projectName"]) + "sketch.ino.hex")
+                if (!fs.existsSync(absHexPath))
+                    absHexPath = path.join(absHexFileDir, this.getHexName(item["projectName"]) + ".hex")
+                let filehash = await this.fileUpload(absHexPath)
+                // absHexPath = path.join(absHexFileDir, this.getHexName(item["projectName"]) + "sketch.ino.hex")
+                if (filehash == 'err')
+                    return "err"
+                burnOption['program'][index] = {
+                    ...burnOption['program'][index],
+                    "filehash": filehash,
+                    "waitingId": (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1))
+                        + Math.pow(10, 15)).toString()
+                }
+                burnOption[index]
+                index++
+            }
+            return await this.ut.program_device(pid, JSON.stringify(burnOption))
+        }
+        catch (e) {
+            console.log(e)
+            this.ut.outputResult("config.json is not set correctly")
+            return
+        }
+    }
     async program(pid: string) {
         let { loginType, fns, dirName, model, deviceRole,
             // waitID, 
@@ -205,7 +254,7 @@ export class Programer {
                 for (let item of deviceRole!) {
                     let hexFile = hex[item.split(".")[0]]
                     console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
-                    let hash = await this.fileUpload(path.join(rootDir, dirName, hexFileDir, hexFile), address, pid)
+                    let hash = await this.fileUpload(path.join(rootDir, dirName, hexFileDir, hexFile))
                     if (hash == 'err')
                         return false
                     // break
@@ -226,7 +275,7 @@ export class Programer {
                     let hexFile = hex[item.split(".")[0]]
                     console.log(item + ":hexFile:" + JSON.stringify(hex))
                     console.log("path:" + [rootDir, dirName, hexFileDir, hexFile].join(";"))
-                    let hash = await this.fileUpload(path.join(rootDir, dirName, hexFileDir, hexFile), address, pid)
+                    let hash = await this.fileUpload(path.join(rootDir, dirName, hexFileDir, hexFile))
                     if (hash == 'err')
                         return false
                     setJson['program'].push({
@@ -313,7 +362,7 @@ export class Programer {
         //         return true
         // })
         // let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[index], pid)
-        let hash = await this.fileUpload(path.join(rootDir, dirName, hexFileDir, hexFile), address, pid)
+        let hash = await this.fileUpload(path.join(rootDir, dirName, hexFileDir, hexFile))
         if (hash == 'err')
             return false
         let bv = await this.ut.program_device_scene(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[0], pid)

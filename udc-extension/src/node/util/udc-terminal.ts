@@ -18,7 +18,7 @@ import * as WebSocket from 'ws'
 import * as crypto from "crypto"
 import * as FormData from "form-data"
 import * as ach from 'archiver'
-import { SENCE_SERVER_URL, LDC_SERVER_IP, LDC_SERVER_PORT, PROGRAM_SERVER_IP, PROGRAM_SERVER_PORT } from '../../setting/backend-config'
+import { SENCE_SERVER_URL, LDC_SERVER_IP, LDC_SERVER_PORT, PROGRAM_SERVER_IP, PROGRAM_SERVER_PORT, TEMPLATE_SERVER } from '../../setting/backend-config'
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -59,7 +59,7 @@ export class UdcTerminal {
     rootDir: string = "/home/project"
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
     initTag: boolean = true
-
+    freeCodingConfig: any = {}
 
     constructor(
         @inject(Packet) protected readonly pkt: Packet,
@@ -67,6 +67,21 @@ export class UdcTerminal {
         this.event = new events.EventEmitter();
         this.hpp = new HalfPackProcess()
         Logger.val("current path:" + process.cwd())
+    }
+    parseFreeConfig(pid: string) {
+        let { dirName } = this.getPidInfos(pid)
+        let infoRaw: any
+        let info: any
+        try {
+            infoRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
+            info = JSON.parse(infoRaw.toString("utf8"))
+            this.freeCodingConfig = info
+        }
+        catch{
+            this.freeCodingConfig = undefined
+            this.outputResult("the config.json is not set correctly")
+            return
+        }
     }
     parseAIConfig(pid: string) {
         let { dirName } = this.getPidInfos(pid)
@@ -384,6 +399,7 @@ export class UdcTerminal {
         console.log(JSON.stringify(this.pidQueueInfo[pid!]))
     }
     async  initPidQueueInfo(infos: string): Promise<string> {
+        this.freeCodingConfig = ""
         this.initTag = false;
         Logger.info(infos, 'info')
         let _this = this
@@ -396,7 +412,7 @@ export class UdcTerminal {
                 if (!fs.existsSync(path.join(_this.rootDir, dirName)) && ppid != null) {
                     let fileRequest = http.request({//
                         method: "POST",
-                        hostname: 'judge.tinylink.cn',
+                        hostname: TEMPLATE_SERVER,
                         path: "/problem/template",
                         headers: {
                             'Content-Type': "application/json"
