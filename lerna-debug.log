@@ -24,7 +24,7 @@
 13 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 13 error
 13 error npm ERR! A complete log of this run can be found in:
-13 error npm ERR!     /home/liang/.npm/_logs/2019-12-28T10_09_38_290Z-debug.log
+13 error npm ERR!     /home/liang/.npm/_logs/2019-12-31T11_58_41_583Z-debug.log
 13 error
 13 error
 13 error > udc-extension@0.0.0 prepare /home/liang/webide/udc-extension
@@ -32,7 +32,7 @@
 13 error
 13 error $ rimraf lib
 13 error $ tsc  --jsx react
-13 error src/node/compilers/contiki-complier.ts(192,25): error TS2304: Cannot find name 'uploadRequest'.
+13 error src/node/util/programmer.ts(190,21): error TS1005: ',' expected.
 13 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 13 error
 13 error     at Promise.all.then.arr (/home/liang/webide/node_modules/lerna/node_modules/execa/index.js:236:11)

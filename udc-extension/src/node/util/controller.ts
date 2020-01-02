@@ -29,6 +29,7 @@ export class Controller {
     async processFreeCoding(pid: string) {
         Logger.info("start process issue")
         this.ut.refreshConfiguration(pid);
+        this.ut.parseFreeConfig(pid)
         for (let i = 4; ; i--) {//等待四秒分配设备
             let devInfo = this.ut.get_devlist()
             if (devInfo != undefined && devInfo != null) {
@@ -142,7 +143,11 @@ export class Controller {
                                     return "fail"
                                 }
                                 Logger.info("programming")
+
                                 // this.ut.udcClient && this.ut.udcClient.onConfigLog({ name: "submitEnableWithJudge", passwd: "true" })
+                                if (this.ut.freeCodingConfig != "") {
+                                    return await _this.pm.freeCodingProgram(pid)
+                                }
                                 let result = await _this.pm.program(pid)
                                 if (result != true) {
                                     Logger.info("program error")
