@@ -1154,7 +1154,7 @@ export class View extends React.Component<View.Props, View.State>{
                         </MyContext.Provider >
                     </div>
                 :
-                this.state.viewType == "2" ?//自由编程
+                this.state.viewType == "11" ?
                     <MyContext.Provider value={{
 
                         props: _this.props
