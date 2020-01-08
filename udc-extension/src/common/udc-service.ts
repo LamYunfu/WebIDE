@@ -32,6 +32,11 @@ export interface UdcService {
     train: (pid: string) => void
     virtualSubmit: (pid: string) => void
     openFile: (pid: string, filename: string) => void
+    linkEdgeConnect: (pid: string, threeTuple: any) => Promise<boolean>
+    developLinkEdgeProject: (pid: string, indexStr: string) => Promise<boolean>
+    addLinkEdgeProject: (pid: string, deviceInfo: any) => Promise<boolean>
+    getLinkEdgeDevicesInfo: (pid: string) => Promise<any>
+    remove: (pid:string,index: string) => Promise<boolean>
 }
 
 

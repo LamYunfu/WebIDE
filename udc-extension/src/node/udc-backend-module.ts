@@ -18,6 +18,7 @@ import { createCommonBindings } from '../common/udc-common-module';
 import { UdcClient } from '../common/udc-watcher';
 import { Compiler } from "./compilers/compiler"
 import { NewAliosCompiler } from './compilers/new-alios-compiler';
+import { LinkEdgeManager } from './util/linkedgemanger';
 
 
 export default new ContainerModule(bind => {
@@ -44,5 +45,6 @@ export default new ContainerModule(bind => {
     bind(Programer).toSelf().inSingletonScope();
     bind(ConfigSetter).toSelf().inSingletonScope();
     bind(NewContikiCompiler).toSelf().inSingletonScope()
+    bind(LinkEdgeManager).toSelf().inSingletonScope()
     // bind(Controller).toSelf().inSingletonScope();
 });

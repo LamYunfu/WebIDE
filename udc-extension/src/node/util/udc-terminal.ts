@@ -60,7 +60,7 @@ export class UdcTerminal {
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
     initTag: boolean = true
     freeCodingConfig: any = {}
-
+    LinkEdgeConfig: any = {}
     constructor(
         @inject(Packet) protected readonly pkt: Packet,
     ) {
@@ -146,6 +146,56 @@ export class UdcTerminal {
             _this.outputResult(res.toString("utf8"))
         })
     }
+    flushLinkEdgeConfig(pid: string) {
+        let configStr = JSON.stringify(this.LinkEdgeConfig)
+        let { dirName } = this.getPidInfos(pid)
+        let p = path.join(this.rootDir, dirName, "config.json")
+        fs.writeFileSync(p, configStr)
+    }
+    getLinkEdgeDevicesInfo(pid: string) {
+        this.parseLinkEdgeConfig(pid)
+        return this.LinkEdgeConfig["projects"]
+
+    }
+    parseLinkEdgeConfig(pid: string, threeTuple: any = undefined) {
+        let { dirName } = this.getPidInfos(pid)
+        let infoRaw: any
+        try {
+            infoRaw = fs.readFileSync(path.join(this.rootDir, dirName, "config.json"))
+
+            this.LinkEdgeConfig = JSON.parse(infoRaw);
+            this.pidQueueInfo[pid].loginType = "queue"
+            this.pidQueueInfo[pid].model = this.LinkEdgeConfig["gatewayType"]
+            if (this.pidQueueInfo[pid].model == undefined)
+                throw "err"
+            if (threeTuple == undefined)
+                return
+            let startCommand = ""
+            if (threeTuple.action == "connect") {
+                startCommand = this.LinkEdgeConfig["gatewayConnectCommand"].split("$ProductKey").join(threeTuple["$ProductKey"])
+                    .split("$DeviceName").join(threeTuple["$DeviceName"])
+                    .split("$DeviceSecret").join(threeTuple["$DeviceSecret"])
+                Logger.info(startCommand, "connect command")
+            } else if (threeTuple.action == "stop") {
+                startCommand = this.LinkEdgeConfig["gatewayStopCommand"]
+                Logger.info(startCommand, "stop command")
+            }
+            else if (threeTuple.action == "start") {
+                startCommand = this.LinkEdgeConfig["gatewayStartCommand"]
+                Logger.info(startCommand, "start command")
+            }
+            else {
+                this.outputResult("invalid operation")
+                throw "error"
+            }
+            fs.writeFileSync(path.join(this.rootDir, dirName, "hexFiles", "command.hex"), startCommand)
+        }
+        catch{
+            this.outputResult("the config.json is not set correctly")
+            throw "error"
+        }
+    }
+
     parseVirtualConfig(pid: string) {
         let { dirName } = this.getPidInfos(pid)
         let infoRaw: any
@@ -162,6 +212,7 @@ export class UdcTerminal {
             return
         }
     }
+
     async virtualSubmit(pid: string) {
         this.parseVirtualConfig(pid)
         console.log("virtual submit" + pid)
@@ -398,6 +449,16 @@ export class UdcTerminal {
         }
         console.log(JSON.stringify(this.pidQueueInfo[pid!]))
     }
+    async  requestFixedTemplate(pid: string, type: string, rootDir: string) {
+        let { dirName } = this.pidQueueInfo[pid]
+        let projectPath = path.join(this.rootDir, dirName, rootDir)
+        if (!fs.existsSync(projectPath)) {
+            fs.mkdirsSync(projectPath)
+            fs.writeFileSync(path.join(projectPath, rootDir + ".cpp"), "")
+        }
+        this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: path.join(projectPath, rootDir + ".cpp") })
+
+    }
     async  initPidQueueInfo(infos: string): Promise<string> {
         this.freeCodingConfig = ""
         this.initTag = false;
@@ -511,6 +572,7 @@ export class UdcTerminal {
     getPidInfos(pid: string) {
         return this.pidQueueInfo[pid]
     }
+
     setClient(client: UdcClient) {
         this.udcClient = client;
     }
@@ -756,9 +818,12 @@ export class UdcTerminal {
             for (let item of logObj['logs']) {
                 this.outputResult(item, 'log')
             }
-            if (logObj["isEnd"] != true) {
+            if (logObj["isEnd"] == true) {
                 this.outputResult('error happened when checking your answer,review your code to see if you code is terminated by a "end" output')
             }
+            // else {
+            //     this.outputResult("program finished")
+            // }
         }
         this.udcServerClient!.write(this.pkt.construct(Packet.HEARTBEAT, ""));
     }

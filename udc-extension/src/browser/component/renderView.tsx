@@ -8,9 +8,15 @@ import { MyContext } from './context'
 import { AIView } from "./ai-view";
 import { VirtualSceneView } from "./virtualscene-view";
 import { USER_INFO_URL, VIEW_DETAIL_URL, QUIZE_JUDGE_URL, CHOICE_JUDGE_URL } from "../../setting/front-end-config";
+import { LinkEdgeView } from "./linkedge";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        remove: (pid: string, index: string) => Promise<boolean>
+        linkEdgeGetDevicesInfo: (pid: string) => Promise<any>
+        linkEdgeProjectAdd: (pid: string, info: any) => Promise<boolean>
+        linkEdgeDevelop: (pid: string, indexStr: string) => Promise<boolean>
+        linkEdgeConnect: (pid: string, threeTuple: any) => Promise<boolean>
         openDrawBoard: () => void
         gotoVirtualScene: () => void
         virtualOpen: () => void
@@ -1147,59 +1153,29 @@ export class View extends React.Component<View.Props, View.State>{
                             </div>
                         </MyContext.Provider >
                     </div>
-
                 :
-                this.state.viewType == "2" ?//实验题
+                this.state.viewType == "2" ?//自由编程
                     <MyContext.Provider value={{
-                        showTheDefaultExperimentView: () => {
-                            _this.showTheDefaultExperimentView()
-                        },
-                        setClickTime: () => {
-                            _this.clickTime = new Date().getTime()
-                        },
-                        setOptionDescription: (a: string) => {
-                            _this.setOptionDescription(a)
-                        },
-                        setOptionChoicesDescription: (a: JSX.Element[]) => {
-                            _this.setOptionChoicesDescription(a)
-                        },
-                        setState: (tmp: object) => {
-                            _this.setState({
-                                ...tmp
-                            })
 
-                        },
-                        getState: (key: string) => {
-                            let tmp: any = this.state
-                            return tmp[key]
-                        },
                         props: _this.props
 
                     }}>
-                        <div>
-                            <div >
-                                {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
-                                <Experiment
-                                    programSingleFile={_this.props.programSingleFile}
-                                    config={_this.props.config}
-                                    openShell={_this.props.openShell}
-                                    initPidQueueInfo={_this.props.initPidQueueInfo}
-                                    closeTabs={_this.props.closeTabs}
-                                    setQueue={_this.props.setQueue}
-                                    section={{ ppid: [_this.ppid], sid: "experiment" }}
-                                    outputResult={_this.props.outputResult}
-                                    say={_this.props.say}
-                                    setCookie={_this.props.setCookie}
-                                    disconnect={_this.props.disconnect}
-                                    connect={_this.props.connect}
-                                    callUpdate={_this.props.callUpdate}
-                                    postSrcFile={_this.props.postSrcFile}
-                                />
-                            </div>
-                        </div>
+                        {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+                        <LinkEdgeView
+                            remove={this.props.remove}
+                            getDevicesInfo={this.props.linkEdgeGetDevicesInfo}
+                            add={this.props.linkEdgeProjectAdd}
+                            develop={this.props.linkEdgeDevelop}
+                            setSize={this.props.setSize}
+                            initPidQueueInfo={this.props.initPidQueueInfo}
+                            linkEdgeConnect={this.props.linkEdgeConnect}
+
+                        />
                     </MyContext.Provider >
+
                     :
-                    this.state.viewType == "3" ?//场景模式
+
+                    this.state.viewType == "2" ?//实验题
                         <MyContext.Provider value={{
                             showTheDefaultExperimentView: () => {
                                 _this.showTheDefaultExperimentView()
@@ -1207,11 +1183,6 @@ export class View extends React.Component<View.Props, View.State>{
                             setClickTime: () => {
                                 _this.clickTime = new Date().getTime()
                             },
-                            setQuestionPool: (section: string, data: any) => {
-                                _this.questionPool[section] = data
-                                ////alert(JSON.stringify(_this.answerPool))
-                            },
-
                             setOptionDescription: (a: string) => {
                                 _this.setOptionDescription(a)
                             },
@@ -1234,14 +1205,14 @@ export class View extends React.Component<View.Props, View.State>{
                             <div>
                                 <div >
                                     {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
-                                    <Scene
+                                    <Experiment
                                         programSingleFile={_this.props.programSingleFile}
                                         config={_this.props.config}
                                         openShell={_this.props.openShell}
                                         initPidQueueInfo={_this.props.initPidQueueInfo}
                                         closeTabs={_this.props.closeTabs}
                                         setQueue={_this.props.setQueue}
-                                        section={{ ppid: [_this.ppid], sid: "Scene" }}
+                                        section={{ ppid: [_this.ppid], sid: "experiment" }}
                                         outputResult={_this.props.outputResult}
                                         say={_this.props.say}
                                         setCookie={_this.props.setCookie}
@@ -1254,14 +1225,19 @@ export class View extends React.Component<View.Props, View.State>{
                             </div>
                         </MyContext.Provider >
                         :
-                        this.state.viewType == "5" ?//自由编程
+                        this.state.viewType == "3" ?//场景模式
                             <MyContext.Provider value={{
-                                showTheDefaultFreeCodingView: () => {
-
+                                showTheDefaultExperimentView: () => {
+                                    _this.showTheDefaultExperimentView()
                                 },
                                 setClickTime: () => {
                                     _this.clickTime = new Date().getTime()
                                 },
+                                setQuestionPool: (section: string, data: any) => {
+                                    _this.questionPool[section] = data
+                                    ////alert(JSON.stringify(_this.answerPool))
+                                },
+
                                 setOptionDescription: (a: string) => {
                                     _this.setOptionDescription(a)
                                 },
@@ -1281,29 +1257,30 @@ export class View extends React.Component<View.Props, View.State>{
                                 props: _this.props
 
                             }}>
-                                {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
-                                <FreeCoding
-                                    title={this.title}
-                                    programSingleFile={_this.props.programSingleFile}
-                                    config={_this.props.config}
-                                    openShell={_this.props.openShell}
-                                    initPidQueueInfo={_this.props.initPidQueueInfo}
-                                    closeTabs={_this.props.closeTabs}
-                                    setQueue={_this.props.setQueue}
-                                    section={{ ppid: [_this.ppid], sid: "experiment" }}
-                                    outputResult={_this.props.outputResult}
-                                    say={_this.props.say}
-                                    setCookie={_this.props.setCookie}
-                                    disconnect={_this.props.disconnect}
-                                    connect={_this.props.connect}
-                                    callUpdate={_this.props.callUpdate}
-                                    postSrcFile={_this.props.postSrcFile}
-                                />
-
+                                <div>
+                                    <div >
+                                        {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+                                        <Scene
+                                            programSingleFile={_this.props.programSingleFile}
+                                            config={_this.props.config}
+                                            openShell={_this.props.openShell}
+                                            initPidQueueInfo={_this.props.initPidQueueInfo}
+                                            closeTabs={_this.props.closeTabs}
+                                            setQueue={_this.props.setQueue}
+                                            section={{ ppid: [_this.ppid], sid: "Scene" }}
+                                            outputResult={_this.props.outputResult}
+                                            say={_this.props.say}
+                                            setCookie={_this.props.setCookie}
+                                            disconnect={_this.props.disconnect}
+                                            connect={_this.props.connect}
+                                            callUpdate={_this.props.callUpdate}
+                                            postSrcFile={_this.props.postSrcFile}
+                                        />
+                                    </div>
+                                </div>
                             </MyContext.Provider >
                             :
-                            this.state.viewType == "8" ?//人工智能
-
+                            this.state.viewType == "5" ?//自由编程
                                 <MyContext.Provider value={{
                                     showTheDefaultFreeCodingView: () => {
 
@@ -1329,22 +1306,30 @@ export class View extends React.Component<View.Props, View.State>{
                                     },
                                     props: _this.props
 
-
                                 }}>
-
-                                    <AIView
+                                    {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+                                    <FreeCoding
                                         title={this.title}
+                                        programSingleFile={_this.props.programSingleFile}
                                         config={_this.props.config}
+                                        openShell={_this.props.openShell}
                                         initPidQueueInfo={_this.props.initPidQueueInfo}
+                                        closeTabs={_this.props.closeTabs}
+                                        setQueue={_this.props.setQueue}
                                         section={{ ppid: [_this.ppid], sid: "experiment" }}
                                         outputResult={_this.props.outputResult}
                                         say={_this.props.say}
+                                        setCookie={_this.props.setCookie}
+                                        disconnect={_this.props.disconnect}
+                                        connect={_this.props.connect}
+                                        callUpdate={_this.props.callUpdate}
+                                        postSrcFile={_this.props.postSrcFile}
                                     />
 
                                 </MyContext.Provider >
-
                                 :
-                                this.state.viewType == "9" ?
+                                this.state.viewType == "8" ?//人工智能
+
                                     <MyContext.Provider value={{
                                         showTheDefaultFreeCodingView: () => {
 
@@ -1370,21 +1355,62 @@ export class View extends React.Component<View.Props, View.State>{
                                         },
                                         props: _this.props
 
+
                                     }}>
-                                        <VirtualSceneView
+
+                                        <AIView
                                             title={this.title}
                                             config={_this.props.config}
                                             initPidQueueInfo={_this.props.initPidQueueInfo}
                                             section={{ ppid: [_this.ppid], sid: "experiment" }}
                                             outputResult={_this.props.outputResult}
                                             say={_this.props.say}
-
                                         />
 
                                     </MyContext.Provider >
-                                    :
 
-                                    <div></div>
+                                    :
+                                    this.state.viewType == "9" ?
+                                        <MyContext.Provider value={{
+                                            showTheDefaultFreeCodingView: () => {
+
+                                            },
+                                            setClickTime: () => {
+                                                _this.clickTime = new Date().getTime()
+                                            },
+                                            setOptionDescription: (a: string) => {
+                                                _this.setOptionDescription(a)
+                                            },
+                                            setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                                _this.setOptionChoicesDescription(a)
+                                            },
+                                            setState: (tmp: object) => {
+                                                _this.setState({
+                                                    ...tmp
+                                                })
+
+                                            },
+                                            getState: (key: string) => {
+                                                let tmp: any = this.state
+                                                return tmp[key]
+                                            },
+                                            props: _this.props
+
+                                        }}>
+                                            <VirtualSceneView
+                                                title={this.title}
+                                                config={_this.props.config}
+                                                initPidQueueInfo={_this.props.initPidQueueInfo}
+                                                section={{ ppid: [_this.ppid], sid: "experiment" }}
+                                                outputResult={_this.props.outputResult}
+                                                say={_this.props.say}
+
+                                            />
+
+                                        </MyContext.Provider >
+
+                                        :
+                                        <div></div>
         )
     }
 }

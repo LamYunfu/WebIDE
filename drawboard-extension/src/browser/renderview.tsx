@@ -1,7 +1,7 @@
 import React = require("react");
 import { MyContext } from "./context";
 import * as $ from "jquery"
-import { ModelTestAddress } from "../settings/aiconfig";
+import { ModelTestAddress, VOICE_RECOGNIZE_URL } from "../settings/aiconfig";
 export namespace View {
     export interface Props {
 
@@ -10,6 +10,7 @@ export namespace View {
 export class View extends React.Component<View.Props>{
     boardType: string | undefined
     title: string | undefined
+    ws: WebSocket | undefined = undefined
     componentWillMount() {
         this.title = $("#coding_title").text().trim()
         if (this.title == "画板数字识别")
@@ -18,11 +19,54 @@ export class View extends React.Component<View.Props>{
             this.boardType = "practice"
         else if (this.title == "实时拍照人脸识别应用")
             this.boardType = "application"
+        // else if (this.title == "实时拍照人脸识别应用")
+    }
+    recv = (e: any) => {
+        if (e.data.origin == "voiceRecognize") {
+            let result: string = e.data.result
+            if (result.split("开灯").length != 1) {
+                console.log("开灯")
+                this.ws!.send("0:0:TL_LED.turnOn")
+
+            }
+            else if (result.split("关灯").length != 1) {
+                console.log("关灯")
+                this.ws!.send("0:0:TL_LED.turnOff")
+
+            }
+            console.log("recv a mesg:" + result)
+            // alert(e.data.result)
+        }
+    }
+    connect() {
+        this.ws = new WebSocket("ws://47.98.249.190:8001")
+        this.ws.onopen = () => {
+            this.ws!.send("0:0:begin ok")
+            // alert("open ws")
+        }
+        this.ws.onmessage = (data) => {
+            // alert(data.toString())
+
+
+        }
+        this.ws.onerror = async (data) => {
+            await new Promise(res => {
+                setTimeout(() => {
+                    res()
+                }, 3000)
+            })
+            console.log("reconnect")
+            this.connect()
+        }
+        this.ws.onclose = () => {
+            this.ws = undefined
+        }
+
     }
     componentDidMount() {
-
+        this.connect()
+        window.addEventListener('message', this.recv)
         const script = document.createElement("script", {
-
         });
         script.async = true;
         script.innerHTML = this.boardType == "digit" ?
@@ -608,7 +652,13 @@ export class View extends React.Component<View.Props>{
                         </div>
                     </div>
                     :
-                    <div>not for this problem</div>
+                    <div style={{ position: "absolute", left: "40px", borderWidth: 0, width: "90%", height: "100%" }}>
+                        <iframe style={{ borderWidth: 0, width: "95%" }} id="voiceRecognize" allow="microphone" src={VOICE_RECOGNIZE_URL} width="100%" height="100%"></iframe>
+                    </div>
+
+
+
+            // <div>not for this problem</div>
 
         )
     }

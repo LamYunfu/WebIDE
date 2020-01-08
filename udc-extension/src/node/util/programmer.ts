@@ -162,6 +162,7 @@ export class Programer {
 
         return new Buffer(fn).toString("hex")
     }
+
     async freeCodingProgram(pid: string) {
         Logger.info("use freecodingprogram", "/")
         let { dirName } = this.ut.pidQueueInfo[pid]
@@ -170,19 +171,23 @@ export class Programer {
         let hexFileDir = this.ut.freeCodingConfig["hexFileDir"]
         let absHexFileDir = path.join(this.ut.rootDir, dirName, hexFileDir)
         let deviceUsage = this.ut.freeCodingConfig["deviceUsage"]
-        let burnOption = deviceUsage == 'QUEUE'
-            ? this.ut.freeCodingConfig['burningDataQueue']
-            : this.ut.freeCodingConfig['burningDataAdhoc']
+        let burnOption: any = {}
         deviceUsage == 'QUEUE' ? this.ut.outputResult("multiplexing model ")
             : this.ut.outputResult("monopoly model")
+
         burnOption = {
-            ...burnOption
-            , pid: pid,
+            ...burnOption,
+            type: deviceUsage,
+            pid: pid,
             "groupId": (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString(),
+            program: []
         }
-        let index = 0
         try {
             for (let item of projects) {
+                let projectBurningSetting = deviceUsage == 'QUEUE'
+                    ? item['burningDataQueue']["program"]
+                    : item['burningDataAdhoc']["program"]
+                projectBurningSetting["model"] = item["deviceType"]
                 let absHexPath = path.join(absHexFileDir, 'B' + this.getHexName(item["projectName"]) + "sketch.ino.hex")
                 if (!fs.existsSync(absHexPath))
                     absHexPath = path.join(absHexFileDir, this.getHexName(item["projectName"]) + ".hex")
@@ -190,14 +195,13 @@ export class Programer {
                 // absHexPath = path.join(absHexFileDir, this.getHexName(item["projectName"]) + "sketch.ino.hex")
                 if (filehash == 'err')
                     return "err"
-                burnOption['program'][index] = {
-                    ...burnOption['program'][index],
+                burnOption['program'].push({
+                    ...projectBurningSetting,
                     "filehash": filehash,
                     "waitingId": (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1))
                         + Math.pow(10, 15)).toString()
                 }
-                burnOption[index]
-                index++
+                )
             }
             return await this.ut.program_device(pid, JSON.stringify(burnOption))
         }

@@ -8,6 +8,7 @@ import { UdcService } from './../common/udc-service';
 import { injectable, inject, } from "inversify";
 import { ILogger } from '@theia/core';
 import { RawProcessFactory } from '@theia/process/lib/node';
+import { LinkEdgeManager } from './util/linkedgemanger';
 @injectable()
 export class UdcServiceImpl implements UdcService {
     constructor(
@@ -16,6 +17,7 @@ export class UdcServiceImpl implements UdcService {
         @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal,
         @inject(Controller) protected readonly controller: Controller,
         @inject(Compiler) protected readonly compiler: Compiler,
+        @inject(LinkEdgeManager) protected readonly linkEdgeManager: LinkEdgeManager,
     ) {
     }
 
@@ -168,4 +170,40 @@ export class UdcServiceImpl implements UdcService {
     literalAnalysis(pid: string) {
         this.udcTerminal.literalAnalysis(pid)
     }
+    async linkEdgeConnect(pid: string, threeTuple: any) {
+        this.linkEdgeManager.processLinkEdgeConnect(pid, threeTuple)
+        return true
+    }
+    async linkEdgeDisconnect(pid: string) {
+        return true
+    }
+    async linkEdgeStart(pid: string) {
+        return true
+    }
+    async linkEdgeStop(pid: string) {
+        return true
+    }
+    async getLinkEdgeDevicesInfo(pid: string) {
+        return this.udcTerminal.getLinkEdgeDevicesInfo(pid)
+    }
+    async addLinkEdgeProject(pid: string, deviceInfo: any) {
+        return !!this.linkEdgeManager.addProjectToLinkEdge(pid, deviceInfo)
+    }
+    async developLinkEdgeProject(pid: string, indexStr: string) {
+        return !!this.linkEdgeManager.developLinkEdgeProject(pid, indexStr)
+    }
+    async openLinkEdgeProject(pid: string, index: string) {
+        return true
+    }
+    async removeLinkEdgeProject(pid: string, index: string) {
+        return true
+    }
+    async shutDownLog(pid: string, index: string) {
+        return true
+    }
+    async remove(pid:string,index: string) {
+        return this.linkEdgeManager.removeProjectInLinkEdge(pid, index)
+    }
+
+
 }

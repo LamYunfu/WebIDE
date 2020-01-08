@@ -10,6 +10,7 @@ import { Compiler } from '../compilers/compiler';
 import { Programer } from './programmer';
 import { Logger } from './logger';
 import { getCompilerType } from '../globalconst';
+
 @injectable()
 /*
 文件操作
@@ -48,6 +49,7 @@ export class Controller {
         }
         this.processIssue(pid);
     }
+
     async processIssue(pid: string) {
         try {
             let { loginType,

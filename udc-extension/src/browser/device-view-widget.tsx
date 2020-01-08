@@ -16,6 +16,7 @@ import { WorkspaceService } from "@theia/workspace/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { FileTreeWidget } from "@theia/filesystem/lib/browser";
 import { ViewContainer } from "@theia/core/lib/browser/view-container"
+// import { LinkEdgeView } from "./component/linkedge";
 export interface DeviceViewSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode {
     iconClass: string;
 }
@@ -88,6 +89,11 @@ export class DeviceViewWidget extends TreeWidget {
         return (
 
             <View
+                remove={this.remove}
+                linkEdgeGetDevicesInfo={this.linkEdgeGetDevicesInfo}
+                linkEdgeProjectAdd={this.linkEdgeProjectAdd}
+                linkEdgeDevelop={this.linkEdgeDevelop}
+                linkEdgeConnect={this.linkEdgeConnect}
                 openDrawBoard={this.openDrawBoard}
                 gotoVirtualScene={this.gotoVirtualScene}
                 virtualOpen={this.virtualOpen}
@@ -124,8 +130,12 @@ export class DeviceViewWidget extends TreeWidget {
                 getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
                 setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
             />
+            // <LinkEdgeView initPidQueueInfo={this.initPidQueueInfo} linkEdgeConnect={this.linkEdgeConnect}></LinkEdgeView>
 
         )
+    }
+    remove = (pid: string, index: string) => {
+        return this.udcService.remove(pid, index)
     }
     setSubmitEnableWithJudgeTag = (val: boolean) => {
         this.submitEnableWithJudgeTag = val
@@ -263,8 +273,19 @@ export class DeviceViewWidget extends TreeWidget {
         this.udcService.setCookie(`JSESSIONID=${cookie}; Path=/; HttpOnly`);
         // this.udcService.setCookie(cookie);
     }
+    linkEdgeProjectAdd = (pid: string, deviceInfo: any) => {
+        return this.udcService.addLinkEdgeProject(pid, deviceInfo)
 
-
+    }
+    linkEdgeConnect = (pid: string, threeTuple: any) => {
+        return this.udcService.linkEdgeConnect(pid, threeTuple)
+    }
+    linkEdgeDevelop = (pid: string, indexStr: string) => {
+        return this.udcService.developLinkEdgeProject(pid, indexStr)
+    }
+    linkEdgeGetDevicesInfo = (pid: string) => {
+        return this.udcService.getLinkEdgeDevicesInfo(pid)
+    }
     postSrcFile = (fn: string) => {
         this.udcService.postSrcFile(fn)
     }

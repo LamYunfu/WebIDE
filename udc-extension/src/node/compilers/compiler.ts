@@ -20,6 +20,10 @@ export class Compiler {
         @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal
     ) {
     }
+    async linkEdgeCompile(pid: string, index: string) {
+        
+
+    }
     async compile(pid: string) {
         let { model } = this.udcTerminal.getPidInfos(pid)
         Logger.info("start compiling")
