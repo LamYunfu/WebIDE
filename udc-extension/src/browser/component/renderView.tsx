@@ -1162,6 +1162,7 @@ export class View extends React.Component<View.Props, View.State>{
                     }}>
                         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
                         <LinkEdgeView
+                            linkEdgeDisconnect={this.props.disconnect}
                             remove={this.props.remove}
                             getDevicesInfo={this.props.linkEdgeGetDevicesInfo}
                             add={this.props.linkEdgeProjectAdd}

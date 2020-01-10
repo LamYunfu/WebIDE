@@ -22,7 +22,7 @@ export class LinkEdgeManager {
             return "err"
         let burnOption = this.ut.LinkEdgeConfig['burningGateway']
         burnOption = {
-            ...burnOption
+            ...this.ut.LinkEdgeConfig['burningDataQueue']
             , pid: pid,
             "groupId": (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) + Math.pow(10, 15)).toString(),
         }
@@ -32,7 +32,7 @@ export class LinkEdgeManager {
             "waitingId": (Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1))
                 + Math.pow(10, 15)).toString()
         }
-        this.ut.connect("", "", pid, "30")
+        this.ut.is_connected ? "" : this.ut.connect("", "", pid, "3")
         for (let i = 4; ; i--) {//等待四秒分配设备
             let devInfo = this.ut.get_devlist()
             if (devInfo != undefined && devInfo != null) {
@@ -57,8 +57,17 @@ export class LinkEdgeManager {
     async addProjectToLinkEdge(pid: string, deviceInfo: any) {
         this.ut.parseLinkEdgeConfig(pid)
         let index = parseInt(deviceInfo.index)
+        let p: any[] = this.ut.LinkEdgeConfig['projects']
+        if (p.some((value) => {
+            return value.deviceName == deviceInfo.deviceName
+        })
+        ) {
+            return false
+        }
+
+
         this.ut.LinkEdgeConfig['projects'][index] == undefined ?
-        this.ut.LinkEdgeConfig['projects'].push(
+            this.ut.LinkEdgeConfig['projects'].push(
                 {
                     "projectName": deviceInfo.deviceName,
                     "deviceName": deviceInfo.deviceName,
@@ -71,6 +80,7 @@ export class LinkEdgeManager {
                 "deviceType": deviceInfo.deviceType
             }
         this.ut.flushLinkEdgeConfig(pid)
+        return true
     }
     async removeProjectInLinkEdge(pid: string, indexStr: string) {
         let index = parseInt(indexStr)
@@ -79,16 +89,12 @@ export class LinkEdgeManager {
         let subDirName = project.projectName
         let subDirPath = path.join(this.ut.rootDir, dirName, subDirName)
         this.ut.LinkEdgeConfig['projects'].splice(index, 1)
-
-
-        fs.readdirSync(subDirPath).forEach((value) => {
+        fs.existsSync(subDirPath) && fs.readdirSync(subDirPath).forEach((value) => {
             fs.unlinkSync(path.join(subDirPath, value))
         }
-
         )
-        fs.rmdirSync(subDirPath)
+        fs.existsSync(subDirPath) && fs.rmdirSync(subDirPath)
         this.ut.flushLinkEdgeConfig(pid)
-
         return true
     }
     async developLinkEdgeProject(pid: string, indexStr: string) {

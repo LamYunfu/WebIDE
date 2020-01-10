@@ -4,6 +4,7 @@ import { MyContext } from "./context";
 
 export namespace LinkEdge {
     export interface Props {
+        linkEdgeDisconnect: () => void
         linkEdgeConnect: (pid: string, threeTuple: any) => Promise<boolean>
         initPidQueueInfo(infos: string): Promise<string>
         setSize(size: number): void
@@ -49,6 +50,9 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
     toggleConnectionStatus = async () => {
 
         if (this.state.connectionStatus) {
+            this.threeTuple["action"] = "stop"
+            await this.props.linkEdgeConnect("29", this.threeTuple)
+            this.props.linkEdgeDisconnect()
             this.setState({
                 connectionStatus: !this.state.connectionStatus
                 , executeStatus: true
@@ -232,18 +236,24 @@ class Form extends React.Component<Form.Props, Form.Status> {
             ra: this.props.ra
         }
     }
-    add = (item: any) => {
+    add = async (item: any) => {
         let indexArr = this.props.ra
         indexArr.push(item)
-        this.props.add(item)
+        if (!await this.props.add(item)) {
+            alert("添加失败")
+            return
+        }
         this.setState({
             ra: indexArr
         })
     }
-    remove(index: number) {
+    async remove(index: number) {
         let ra = this.state.ra
         ra.splice(index, 1)
-        this.props.remove(index.toString())
+        if (!await this.props.remove(index.toString())) {
+            alert("删除失败")
+            return
+        }
         this.setState({
             ra: ra
         })

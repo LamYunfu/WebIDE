@@ -61,6 +61,7 @@ export class UdcTerminal {
     initTag: boolean = true
     freeCodingConfig: any = {}
     LinkEdgeConfig: any = {}
+    fileTag: boolean = false
     constructor(
         @inject(Packet) protected readonly pkt: Packet,
     ) {
@@ -157,7 +158,18 @@ export class UdcTerminal {
         return this.LinkEdgeConfig["projects"]
 
     }
-    parseLinkEdgeConfig(pid: string, threeTuple: any = undefined) {
+    async parseLinkEdgeConfig(pid: string, threeTuple: any = undefined) {
+        for (let i = 0; i < 6; i++) {
+            if (this.fileTag) {
+                await new Promise((res) => {
+                    setTimeout(() => {
+                        res()
+                    }, 1000);
+                })
+            }
+        }
+
+        this.fileTag = true
         let { dirName } = this.getPidInfos(pid)
         let infoRaw: any
         try {
@@ -190,9 +202,13 @@ export class UdcTerminal {
             }
             fs.writeFileSync(path.join(this.rootDir, dirName, "hexFiles", "command.hex"), startCommand)
         }
-        catch{
+        catch (e) {
+            Logger.info(JSON.stringify(e))
             this.outputResult("the config.json is not set correctly")
             throw "error"
+        }
+        finally {
+            this.fileTag = false
         }
     }
 

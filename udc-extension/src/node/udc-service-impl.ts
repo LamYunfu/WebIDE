@@ -187,10 +187,10 @@ export class UdcServiceImpl implements UdcService {
         return this.udcTerminal.getLinkEdgeDevicesInfo(pid)
     }
     async addLinkEdgeProject(pid: string, deviceInfo: any) {
-        return !!this.linkEdgeManager.addProjectToLinkEdge(pid, deviceInfo)
+        return !!await this.linkEdgeManager.addProjectToLinkEdge(pid, deviceInfo)
     }
     async developLinkEdgeProject(pid: string, indexStr: string) {
-        return !!this.linkEdgeManager.developLinkEdgeProject(pid, indexStr)
+        return !!await this.linkEdgeManager.developLinkEdgeProject(pid, indexStr)
     }
     async openLinkEdgeProject(pid: string, index: string) {
         return true
@@ -201,7 +201,7 @@ export class UdcServiceImpl implements UdcService {
     async shutDownLog(pid: string, index: string) {
         return true
     }
-    async remove(pid:string,index: string) {
+    async remove(pid: string, index: string) {
         return this.linkEdgeManager.removeProjectInLinkEdge(pid, index)
     }
 

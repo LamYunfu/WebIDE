@@ -21,6 +21,7 @@ export class HalfPackProcess extends EventEmitor {
 
 
     putData(inData: Buffer): void {
+        Logger.info(inData.toString("utf-8"),'raw')
         if (this.currentDataSize + inData.length > this.maxSize) {
             Logger.info("data overflowing")
             return
