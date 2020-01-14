@@ -834,9 +834,9 @@ export class UdcTerminal {
             for (let item of logObj['logs']) {
                 this.outputResult(item, 'log')
             }
-            if (logObj["isEnd"] == true) {
-                this.outputResult('error happened when checking your answer,review your code to see if you code is terminated by a "end" output')
-            }
+            // if (logObj["isEnd"] == true) {
+            //     this.outputResult('error happened when checking your answer,review your code to see if you code is terminated by a "end" output')
+            // }
             // else {
             //     this.outputResult("program finished")
             // }

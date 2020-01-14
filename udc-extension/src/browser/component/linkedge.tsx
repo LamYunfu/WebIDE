@@ -17,6 +17,8 @@ export namespace LinkEdge {
         connectionStatus: boolean
         ,
         executeStatus: boolean,
+        connectionLoading: boolean,
+        executeLoading: boolean,
         ra: any[]
 
     }
@@ -28,6 +30,8 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
         super(props)
         console.log("init")
         this.state = {
+            connectionLoading: false,
+            executeLoading: false,
             connectionStatus: false,
             executeStatus: true,
             ra: []
@@ -48,7 +52,7 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
     }
 
     toggleConnectionStatus = async () => {
-
+        this.setState({ connectionLoading: true })
         if (this.state.connectionStatus) {
             this.threeTuple["action"] = "stop"
             await this.props.linkEdgeConnect("29", this.threeTuple)
@@ -74,6 +78,7 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
     }
     toggleExecuteStatus = async () => {
         this.threeTuple["action"] = this.state.executeStatus ? "stop" : "start"
+        this.setState({ executeLoading: true })
         if (await this.props.linkEdgeConnect("29", this.threeTuple)) {
             this.setState({
                 executeStatus: !this.state.executeStatus
@@ -116,14 +121,16 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
 
         return (
             <div>
-                <h5 style={{ padding: '3%', height: '10%', textAlign: "center" }}>OneLink</h5>
+                <h5 style={{ padding: '3%', height: '10%', textAlign: "center" }}>LinkEdge</h5>
                 <div className="col-12" style={{ height: '90%' }}>
                     <div className="col-11 ">
                         <div className="col-12">
-                            <Input label="*DeviceName   : " hint="Please Input DeviceName " onChange={this.changeDeviceName} disabled={this.state.connectionStatus}></Input>
-                            <Input label="*ProductKey   : " hint="Please Input ProductKey " onChange={this.changeProductKey} disabled={this.state.connectionStatus}></Input>
-                            <Input label="*DeviceSecret : " hint="Please Input Please Input DeviceSecret " onChange={this.changeDeviceSecret} disabled={this.state.connectionStatus}></Input>
+                            <Input label="*ProductKey   : " hint="Please Input ProductKey " onChange={this.changeProductKey} disabled={this.state.connectionStatus} copy={true}>  </Input>
+                            <Input label="*DeviceName   : " hint="Please Input DeviceName " onChange={this.changeDeviceName} disabled={this.state.connectionStatus} copy={true}></Input>
+                            <Input label="*DeviceSecret : " hint="Please Input Please Input DeviceSecret " onChange={this.changeDeviceSecret} disabled={this.state.connectionStatus} copy={true}></Input>
                             <div> <ButtonGroup
+                                connectionLoading={this.state.connectionLoading}
+                                executeLoading={this.state.executeLoading}
                                 toggleConnectionStatus={this.toggleConnectionStatus}
                                 toggleExecuteStatus={this.toggleExecuteStatus}
                                 connectionStatus={this.state.connectionStatus}
@@ -146,11 +153,17 @@ namespace Input {
         disabled?: boolean
         label: string,
         hint: string,
-
+        copy?: boolean
     }
 }
 class Input extends React.Component<Input.Props> {
     index: number = 0
+    str: string = ""
+    onChange = (e: any) => {
+        this.props.onChange!(e)
+        // alert(e.target.value)
+        this.str = e.target.value
+    }
     render() {
         return <div className="row cols-1">
             <div className="col-3" style={{
@@ -158,16 +171,30 @@ class Input extends React.Component<Input.Props> {
                 justifyItems: "center", fontStyle: "oblique"
                 , fontFamily: "fantasy"
             }}>{this.props.label}</div>
-            <input type="text" className="form-control  col-9" id="name" disabled={this.props.disabled}
-                placeholder={this.props.hint} onChange={this.props.onChange} />
+            <input type="text" className="form-control  col-8" id="name" disabled={this.props.disabled}
+                placeholder={this.props.hint} onChange={this.onChange} />
+            {this.props.copy ? <a className="col-1" style={{
+                padding: 0, display: "flex", justifyContent: "center", alignItems: 'center', color: 'blue',
+                cursor: ' pointer',
+                textDecoration: 'underline'
+            }} onClick={this.copy}> 复制</a> : ""}
         </div>
+    }
+    copy = () => {
+        let item = document.createElement('textarea')
+        item.innerHTML = this.str
+        document.body.append(item)
+        item.select()
+        document.execCommand("copy")
+        item.remove()
     }
 }
 namespace ButtonGroup {
     export interface Props {
         toggleConnectionStatus: () => void
         toggleExecuteStatus: () => void,
-
+        connectionLoading: boolean,
+        executeLoading: boolean,
         connectionStatus: boolean
         ,
         executeStatus: boolean
@@ -182,12 +209,12 @@ class ButtonGroup extends React.Component<ButtonGroup.Props, ButtonGroup.Status>
     }
     render() {
         return <div>
-            {this.props.connectionStatus ? <Button onClick={this.props.toggleConnectionStatus} value='释放'></Button> :
-                <Button disabled={this.props.connectionStatus} value='连接' onClick={this.props.toggleConnectionStatus}></Button>}
+            {this.props.connectionStatus ? <Button onClick={this.props.toggleConnectionStatus} value='释放' loading={this.props.connectionLoading} ></Button> :
+                <Button disabled={this.props.connectionStatus} value='连接' onClick={this.props.toggleConnectionStatus} loading={this.props.connectionLoading}></Button>}
             {!this.props.executeStatus && this.props.connectionStatus ?
-                <Button disabled={!this.props.connectionStatus} value='启动' onClick={this.props.toggleExecuteStatus}></Button>
+                <Button disabled={!this.props.connectionStatus} value='启动' onClick={this.props.toggleExecuteStatus} loading={this.props.executeLoading}></Button>
                 :
-                <Button disabled={!this.props.connectionStatus} value='停止' onClick={this.props.toggleExecuteStatus}></Button>}
+                <Button disabled={!this.props.connectionStatus} value='停止' onClick={this.props.toggleExecuteStatus} loading={this.props.executeLoading}></Button>}
 
         </div>
     }
@@ -197,14 +224,21 @@ namespace Button {
         onClick?: () => void
         disabled?: boolean
         value: string
+        loading?: boolean
     }
 
 }
 class Button extends React.Component<Button.Props> {
     render() {
-        return this.props.disabled ?
-            <button className="btn btn-warning" disabled={true} value={this.props.value} onClick={this.props.onClick}>{this.props.value}</button>
-            : <button className="btn btn-primary" disabled={false} value={this.props.value} onClick={this.props.onClick}> {this.props.value}</button>
+        return this.props.loading ?
+            <div className="spinner-border" role="status">
+                <span className="sr-only">Loading...</span>
+            </div>
+            :
+            this.props.disabled ?
+                <button className="btn btn-warning" disabled={true} value={this.props.value} onClick={this.props.onClick}>{this.props.value}</button>
+                :
+                <button className="btn btn-primary" disabled={false} value={this.props.value} onClick={this.props.onClick}> {this.props.value}</button>
     }
 }
 namespace Form {

@@ -245,18 +245,19 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                         let tmp = [data.data]
                         for (let x of tmp) {
                             if (_this.lastSubmitCount[x.pid] == undefined) {
-                                _this.lastSubmitCount = x.submit
+                                _this.lastSubmitCount[x.pid] = x.submit
                             }
                             $(`.onlineCount.${x.pid}>span`).text(x.count)
                             _this.codingStatus[x.pid] = x.status
                             if (find(_this.submittedCodingIssue, (value, index) => x.pid == value) == undefined) {
-
                                 continue
                             }
                             let status = _this.statusCode[parseInt(x.status)];
                             if (_this.lastSubmitCount != undefined && _this.lastSubmitCount[x.pid] != undefined &&
                                 _this.lastSubmitCount[x.pid] != x.submit) {
-                                _this.judgeStatus[x.pid] == '1'
+                                _this.judgeStatus[x.pid] = '1'
+                            } else {
+                                continue;
                             }
                             if (status == 'JUDGING') {
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-warning");
@@ -265,12 +266,13 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 sp.attr("class", "oi oi-ellipses")
                                 sp.show()
                                 _this.judgeStatus[x.pid] = '1'
+                                continue
                             } else if (status == 'ACCEPT') {
                                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
-                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check").show()
                                 if (_this.judgeStatus[x.pid] == '1') { //9.27
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
@@ -279,7 +281,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                     $("[id*=connectButton]").removeAttr("disabled")
                                     $("[id*=submitSrcButton]").removeAttr("disabled")
-                                    _this.judgeStatus[x.pid] == '0'
+                                    _this.judgeStatus[x.pid] = '0'
                                 }
 
                             } else if (status == 'WRONG_ANSWER') {
@@ -287,7 +289,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
-                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x").show()
                                 // alert(_this.judgeStatus[x.pid])
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
@@ -297,18 +299,18 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                     $("[id*=connectButton]").removeAttr("disabled")
                                     $("[id*=submitSrcButton]").removeAttr("disabled")
-                                    _this.judgeStatus[x.pid] == '0'
+                                    _this.judgeStatus[x.pid] = '0'
                                 }
                             } else if (status == 'TIMEOUT') {
                                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
-                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock").show()
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     $("[id*=connectButton]").removeAttr("disabled")
                                     $("[id*=submitSrcButton]").removeAttr("disabled")
-                                    _this.judgeStatus[x.pid] == '0'
+                                    _this.judgeStatus[x.pid] = '0'
                                 }
 
                             } else {
@@ -318,13 +320,14 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-dark");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-question-mark")
                             }
+                            _this.lastSubmitCount[x.pid] = x.submit
                         }
 
                     }
                 }
             )
 
-        }, 2000)
+        }, 3000)
         while (this.state.codingItems.length == 0)
             await new Promise((resolve) => {
                 setTimeout(() => {
