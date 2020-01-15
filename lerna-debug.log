@@ -17,24 +17,23 @@
 13 error error Command failed with exit code 2.
 13 error npm ERR! code ELIFECYCLE
 13 error npm ERR! errno 2
-13 error npm ERR! udc-extension@0.0.0 prepare: `yarn run clean && yarn run build`
+13 error npm ERR! drawboard-extension@0.0.0 prepare: `yarn run clean && yarn run build`
 13 error npm ERR! Exit status 2
 13 error npm ERR!
-13 error npm ERR! Failed at the udc-extension@0.0.0 prepare script.
+13 error npm ERR! Failed at the drawboard-extension@0.0.0 prepare script.
 13 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 13 error
 13 error npm ERR! A complete log of this run can be found in:
-13 error npm ERR!     /home/liang/.npm/_logs/2020-01-09T11_05_36_101Z-debug.log
+13 error npm ERR!     /home/liang/.npm/_logs/2020-01-15T13_08_41_691Z-debug.log
 13 error
 13 error
-13 error > udc-extension@0.0.0 prepare /home/liang/webide/udc-extension
+13 error > drawboard-extension@0.0.0 prepare /home/liang/webide/drawboard-extension
 13 error > yarn run clean && yarn run build
 13 error
 13 error $ rimraf lib
 13 error $ tsc  --jsx react
-13 error src/browser/component/linkedge.tsx(226,14): error TS2551: Property 'remove' does not exist on type 'Form'. Did you mean 'emove'?
-13 error src/browser/component/linkedge.tsx(226,28): error TS2551: Property 'remove' does not exist on type 'Form'. Did you mean 'emove'?
-13 error src/browser/component/linkedge.tsx(307,117): error TS2551: Property 'remove' does not exist on type 'Form'. Did you mean 'emove'?
+13 error src/browser/renderview.tsx(660,26): error TS2304: Cannot find name 'InstructionActionCollection'.
+13 error src/browser/renderview.tsx(660,56): error TS2304: Cannot find name 'InstructionActionCollection'.
 13 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 13 error
 13 error     at Promise.all.then.arr (/home/liang/webide/node_modules/lerna/node_modules/execa/index.js:236:11)

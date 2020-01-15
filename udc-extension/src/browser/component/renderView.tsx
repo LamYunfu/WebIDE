@@ -9,6 +9,7 @@ import { AIView } from "./ai-view";
 import { VirtualSceneView } from "./virtualscene-view";
 import { USER_INFO_URL, VIEW_DETAIL_URL, QUIZE_JUDGE_URL, CHOICE_JUDGE_URL } from "../../setting/front-end-config";
 import { LinkEdgeView } from "./linkedge";
+// import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
@@ -1369,7 +1370,6 @@ export class View extends React.Component<View.Props, View.State>{
                                         />
 
                                     </MyContext.Provider >
-
                                     :
                                     this.state.viewType == "9" ?
                                         <MyContext.Provider value={{
@@ -1409,9 +1409,48 @@ export class View extends React.Component<View.Props, View.State>{
                                             />
 
                                         </MyContext.Provider >
-
                                         :
-                                        <div></div>
+                                        this.state.viewType == "9" ?
+                                            <MyContext.Provider value={{
+                                                showTheDefaultFreeCodingView: () => {
+
+                                                },
+                                                setClickTime: () => {
+                                                    _this.clickTime = new Date().getTime()
+                                                },
+                                                setOptionDescription: (a: string) => {
+                                                    _this.setOptionDescription(a)
+                                                },
+                                                setOptionChoicesDescription: (a: JSX.Element[]) => {
+                                                    _this.setOptionChoicesDescription(a)
+                                                },
+                                                setState: (tmp: object) => {
+                                                    _this.setState({
+                                                        ...tmp
+                                                    })
+
+                                                },
+                                                getState: (key: string) => {
+                                                    let tmp: any = this.state
+                                                    return tmp[key]
+                                                },
+                                                props: _this.props
+
+                                            }}>
+                                                <VirtualSceneView
+                                                    title={this.title}
+                                                    config={_this.props.config}
+                                                    initPidQueueInfo={_this.props.initPidQueueInfo}
+                                                    section={{ ppid: [_this.ppid], sid: "experiment" }}
+                                                    outputResult={_this.props.outputResult}
+                                                    say={_this.props.say}
+
+                                                />
+
+                                            </MyContext.Provider >
+
+                                            :
+                                            <div></div>
         )
     }
 }

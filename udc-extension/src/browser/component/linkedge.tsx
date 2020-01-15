@@ -53,6 +53,9 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
 
     toggleConnectionStatus = async () => {
         this.setState({ connectionLoading: true })
+        setTimeout(() => {
+            this.setState({ connectionLoading: false })
+        }, 3000);
         if (this.state.connectionStatus) {
             this.threeTuple["action"] = "stop"
             await this.props.linkEdgeConnect("29", this.threeTuple)
@@ -79,6 +82,9 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
     toggleExecuteStatus = async () => {
         this.threeTuple["action"] = this.state.executeStatus ? "stop" : "start"
         this.setState({ executeLoading: true })
+        setTimeout(() => {
+            this.setState({ executeLoading: false })
+        }, 3000);
         if (await this.props.linkEdgeConnect("29", this.threeTuple)) {
             this.setState({
                 executeStatus: !this.state.executeStatus
@@ -147,7 +153,7 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
 
     }
 }
-namespace Input {
+export namespace Input {
     export interface Props {
         onChange?: (e: any) => void
         disabled?: boolean
@@ -156,7 +162,7 @@ namespace Input {
         copy?: boolean
     }
 }
-class Input extends React.Component<Input.Props> {
+export class Input extends React.Component<Input.Props> {
     index: number = 0
     str: string = ""
     onChange = (e: any) => {

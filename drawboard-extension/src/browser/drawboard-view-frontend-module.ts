@@ -31,7 +31,7 @@ export default new ContainerModule(bind => {
 function createDrawboardViewWidget(parent: interfaces.Container): DrawboardViewWidget {
     const child = createTreeContainer(parent);
 
-    child.rebind(TreeProps).toConstantValue({ ...defaultTreeProps, search: true });
+    child.rebind(TreeProps).toConstantValue({ ...defaultTreeProps, search: false });
 
     child.unbind(TreeWidget);
     child.bind(DrawboardViewWidget).toSelf();

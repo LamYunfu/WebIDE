@@ -34,7 +34,8 @@ export class VirtualSceneView extends React.Component<VirtualScene.Props, Virtua
         let _this = this
         _this.context.props.openSrcFile(this.props.section["ppid"][0])
         $("#submitSrcButton").click(() => {
-            _this.context.props.gotoVirtualScene()
+            // _this.context.props.gotoVirtualScene()
+
             _this.context.props.virtualSubmit(_this.props.section["ppid"][0])
         })
         console.log("waiting")
@@ -43,7 +44,8 @@ export class VirtualSceneView extends React.Component<VirtualScene.Props, Virtua
             console.log("start unity")
             let a = () => {
                 _this.props.outputResult("start unity")
-                _this.context.props.virtualOpen()
+                window.open("http://47.97.253.23:12311/static/publish/index.html")
+                // _this.context.props.virtualOpen()
             }
             a()
         }, 3000);
@@ -51,6 +53,7 @@ export class VirtualSceneView extends React.Component<VirtualScene.Props, Virtua
     }
     render(): JSX.Element {
         return (
+
             <div>
                 <h5 id="titleAndStatus" className="card-title">
                     <span id={"coding_title"}>{this.props.title}</span>
@@ -59,6 +62,7 @@ export class VirtualSceneView extends React.Component<VirtualScene.Props, Virtua
                     <pre className="card-text" id={"codingInfoArea"} title="1">这是一个有关{this.props.title}的虚拟场景</pre>
                 </div>
                 <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>submit</button></span>
+       
             </div >
         )
     }

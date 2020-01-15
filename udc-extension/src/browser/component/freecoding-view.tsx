@@ -175,6 +175,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
 
     render(): JSX.Element {
         return (
+
             <div style={{ height: "100%", display: "none" }}>
                 <div className="title_timer" title={this.props.section["ppid"][0]} style={{ height: "10%" }}><h4 className={`section experiment`}>自由实验</h4><span id='timer'></span></div>
                 <div className="row col-12" style={{ height: "80%" }} >

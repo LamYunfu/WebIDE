@@ -2,6 +2,7 @@ import React = require("react");
 import { MyContext } from "./context";
 import * as $ from "jquery"
 import { ModelTestAddress, VOICE_RECOGNIZE_URL } from "../settings/aiconfig";
+import { Input, InstructionActionCollection } from "./input";
 export namespace View {
     export interface Props {
 
@@ -653,7 +654,11 @@ export class View extends React.Component<View.Props>{
                     </div>
                     :
                     <div style={{ position: "absolute", left: "40px", borderWidth: 0, width: "90%", height: "100%" }}>
-                        <iframe style={{ borderWidth: 0, width: "95%" }} id="voiceRecognize" allow="microphone" src={VOICE_RECOGNIZE_URL} width="100%" height="100%"></iframe>
+                        <iframe style={{ borderWidth: 0, width: "95%", height: "35%" }} id="voiceRecognize" allow="microphone" src={VOICE_RECOGNIZE_URL} width="100%" height="100%"></iframe>
+                        <Input label="DeviceName:" hint="please input device name"></Input>
+                        <Input label="Password:" hint="please input device password"></Input>
+                        <button className="btn btn-primary">连接</button>
+                        <InstructionActionCollection></InstructionActionCollection>
                     </div>
 
 
@@ -662,5 +667,7 @@ export class View extends React.Component<View.Props>{
 
         )
     }
+
 }
+
 View.contextType = MyContext
