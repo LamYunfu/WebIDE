@@ -71,7 +71,7 @@ export function start(context: theia.PluginContext) {
                 panel.webview.onDidReceiveMessage((e) => {
                     console.log("mesg:" + e.command)
                     if(e.command=="openUri"){
-                        theia.commands.executeCommand("OpenCommand",`/home/project/abc.c`)
+                        theia.commands.executeCommand("OpenCommand",``)
                     }
                 })
                 panel.webview.html = IoTWebview.generateHTML(

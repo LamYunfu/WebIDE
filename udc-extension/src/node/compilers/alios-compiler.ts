@@ -6,6 +6,7 @@ import * as fs from 'fs-extra';
 import { UdcTerminal } from '../util/udc-terminal'
 import * as http from 'http'
 import { Logger } from '../util/logger'
+import { LINKLAB_WORKSPACE } from '../../setting/backend-config';
 
 @injectable()
 export class AliosCompiler {
@@ -13,7 +14,7 @@ export class AliosCompiler {
 
     }
     DEBUG: boolean = false
-    rootDir: string = "/home/project"
+    rootDir: string = `${LINKLAB_WORKSPACE}`
     cookie: string = ""
     AliosAPIs: { [key: string]: string } = {
         hostname: "47.97.253.23",

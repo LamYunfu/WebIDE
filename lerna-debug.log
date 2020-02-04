@@ -1,15 +1,15 @@
 0 silly input [ 'prepare' ]
 1 silly flags { _: [ 'run' ], script: 'prepare', args: [] }
-2 verbose rootPath /home/liang/webide
+2 verbose rootPath D:\webide\webide-back
 3 info version 2.4.0
-4 silly existsSync /home/liang/webide/VERSION
+4 silly existsSync D:\webide\webide-back\VERSION
 5 silly initialize attempt
 6 silly initialize success
 7 silly execute attempt
 8 silly runScriptInPackageStreaming [ 'prepare', [], 'drawboard-extension' ]
-9 silly getExecOpts { cwd: '/home/liang/webide/drawboard-extension' }
+9 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\drawboard-extension' }
 10 silly runScriptInPackageStreaming [ 'prepare', [], 'udc-extension' ]
-11 silly getExecOpts { cwd: '/home/liang/webide/udc-extension' }
+11 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\udc-extension' }
 12 error execute callback with error
 13 error Error: Command failed: npm run prepare
 13 error warning package.json: No license field
@@ -17,23 +17,25 @@
 13 error error Command failed with exit code 2.
 13 error npm ERR! code ELIFECYCLE
 13 error npm ERR! errno 2
-13 error npm ERR! drawboard-extension@0.0.0 prepare: `yarn run clean && yarn run build`
+13 error npm ERR! udc-extension@0.0.0 prepare: `yarn run clean && yarn run build`
 13 error npm ERR! Exit status 2
 13 error npm ERR!
-13 error npm ERR! Failed at the drawboard-extension@0.0.0 prepare script.
+13 error npm ERR! Failed at the udc-extension@0.0.0 prepare script.
 13 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 13 error
 13 error npm ERR! A complete log of this run can be found in:
-13 error npm ERR!     /home/liang/.npm/_logs/2020-01-15T13_08_41_691Z-debug.log
+13 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-03T08_09_19_754Z-debug.log
 13 error
 13 error
-13 error > drawboard-extension@0.0.0 prepare /home/liang/webide/drawboard-extension
+13 error > udc-extension@0.0.0 prepare D:\webide\webide-back\udc-extension
 13 error > yarn run clean && yarn run build
 13 error
 13 error $ rimraf lib
 13 error $ tsc  --jsx react
-13 error src/browser/renderview.tsx(660,26): error TS2304: Cannot find name 'InstructionActionCollection'.
-13 error src/browser/renderview.tsx(660,56): error TS2304: Cannot find name 'InstructionActionCollection'.
+13 error src/browser/component/code-issue.tsx(70,26): error TS2304: Cannot find name 'LINKLAB_WORKSPACE'.
+13 error src/browser/device-view-widget.tsx(74,26): error TS2304: Cannot find name 'LINKLAB_WORKSPACE'.
+13 error src/node/compilers/alios-compiler.ts(16,26): error TS2304: Cannot find name 'LINKLAB_WORKSPACE'.
+13 error src/node/globalconst.ts(2,27): error TS2304: Cannot find name 'LINKLAB_WORKSPACE'.
 13 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 13 error
-13 error     at Promise.all.then.arr (/home/liang/webide/node_modules/lerna/node_modules/execa/index.js:236:11)
+13 error     at Promise.all.then.arr (D:\webide\webide-back\node_modules\lerna\node_modules\execa\index.js:236:11)

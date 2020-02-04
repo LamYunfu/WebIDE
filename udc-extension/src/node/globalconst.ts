@@ -1,5 +1,6 @@
 import { Logger } from "./util/logger";
-export const rootDir = "/home/project"
+import { LINKLAB_WORKSPACE } from "../setting/backend-config";
+export const rootDir = `${LINKLAB_WORKSPACE}`
 export const hexFileDir = "hexFiles"
 export const getCompilerType = (model: string): string => {
     Logger.info("the model is:" + model)

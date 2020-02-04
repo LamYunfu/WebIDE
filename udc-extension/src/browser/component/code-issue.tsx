@@ -2,6 +2,7 @@ import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import * as $ from "jquery"
 import { MyContext } from "./context";
+import { LINKLAB_WORKSPACE } from "../../setting/backend-config";
 // import { getCompilerType } from "../../node/globalconst";
 // import { MyContext } from "./context";
 
@@ -67,7 +68,7 @@ export namespace CodingInfo {
 
 
 export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.States>{
-    rootDir: string = "/home/project"
+    rootDir: string = `${LINKLAB_WORKSPACE}`
     focusFile: string = ""
     constructor(props: Readonly<CodingInfo.Props>) {
         super(props)

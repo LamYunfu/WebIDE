@@ -10,6 +10,7 @@ import { Compiler } from '../compilers/compiler';
 import { Programer } from './programmer';
 import { Logger } from './logger';
 import { getCompilerType } from '../globalconst';
+import { LINKLAB_WORKSPACE } from '../../setting/backend-config';
 
 @injectable()
 /*
@@ -25,7 +26,7 @@ export class Controller {
         // @inject(Event) protected readonly evt: Event
     ) {
     }
-    rootDir: string = "/home/project"
+    rootDir: string = `${LINKLAB_WORKSPACE}`
     events = new events.EventEmitter()
     async processFreeCoding(pid: string) {
         Logger.info("start process issue")

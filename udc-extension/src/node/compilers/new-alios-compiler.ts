@@ -8,7 +8,8 @@ import * as crypto from "crypto"
 import * as FormData from "form-data"
 import { injectable, inject } from 'inversify';
 import { Logger } from '../util/logger';
-import { ALIOS_IP, ALIOS_PORT } from '../../setting/backend-config';
+import { ALIOS_IP, ALIOS_PORT, LINKLAB_WORKSPACE } from '../../setting/backend-config';
+import * as path from "path";
 @injectable()
 export class NewAliosCompiler {
     constructor(@inject(UdcTerminal) protected readonly udc: UdcTerminal,
@@ -29,8 +30,8 @@ export class NewAliosCompiler {
         Logger.info("postSingleSrcFile")
         let { model } = this.udc.getPidInfos(pid)
         let _this = this
-        let st = fs.createWriteStream(`/home/project/${projectName}/${role}.zip`) //打包
-        let achst = ach.create("zip").directory(`/home/project/${projectName}/${role}`, false)
+        let st = fs.createWriteStream(path.join(LINKLAB_WORKSPACE,projectName,`${role}.zip`)) //打包
+        let achst = ach.create("zip").directory(path.join(LINKLAB_WORKSPACE,projectName,role), false)
         let hash = crypto.createHash("sha1")
         let hashVal = ""
         let p = new Promise(resolve => {
@@ -42,7 +43,7 @@ export class NewAliosCompiler {
         }).then((res) => {
             if (res == "scc") {
                 hash = crypto.createHash("sha1")
-                let buff = new Buffer(fs.readFileSync(`/home/project/${projectName}/${role}.zip`))//初始化
+                let buff = new Buffer(fs.readFileSync(path.join(LINKLAB_WORKSPACE,projectName,`${role}.zip`)))//初始化
                 hashVal = hash.update(buff).digest("hex")
                 return new Promise((resolve) => {
 
@@ -137,7 +138,7 @@ export class NewAliosCompiler {
                         _this.udc.outputResult("network error")
                         resolve("err")
                     })
-                    let blob = fs.readFileSync(`/home/project/${projectName}/${role}.zip`)
+                    let blob = fs.readFileSync(path.join(LINKLAB_WORKSPACE,projectName,`${role}.zip`))
                     fm.append("file", blob, "install.zip")
                     fm.pipe(uploadRequest)
                 })
@@ -164,7 +165,7 @@ export class NewAliosCompiler {
                             }
                             let bufferStore = ""
                             if (mesg.headers["content-type"] == "application/octet-stream") {
-                                let ws = fs.createWriteStream(`/home/project/${projectName}/hexFiles/${new Buffer(`${role}`).toString("hex")}.hex`, {
+                                let ws = fs.createWriteStream(path.join(LINKLAB_WORKSPACE,projectName,'hexFiles',`${new Buffer(`${role}`).toString("hex")}.hex`), {
                                     encoding: "binary"
                                 })
                                 ws.on("close", () => {

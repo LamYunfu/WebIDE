@@ -6,6 +6,7 @@ import { injectable, inject } from 'inversify';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as unzip from "unzip";
+import { LINKLAB_WORKSPACE } from '../../setting/backend-config';
 
 @injectable()
 export class Extractor {
@@ -13,7 +14,7 @@ export class Extractor {
         @inject(UdcTerminal) protected readonly ut: UdcTerminal) {
     }
 
-    rootDir: string = "/home/project"
+    rootDir: string = `${LINKLAB_WORKSPACE}`
     projectDir: string = ""
     hexFileDir: string = ""
     init(projectName: string, dirName: string) {

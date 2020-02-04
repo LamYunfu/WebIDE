@@ -100,7 +100,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
         // this.props.openShell()
         // _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
         // if (decodeURI(window.location.href).split("/").pop() != "自由编程") {
-        //     _this.context.props.openWorkSpace(`file:/home/project/自由编程`)
+        //     _this.context.props.openWorkSpace(`file:${LINKLAB_WORKSPACE}/自由编程`)
         //     return
         // }
 

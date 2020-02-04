@@ -16,6 +16,7 @@ import { WorkspaceService } from "@theia/workspace/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { FileTreeWidget } from "@theia/filesystem/lib/browser";
 import { ViewContainer } from "@theia/core/lib/browser/view-container"
+import { LINKLAB_WORKSPACE } from "../setting/backend-config";
 // import { LinkEdgeView } from "./component/linkedge";
 export interface DeviceViewSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode {
     iconClass: string;
@@ -71,7 +72,7 @@ export class DeviceViewWidget extends TreeWidget {
         this.addClass('theia-udcdevice-view');
     }
     submitEnableWithJudgeTag: boolean = false
-    rootdir: string = "/home/project"
+    rootdir: string = `${LINKLAB_WORKSPACE}`
     viewType: string = ""
     setSize = (size: number) => {
         console.log("rendering")

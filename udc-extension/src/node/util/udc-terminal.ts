@@ -18,7 +18,7 @@ import * as WebSocket from 'ws'
 import * as crypto from "crypto"
 import * as FormData from "form-data"
 import * as ach from 'archiver'
-import { SENCE_SERVER_URL, LDC_SERVER_IP, LDC_SERVER_PORT, PROGRAM_SERVER_IP, PROGRAM_SERVER_PORT, TEMPLATE_SERVER } from '../../setting/backend-config'
+import { SENCE_SERVER_URL, LDC_SERVER_IP, LDC_SERVER_PORT, PROGRAM_SERVER_IP, PROGRAM_SERVER_PORT, TEMPLATE_SERVER, LINKLAB_WORKSPACE } from '../../setting/backend-config'
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -56,7 +56,7 @@ export class UdcTerminal {
     aiConfig: any = {}
     virtualConfig: any = {}
     currentPid: string = ``
-    rootDir: string = "/home/project"
+    rootDir: string = `${LINKLAB_WORKSPACE}`
     tinyLinkInfo: { name: string, passwd: string } = { name: "", passwd: "" }
     initTag: boolean = true
     freeCodingConfig: any = {}
@@ -108,8 +108,8 @@ export class UdcTerminal {
         let _this = this
         let { dirName } = this.getPidInfos(pid)
         let trainServer = this.aiConfig["trainServer"]
-        let st = fs.createWriteStream(`/home/project/${dirName}/src.zip`) //打包
-        let achst = ach.create("zip").directory(`/home/project/${dirName}`, false)
+        let st = fs.createWriteStream(path.join(LINKLAB_WORKSPACE,dirName,'src.zip')) //打包
+        let achst = ach.create("zip").directory(path.join(LINKLAB_WORKSPACE,dirName), false)
         let hash = crypto.createHash("sha1")
         let hashVal = ""
         let p = new Promise(resolve => {
@@ -122,7 +122,7 @@ export class UdcTerminal {
         achst.pipe(st)
         achst.finalize()
         await p
-        let rb = fs.readFileSync(`/home/project/${dirName}/src.zip`, { encoding: "base64" })//base64转码文件
+        let rb = fs.readFileSync(path.join(LINKLAB_WORKSPACE,dirName,'src.zip'), { encoding: "base64" })//base64转码文件
         hashVal = hash.update(rb).digest("hex")
         let data = {
             hash: hashVal,
@@ -235,8 +235,8 @@ export class UdcTerminal {
         let _this = this
         let { dirName } = this.getPidInfos(pid)
         let simServer = this.virtualConfig["simServer"]
-        let st = fs.createWriteStream(`/home/project/${dirName}/src.zip`) //打包
-        let achst = ach.create("zip").directory(`/home/project/${dirName}`, false)
+        let st = fs.createWriteStream(path.join(LINKLAB_WORKSPACE,dirName,'src.zip')) //打包
+        let achst = ach.create("zip").directory(path.join(LINKLAB_WORKSPACE,dirName), false)
         let hash = crypto.createHash("sha1")
         let hashVal = ""
         let p = new Promise(resolve => {
@@ -249,7 +249,7 @@ export class UdcTerminal {
         achst.pipe(st)
         achst.finalize()
         await p
-        let rb = fs.readFileSync(`/home/project/${dirName}/src.zip`, { encoding: "base64" })//base64转码文件
+        let rb = fs.readFileSync( path.join(LINKLAB_WORKSPACE,dirName,'src.zip'), { encoding: "base64" })//base64转码文件
         hashVal = hash.update(rb).digest("hex")
         let data = {
             hash: hashVal,
@@ -473,6 +473,7 @@ export class UdcTerminal {
             fs.writeFileSync(path.join(projectPath, rootDir + ".cpp"), "")
         }
         this.udcClient && this.udcClient.onConfigLog({ name: 'openSrcFile', passwd: path.join(projectPath, rootDir + ".cpp") })
+        Logger.info( path.join(projectPath, rootDir + ".cpp") )
 
     }
     async  initPidQueueInfo(infos: string): Promise<string> {
@@ -560,9 +561,9 @@ export class UdcTerminal {
             })
             this.udcClient!.onConfigLog({ name: "openShell", passwd: "" })
             if (this.pidQueueInfo[index]["type"] == "freecoding")
-                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/home/project/${dirName}` })
+                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: path.join(LINKLAB_WORKSPACE,dirName) })
             else
-                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/home/project` })
+                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `${LINKLAB_WORKSPACE}` })
 
             // if (fileRequestResult != "scc") {
             //     console.log("create file fail")

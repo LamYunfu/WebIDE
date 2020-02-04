@@ -1,7 +1,7 @@
-export const DEPLOY_SERVER_IP = "47.97.253.23"
-export const DEPLOY_SERVE_DOMAIN = "test.tinylink.cn"
-// export const DEPLOY_SERVER_IP = "120.55.102.225"
-// export const DEPLOY_SERVE_DOMAIN = "tinylink.cn"
+// export const DEPLOY_SERVER_IP = "47.97.253.23"
+// export const DEPLOY_SERVE_DOMAIN = "test.tinylink.cn"
+export const DEPLOY_SERVER_IP = "120.55.102.225"
+export const DEPLOY_SERVE_DOMAIN = "tinylink.cn"
 export const CONTIKI_IP = `${DEPLOY_SERVER_IP}`
 export const CONTIKI_PORT = "12382"
 export const ALIOS_IP = `${DEPLOY_SERVER_IP}`
@@ -14,3 +14,4 @@ export const LDC_SERVER_IP = `${DEPLOY_SERVER_IP}`
 export const LDC_SERVER_PORT = 5000
 export const TEMPLATE_SERVER = `judge.${DEPLOY_SERVE_DOMAIN }`
 export const TINY_MOBILE_HOST=`${DEPLOY_SERVER_IP}:12355`
+export const LINKLAB_WORKSPACE=`D:/all`

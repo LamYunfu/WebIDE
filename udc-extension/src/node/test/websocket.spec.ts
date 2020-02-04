@@ -15,7 +15,7 @@ describe("ws", () => {
         })
         tinySimRequest.on("open", () => {
             console.log("send buffer")
-            let buff = fs.readFileSync("/home/project/main.cpp", { encoding: 'utf8' })
+            let buff = fs.readFileSync(`/home/project/main.cpp`, { encoding: 'utf8' })
             tinySimRequest.send(buff, () => {
                 console.log("send buffer scc")
                 tinySimRequest.send("quit")

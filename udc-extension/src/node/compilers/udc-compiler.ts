@@ -5,7 +5,7 @@ import { UdcTerminal } from '../util/udc-terminal'
 import * as http from 'http'
 import { Logger } from '../util/logger'
 import { injectable, inject, LazyServiceIdentifer } from 'inversify';
-import { TINYLINK_HOST } from '../../setting/backend-config';
+import { TINYLINK_HOST, LINKLAB_WORKSPACE } from '../../setting/backend-config';
 @injectable()
 export class UdcCompiler {
     constructor(
@@ -14,7 +14,7 @@ export class UdcCompiler {
 
     }
     DEBUG: boolean = false
-    rootDir: string = "/home/project"
+    rootDir: string = `${LINKLAB_WORKSPACE}`
 
     tinyLinkAPIs: { [key: string]: string } = {
         hostname: TINYLINK_HOST,
