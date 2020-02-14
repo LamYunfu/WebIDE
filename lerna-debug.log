@@ -14,6 +14,13 @@
 13 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\demo' }
 14 error execute callback with error
 15 error Error: Command failed: npm run prepare
+15 error
+15 error ┌────────────────────────────────────────────────────────────┐
+15 error │                  npm update check failed                   │
+15 error │            Try running with sudo or get access             │
+15 error │            to the local update config store via            │
+15 error │ sudo chown -R $USER:$(id -gn $USER) C:\Users\10344\.config │
+15 error └────────────────────────────────────────────────────────────┘
 15 error warning package.json: No license field
 15 error warning package.json: No license field
 15 error error Command failed with exit code 2.
@@ -26,7 +33,7 @@
 15 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 15 error
 15 error npm ERR! A complete log of this run can be found in:
-15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-14T05_18_14_458Z-debug.log
+15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-14T16_19_48_459Z-debug.log
 15 error
 15 error
 15 error > udc-extension@0.0.0 prepare D:\webide\webide-back\udc-extension
@@ -34,8 +41,8 @@
 15 error
 15 error $ rimraf lib
 15 error $ tsc  --jsx react
-15 error src/node/udc-service-impl.ts(220,7): error TS2322: Type 'Promise<void>' is not assignable to type 'Promise<boolean>'.
-15 error   Type 'void' is not assignable to type 'boolean'.
+15 error src/browser/udc-extension-contribution.ts(2,46): error TS6133: 'Path' is declared but its value is never read.
+15 error src/browser/udc-extension-contribution.ts(2,52): error TS6133: 'OS' is declared but its value is never read.
 15 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 15 error
 15 error     at Promise.all.then.arr (D:\webide\webide-back\node_modules\lerna\node_modules\execa\index.js:236:11)

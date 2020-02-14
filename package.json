@@ -4,7 +4,7 @@
     "prepare": "lerna run prepare",
     "rebuild:browser": "theia rebuild:browser",
     "rebuild:electron": "theia rebuild:electron",
-    "start": "yarn && cd browser-app && export THEIA_DEFAULT_PLUGINS=local-dir:../plugins/node && yarn start",
+    "start": " cd browser-app && export THEIA_DEFAULT_PLUGINS=local-dir:../plugins/node && yarn start",
     "build": "bash ./scripts/build.sh"
   },
   "devDependencies": {
@@ -33,6 +33,7 @@
     "archiver": "^3.1.1",
     "colors": "^1.4.0",
     "jquery": "^3.4.1",
+    "alibabacloud-iot-device-sdk": "^1.2.8",
     "node-filesystem": "^0.0.20",
     "node-gyp": "^6.0.1",
     "unzip": "^0.1.11",

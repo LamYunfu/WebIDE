@@ -166,7 +166,8 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         this.udcWatcher.onConfigLog((data: { name: string, passwd: string }) => {
             let tmp = data
             if (data.name == "openSrcFile") {
-                this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file:///`+data.passwd)
+                console.log(data.passwd)
+                this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
                 return
             } else if (data.name == 'openWorkspace') {
                 this.ds.openWorkspace(data.passwd)
