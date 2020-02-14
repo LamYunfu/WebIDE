@@ -37,6 +37,11 @@ export interface UdcService {
     addLinkEdgeProject: (pid: string, deviceInfo: any) => Promise<boolean>
     getLinkEdgeDevicesInfo: (pid: string) => Promise<any>
     remove: (pid:string,index: string) => Promise<boolean>
+    createOnelinkProject:(projetName:string,pid:string)=>Promise<boolean>
+    openDevice:()=>void
+    openMobile:()=>void
+    compileMobile:()=>Promise<boolean>
+    compileDevice:()=>Promise<boolean>
 }
 
 

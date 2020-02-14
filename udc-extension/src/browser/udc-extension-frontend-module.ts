@@ -40,8 +40,8 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     UdcConsoleContribution.bindContribution(bind);
     bind(FileTreeWidget).toSelf().inSingletonScope();
     bind(FileTreeModel).toSelf().inSingletonScope();
-    bind(FileTree).toSelf().inSingletonScope()
-    bind(ViewContainer).toSelf().inSingletonScope()
+    bind(FileTree).toSelf().inSingletonScope();
+    bind(ViewContainer).toSelf().inSingletonScope();
 
 });
 

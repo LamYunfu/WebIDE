@@ -28,7 +28,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/drawboard-view-frontend-module"
+      "frontend": "lib/browser/drawboard-view-frontend-module",
+      "backend":"lib/node/drawboardbackend"
     }
   ]
 }

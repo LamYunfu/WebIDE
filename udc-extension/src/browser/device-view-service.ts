@@ -43,6 +43,9 @@ export class DeviceViewService implements WidgetFactory {
     approveClick() {
         this.widget!.setSubmitEnableWithJudgeTag(true)
     }
+    openTinyMobile(url:string){
+        this.widget!.openTinyMobile(url)
+    }
     enableClick() {
         Logger.info(this.widget == null)
         this.widget!.enableClick()

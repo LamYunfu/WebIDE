@@ -3,19 +3,30 @@ import { Event, Emitter, DisposableCollection } from '@theia/core';
 import { WidgetFactory } from '@theia/core/lib/browser';
 import { DrawboardViewWidget, DrawboardViewWidgetFactory, DrawboardSymbolInformationNode } from './drawboard-view-widget';
 import { Widget } from '@phosphor/widgets';
+import { ProxyObject } from '../common/drawboardproxy';
 
 @injectable()
 export class DrawboardViewService implements WidgetFactory {
 
     id = 'drawboard-view';
-
     protected widget?: DrawboardViewWidget;
     protected readonly onDidChangeDrawboardEmitter = new Emitter<DrawboardSymbolInformationNode[]>();
     protected readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
     protected readonly onDidSelectEmitter = new Emitter<DrawboardSymbolInformationNode>();
     protected readonly onDidOpenEmitter = new Emitter<DrawboardSymbolInformationNode>();
 
-    constructor(@inject(DrawboardViewWidgetFactory) protected factory: DrawboardViewWidgetFactory) { }
+    constructor(@inject(DrawboardViewWidgetFactory) protected factory: DrawboardViewWidgetFactory,
+    @inject(ProxyObject) protected readonly po :ProxyObject ) {
+        this.widget=this.factory()
+        this.po.register(e=>{
+            if(e.type=="data"){
+                console.log(e.data)
+                this.widget!.setIaMap(e.data)
+                this.widget!.update()
+            }
+        })
+
+     }
 
     get onDidSelect(): Event<DrawboardSymbolInformationNode> {
         return this.onDidSelectEmitter.event;
@@ -36,14 +47,13 @@ export class DrawboardViewService implements WidgetFactory {
     get open(): boolean {
         return this.widget !== undefined && this.widget.isVisible;
     }
-
+    
     publish(roots: DrawboardSymbolInformationNode[]): void {
         if (this.widget) {
             this.widget.setDrawboardTree(roots);
             this.onDidChangeDrawboardEmitter.fire(roots);
         }
     }
-
     createWidget(): Promise<Widget> {
         this.widget = this.factory();
         const disposables = new DisposableCollection();

@@ -22,8 +22,7 @@
     "drawboard-extension",
     "udc-extension",
     "browser-app",
-    "plugin/tinylink",
-    "plugin/node"
+    "demo"
   ],
   "dependencies": {
     "@types/archiver": "^3.0.0",
@@ -37,7 +36,9 @@
     "node-filesystem": "^0.0.20",
     "node-gyp": "^6.0.1",
     "unzip": "^0.1.11",
+    "vscode-ripgrep": "^1.3.1",
     "ws": "^7.1.2",
-    "yarn": "^1.21.1"
+    "yarn": "^1.21.1",
+    "rhea": "^1.0.12"
   }
 }

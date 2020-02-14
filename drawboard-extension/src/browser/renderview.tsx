@@ -5,13 +5,41 @@ import { ModelTestAddress, VOICE_RECOGNIZE_URL } from "../settings/aiconfig";
 import { Input, InstructionActionCollection } from "./input";
 export namespace View {
     export interface Props {
-
+        iamap:any
+        getData:()=>Promise<string>
+        pushData:(data:any)=>Promise<boolean>
+        connect:(authen:any)=>Promise<boolean>
+        disconnect:()=>Promise<boolean>
     }
 }
 export class View extends React.Component<View.Props>{
     boardType: string | undefined
     title: string | undefined
     ws: WebSocket | undefined = undefined
+    aliIotAuthen:{    
+    uid:string,
+    regionId:string,
+    YourClientId:string,
+    YourAccessKeyID:string,
+    YourConsumerGroupId:string,
+    YourAccessKeySecret:string,
+    "ProductKey": string,
+    "DeviceName": string,
+    "DeviceSecret": string
+}={
+         uid:"1798257112763226",
+         regionId:"cn-shanghai",
+         YourClientId:"U1ilJ1n8oxIeNc5glsa6",
+         YourConsumerGroupId:"8BYG3MDP1fgxLKVPYq9L000100",
+         YourAccessKeyID:"LTAI4Ffvym2nwGLdKkP8R61q",
+         YourAccessKeySecret:"HZStcyKAQDPv1caoba28NfZwW6IKNP",                
+        "ProductKey": "a1Lufk6fEdk",
+        "DeviceName": "qWupdz488DPrdpGQQD6v",
+        "DeviceSecret": "dTOJ98JGAivYE2eqGGyDRkjTdFGW4CMy"
+         
+    }
+
+ 
     componentWillMount() {
         this.title = $("#coding_title").text().trim()
         if (this.title == "画板数字识别")
@@ -25,10 +53,10 @@ export class View extends React.Component<View.Props>{
     recv = (e: any) => {
         if (e.data.origin == "voiceRecognize") {
             let result: string = e.data.result
+            this.props.pushData({data:result})
             if (result.split("开灯").length != 1) {
                 console.log("开灯")
-                this.ws!.send("0:0:TL_LED.turnOn")
-
+                this.ws!.send("0:0:TL_LED.turnOn")  
             }
             else if (result.split("关灯").length != 1) {
                 console.log("关灯")
@@ -64,7 +92,8 @@ export class View extends React.Component<View.Props>{
         }
 
     }
-    componentDidMount() {
+  async  componentDidMount() {
+        // alert( await  this.props.getData())
         this.connect()
         window.addEventListener('message', this.recv)
         const script = document.createElement("script", {
@@ -654,11 +683,37 @@ export class View extends React.Component<View.Props>{
                     </div>
                     :
                     <div style={{ position: "absolute", left: "40px", borderWidth: 0, width: "90%", height: "100%" }}>
-                        <iframe style={{ borderWidth: 0, width: "95%", height: "35%" }} id="voiceRecognize" allow="microphone" src={VOICE_RECOGNIZE_URL} width="100%" height="100%"></iframe>
-                        <Input label="DeviceName:" hint="please input device name"></Input>
-                        <Input label="Password:" hint="please input device password"></Input>
-                        <button className="btn btn-primary">连接</button>
-                        <InstructionActionCollection></InstructionActionCollection>
+                        <iframe style={{ borderWidth: 0, width: "95%", height: "35%" }} id="voiceRecognize" allow="microphone"  src={VOICE_RECOGNIZE_URL } width="100%" height="100%"></iframe>
+                        <Input label="UID:" hint="please input UID" onChange={(e)=>{
+                            this.aliIotAuthen.uid=e.target.value
+                        }}></Input>
+                        <Input label="RegionID:" hint="please input RegionID"  onChange={(e)=>{
+                            this.aliIotAuthen.regionId=e.target.value
+                        }}></Input>
+                        <Input label="ClientID:" hint="please input ClientID"  onChange={(e)=>{
+                            this.aliIotAuthen.YourClientId=e.target.value
+                        }}></Input>
+                          <Input label="ConsumerGroupId:" hint="please input ConsumerGroupId"  onChange={(e)=>{
+                            this.aliIotAuthen.YourConsumerGroupId=e.target.value
+                        }}></Input>
+                        <Input label="AccessKeyID:" hint="please input AccessKeyID"  onChange={(e)=>{
+                            this.aliIotAuthen.YourAccessKeyID=e.target.value
+                        }}></Input>                      
+                        <Input label="AccessKeySecret:" hint="please input AccessKeySecret"  onChange={(e)=>{
+                            this.aliIotAuthen.YourAccessKeySecret=e.target.value
+                        }}></Input>
+                        <Input label="ProductKey:" hint="please input ProductKey"  onChange={(e)=>{
+                            this.aliIotAuthen.ProductKey=e.target.value
+                        }}></Input>
+                            <Input label="DeviceName:" hint="please input DevcieName"  onChange={(e)=>{
+                            this.aliIotAuthen.DeviceName=e.target.value
+                        }}></Input>
+                            <Input label="DevcieSecret:" hint="please input DevcieSecret"  onChange={(e)=>{
+                            this.aliIotAuthen.DeviceSecret=e.target.value
+                        }}></Input>
+                        {/* <button className="btn btn-primary" onClick={this.connectIot}>连接</button> */}
+                        <ConnectButton connect={this.connectIot} disconnect={this.disconnectIot}></ConnectButton>
+                        <InstructionActionCollection instructionActionMappings={this.props.iamap}></InstructionActionCollection>
                     </div>
 
 
@@ -667,7 +722,70 @@ export class View extends React.Component<View.Props>{
 
         )
     }
-
+ 
+    connectIot= async ()=>{
+      let res= await  this.props.connect(this.aliIotAuthen)
+    //    await this.props.pushData({data:"data"})
+       return res
+    }
+    disconnectIot=async ()=>{
+        return this.props.disconnect()
+    }
 }
-
+export namespace ConnectButton{
+    export interface Props{
+       connect:()=>Promise<boolean>,
+       disconnect:()=>Promise<boolean>
+    }
+    export interface Status{
+        disable:boolean,
+        connected:boolean
+    }
+}
+export class ConnectButton extends React.Component<ConnectButton.Props,ConnectButton.Status>{
+    constructor(props:any){
+        super(props)
+        this.state={
+            disable:false,
+            connected:false
+        }
+    }
+    render(){
+        return(<div>
+            {
+            !this.state.connected?<button className="btn btn-primary" disabled={this.state.disable} onClick={this.connect}>连接</button>
+            :<button className="btn btn-primary" disabled={this.state.disable} onClick={this.disconnect}>断开</button>
+            }
+        </div>)
+    }
+    disconnect=async ()=>{
+        this.setState({
+            disable:true
+        })
+        await this.props.disconnect()        
+        this.setState({
+            disable:false,
+            connected:false,
+        })        
+    }
+    connect=async ()=>{
+        this.setState({
+            disable:true
+        })
+        let res=await this.props.connect()        
+        if(res){
+            this.setState({
+              disable:false,
+              connected:true,  
+            })
+        }
+        else{
+            this.setState({
+                disable:false,
+                connected:false,
+            })
+        }
+    }
+    
+}
 View.contextType = MyContext

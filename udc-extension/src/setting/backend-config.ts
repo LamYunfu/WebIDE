@@ -13,5 +13,6 @@ export const SENCE_SERVER_URL = "ws://47.98.249.190:8004/"
 export const LDC_SERVER_IP = `${DEPLOY_SERVER_IP}`
 export const LDC_SERVER_PORT = 5000
 export const TEMPLATE_SERVER = `judge.${DEPLOY_SERVE_DOMAIN }`
-export const TINY_MOBILE_HOST=`${DEPLOY_SERVER_IP}:12355`
 export const LINKLAB_WORKSPACE=`D:/all`
+export const TINY_MOBILE_IP=`${DEPLOY_SERVE_DOMAIN}`
+export const TINY_MOBILE_PORT=`12355`

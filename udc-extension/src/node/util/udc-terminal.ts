@@ -19,6 +19,7 @@ import * as crypto from "crypto"
 import * as FormData from "form-data"
 import * as ach from 'archiver'
 import { SENCE_SERVER_URL, LDC_SERVER_IP, LDC_SERVER_PORT, PROGRAM_SERVER_IP, PROGRAM_SERVER_PORT, TEMPLATE_SERVER, LINKLAB_WORKSPACE } from '../../setting/backend-config'
+import { OS } from '@theia/core';
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -560,11 +561,19 @@ export class UdcTerminal {
                 }
             })
             this.udcClient!.onConfigLog({ name: "openShell", passwd: "" })
-            if (this.pidQueueInfo[index]["type"] == "freecoding")
-                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: path.join(LINKLAB_WORKSPACE,dirName) })
+            if (this.pidQueueInfo[index]["type"] == "freecoding"||this.pidQueueInfo[index]["type"] =="OneLinkView" ){
+                if(OS.type()==OS.Type.Linux)
+                     this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: path.join(LINKLAB_WORKSPACE,dirName) })
+                else
+                     this.udcClient!.onConfigLog({ name: "openWorkspace", passwd:`/`+LINKLAB_WORKSPACE+`/`+dirName })
+            }
             else
-                this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `${LINKLAB_WORKSPACE}` })
-
+                if(OS.type()==OS.Type.Linux)
+                     this.udcClient!.onConfigLog({ name: "openWorkspace", passwd:  LINKLAB_WORKSPACE})
+                else
+                     this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `/`+LINKLAB_WORKSPACE })
+                // this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `${path.join(LINKLAB_WORKSPACE) }` })
+          
             // if (fileRequestResult != "scc") {
             //     console.log("create file fail")
             //     return "err"

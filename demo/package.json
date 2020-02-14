@@ -1,0 +1,37 @@
+{
+    "name": "demo",
+    "keywords": [
+      "theia-extension"
+    ],
+    "version": "0.0.0",
+    "files": [
+      "data",
+      "lib",
+      "src"
+    ],
+    "dependencies": {
+      "@theia/core": "latest",
+      "axios": "^0.18.0",
+      "describe": "^1.2.0",
+      "tsc": "^1.20150623.0"
+    },
+    "devDependencies": {
+      "rimraf": "latest",
+      "typescript": "latest"
+    },
+    "scripts": {
+      "prepare": "yarn run clean && yarn run build",
+      "clean": "rimraf lib",
+      "build": "tsc  --jsx react",
+      "watch": "tsc -w",
+      "test": "jest"
+    },
+    "theiaExtensions": [
+      {
+        "frontend": "lib/browser/demo-frontend-module",
+        "backend":"lib/node/backend"
+  
+      }
+    ]
+  }
+  

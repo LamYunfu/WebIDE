@@ -14,6 +14,7 @@ import { Emitter } from '@theia/core';
 import { CompositeTreeNode } from '@theia/core/lib/browser';
 import * as React from 'react';
 import { View } from './renderview';
+import { DrawboardService } from '../common/drawboardservice';
 
 export interface DrawboardSymbolInformationNode extends CompositeTreeNode, SelectableTreeNode, ExpandableTreeNode {
     iconClass: string;
@@ -32,11 +33,13 @@ export const DrawboardViewWidgetFactory = Symbol('DrawboardViewWidgetFactory');
 export class DrawboardViewWidget extends TreeWidget {
 
     readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
+    iamap:any
 
     constructor(
         @inject(TreeProps) protected readonly treeProps: TreeProps,
         @inject(TreeModel) model: TreeModel,
-        @inject(ContextMenuRenderer) protected readonly contextMenuRenderer: ContextMenuRenderer
+        @inject(ContextMenuRenderer) protected readonly contextMenuRenderer: ContextMenuRenderer,
+        @inject(DrawboardService) protected readonly ds :DrawboardService
     ) {
         super(treeProps, model, contextMenuRenderer);
 
@@ -112,8 +115,23 @@ export class DrawboardViewWidget extends TreeWidget {
 
     protected renderTree(): React.ReactNode {
         return (
-            <View></View>
+            <View disconnect={this.disconnect} pushData={this.pushDate} connect={this.connect} iamap={this.iamap} getData={this.getData}></View>
         )
     }
-
+    getData=async ()=>{
+       return await  this.ds.getDataFromIotPlatform()
+    }
+    pushDate= async (data:any)=>{
+        return await  this.ds.pushDataToIotPlatform(data)
+    }
+    setIaMap(iamap:any){
+        this.iamap=iamap
+    }
+    connect=(authen :any )=>{
+       return this.ds.connectIot(authen)
+    }
+    disconnect=()=>{
+        return this.ds.disconnectIot()
+    }
+    
 }

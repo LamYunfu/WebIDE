@@ -9,10 +9,19 @@ import { AIView } from "./ai-view";
 import { VirtualSceneView } from "./virtualscene-view";
 import { USER_INFO_URL, VIEW_DETAIL_URL, QUIZE_JUDGE_URL, CHOICE_JUDGE_URL } from "../../setting/front-end-config";
 import { LinkEdgeView } from "./linkedge";
+import { OneLinkView } from "./onelink-view";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        gotoPhone:()=>void
+        gotoUnity:()=>void
+        openUnity:()=>void
+        complileMobile:()=> Promise<boolean>
+        compileDevice: ()=>Promise<boolean>
+        openMobile:()=>void
+        openDevice:()=>void
+        createOnelinkProject:(projectName:string,pid:string)=>Promise<boolean>
         remove: (pid: string, index: string) => Promise<boolean>
         linkEdgeGetDevicesInfo: (pid: string) => Promise<any>
         linkEdgeProjectAdd: (pid: string, info: any) => Promise<boolean>
@@ -1398,7 +1407,16 @@ export class View extends React.Component<View.Props, View.State>{
                                             props: _this.props
 
                                         }}>
-                                            <VirtualSceneView
+                                            <OneLinkView
+                                                openUnity={this.props.openUnity}
+                                                gotoPhone={this.props.gotoPhone}
+                                                gotoUnity={this.props.gotoUnity}
+                                                openFileView={this.props.openFileView}
+                                                complileMobile={this.props.complileMobile}
+                                                compileDevice={this.props.compileDevice}
+                                                openMobile={this.props.openMobile}
+                                                openDevice={this.props.openDevice}
+                                                createOnelinkProject={this.props.createOnelinkProject}
                                                 title={this.title}
                                                 config={_this.props.config}
                                                 initPidQueueInfo={_this.props.initPidQueueInfo}

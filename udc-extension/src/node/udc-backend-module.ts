@@ -19,6 +19,7 @@ import { UdcClient } from '../common/udc-watcher';
 import { Compiler } from "./compilers/compiler"
 import { NewAliosCompiler } from './compilers/new-alios-compiler';
 import { LinkEdgeManager } from './util/linkedgemanger';
+import { OnelinkService } from './util/onelink';
 
 
 export default new ContainerModule(bind => {
@@ -46,5 +47,6 @@ export default new ContainerModule(bind => {
     bind(ConfigSetter).toSelf().inSingletonScope();
     bind(NewContikiCompiler).toSelf().inSingletonScope()
     bind(LinkEdgeManager).toSelf().inSingletonScope()
+    bind(OnelinkService).toSelf().inSingletonScope()
     // bind(Controller).toSelf().inSingletonScope();
 });

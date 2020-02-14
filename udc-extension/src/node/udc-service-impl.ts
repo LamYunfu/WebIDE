@@ -9,8 +9,10 @@ import { injectable, inject, } from "inversify";
 import { ILogger } from '@theia/core';
 import { RawProcessFactory } from '@theia/process/lib/node';
 import { LinkEdgeManager } from './util/linkedgemanger';
+import { OnelinkService } from './util/onelink';
 @injectable()
 export class UdcServiceImpl implements UdcService {
+
     constructor(
         @inject(ILogger) protected readonly logger: ILogger,
         @inject(RawProcessFactory) protected readonly rawProcessFactory: RawProcessFactory,
@@ -18,6 +20,7 @@ export class UdcServiceImpl implements UdcService {
         @inject(Controller) protected readonly controller: Controller,
         @inject(Compiler) protected readonly compiler: Compiler,
         @inject(LinkEdgeManager) protected readonly linkEdgeManager: LinkEdgeManager,
+        @inject(OnelinkService) protected readonly ols:OnelinkService
     ) {
     }
 
@@ -204,6 +207,19 @@ export class UdcServiceImpl implements UdcService {
     async remove(pid: string, index: string) {
         return this.linkEdgeManager.removeProjectInLinkEdge(pid, index)
     }
-
-
+    async createOnelinkProject(projectName:string,pid:string):Promise<boolean>{
+    return this.ols.createProject(projectName,pid)
+    }
+    openDevice() {
+        this.ols.openDevice()
+    } 
+    openMobile() {
+        this.ols.openMobile()
+    }
+    compileMobile() :Promise<boolean>{
+      return  this.ols.complileMobile()
+    }
+    compileDevice():Promise<boolean>{
+        return this.ols.compileDevice()
+    }
 }

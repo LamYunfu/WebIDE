@@ -121,6 +121,8 @@ export namespace UdcCommands {
 export class UdcExtensionCommandContribution implements CommandContribution, QuickOpenModel {
 
     selectDeviceModel = "";
+    x:Window|null=null
+    url:string=""
 
     async onType(lookFor: string, acceptor: (items: QuickOpenItem<QuickOpenItemOptions>[]) => void): Promise<void> {
         let items = await this.udcService.list_models()
@@ -180,6 +182,14 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 return
             } else if (data.name == "executeSelectPanel") {
                 this.deviceViewService.openExecutePanel()
+                return
+            } else if (data.name=="redirect"){
+                // this.url=data.passwd
+                this.ds.openTinyMobile(data.passwd)
+                // this.x= window.open("http://120.55.102.225:12359/phone/index.html")     
+                // setTimeout(() => {
+                //     this.x!.postMessage(this.url,"*")      
+                // }, 2000);             
                 return
             }
             applicationShell.closeTabs("bottom")

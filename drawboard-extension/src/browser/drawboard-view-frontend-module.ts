@@ -9,21 +9,27 @@ import {
     bindViewContribution,
     TreeProps,
     defaultTreeProps,
-    TreeDecoratorService
+    TreeDecoratorService,
+    WebSocketConnectionProvider
 } from '@theia/core/lib/browser';
 import { DrawboardViewWidgetFactory, DrawboardViewWidget } from './drawboard-view-widget';
 import '../../src/browser/styles/index.css';
 import { bindContributionProvider } from '@theia/core/lib/common/contribution-provider';
 import { DrawboardDecoratorService, DrawboardTreeDecorator } from './drawboard-decorator-service';
+import { DrawboardService } from '../common/drawboardservice';
+import { SERVICE_PATH, createCommonBind, ProxyObject, Client } from '../common/drawboardproxy';
 
 export default new ContainerModule(bind => {
     bind(DrawboardViewWidgetFactory).toFactory(ctx =>
         () => createDrawboardViewWidget(ctx.container)
     );
-
+    createCommonBind(bind)
+    bind(DrawboardService).toDynamicValue(ctx=>{
+        const wsp=ctx.container.get(WebSocketConnectionProvider)
+       return wsp.createProxy<Client>(SERVICE_PATH,ctx.container.get(ProxyObject).getClient())
+    })
     bind(DrawboardViewService).toSelf().inSingletonScope();
     bind(WidgetFactory).toService(DrawboardViewService);
-
     bindViewContribution(bind, DrawboardViewContribution);
     bind(FrontendApplicationContribution).toService(DrawboardViewContribution);
 });

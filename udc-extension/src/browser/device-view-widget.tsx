@@ -46,7 +46,9 @@ export class DeviceViewWidget extends TreeWidget {
     readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
     device_list?: { [key: string]: number }
     ppid: string | undefined
-
+    tinymobile:Window|null=null
+    unity:Window|null=null
+    url:string=""
 
     constructor(
         @inject(TreeProps) protected readonly treePros: TreeProps,
@@ -70,6 +72,14 @@ export class DeviceViewWidget extends TreeWidget {
         this.title.closable = true;
         this.title.iconClass = 'fa fa-gg';
         this.addClass('theia-udcdevice-view');
+        window.addEventListener("message",(message)=>{
+            if(message.data=="scc"){
+                // alert("get")
+             this.tinymobile!.postMessage(this.url,"*")
+             window.blur()
+             this.tinymobile!.focus()
+            }
+        })
     }
     submitEnableWithJudgeTag: boolean = false
     rootdir: string = `${LINKLAB_WORKSPACE}`
@@ -90,6 +100,14 @@ export class DeviceViewWidget extends TreeWidget {
         return (
 
             <View
+                gotoPhone={this.gotoPhone}
+                gotoUnity={this.gotoUnity}
+                openUnity={this.openUnity}
+                openDevice={this.openDevice}
+                openMobile={this.openMobile}
+                compileDevice={this.compileDevice}
+                complileMobile={this.complileMobile}
+                createOnelinkProject={this.createOnelinkProject}
                 remove={this.remove}
                 linkEdgeGetDevicesInfo={this.linkEdgeGetDevicesInfo}
                 linkEdgeProjectAdd={this.linkEdgeProjectAdd}
@@ -134,6 +152,31 @@ export class DeviceViewWidget extends TreeWidget {
             // <LinkEdgeView initPidQueueInfo={this.initPidQueueInfo} linkEdgeConnect={this.linkEdgeConnect}></LinkEdgeView>
 
         )
+    }
+    gotoPhone=()=>{
+        window.blur()
+        this.tinymobile!.focus()
+    }
+    gotoUnity=()=>{
+        window.blur()
+        this.unity!.focus()
+    }
+    openUnity=()=>{
+       this.unity= window.open("http://47.97.253.23:12311/static/publish/index.html")          
+    }
+    openTinyMobile=(url :string )=>{
+        this.url=url
+        if(this.tinymobile==null){
+            this.tinymobile=window.open("http://120.55.102.225:12359/phone/index.html")
+            // this.tinymobile=window.open("http://localhost:8080/index.html")
+            this.tinymobile!.onclose=()=>{
+                this.tinymobile=null
+            }
+        }
+        else{
+            this.tinymobile.postMessage(url,"*")
+        }
+
     }
     remove = (pid: string, index: string) => {
         return this.udcService.remove(pid, index)
@@ -231,8 +274,6 @@ export class DeviceViewWidget extends TreeWidget {
         }
 
     }
-
-
     say = (verbose: string) => {
         this.messageService.info(verbose)
     }
@@ -385,6 +426,25 @@ export class DeviceViewWidget extends TreeWidget {
             // this.outputResult("no find unity")
             this.virtualOpen()
         }
-
+    }
+    createOnelinkProject=async (project:string,pid:string)=>{
+        return this.udcService.createOnelinkProject(project,pid)
+    }
+    openDevice= async ()=>{
+        this.udcService.openDevice()
+    }
+    openMobile= async ()=>{
+        this.udcService.openMobile()
+    }
+    complileMobile=async()=>{
+       await this.saveAll()        
+       await this.udcService.compileMobile()
+       window.blur()
+       this.tinymobile!.focus()    
+        return true;
+    }
+    compileDevice=async()=>{
+        this.udcService.compileDevice()
+        return true;
     }
 }

@@ -42,19 +42,33 @@ export class Input extends React.Component<Input.Props> {
         item.remove()
     }
 }
-
-export class InstructionActionCollection extends React.Component {
+export namespace InstructionActionCollection {
+    export interface Props {
+        instructionActionMappings:any
+    }
+    
+}
+export class InstructionActionCollection extends React.Component<InstructionActionCollection.Props> {
     render() {
-        return (<div>
+        if(this.props.instructionActionMappings==undefined)
+        return <div></div>
+        let array = Object.keys(this.props.instructionActionMappings).map((str,index)=>{
+            return     <InstructionActionMapping instruction={str} action={this.props.instructionActionMappings[str]}></InstructionActionMapping>
+        })
+        return (
+        <div>
             <InstructionActionMapping instruction="**指令**" action="**动作**" ></InstructionActionMapping>
-            <InstructionActionMapping instruction="打开灯" action="light on" ></InstructionActionMapping>
+            {/* <InstructionActionMapping instruction="打开灯" action="light on" ></InstructionActionMapping>
             <InstructionActionMapping instruction="亮灯" action="light on" ></InstructionActionMapping>
             <InstructionActionMapping instruction="开灯" action="light on" ></InstructionActionMapping>
             <InstructionActionMapping instruction="关灯" action="light off" ></InstructionActionMapping>
             <InstructionActionMapping instruction="熄灯" action="light off" ></InstructionActionMapping>
-            <InstructionActionMapping instruction="关闭灯" action="light off" ></InstructionActionMapping>
+            <InstructionActionMapping instruction="关闭灯" action="light off" ></InstructionActionMapping> */}
+            {        array}
+        </div>
 
-        </div>)
+        
+        )
     }
 }
 export namespace InstructionActionMapping {
