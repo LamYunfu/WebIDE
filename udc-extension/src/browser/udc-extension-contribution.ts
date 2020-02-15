@@ -185,7 +185,7 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
                 this.deviceViewService.openExecutePanel()
                 return
             } else if (data.name=="redirect"){
-                // this.url=data.passwd
+                // // this.url=data.passwd
                 this.ds.openTinyMobile(data.passwd)
                 // this.x= window.open("http://120.55.102.225:12359/phone/index.html")     
                 // setTimeout(() => {

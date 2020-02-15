@@ -82,14 +82,14 @@ export class DeviceViewWidget extends TreeWidget {
     this.title.closable = true;
     this.title.iconClass = "fa fa-gg";
     this.addClass("theia-udcdevice-view");
-    window.addEventListener("message", message => {
-      if (message.data == "scc") {
-        // alert("get")
-        this.tinymobile!.postMessage(this.url, "*");
-        window.blur();
-        this.tinymobile!.focus();
-      }
-    });
+    // window.addEventListener("message", message => {
+    //   if (message.data == "scc") {
+    //     // alert("get")
+    //     this.tinymobile!.postMessage(this.url, "*");
+    //     window.blur();
+    //     this.tinymobile!.focus();
+    //   }
+    // });
   }
   submitEnableWithJudgeTag: boolean = false;
   rootdir: string = `${LINKLAB_WORKSPACE}`;
@@ -177,17 +177,25 @@ export class DeviceViewWidget extends TreeWidget {
   };
   openTinyMobile = (url: string) => {
     this.url = url;
-    if (this.tinymobile == null) {
-      this.tinymobile = window.open(
-        "http://120.55.102.225:12359/phone/index.html"
-      );
-      // this.tinymobile=window.open("http://localhost:8080/index.html")
-      this.tinymobile!.onclose = () => {
-        this.tinymobile = null;
-      };
-    } else {
-      this.tinymobile.postMessage(url, "*");
-    }
+    // if (this.tinymobile == null) {
+    //   this.tinymobile = window.open(
+    //     "http://120.55.102.225:12359/phone/index.html"
+    //   );
+    //   this.tinymobile!.onclose = () => {
+    //     this.tinymobile = null;
+    //   };
+    // } else {
+    //   this.tinymobile.postMessage(url, "*");
+    // }
+    this.tinymobile = window.open(
+      "http://120.55.102.225:12359/phone/index.html"
+    );
+    setTimeout(()=>{
+      this.tinymobile!.postMessage(this.url,"*")
+    })
+    this.tinymobile!.onclose = () => {
+      this.tinymobile = null;
+    };
   };
   remove = (pid: string, index: string) => {
     return this.udcService.remove(pid, index);
