@@ -483,12 +483,20 @@ export class UdcTerminal {
       fs.mkdirsSync(projectPath);
       fs.writeFileSync(path.join(projectPath, rootDir + ".cpp"), "");
     }
-    if (OS.type() == OS.Type.Linux)
+    if (OS.type() == OS.Type.Linux){
       this.udcClient &&
         this.udcClient.onConfigLog({
           name: "openSrcFile",
           passwd: path.join(projectPath, rootDir + ".cpp")
         });
+      }
+    else{
+      this.udcClient &&
+      this.udcClient.onConfigLog({
+        name: "openSrcFile",
+        passwd: `/`+path.join(projectPath, rootDir + ".cpp")
+      });
+    }
     Logger.info(path.join(projectPath, rootDir + ".cpp"));
   }
   async initPidQueueInfo(infos: string): Promise<string> {

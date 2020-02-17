@@ -82,14 +82,14 @@ export class DeviceViewWidget extends TreeWidget {
     this.title.closable = true;
     this.title.iconClass = "fa fa-gg";
     this.addClass("theia-udcdevice-view");
-    // window.addEventListener("message", message => {
-    //   if (message.data == "scc") {
-    //     // alert("get")
-    //     this.tinymobile!.postMessage(this.url, "*");
-    //     window.blur();
-    //     this.tinymobile!.focus();
-    //   }
-    // });
+    window.addEventListener("message", message => {
+      if (message.data == "scc") {
+        // alert("get")
+        this.tinymobile!.postMessage(this.url, "*");
+        window.blur();
+        this.tinymobile!.focus();
+      }
+    });
   }
   submitEnableWithJudgeTag: boolean = false;
   rootdir: string = `${LINKLAB_WORKSPACE}`;
@@ -190,9 +190,9 @@ export class DeviceViewWidget extends TreeWidget {
     this.tinymobile = window.open(
       "http://120.55.102.225:12359/phone/index.html"
     );
-    setTimeout(()=>{
-      this.tinymobile!.postMessage(this.url,"*")
-    })
+    // setTimeout(()=>{
+    //   this.tinymobile!.postMessage(this.url,"*")
+    // })
     this.tinymobile!.onclose = () => {
       this.tinymobile = null;
     };

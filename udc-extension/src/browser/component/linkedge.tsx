@@ -278,22 +278,22 @@ class Form extends React.Component<Form.Props, Form.Status> {
     }
     add = async (item: any) => {
         let indexArr = this.props.ra
-        indexArr.push(item)
         if (!await this.props.add(item)) {
             alert("添加失败")
             return
         }
+        indexArr.push(item)
         this.setState({
             ra: indexArr
         })
     }
     async remove(index: number) {
         let ra = this.state.ra
-        ra.splice(index, 1)
         if (!await this.props.remove(index.toString())) {
             alert("删除失败")
             return
         }
+        ra.splice(index, 1)
         this.setState({
             ra: ra
         })

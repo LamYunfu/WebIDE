@@ -1,7 +1,7 @@
 import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import { MyContext } from "./context";
-import { Input } from "./linkedge";
+// import { Input } from "./linkedge";
 import * as $ from "jquery"
 export namespace OneLinkView {
     export interface Props {
@@ -45,6 +45,8 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
     }
     async componentDidMount() {
         let _this = this
+        let  projectName=Math.round(Math.random()*1000000).toString()
+        _this.props.createOnelinkProject(projectName,this.props.section["ppid"][0])
         _this.context.props.openSrcFile(this.props.section["ppid"][0])
         $("#submitSrcButton").click(() => {
             // _this.context.props.gotoVirtualScene()
@@ -106,8 +108,8 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
                 <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"gotoPhone"} onClick={this.props.gotoPhone}>gotoPhoneSimulator</button></span>
                 <span style={{ position: "absolute", left: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"gotoUnity"} onClick ={this.props.gotoUnity}>gotoUnity</button></span>
                 <div style={{ width: "100%", fontSize: "20px", position: "absolute", top: "60%" }}>
-                    <Input label="*appName:" hint="please input appName" copy={true} onChange={this.changeAppName}></Input>
-                    <button className="btn btn-primary" onClick={this.createProject}>创建</button>
+                    {/* <Input label="*appName:" hint="please input appName" copy={true} onChange={this.changeAppName}></Input>
+                    <button className="btn btn-primary" onClick={this.createProject}>创建</button> */}
                     <div className="row" >
                         <div className="col-6">设备端联合开发:</div><a  className="col-2" style={{ color: 'green', cursor: "pointer" }}>教程</a><div className="col-2" style={{ color: 'green', cursor: "pointer" }}  onClick={this.props.openFileView}>开发</div> <div className="col-2" style={{ color: 'green', cursor: "pointer" }} onClick={this.submit}> 编译</div>
                     </div>
