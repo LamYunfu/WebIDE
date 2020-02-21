@@ -49,7 +49,7 @@ namespace IoTWebview {
           </script>        
         <body style="margin:0">
           <iframe id="iframe"
-           src="http://47.97.253.23:12311/static/publish/index.html"        
+           src="http://47.97.253.23:12359/clickjump/index.html"        
             frameborder="0" 
             scrolling="no"
             style="display: block;

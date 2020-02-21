@@ -57,6 +57,7 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
 
         setTimeout(() => {  
             console.log("start unity")
+            
             this.props.openUnity()
         }, 3000);
     }
