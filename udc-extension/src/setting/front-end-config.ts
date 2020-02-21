@@ -14,4 +14,4 @@ export const VIDEO_URL = "http://linklab.tinylink.cn/"
 export const QUIZ_CONTENT_URL = "http://judge.tinylink.cn/quiz/content"
 export const PROBLEM_STATUS_URL = `http://api.${DEPLOY_SERVER_DOMAIN }/problem/status`
 export const MULTIPLY_PROBLEM_STATUS_URL = `http://judge.${DEPLOY_SERVER_DOMAIN }/problem/status`
-
+export const FINISH_URL= `http://api.${DEPLOY_SERVER_DOMAIN }/problem/aliyun/report`

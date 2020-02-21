@@ -228,6 +228,7 @@ export class View extends React.Component<View.Props, View.State>{
                         return
                     }
                     _this.type = data.data.type
+
                     _this.vid = data.data.vid
                     // setInterval(() => {
                     //     _this.props.storeData(JSON.stringify(_this.typeDataPool))
@@ -959,7 +960,7 @@ export class View extends React.Component<View.Props, View.State>{
                                 }}>
                                     <Chapter
                                         sectionData={_this.sectionData}
-                                        viewType={_this.type}
+                                        viewType={_this.state.viewType}
                                         programSingleFile={_this.props.programSingleFile}
                                         setLocal={_this.props.setLocal}
                                         getLocal={_this.props.getLocal}
@@ -1086,7 +1087,7 @@ export class View extends React.Component<View.Props, View.State>{
                             props: _this.props
 
                         }}>
-                            <div className="row col-12" style={{ height: '90%' }}>
+                            <div className="row col-12" style={{ height: '90%',overflow:"hidden"}} >
                                 <div className="selectPanel row col-4" style={{
                                     minWidth: '450px', height: "98%",
                                     backgroundColor: "#262527", left: "10px",
@@ -1100,7 +1101,7 @@ export class View extends React.Component<View.Props, View.State>{
                                     }}>
                                         <Chapter
                                             sectionData={_this.sectionData}
-                                            viewType={_this.type}
+                                            viewType={_this.state.viewType}
                                             programSingleFile={_this.props.programSingleFile}
                                             setLocal={_this.props.setLocal}
                                             getLocal={_this.props.getLocal}

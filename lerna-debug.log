@@ -26,7 +26,7 @@
 15 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 15 error
 15 error npm ERR! A complete log of this run can be found in:
-15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-21T02_31_20_909Z-debug.log
+15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-21T06_02_23_596Z-debug.log
 15 error
 15 error
 15 error > udc-extension@0.0.0 prepare D:\webide\webide-back\udc-extension
@@ -34,7 +34,11 @@
 15 error
 15 error $ rimraf lib
 15 error $ tsc  --jsx react
-15 error src/node/util/udc-terminal.ts(481,9): error TS6133: 'dirName' is declared but its value is never read.
+15 error src/browser/component/code-issue.tsx(245,5): error TS1005: ',' expected.
+15 error src/browser/component/code-issue.tsx(245,12): error TS1005: ',' expected.
+15 error src/browser/component/code-issue.tsx(245,21): error TS1005: ',' expected.
+15 error src/browser/component/code-issue.tsx(248,17): error TS1005: ',' expected.
+15 error src/browser/component/code-issue.tsx(312,9): error TS1005: ',' expected.
 15 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 15 error
 15 error     at Promise.all.then.arr (D:\webide\webide-back\node_modules\lerna\node_modules\execa\index.js:236:11)

@@ -598,6 +598,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
     }
     upDateCount: number = 0
     componentDidUpdate() {
+        // console.log("view type:" +this.props.viewType)
         // if (this.upDateCount <= 100) {
         //     this.recoveryState()
         //     this.upDateCount++
@@ -624,7 +625,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
 
                             </div>
                             <div className={`codingInfos ${this.props.sid} col-7`} >
-                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos}
+                                <CodingInfo viewType={this.props.viewType} programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos}
                                     openShell={this.props.openShell} codeInfoType="coding"
                                     config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say}
                                     currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
@@ -664,7 +665,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                     sid={this.props.sid} say={this.props.say} answers={this.answers} />
                             </div> */}
                             <div className={`codingInfos ${this.props.sid} col-7`} style={{ zIndex: 2, position: "sticky", bottom: "50%" }}>
-                                <CodingInfo programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell}
+                                <CodingInfo viewType={this.props.viewType} programSingleFile={this.props.programSingleFile} codingInfos={this.codingInfos} openShell={this.props.openShell}
                                     codeInfoType="coding" config={this.props.config} roles={this.role} sid={this.props.sid} say={this.props.say} currentFocusCodingIndex={this.currentFocusCodingIndex} issueStatusStrs={this.codingStatus} coding_titles={this.codingIssues}
                                     postSrcFile={this.props.postSrcFile} addCodingSubmittedIssue={this.addSubmittedCodingIssue} />
                             </div>

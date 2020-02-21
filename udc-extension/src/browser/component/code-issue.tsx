@@ -3,6 +3,7 @@ import React = require("react");
 import * as $ from "jquery"
 import { MyContext } from "./context";
 import { LINKLAB_WORKSPACE } from "../../setting/backend-config";
+import { FINISH_URL } from "../../setting/front-end-config";
 // import { getCompilerType } from "../../node/globalconst";
 // import { MyContext } from "./context";
 
@@ -18,6 +19,7 @@ export namespace CodeItem {
         role: string[]
         codingStatus: { [key: string]: string }
         codingTitles: { [key: string]: string }
+        
     }
 }
 
@@ -55,6 +57,7 @@ export namespace CodingInfo {
         codingInfos: { [key: string]: string }
         openShell: () => void
         programSingleFile: (pidAndFn: string) => void
+        viewType?:string
     }
     export interface States {
         pid: string
@@ -79,6 +82,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
         }
     }
     componentDidMount() {
+        console.log("view type:" +this.props.viewType +"abc")
         this.context.props.isconnected().then((res: boolean) => {
             if (res) {
                 _this.context.props.disconnect()
@@ -176,6 +180,28 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                         }
                     }
                 )
+                $(document).on("click","#finish",()=>{
+                if(!confirm("即将提交答卷，确认要继续？"))
+                    return 
+                $.ajax(
+                        {
+                            headers: {
+                                "accept": "application/json",
+                            },
+                            crossDomain: true,
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            method: "get",
+                            url: FINISH_URL,
+                            dataType: 'json',
+                            contentType: "text/plain",
+                            data: "", 
+                            success: function (data) {
+                             console.log(data)
+                            }
+                })
+            })
                 $(document).on("click", ".singleFile", (e) => {
                     let fileName = $(e.currentTarget).attr("id")
                     // alert("filename:" + fileName)
@@ -238,7 +264,8 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
 
 
                         {/* <span><button className="btn btn-primary" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span> */}
-                        <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交判题</button></span>
+                        <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交本题</button></span>
+                        {this.props.viewType=="4"?<span><button className="btn btn-primary" id={"finish"}>提交答卷</button></span>:""} 
                         <span><button className="btn btn-primary" id={"submitSimButton" + this.props.sid}>仿真</button></span>
                     </div>
                     <div className="simInfo " style={{
