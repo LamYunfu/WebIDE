@@ -4,6 +4,7 @@ import { MyContext } from "./context";
 
 export namespace LinkEdge {
     export interface Props {
+        initLinkedgeConfig:(pid :string)=>Promise<boolean>
         linkEdgeDisconnect: () => void
         linkEdgeConnect: (pid: string, threeTuple: any) => Promise<boolean>
         initPidQueueInfo(infos: string): Promise<string>
@@ -40,6 +41,11 @@ export class LinkEdgeView extends React.Component<LinkEdge.Props, LinkEdge.State
     }
     componentDidMount() {
         this.props.setSize(850)
+        let pid =this.getPid()
+        this.props.initLinkedgeConfig(pid)
+    }
+    getPid():string{
+        return "29"
     }
     async  componentWillMount() {
         console.log("mountI")

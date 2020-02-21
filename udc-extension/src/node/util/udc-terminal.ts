@@ -25,7 +25,8 @@ import {
   PROGRAM_SERVER_IP,
   PROGRAM_SERVER_PORT,
   TEMPLATE_SERVER,
-  LINKLAB_WORKSPACE
+  LINKLAB_WORKSPACE,
+  CONFIGPATH
 } from "../../setting/backend-config";
 import { OS } from "@theia/core";
 // import { networkInterfaces } from 'os';
@@ -170,7 +171,7 @@ export class UdcTerminal {
   flushLinkEdgeConfig(pid: string) {
     let configStr = JSON.stringify(this.LinkEdgeConfig);
     let { dirName } = this.getPidInfos(pid);
-    let p = path.join(this.rootDir, dirName, "config.json");
+    let p = path.join(CONFIGPATH, dirName, "config.json");
     fs.writeFileSync(p, configStr);
   }
   getLinkEdgeDevicesInfo(pid: string) {
@@ -193,7 +194,7 @@ export class UdcTerminal {
     let infoRaw: any;
     try {
       infoRaw = fs.readFileSync(
-        path.join(this.rootDir, dirName, "config.json")
+        path.join(CONFIGPATH, dirName, "config.json")
       );
 
       this.LinkEdgeConfig = JSON.parse(infoRaw);
@@ -222,7 +223,7 @@ export class UdcTerminal {
         throw "error";
       }
       fs.writeFileSync(
-        path.join(this.rootDir, dirName, "hexFiles", "command.hex"),
+        path.join(CONFIGPATH, dirName, "hexFiles", "command.hex"),
         startCommand
       );
     } catch (e) {
@@ -278,6 +279,7 @@ export class UdcTerminal {
     let rb = fs.readFileSync(path.join(LINKLAB_WORKSPACE, dirName, "src.zip"), {
       encoding: "base64"
     }); //base64转码文件
+    fs.unlinkSync( path.join(LINKLAB_WORKSPACE, dirName, "src.zip"))
     hashVal = hash.update(rb).digest("hex");
     let data = {
       hash: hashVal,
@@ -449,7 +451,7 @@ export class UdcTerminal {
   async refreshConfiguration(pid: string) {
     let { dirName } = this.getPidInfos(pid);
     let infoRaw = fs.readFileSync(
-      path.join(this.rootDir, dirName, "config.json")
+      path.join(CONFIGPATH, dirName, "config.json")
     );
     let info: any;
     try {
@@ -477,8 +479,9 @@ export class UdcTerminal {
     console.log(JSON.stringify(this.pidQueueInfo[pid!]));
   }
   async requestFixedTemplate(pid: string, type: string, rootDir: string) {
-    let { dirName } = this.pidQueueInfo[pid];
-    let projectPath = path.join(this.rootDir, dirName, rootDir);
+    let devicePath=path.join(this.rootDir,"device")
+    !fs.existsSync(devicePath)?fs.mkdirSync(devicePath):""
+    let projectPath = path.join(devicePath, rootDir);
     if (!fs.existsSync(projectPath)) {
       fs.mkdirsSync(projectPath);
       fs.writeFileSync(path.join(projectPath, rootDir + ".cpp"), "");
@@ -545,14 +548,6 @@ export class UdcTerminal {
                   for (let item of Object.keys(res.template)) {
                     if (!fs.existsSync(path.join(_this.rootDir, dirName)))
                       fs.mkdirSync(path.join(_this.rootDir, dirName));
-                    if (
-                      !fs.existsSync(
-                        path.join(_this.rootDir, dirName, "hexFiles")
-                      )
-                    )
-                      fs.mkdirSync(
-                        path.join(_this.rootDir, dirName, "hexFiles")
-                      );
                     if (
                       !fs.existsSync(path.join(_this.rootDir, dirName, item))
                     ) {
@@ -1091,7 +1086,7 @@ export class UdcTerminal {
     // await this.udcServerClient.destroy();
     // this.udcServerClient = null;
     // this.dev_list = undefined
-    await this.udcServerClient.end();
+    await this.udcServerClient==undefined?"":this.udcServerClient.end();
     return true;
   }
 

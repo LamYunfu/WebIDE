@@ -31,7 +31,9 @@ export class UdcServiceImpl implements UdcService {
         });
     }
 
-
+    initLinkedgeConfig(pid:string):Promise<boolean>{
+     return this.linkEdgeManager.initConfigDir(pid)    
+    }
     async connect(login_type: LOGINTYPE, model: string, pid: string, timeout: string): Promise<boolean> {
         try {
             let result = await this.udcTerminal.connect(login_type, model, pid, timeout);

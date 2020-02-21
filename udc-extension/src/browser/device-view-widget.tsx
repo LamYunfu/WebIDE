@@ -109,6 +109,7 @@ export class DeviceViewWidget extends TreeWidget {
   protected renderTree(): React.ReactNode {
     return (
       <View
+        initLinkedge={this.initLinkedgeConfig}
         gotoPhone={this.gotoPhone}
         gotoUnity={this.gotoUnity}
         openUnity={this.openUnity}
@@ -490,4 +491,7 @@ export class DeviceViewWidget extends TreeWidget {
     this.udcService.compileDevice();
     return true;
   };
+  initLinkedgeConfig= async (pid :string)=>{
+    return this.udcService.initLinkedgeConfig(pid)
+  }
 }

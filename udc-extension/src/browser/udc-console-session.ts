@@ -9,7 +9,7 @@ import { UdcConsoleWidget } from "./udc-console-contribution";
 
 @injectable()
 export class UdcConsoleSession extends ConsoleSession {
-    static uri = new URI().withScheme('udcconsole');
+    static uri = new URI("udcconsole")
     readonly id = 'udc';
     protected items: ConsoleItem[] = [];
     protected consoleWidget: Promise<UdcConsoleWidget> | undefined = undefined

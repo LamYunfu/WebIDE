@@ -320,8 +320,10 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
             () => {
                 // $(".optionItem").on('click',
                 $(document).off('click', ".optionItem." + _this.props.sid)
+              
                 $(document).on('click', ".optionItem." + _this.props.sid,
                     (e) => {
+                        _this.context.props.disconnect()
                         if (_this.context.getViewState())
                             $('.selectPanel').css("box-shadow", "black 5px 5px 5px")
                         console.log("click.............................")
@@ -345,7 +347,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                         $(".optionDescription").show()
                         $(".optionChoices").show()
                         // $(".optionInfos." + _this.props.sid).show()
-                        let x = $(e.currentTarget).children("a").attr("id")
+                        let x = $(e.currentTarget).children("a").attr("id")//pid
                         if (x != undefined) {
                             $(".optionIssueTitle" + _this.props.sid).text(this.optionIssues[x])
                             _this.context.setOptionDescription(this.optionIssues[x])
@@ -393,7 +395,12 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                 )
 
             })
+/*
+红：错误
+绿：正确
+灰色：超时
 
+*/
         setInterval(() => {
             _this.pids.length != 0 && $.ajax(
                 {
@@ -444,6 +451,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-success");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-check")
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().css("background-color","green")
                                 if (_this.judgeStatus[x.pid] == '1') { //9.27
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
@@ -461,6 +469,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-danger");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-x")
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().css("background-color","red")
                                 // alert(_this.judgeStatus[x.pid])
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
@@ -478,6 +487,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 _this.context.props.setSubmitEnableWithJudgeTag(false)
                                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).next().attr("class", "oi oi-clock")
+                                $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().css("background-color","gray")
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     $("[id*=connectButton]").removeAttr("disabled")
                                     $("[id*=submitSrcButton]").removeAttr("disabled")

@@ -1,4 +1,4 @@
-import { AbstractViewContribution, bindViewContribution, WidgetFactory } from '@theia/core/lib/browser';
+import { AbstractViewContribution, bindViewContribution, WidgetFactory} from '@theia/core/lib/browser';
 import { injectable, interfaces } from "inversify";
 import { ConsoleWidget, ConsoleOptions } from '@theia/console/lib/browser/console-widget';
 import { ContextKey, ContextKeyService } from '@theia/core/lib/browser/context-key-service';
@@ -8,7 +8,7 @@ export const InUdcReplContextKey = Symbol('inUdcReplContextKey');
 
 
 @injectable()
-export class UdcConsoleWidget extends ConsoleWidget {
+export class UdcConsoleWidget extends ConsoleWidget  {
     constructor() {
         super();
     }
@@ -24,7 +24,7 @@ export class UdcConsoleWidget extends ConsoleWidget {
 
 
 @injectable()
-export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleWidget>{
+export class UdcConsoleContribution extends AbstractViewContribution< UdcConsoleWidget>{
     constructor() {
         super({
             widgetId: UdcConsoleContribution.options.id,
@@ -43,15 +43,17 @@ export class UdcConsoleContribution extends AbstractViewContribution<UdcConsoleW
         title: {
             label: 'LDC shell',
             iconClass: 'theia-debug-console-icon'
-        },
+        }
+        ,
         input: {
             uri: UdcConsoleSession.uri,
-            options: {
-                autoSizing: true,
-                minHeight: 1,
-                maxHeight: 10,
-            }
+            // options: {
+            //     autoSizing: true,
+            //     minHeight: 1,
+            //     maxHeight: 10,
+            // }
         }
+
     };
 
 

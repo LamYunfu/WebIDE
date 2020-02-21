@@ -14,6 +14,7 @@ import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
     export interface Props {
+        initLinkedge:(pid :string)=>Promise<boolean>
         gotoPhone:()=>void
         gotoUnity:()=>void
         openUnity:()=>void
@@ -1040,10 +1041,10 @@ export class View extends React.Component<View.Props, View.State>{
                     :
                     <div style={{ height: "100%" }}>
                         <div className="title_timer col-12" style={{ height: "10%" }}><h4> {_this.title}</h4><span id='timer'></span></div>
-                        <button className="displayStyle" style={{
+                        {/* <button className="displayStyle" style={{
                             position: 'fixed', top: '10%', right: '50px', borderRadius: '10px',
                             backgroundColor: 'silver'
-                        }}>change style</button>
+                        }}>change style</button> */}
                         <MyContext.Provider value={{
                             setTypeData: (sid: string, types: any) => {
                                 _this.typeData[sid] = types
@@ -1172,6 +1173,7 @@ export class View extends React.Component<View.Props, View.State>{
                     }}>
                         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
                         <LinkEdgeView
+                        initLinkedgeConfig={this.props.initLinkedge}
                             linkEdgeDisconnect={this.props.disconnect}
                             remove={this.props.remove}
                             getDevicesInfo={this.props.linkEdgeGetDevicesInfo}

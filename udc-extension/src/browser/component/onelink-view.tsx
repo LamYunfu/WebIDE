@@ -45,7 +45,7 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
     }
     async componentDidMount() {
         let _this = this
-        let  projectName=Math.round(Math.random()*1000000).toString()
+        let  projectName=Math.round(Math.random()*1000000000000).toString()
         _this.props.createOnelinkProject(projectName,this.props.section["ppid"][0])
         _this.context.props.openSrcFile(this.props.section["ppid"][0])
         $("#submitSrcButton").click(() => {

@@ -173,7 +173,7 @@ export class DrawboardServiceImpl implements DrawboardService{
        })
     }  
       pushDataToIotPlatform(data :any): Promise<boolean> {
-        this.device.publish(`${this.aliIotDevAuthen.ProductKey}/${this.aliIotDevAuthen.DeviceName}/user/abcde`,JSON.stringify(data))
+        // this.device.publish(`${this.aliIotDevAuthen.ProductKey}/${this.aliIotDevAuthen.DeviceName}/user/abcde`,JSON.stringify(data))
         return new Promise((res)=>{
             return res(true)
         })

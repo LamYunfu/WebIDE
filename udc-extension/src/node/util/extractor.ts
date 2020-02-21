@@ -19,6 +19,7 @@ export class Extractor {
     hexFileDir: string = ""
     init(projectName: string, dirName: string) {
         this.hexFileDir = path.join(this.rootDir, projectName, dirName)
+        !fs.existsSync(this.hexFileDir)?fs.mkdirsSync(this.hexFileDir):""
         this.projectDir = path.join(this.rootDir, projectName)
     }
     get hexFileDirectory() {
@@ -150,6 +151,7 @@ export class Extractor {
                 }
             })
         )
+        fs.unlinkSync(filePath)
         let etArr = this.fm.getFileNameMapper(pid)
         if (typeof (etArr) == 'string' || etArr == undefined)
             return "failed"

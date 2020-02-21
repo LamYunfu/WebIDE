@@ -7,17 +7,58 @@ import { Programer } from "./programmer";
 import * as path from "path";
 import * as fs from "fs";
 import { Logger } from "./logger";
+import { CONFIGPATH } from "../../setting/backend-config";
+
 @injectable()
 export class LinkEdgeManager {
   constructor(
     @inject(UdcTerminal) protected readonly ut: UdcTerminal,
     @inject(Programer) protected readonly pm: Programer
   ) {}
+  async delayNs(limit:number,f:(...[])=>boolean):Promise<boolean>{
+    for(let i = 0 ;i<limit;i++){
+      let res =f()
+      if(res){
+        return true
+      }
+      await new Promise(res=>{
+        setTimeout(()=>{
+           res()
+        },1000)
+      })
+      console.log("delay")
+    }
+    return false
+  }
+  async initConfigDir(pid:string):Promise<boolean>{
+    let configContent=`{"deviceUsage":"QUEUE","gatewayType":"raspberry_pi","hexFileDir":"hexFiles","gatewayConnectCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --config $ProductKey $DeviceName  $DeviceSecret && ./link-iot-edge-standard.sh --start","gatewayStopCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --stop","gatewayStartCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --start","projects":[],"burningDataQueue":{"program":{"runtime":30,"address":"0x10000"}}}`
+    !fs.existsSync(CONFIGPATH)?fs.mkdirSync(CONFIGPATH):""
+
+    if(await this.delayNs(4,()=>{
+      if((this.ut.pidQueueInfo[pid]==undefined)||this.ut.pidQueueInfo[pid].dirName==undefined){
+        return false
+      };
+      return true
+    })){
+      console.log("error c")
+    }
+    else{
+      console.log("ok")
+    }
+    let {dirName}=this.ut.pidQueueInfo[pid]
+    let currentPath=path.join(CONFIGPATH,dirName)
+    !fs.existsSync(currentPath)?fs.mkdirSync(currentPath):""
+    let hexDir=path.join(CONFIGPATH,dirName,"hexFiles")
+    !fs.existsSync(hexDir)?fs.mkdirSync(hexDir):""
+    let filePath=path.join(currentPath,"config.json")
+    fs.writeFileSync(filePath,configContent)
+    return true
+  }
   async programGateWay(pid: string, threeTuple: any) {
     let { dirName } = this.ut.pidQueueInfo[pid];
     this.ut.parseLinkEdgeConfig(pid, threeTuple);
     let filehash = await this.pm.fileUpload(
-      path.join(this.ut.rootDir, dirName, "hexFiles", "command.hex")
+      path.join(CONFIGPATH, dirName, "hexFiles", "command.hex")
     );
     if (filehash == "err") return "err";
     let burnOption = this.ut.LinkEdgeConfig["burningGateway"];

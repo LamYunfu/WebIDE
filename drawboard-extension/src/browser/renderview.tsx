@@ -54,8 +54,16 @@ export class View extends React.Component<View.Props>{
         if (e.data.origin == "voiceRecognize") {
             let result: string = e.data.result
             this.props.pushData({data:result})
+            if(this.props.iamap[result]!=undefined){
+                console.log("action:"+this.props.iamap[result]);
+                this.ws!.send("0:0:TL_LED.turnOn")  
+            }
+            else{
+                return
+            }
             if (result.split("开灯").length != 1) {
                 console.log("开灯")
+
                 this.ws!.send("0:0:TL_LED.turnOn")  
             }
             else if (result.split("关灯").length != 1) {
@@ -702,7 +710,7 @@ export class View extends React.Component<View.Props>{
                         <Input label="AccessKeySecret:" hint="please input AccessKeySecret"  onChange={(e)=>{
                             this.aliIotAuthen.YourAccessKeySecret=e.target.value
                         }}></Input>
-                        <Input label="ProductKey:" hint="please input ProductKey"  onChange={(e)=>{
+                        {/* <Input label="ProductKey:" hint="please input ProductKey"  onChange={(e)=>{
                             this.aliIotAuthen.ProductKey=e.target.value
                         }}></Input>
                             <Input label="DeviceName:" hint="please input DevcieName"  onChange={(e)=>{
@@ -710,7 +718,7 @@ export class View extends React.Component<View.Props>{
                         }}></Input>
                             <Input label="DevcieSecret:" hint="please input DevcieSecret"  onChange={(e)=>{
                             this.aliIotAuthen.DeviceSecret=e.target.value
-                        }}></Input>
+                        }}></Input> */}
                         {/* <button className="btn btn-primary" onClick={this.connectIot}>连接</button> */}
                         <ConnectButton connect={this.connectIot} disconnect={this.disconnectIot}></ConnectButton>
                         <InstructionActionCollection instructionActionMappings={this.props.iamap}></InstructionActionCollection>

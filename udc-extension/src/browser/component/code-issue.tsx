@@ -17,19 +17,17 @@ export namespace CodeItem {
         model: string
         role: string[]
         codingStatus: { [key: string]: string }
-        codingTitles: { [key: string]: string },
-
+        codingTitles: { [key: string]: string }
     }
 }
 
 
 
 export class CodeItem extends React.Component<CodeItem.Props>{
-
-
-
+ 
     public render(): JSX.Element {
         return (
+            // <li className={`codeItem${this.props.sid} list-group-item`} style={{backgroundColor:"#ca6262"}} >
             <li className={`codeItem${this.props.sid} list-group-item`} >
                 <span className="model" style={{ display: 'none' }}>{this.props.model}</span>
                 <span className="oi oi-terminal" aria-hidden="true"></span>
@@ -91,19 +89,23 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
             () => {
                 $(document).on("click", "#submitSrcButton" + _this.props.sid,
                     async (e) => {
+                        if(!confirm("即将提交到判题系统，是否继续？"))
+                            return
+                        let pid =$("#codingInfoArea" + _this.props.sid).attr("title")
+                        await _this.context.props.connect("","",pid,30)
                         $("[id*=connectButton]").attr("disabled", "true")
                         $("[id*=submitSrcButton]").attr("disabled", "true")
                         _this.context.props.setSubmitEnableWithJudgeTag(false)
-                        await this.context.props.saveAll()
+                        await _this.context.props.saveAll()
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")
-                        if (_this.props.currentFocusCodingIndex[0] != index) {
-                            _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
-                            $("[id*=connectButton]").text("连接")
-                            await _this.context.props.disconnect()
-                            $("[id*=connectButton]").removeAttr("disabled")
-                            $("[id*=submitSrcButton]").removeAttr("disabled")
-                            return
-                        }
+                        // if (_this.props.currentFocusCodingIndex[0] != index) {
+                        //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+                        //     $("[id*=connectButton]").text("连接")
+                        //     await _this.context.props.disconnect()
+                        //     $("[id*=connectButton]").removeAttr("disabled")
+                        //     $("[id*=submitSrcButton]").removeAttr("disabled")
+                        //     return
+                        // }
                         console.log("click submit:" + index + "#codingInfofArea" + this.props.sid)
                         index != undefined && _this.props.postSrcFile(index)
                         index != undefined && _this.props.addCodingSubmittedIssue(index)
@@ -134,6 +136,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                 $(document).on("click", `.codeItem${_this.props.sid}`,
                     async (e) => {
                         // alert("click codeItem")
+                        _this.context.props.disconnect()
                         $('.selectPanel').css("box-shadow", "")
                         if ($(".selectPanel").hasClass("col-3")) {
                             $(".selectPanel").removeClass("col-3")
@@ -165,32 +168,6 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             _this.context.props.openSrcFile(tmp)
                             if (_this.props.coding_titles[tmp].split("AliOS").length > 1 || _this.props.coding_titles[tmp].split("阿里云").length > 1)
                                 $("#submitSimButton" + this.props.sid).hide()
-
-                            // if (_this.props.roles[tmp] != undefined) {
-                            //     if (getCompilerType(_this.props.coding_titles[tmp]) == "alios") {
-                            //         for (let item of _this.props.roles[tmp]) {
-                            //             // alert(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`))
-                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `aos.mk`)))
-                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `k_app_config.h`)))
-                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `ucube.py`)))
-                            //             // await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `Config.in`)))
-                            //             await _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}/${item}`, `main.c`)))
-                            //         }
-                            //         $("#submitSimButton" + this.props.sid).hide()
-                            //     }
-                            //     else {
-                            //         for (let mem of _this.props.roles[tmp]) {
-                            //             _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + mem}.cpp`)))
-                            //         }
-                            //         $("#submitSimButton" + this.props.sid).show()
-                            //     }
-                            // }
-                            // else {
-                            //     // for (let mem of _this.props.roles[tmp]) {
-                            //     _this.props.openSrcFile(new URI(path.join(`file://${this.rootDir}/${_this.props.coding_titles[tmp]}`, `${"helloworld" + "_" + "device"}.cpp`)))
-                            //     $("#submitSimButton" + this.props.sid).show()
-                            // }
-                            // }
                             $(".codingInfos." + _this.props.sid).show()
                             $("#coding_title" + _this.props.sid).html(_this.props.coding_titles[tmp])
                             //$("#codingInfoArea").val(_this.props.codingInfos[tmp])
@@ -256,12 +233,12 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
                             <pre className="card-text" id={"codingInfoArea" + this.props.sid} title="1">你需要使用mqtt来实现这一道题目</pre>
                         </div>
-                        <span><button className="btn btn-primary" id={"connectButton" + this.props.sid}>{this.state.connectionStatus}</button></span>
+                        {/* <span><button className="btn btn-primary" id={"connectButton" + this.props.sid}>{this.state.connectionStatus}</button></span> */}
                         {/* <span><button className="btn btn-primary" id={"setQueue" + this.props.sid}>排队</button></span> */}
 
 
                         {/* <span><button className="btn btn-primary" id={"configButton" + this.props.sid} onClick={this.props.config}>配置</button></span> */}
-                        <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交</button></span>
+                        <span><button className="btn btn-primary" id={"submitSrcButton" + this.props.sid}>提交判题</button></span>
                         <span><button className="btn btn-primary" id={"submitSimButton" + this.props.sid}>仿真</button></span>
                     </div>
                     <div className="simInfo " style={{
