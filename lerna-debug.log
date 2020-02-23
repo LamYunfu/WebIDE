@@ -26,7 +26,7 @@
 15 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 15 error
 15 error npm ERR! A complete log of this run can be found in:
-15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-21T06_02_23_596Z-debug.log
+15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-22T05_49_27_338Z-debug.log
 15 error
 15 error
 15 error > udc-extension@0.0.0 prepare D:\webide\webide-back\udc-extension
@@ -34,11 +34,10 @@
 15 error
 15 error $ rimraf lib
 15 error $ tsc  --jsx react
-15 error src/browser/component/code-issue.tsx(245,5): error TS1005: ',' expected.
-15 error src/browser/component/code-issue.tsx(245,12): error TS1005: ',' expected.
-15 error src/browser/component/code-issue.tsx(245,21): error TS1005: ',' expected.
-15 error src/browser/component/code-issue.tsx(248,17): error TS1005: ',' expected.
-15 error src/browser/component/code-issue.tsx(312,9): error TS1005: ',' expected.
+15 error src/browser/component/linkedge.tsx(221,11): error TS6133: 'ButtonGroup' is declared but its value is never read.
+15 error src/browser/component/linkedge.tsx(233,7): error TS6196: 'ButtonGroup' is declared but never used.
+15 error src/browser/component/linkedge.tsx(312,11): error TS6133: 'Form' is declared but its value is never read.
+15 error src/browser/component/linkedge.tsx(325,7): error TS6196: 'Form' is declared but never used.
 15 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 15 error
 15 error     at Promise.all.then.arr (D:\webide\webide-back\node_modules\lerna\node_modules\execa\index.js:236:11)

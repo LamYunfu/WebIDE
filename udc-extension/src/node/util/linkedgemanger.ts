@@ -8,6 +8,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { Logger } from "./logger";
 import { CONFIGPATH } from "../../setting/backend-config";
+import { OS } from "@theia/core";
 
 @injectable()
 export class LinkEdgeManager {
@@ -15,44 +16,71 @@ export class LinkEdgeManager {
     @inject(UdcTerminal) protected readonly ut: UdcTerminal,
     @inject(Programer) protected readonly pm: Programer
   ) {}
-  async delayNs(limit:number,f:(...[])=>boolean):Promise<boolean>{
-    for(let i = 0 ;i<limit;i++){
-      let res =f()
-      if(res){
-        return true
+  async delayNs(limit: number, f: (...[]) => boolean): Promise<boolean> {
+    for (let i = 0; i < limit; i++) {
+      let res = f();
+      if (res) {
+        return true;
       }
-      await new Promise(res=>{
-        setTimeout(()=>{
-           res()
-        },1000)
-      })
-      console.log("delay")
+      await new Promise(res => {
+        setTimeout(() => {
+          res();
+        }, 1000);
+      });
+      console.log("delay");
     }
-    return false
+    return false;
   }
-  async initConfigDir(pid:string):Promise<boolean>{
-    let configContent=`{"deviceUsage":"QUEUE","gatewayType":"raspberry_pi","hexFileDir":"hexFiles","gatewayConnectCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --config $ProductKey $DeviceName  $DeviceSecret && ./link-iot-edge-standard.sh --start","gatewayStopCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --stop","gatewayStartCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --start","projects":[],"burningDataQueue":{"program":{"runtime":30,"address":"0x10000"}}}`
-    !fs.existsSync(CONFIGPATH)?fs.mkdirSync(CONFIGPATH):""
+  async openConfigFile(pid: string) {
+    let { dirName } = this.ut.pidQueueInfo[pid];
+    let filePath = path.join(
+      this.ut.rootDir,
+      dirName,
+      "gateway",
+      "config.json"
+    );
+    if (OS.type() == OS.Type.Linux) {
+      this.ut.udcClient &&
+        this.ut.udcClient.onConfigLog({
+          name: "openSrcFile",
+          passwd: path.join(filePath)
+        });
+    } else {
+      this.ut.udcClient &&
+        this.ut.udcClient.onConfigLog({
+          name: "openSrcFile",
+          passwd: `/` + path.join(filePath)
+        });
+    }
+  }
 
-    if(await this.delayNs(4,()=>{
-      if((this.ut.pidQueueInfo[pid]==undefined)||this.ut.pidQueueInfo[pid].dirName==undefined){
-        return false
-      };
-      return true
-    })){
-      console.log("error c")
+  async initConfigDir(pid: string): Promise<boolean> {
+    let configContent = `{"deviceUsage":"QUEUE","gatewayType":"raspberry_pi","hexFileDir":"hexFiles","gatewayConnectCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --config $ProductKey $DeviceName  $DeviceSecret && ./link-iot-edge-standard.sh --start","gatewayStopCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --stop","gatewayStartCommand":"cd /linkEdge&&./link-iot-edge-standard.sh --start","projects":[],"burningDataQueue":{"program":{"runtime":30,"address":"0x10000"}}}`;
+    !fs.existsSync(CONFIGPATH) ? fs.mkdirSync(CONFIGPATH) : "";
+
+    if (
+      await this.delayNs(4, () => {
+        if (
+          this.ut.pidQueueInfo[pid] == undefined ||
+          this.ut.pidQueueInfo[pid].dirName == undefined
+        ) {
+          return false;
+        }
+        return true;
+      })
+    ) {
+      console.log("error c");
+    } else {
+      console.log("ok");
     }
-    else{
-      console.log("ok")
-    }
-    let {dirName}=this.ut.pidQueueInfo[pid]
-    let currentPath=path.join(CONFIGPATH,dirName)
-    !fs.existsSync(currentPath)?fs.mkdirSync(currentPath):""
-    let hexDir=path.join(CONFIGPATH,dirName,"hexFiles")
-    !fs.existsSync(hexDir)?fs.mkdirSync(hexDir):""
-    let filePath=path.join(currentPath,"config.json")
-    fs.writeFileSync(filePath,configContent)
-    return true
+    let { dirName } = this.ut.pidQueueInfo[pid];
+    let currentPath = path.join(CONFIGPATH, dirName);
+    !fs.existsSync(currentPath) ? fs.mkdirSync(currentPath) : "";
+    let hexDir = path.join(CONFIGPATH, dirName, "hexFiles");
+    !fs.existsSync(hexDir) ? fs.mkdirSync(hexDir) : "";
+    let filePath = path.join(currentPath, "config.json");
+    !fs.existsSync(hexDir) ? fs.writeFileSync(filePath, configContent) : "";
+    return true;
   }
   async programGateWay(pid: string, threeTuple: any) {
     let { dirName } = this.ut.pidQueueInfo[pid];
@@ -130,11 +158,12 @@ export class LinkEdgeManager {
     return true;
   }
   async removeProjectInLinkEdge(pid: string, indexStr: string) {
+    Logger.info("remove a device")
     let index = parseInt(indexStr);
     let { dirName } = this.ut.pidQueueInfo[pid];
     let project = this.ut.LinkEdgeConfig["projects"][index];
     let subDirName = project.projectName;
-    let subDirPath = path.join(this.ut.rootDir, dirName, subDirName);
+    let subDirPath = path.join(this.ut.rootDir, dirName, "device", subDirName);
     this.ut.LinkEdgeConfig["projects"].splice(index, 1);
     fs.existsSync(subDirPath) &&
       fs.readdirSync(subDirPath).forEach(value => {
@@ -146,6 +175,7 @@ export class LinkEdgeManager {
   }
   async developLinkEdgeProject(pid: string, indexStr: string) {
     let index = parseInt(indexStr);
+    console.log("develop");
     let project = this.ut.LinkEdgeConfig["projects"][index];
     let { deviceType, projectName } = project;
     if (deviceType == undefined || projectName == undefined) {

@@ -43,6 +43,7 @@ export interface UdcService {
     compileMobile:()=>Promise<boolean>
     compileDevice:()=>Promise<boolean>
     initLinkedgeConfig:(pid:string )=>Promise<boolean>
+    openConfigFile:(pid:string)=>void
 }
 
 

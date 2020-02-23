@@ -18,7 +18,8 @@ export class DeviceViewContribution extends AbstractViewContribution<DeviceViewW
         @inject(CommandRegistry) protected registry: CommandRegistry,
         @inject(WorkspaceService) protected ws: WorkspaceService,
         @inject(WidgetManager) protected wm: WidgetManager,
-        @inject(DeviceViewService) protected ds: DeviceViewService
+        @inject(DeviceViewService) protected ds: DeviceViewService,
+        
 
 
 

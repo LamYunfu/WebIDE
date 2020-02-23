@@ -172,6 +172,7 @@ export class UdcTerminal {
     let configStr = JSON.stringify(this.LinkEdgeConfig);
     let { dirName } = this.getPidInfos(pid);
     let p = path.join(CONFIGPATH, dirName, "config.json");
+    console.log("flush config:" + configStr);
     fs.writeFileSync(p, configStr);
   }
   getLinkEdgeDevicesInfo(pid: string) {
@@ -193,10 +194,11 @@ export class UdcTerminal {
     let { dirName } = this.getPidInfos(pid);
     let infoRaw: any;
     try {
-      infoRaw = fs.readFileSync(
-        path.join(CONFIGPATH, dirName, "config.json")
+      infoRaw = fs.readFileSync(path.join(CONFIGPATH, dirName, "config.json"));
+      let tulpeRaw = fs.readFileSync(
+        path.join(this.rootDir, dirName, "gateway", "config.json")
       );
-
+      let tulpe = JSON.parse(tulpeRaw.toString());
       this.LinkEdgeConfig = JSON.parse(infoRaw);
       this.pidQueueInfo[pid].loginType = "queue";
       this.pidQueueInfo[pid].model = this.LinkEdgeConfig["gatewayType"];
@@ -206,11 +208,11 @@ export class UdcTerminal {
       if (threeTuple.action == "connect") {
         startCommand = this.LinkEdgeConfig["gatewayConnectCommand"]
           .split("$ProductKey")
-          .join(threeTuple["$ProductKey"])
+          .join(tulpe["productKey"])
           .split("$DeviceName")
-          .join(threeTuple["$DeviceName"])
+          .join(tulpe["deviceName"])
           .split("$DeviceSecret")
-          .join(threeTuple["$DeviceSecret"]);
+          .join(tulpe["deviceSecret"]);
         Logger.info(startCommand, "connect command");
       } else if (threeTuple.action == "stop") {
         startCommand = this.LinkEdgeConfig["gatewayStopCommand"];
@@ -279,7 +281,7 @@ export class UdcTerminal {
     let rb = fs.readFileSync(path.join(LINKLAB_WORKSPACE, dirName, "src.zip"), {
       encoding: "base64"
     }); //base64转码文件
-    fs.unlinkSync( path.join(LINKLAB_WORKSPACE, dirName, "src.zip"))
+    fs.unlinkSync(path.join(LINKLAB_WORKSPACE, dirName, "src.zip"));
     hashVal = hash.update(rb).digest("hex");
     let data = {
       hash: hashVal,
@@ -479,26 +481,26 @@ export class UdcTerminal {
     console.log(JSON.stringify(this.pidQueueInfo[pid!]));
   }
   async requestFixedTemplate(pid: string, type: string, rootDir: string) {
-    let devicePath=path.join(this.rootDir,"device")
-    !fs.existsSync(devicePath)?fs.mkdirSync(devicePath):""
+    let { dirName } = this.pidQueueInfo[pid];
+    let devicePath = path.join(this.rootDir, dirName, "device");
+    !fs.existsSync(devicePath) ? fs.mkdirSync(devicePath) : "";
     let projectPath = path.join(devicePath, rootDir);
     if (!fs.existsSync(projectPath)) {
       fs.mkdirsSync(projectPath);
       fs.writeFileSync(path.join(projectPath, rootDir + ".cpp"), "");
     }
-    if (OS.type() == OS.Type.Linux){
+    if (OS.type() == OS.Type.Linux) {
       this.udcClient &&
         this.udcClient.onConfigLog({
           name: "openSrcFile",
           passwd: path.join(projectPath, rootDir + ".cpp")
         });
-      }
-    else{
+    } else {
       this.udcClient &&
-      this.udcClient.onConfigLog({
-        name: "openSrcFile",
-        passwd: `/`+path.join(projectPath, rootDir + ".cpp")
-      });
+        this.udcClient.onConfigLog({
+          name: "openSrcFile",
+          passwd: `/` + path.join(projectPath, rootDir + ".cpp")
+        });
     }
     Logger.info(path.join(projectPath, rootDir + ".cpp"));
   }
@@ -1086,7 +1088,7 @@ export class UdcTerminal {
     // await this.udcServerClient.destroy();
     // this.udcServerClient = null;
     // this.dev_list = undefined
-    await this.udcServerClient==undefined?"":this.udcServerClient.end();
+    (await this.udcServerClient) == undefined ? "" : this.udcServerClient.end();
     return true;
   }
 

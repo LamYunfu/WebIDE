@@ -5,6 +5,8 @@ import { MyContext } from "./context";
 import * as $ from "jquery"
 export namespace OneLinkView {
     export interface Props {
+        initPid:(pid:string)=>void
+        gotoVirtualScene:()=>void
         gotoPhone:()=>void
         gotoUnity:()=>void
         openUnity:()=>void
@@ -41,25 +43,31 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
         
     }
     submit=()=>{
+        this.props.openUnity()
         this.context.props.virtualSubmit(this.props.section["ppid"][0])
     }
     async componentDidMount() {
         let _this = this
         let  projectName=Math.round(Math.random()*1000000000000).toString()
         _this.props.createOnelinkProject(projectName,this.props.section["ppid"][0])
-        _this.context.props.openSrcFile(this.props.section["ppid"][0])
+        // _this.context.props.openSrcFile(this.props.section["ppid"][0])
+        _this.props.initPid(_this.props.section["ppid"][0])
+        setTimeout(()=>{
+            _this.props.gotoVirtualScene()
+        },2000)
         $("#submitSrcButton").click(() => {
             // _this.context.props.gotoVirtualScene()
             alert("vir")
+            
             _this.context.props.virtualSubmit(_this.props.section["ppid"][0])
         })
         console.log("waiting")
 
-        setTimeout(() => {  
-            console.log("start unity")
+        // setTimeout(() => {  
+        //     console.log("start unity")
             
-            this.props.openUnity()
-        }, 3000);
+        //     this.props.openUnity()
+        // }, 3000);
     }
     createMobile =  async ()=>{
 
@@ -80,6 +88,7 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
         this.props.complileMobile()
     }
     compileDevice=async ()=>{
+ 
         await this.props.compileDevice()
         this.openMobile()
 

@@ -1,4 +1,4 @@
-import { WidgetManager } from '@theia/core/lib/browser';
+import { WidgetManager, OpenerService } from '@theia/core/lib/browser';
 import { CommandRegistry, InMemoryResources } from '@theia/core';
 import { UdcWatcher } from './../common/udc-watcher';
 import { AboutDialog } from './about-dailog';
@@ -14,6 +14,7 @@ import { UdcConsoleSession } from './udc-console-session';
 import { DeviceViewService } from './device-view-service';
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager } from '@theia/editor/lib/browser';
+import {EditorQuickOpenService} from "@theia/editor/lib/browser/editor-quick-open-service"
 export const UdcExtensionCommand = {
     id: 'UdcExtension.command',
     label: "test node server"
@@ -158,7 +159,9 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
         @inject(ApplicationShell) protected applicationShell: ApplicationShell,
         @inject(KeybindingRegistry) protected kr: KeybindingRegistry,
         @inject(DeviceViewService) protected ds: DeviceViewService,
-        @inject(WidgetManager) protected wm: WidgetManager
+        @inject(WidgetManager) protected wm: WidgetManager,
+        @inject(EditorQuickOpenService) readonly eqos:EditorQuickOpenService,
+        @inject(OpenerService) readonly os:OpenerService
 
 
 
@@ -167,7 +170,10 @@ export class UdcExtensionCommandContribution implements CommandContribution, Qui
             let tmp = data
             if (data.name == "openSrcFile") {
                 console.log(data.passwd)
-                this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
+                // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
+                this.os.getOpener(new URI(data.passwd)).then((res)=>{
+                   res.open(new URI("file://"+data.passwd))
+                })
                 return
             } else if (data.name == 'openWorkspace') {
                 this.ds.openWorkspace(data.passwd)

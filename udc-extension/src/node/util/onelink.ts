@@ -6,6 +6,7 @@ import {  TINY_MOBILE_IP, TINY_MOBILE_PORT, LINKLAB_WORKSPACE } from "../../sett
 import * as http from "http"
 import * as FormData from "form-data"
 import { Logger } from "./logger";
+import { OS } from "@theia/core";
 @injectable()
 
 export class OnelinkService{
@@ -245,9 +246,12 @@ processBackValue(backValue:any){
     }   
     }
     async openMobile (){
-        
+        if(OS.type()==OS.Type.Linux)
         this.ut.udcClient!.onConfigLog({name:"openSrcFile",passwd:this.mobileFile})
-
+        else{
+            
+        this.ut.udcClient!.onConfigLog({name:"openSrcFile",passwd:`/`+this.mobileFile})
+        }
     }
     async openDevice (){
      

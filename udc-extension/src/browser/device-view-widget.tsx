@@ -74,7 +74,7 @@ export class DeviceViewWidget extends TreeWidget {
     @inject(WidgetManager) protected readonly wm: WidgetManager,
     @inject(FileTreeWidget) protected readonly ftw: FileTreeWidget,
     @inject(ViewContainer) protected readonly vc: ViewContainer
-  ) {
+  ) { 
     super(treePros, model, contextMenuRenderer);
     this.id = "device-view";
     // this.title.label = "题目目录";
@@ -109,6 +109,8 @@ export class DeviceViewWidget extends TreeWidget {
   protected renderTree(): React.ReactNode {
     return (
       <View
+        initPid={this.initPid}
+        openConfigFile={this.openConfigFile}
         initLinkedge={this.initLinkedgeConfig}
         gotoPhone={this.gotoPhone}
         gotoUnity={this.gotoUnity}
@@ -358,6 +360,7 @@ export class DeviceViewWidget extends TreeWidget {
     return this.udcService.linkEdgeConnect(pid, threeTuple);
   };
   linkEdgeDevelop = (pid: string, indexStr: string) => {
+    console.log("develop");
     return this.udcService.developLinkEdgeProject(pid, indexStr);
   };
   linkEdgeGetDevicesInfo = (pid: string) => {
@@ -370,6 +373,9 @@ export class DeviceViewWidget extends TreeWidget {
   postFreeCodingFile = (pid: string) => {
     this.udcService.postFreeCodingFile(pid);
   };
+  initPid=(pid:string)=>{
+    this.ppid=pid
+  }
   openSrcFile = (pid: string) => {
     // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
     this.ppid = pid;
@@ -456,6 +462,7 @@ export class DeviceViewWidget extends TreeWidget {
   };
   gotoVirtualScene = () => {
     if (
+      this.applicationShell.getTabBarFor("main") != null &&
       this.applicationShell.getTabBarFor("main")!.titles.some((w, i) => {
         if (w.label == "unity") {
           this.applicationShell.revealWidget(w.owner.id);
@@ -491,7 +498,10 @@ export class DeviceViewWidget extends TreeWidget {
     this.udcService.compileDevice();
     return true;
   };
-  initLinkedgeConfig= async (pid :string)=>{
-    return this.udcService.initLinkedgeConfig(pid)
-  }
+  initLinkedgeConfig = async (pid: string) => {
+    return this.udcService.initLinkedgeConfig(pid);
+  };
+  openConfigFile = (pid: string) => {
+    this.udcService.openConfigFile(pid);
+  };
 }

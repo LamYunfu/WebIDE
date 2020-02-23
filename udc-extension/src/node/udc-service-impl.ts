@@ -224,4 +224,7 @@ export class UdcServiceImpl implements UdcService {
     compileDevice():Promise<boolean>{
         return this.ols.compileDevice()
     }
+    openConfigFile(pid:string){
+        this.linkEdgeManager.openConfigFile(pid)
+    }
 }
