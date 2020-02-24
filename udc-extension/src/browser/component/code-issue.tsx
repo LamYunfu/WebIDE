@@ -198,6 +198,7 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
                             contentType: "text/plain",
                             data: "", 
                             success: function (data) {
+                             window.close()
                              console.log(data)
                             }
                 })
