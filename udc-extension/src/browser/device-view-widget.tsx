@@ -175,7 +175,7 @@ export class DeviceViewWidget extends TreeWidget {
   };
   openUnity = () => {
     this.unity = window.open(
-      "http://47.97.253.23:12311/static/publish/index.html"
+      "http://120.55.102.225:12359/publish/index.html"
     );
   };
   openTinyMobile = (url: string) => {

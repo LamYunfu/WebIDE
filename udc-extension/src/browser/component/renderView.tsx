@@ -1508,9 +1508,11 @@ export class View extends React.Component<View.Props, View.State> {
           </MyContext.Provider>
         </div>
       )
-    ) : // this.state.viewType == "11" ?
+    ) :
+     this.state.viewType == "11" ?
 
-    this.state.viewType == "5" ? (
+    // this.state.viewType == "5" ?
+     (
       <MyContext.Provider
         value={{
           props: _this.props
