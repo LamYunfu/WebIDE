@@ -8,7 +8,7 @@
     "@theia/filesystem": "latest",
     "@theia/workspace": "latest",
     "@theia/preferences": "latest",
-    "@theia/navigator": "latest",
+   
     "@theia/process": "latest",
     "@theia/editor": "latest",
     "@theia/languages": "latest",
@@ -19,7 +19,8 @@
     "@theia/plugin-ext": "latest",
     "@theia/mini-browser":"latest",
     "drawboard-extension":"0.0.0",
-    "udc-extension":"0.0.0"
+    "udc-extension":"0.0.0",
+    "demo":"0.0.0"
   },
   "devDependencies": {
     "@theia/cli": "latest"
