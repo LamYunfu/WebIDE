@@ -32,25 +32,21 @@ export class LinkEdgeManager {
     }
     return false;
   }
-   getIotId():string{
+  getIotId(): string {
     try {
-      let raw =fs.readFileSync(path.join(rootDir,"LinkEdge","Config","config.json")).toString()
-      let ob =JSON.parse(raw)
-      return ob["IoTId"]
+      let raw = fs
+        .readFileSync(path.join(rootDir, "LinkEdge", "Config", "config.json"))
+        .toString();
+      let ob = JSON.parse(raw);
+      return ob["IoTId"];
     } catch (error) {
-      this.ut.outputResult("config.json not set correctly")
-      return ""
+      this.ut.outputResult("config.json not set correctly");
+      return "";
     }
-   
   }
   async openConfigFile(pid: string) {
     let { dirName } = this.ut.pidQueueInfo[pid];
-    let filePath = path.join(
-      this.ut.rootDir,
-      dirName,
-      "Config",
-      "config.json"
-    );
+    let filePath = path.join(this.ut.rootDir, dirName, "Config", "config.json");
     if (OS.type() == OS.Type.Linux) {
       this.ut.udcClient &&
         this.ut.udcClient.onConfigLog({
@@ -91,7 +87,8 @@ export class LinkEdgeManager {
     let hexDir = path.join(CONFIGPATH, dirName, "hexFiles");
     !fs.existsSync(hexDir) ? fs.mkdirSync(hexDir) : "";
     let filePath = path.join(currentPath, "config.json");
-    !fs.existsSync(hexDir) ? fs.writeFileSync(filePath, configContent) : "";
+    //
+    fs.existsSync(hexDir) ? fs.writeFileSync(filePath, configContent) : "";
     return true;
   }
   async programGateWay(pid: string, threeTuple: any) {
@@ -102,22 +99,40 @@ export class LinkEdgeManager {
     );
     if (filehash == "err") return "err";
     let burnOption = this.ut.LinkEdgeConfig["burningGateway"];
+    let op = {
+      type: "QUEUE",
+      pid: "19",
+      groupId: "4274281479971534",
+      program: [
+        {
+          filehash: "230ef251e73074bce1e40dc5d7c5ee4d563406b8",
+          waitingId: "9617087952215092",
+          model: "tinylink_platform_1",
+          runtime: 30,
+          address: "0x10000"
+        }
+      ]
+    };
     burnOption = {
       ...this.ut.LinkEdgeConfig["burningDataQueue"],
       pid: pid,
+      type: "QUEUE",
       groupId: (
         Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
         Math.pow(10, 15)
       ).toString()
     };
-    burnOption["program"][0] = {
-      ...burnOption["program"][0],
-      filehash: filehash,
-      waitingId: (
-        Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
-        Math.pow(10, 15)
-      ).toString()
-    };
+    burnOption["program"] = [
+      {
+        ...burnOption["program"],
+        filehash: filehash,
+        model: this.ut.LinkEdgeConfig["gatewayType"],
+        waitingId: (
+          Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
+          Math.pow(10, 15)
+        ).toString()
+      }
+    ];
     this.ut.is_connected ? "" : this.ut.connect("", "", pid, "3");
     for (let i = 4; ; i--) {
       //等待四秒分配设备
@@ -170,7 +185,7 @@ export class LinkEdgeManager {
     return true;
   }
   async removeProjectInLinkEdge(pid: string, indexStr: string) {
-    Logger.info("remove a device")
+    Logger.info("remove a device");
     let index = parseInt(indexStr);
     let { dirName } = this.ut.pidQueueInfo[pid];
     let project = this.ut.LinkEdgeConfig["projects"][index];

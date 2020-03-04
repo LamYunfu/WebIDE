@@ -1083,7 +1083,7 @@ export class UdcTerminal {
     );
     Logger.val("result-----------------------------" + result);
     if (result !== "success") return false;
-    this.outputResult("connect to server success, server ip is " + server_ip);
+    this.outputResult("connect to server success");
     await this.send_packet(
       Packet.packet_type.TERMINAL_LOGIN,
       `${this.uuid},${token},${pid}`

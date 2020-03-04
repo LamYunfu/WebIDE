@@ -1,0 +1,13 @@
+if [ "$1" == "demo" ]
+then 
+echo "enter demo"
+cd  ../demo
+else 
+echo "enter udc"
+cd ../udc-extension
+fi
+yarn build
+cd ../browser-app 
+yarn prepare
+yarn start
+

@@ -341,7 +341,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
     render(): JSX.Element {
         return (
             <div>
-                <div className="title_timer"><h4 className={`section experiment`}>编程测试</h4><span id='timer'></span></div>
+                <div className="title_timer"><h4 className={`section experiment`}>LinkLab实验题</h4><span id='timer'></span></div>
                 <div className={`contentsAndInfos ${this.props.section.sid} container`}>
                     <div className="row">
                         <div className="contents col-5">

@@ -228,6 +228,7 @@ export class Programer {
         console.log(JSON.stringify(option));
       }
       burnOption["program"] = option;
+      console.log("burning option :"+JSON.stringify(burnOption))
       return await this.ut.program_device(pid, JSON.stringify(burnOption));
     } catch (e) {
       console.log(e);
