@@ -12,32 +12,394 @@
 11 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\udc-extension' }
 12 silly runScriptInPackageStreaming [ 'prepare', [], 'demo' ]
 13 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\demo' }
-14 error execute callback with error
-15 error Error: Command failed: npm run prepare
-15 error warning package.json: No license field
-15 error warning package.json: No license field
-15 error error Command failed with exit code 2.
-15 error npm ERR! code ELIFECYCLE
-15 error npm ERR! errno 2
-15 error npm ERR! udc-extension@0.0.0 prepare: `yarn run clean && yarn run build`
-15 error npm ERR! Exit status 2
-15 error npm ERR!
-15 error npm ERR! Failed at the udc-extension@0.0.0 prepare script.
-15 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-15 error
-15 error npm ERR! A complete log of this run can be found in:
-15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-22T05_49_27_338Z-debug.log
-15 error
-15 error
-15 error > udc-extension@0.0.0 prepare D:\webide\webide-back\udc-extension
-15 error > yarn run clean && yarn run build
-15 error
-15 error $ rimraf lib
-15 error $ tsc  --jsx react
-15 error src/browser/component/linkedge.tsx(221,11): error TS6133: 'ButtonGroup' is declared but its value is never read.
-15 error src/browser/component/linkedge.tsx(233,7): error TS6196: 'ButtonGroup' is declared but never used.
-15 error src/browser/component/linkedge.tsx(312,11): error TS6133: 'Form' is declared but its value is never read.
-15 error src/browser/component/linkedge.tsx(325,7): error TS6196: 'Form' is declared but never used.
-15 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
-15 error
-15 error     at Promise.all.then.arr (D:\webide\webide-back\node_modules\lerna\node_modules\execa\index.js:236:11)
+14 silly runScriptInPackageStreaming [ 'prepare', [], 'browser-app' ]
+15 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\browser-app' }
+16 error execute callback with error
+17 error Error: Command failed: npm run prepare
+17 error (node:23080) DeprecationWarning: Tapable.apply is deprecated. Call apply on the plugin directly instead
+17 error
+17 error Error: webpack exited with an unexpected code: 2.
+17 error     at ChildProcess.<anonymous> (D:\webide\webide-back\node_modules\@theia\application-manager\lib\application-process.js:66:28)
+17 error     at ChildProcess.emit (events.js:193:13)
+17 error     at maybeClose (internal/child_process.js:999:16)
+17 error     at Process.ChildProcess._handle.onexit (internal/child_process.js:266:5)
+17 error npm ERR! code ELIFECYCLE
+17 error npm ERR! errno 1
+17 error npm ERR! browser-app@0.0.0 prepare: `theia build --mode development`
+17 error npm ERR! Exit status 1
+17 error npm ERR!
+17 error npm ERR! Failed at the browser-app@0.0.0 prepare script.
+17 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+17 error
+17 error npm ERR! A complete log of this run can be found in:
+17 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-02-27T09_39_30_184Z-debug.log
+17 error
+17 error
+17 error > browser-app@0.0.0 prepare D:\webide\webide-back\browser-app
+17 error > theia build --mode development
+17 error
+17 error Hash: 825786371829d977f0b2
+17 error Version: webpack 4.35.3
+17 error Time: 13508ms
+17 error Built at: 2020-02-27 17:39:30
+17 error                                   Asset      Size  Chunks             Chunk Names
+17 error                             0.bundle.js  29.7 KiB       0  [emitted]
+17 error                         0.bundle.js.map  37.9 KiB       0  [emitted]
+17 error  0a32a80243e05284a5d741c5dc093f31.woff2  23.8 KiB          [emitted]
+17 error                             1.bundle.js  49.5 KiB       1  [emitted]
+17 error                         1.bundle.js.map  45.4 KiB       1  [emitted]
+17 error                            10.bundle.js  31.5 KiB      10  [emitted]
+17 error                        10.bundle.js.map  29.3 KiB      10  [emitted]
+17 error                            11.bundle.js   578 KiB      11  [emitted]
+17 error                        11.bundle.js.map   683 KiB      11  [emitted]
+17 error  11d1a2390613abf202bfd2ebbd5c4500.woff2  88.6 KiB          [emitted]
+17 error                            12.bundle.js  47.4 KiB      12  [emitted]
+17 error                        12.bundle.js.map  58.7 KiB      12  [emitted]
+17 error                            13.bundle.js   148 KiB      13  [emitted]
+17 error                        13.bundle.js.map   143 KiB      13  [emitted]
+17 error                            14.bundle.js  14.9 KiB      14  [emitted]
+17 error                        14.bundle.js.map  15.3 KiB      14  [emitted]
+17 error                            15.bundle.js  58.2 KiB      15  [emitted]
+17 error                        15.bundle.js.map    64 KiB      15  [emitted]
+17 error                            16.bundle.js  17.9 KiB      16  [emitted]
+17 error                        16.bundle.js.map  15.4 KiB      16  [emitted]
+17 error                            17.bundle.js  87.6 KiB      17  [emitted]
+17 error                        17.bundle.js.map  96.4 KiB      17  [emitted]
+17 error                            18.bundle.js  95.4 KiB      18  [emitted]
+17 error                        18.bundle.js.map  86.7 KiB      18  [emitted]
+17 error                            19.bundle.js  52.2 KiB      19  [emitted]
+17 error                        19.bundle.js.map  53.6 KiB      19  [emitted]
+17 error                             2.bundle.js   116 KiB       2  [emitted]
+17 error                         2.bundle.js.map    97 KiB       2  [emitted]
+17 error                            20.bundle.js  25.7 KiB      20  [emitted]
+17 error                        20.bundle.js.map  21.6 KiB      20  [emitted]
+17 error                            21.bundle.js  22.8 KiB      21  [emitted]
+17 error                        21.bundle.js.map  26.1 KiB      21  [emitted]
+17 error                            22.bundle.js  15.4 KiB      22  [emitted]
+17 error                        22.bundle.js.map  36.5 KiB      22  [emitted]
+17 error                            23.bundle.js   483 KiB      23  [emitted]
+17 error                        23.bundle.js.map   930 KiB      23  [emitted]
+17 error                            24.bundle.js   278 KiB      24  [emitted]
+17 error                        24.bundle.js.map   291 KiB      24  [emitted]
+17 error                            25.bundle.js  23.2 KiB      25  [emitted]
+17 error                        25.bundle.js.map  18.5 KiB      25  [emitted]
+17 error                            26.bundle.js  27.1 KiB      26  [emitted]
+17 error                        26.bundle.js.map  25.8 KiB      26  [emitted]
+17 error                            27.bundle.js  41.3 KiB      27  [emitted]
+17 error                        27.bundle.js.map  33.9 KiB      27  [emitted]
+17 error                            28.bundle.js  26.3 KiB      28  [emitted]
+17 error                        28.bundle.js.map    31 KiB      28  [emitted]
+17 error                            29.bundle.js   318 KiB      29  [emitted]
+17 error                        29.bundle.js.map   267 KiB      29  [emitted]
+17 error                             3.bundle.js  20.6 KiB       3  [emitted]
+17 error                         3.bundle.js.map  15.5 KiB       3  [emitted]
+17 error                            30.bundle.js   345 KiB      30  [emitted]
+17 error                        30.bundle.js.map   175 KiB      30  [emitted]
+17 error                            31.bundle.js  60.9 KiB      31  [emitted]
+17 error                        31.bundle.js.map  48.3 KiB      31  [emitted]
+17 error                            32.bundle.js  73.2 KiB      32  [emitted]
+17 error                        32.bundle.js.map  51.8 KiB      32  [emitted]
+17 error                            33.bundle.js  78.1 KiB      33  [emitted]
+17 error                        33.bundle.js.map  63.8 KiB      33  [emitted]
+17 error                            34.bundle.js  57.3 KiB      34  [emitted]
+17 error                        34.bundle.js.map  62.5 KiB      34  [emitted]
+17 error                            35.bundle.js  17.3 KiB      35  [emitted]
+17 error                        35.bundle.js.map  15.2 KiB      35  [emitted]
+17 error                            36.bundle.js  29.2 KiB      36  [emitted]
+17 error                        36.bundle.js.map  22.4 KiB      36  [emitted]
+17 error                            37.bundle.js    28 KiB      37  [emitted]
+17 error                        37.bundle.js.map  27.3 KiB      37  [emitted]
+17 error                            38.bundle.js  10.8 KiB      38  [emitted]
+17 error                        38.bundle.js.map  11.1 KiB      38  [emitted]
+17 error                            39.bundle.js   274 KiB      39  [emitted]
+17 error                        39.bundle.js.map   358 KiB      39  [emitted]
+17 error   3cf97837524dd7445e9d1462e3c4afe2.woff  14.6 KiB          [emitted]
+17 error                             4.bundle.js   123 KiB       4  [emitted]
+17 error                         4.bundle.js.map   117 KiB       4  [emitted]
+17 error                            40.bundle.js  1.23 MiB      40  [emitted]
+17 error                        40.bundle.js.map  1.48 MiB      40  [emitted]
+17 error                            41.bundle.js   366 KiB      41  [emitted]
+17 error                        41.bundle.js.map   334 KiB      41  [emitted]
+17 error                            42.bundle.js  1.18 MiB      42  [emitted]
+17 error                        42.bundle.js.map   721 KiB      42  [emitted]
+17 error                            43.bundle.js   144 KiB      43  [emitted]
+17 error                        43.bundle.js.map   132 KiB      43  [emitted]
+17 error                            44.bundle.js  90.7 KiB      44  [emitted]
+17 error                        44.bundle.js.map  76.4 KiB      44  [emitted]
+17 error                            45.bundle.js  97.4 KiB      45  [emitted]
+17 error                        45.bundle.js.map  78.9 KiB      45  [emitted]
+17 error                            46.bundle.js  81.1 KiB      46  [emitted]
+17 error                        46.bundle.js.map  80.6 KiB      46  [emitted]
+17 error                            47.bundle.js   105 KiB      47  [emitted]
+17 error                        47.bundle.js.map  78.9 KiB      47  [emitted]
+17 error    47151e87c5a8666791a91007de4962da.eot  27.5 KiB          [emitted]
+17 error                            48.bundle.js    51 KiB      48  [emitted]
+17 error                        48.bundle.js.map  42.1 KiB      48  [emitted]
+17 error                            49.bundle.js   142 KiB      49  [emitted]
+17 error                        49.bundle.js.map   153 KiB      49  [emitted]
+17 error                             5.bundle.js  24.8 KiB       5  [emitted]
+17 error                         5.bundle.js.map  16.9 KiB       5  [emitted]
+17 error                            50.bundle.js   105 KiB      50  [emitted]
+17 error                        50.bundle.js.map  92.5 KiB      50  [emitted]
+17 error                            51.bundle.js  27.5 KiB      51  [emitted]
+17 error                        51.bundle.js.map  28.6 KiB      51  [emitted]
+17 error                            52.bundle.js  44.5 KiB      52  [emitted]
+17 error                        52.bundle.js.map  24.6 KiB      52  [emitted]
+17 error                            53.bundle.js  53.9 KiB      53  [emitted]
+17 error                        53.bundle.js.map  40.4 KiB      53  [emitted]
+17 error                            54.bundle.js  32.5 KiB      54  [emitted]
+17 error                        54.bundle.js.map  35.6 KiB      54  [emitted]
+17 error                            55.bundle.js    48 KiB      55  [emitted]
+17 error                        55.bundle.js.map  42.3 KiB      55  [emitted]
+17 error                            56.bundle.js  20.1 KiB      56  [emitted]
+17 error                        56.bundle.js.map  16.1 KiB      56  [emitted]
+17 error                            57.bundle.js  29.9 KiB      57  [emitted]
+17 error                        57.bundle.js.map  29.1 KiB      57  [emitted]
+17 error                            58.bundle.js  25.9 KiB      58  [emitted]
+17 error                        58.bundle.js.map  23.7 KiB      58  [emitted]
+17 error                            59.bundle.js    22 KiB      59  [emitted]
+17 error                        59.bundle.js.map  17.3 KiB      59  [emitted]
+17 error                             6.bundle.js    22 KiB       6  [emitted]
+17 error                         6.bundle.js.map  15.5 KiB       6  [emitted]
+17 error                            60.bundle.js  38.9 KiB      60  [emitted]
+17 error                        60.bundle.js.map  33.4 KiB      60  [emitted]
+17 error                            61.bundle.js  13.8 KiB      61  [emitted]
+17 error                        61.bundle.js.map  9.21 KiB      61  [emitted]
+17 error                            62.bundle.js  22.4 KiB      62  [emitted]
+17 error                        62.bundle.js.map  21.1 KiB      62  [emitted]
+17 error                            63.bundle.js  14.4 KiB      63  [emitted]
+17 error                        63.bundle.js.map  16.8 KiB      63  [emitted]
+17 error                            64.bundle.js  14.4 KiB      64  [emitted]
+17 error                        64.bundle.js.map  16.8 KiB      64  [emitted]
+17 error                            65.bundle.js  14.4 KiB      65  [emitted]
+17 error                        65.bundle.js.map  16.8 KiB      65  [emitted]
+17 error                            66.bundle.js   7.5 KiB      66  [emitted]
+17 error                        66.bundle.js.map  5.76 KiB      66  [emitted]
+17 error                            67.bundle.js  9.35 KiB      67  [emitted]
+17 error                        67.bundle.js.map  15.3 KiB      67  [emitted]
+17 error    674f50d287a8c48dc19ba404d20fe713.eot   162 KiB          [emitted]
+17 error                            68.bundle.js  4.75 KiB      68  [emitted]
+17 error                        68.bundle.js.map  4.68 KiB      68  [emitted]
+17 error                            69.bundle.js  10.9 KiB      69  [emitted]
+17 error                        69.bundle.js.map  7.86 KiB      69  [emitted]
+17 error                             7.bundle.js  23.1 KiB       7  [emitted]
+17 error                         7.bundle.js.map  17.7 KiB       7  [emitted]
+17 error                            70.bundle.js  8.39 KiB      70  [emitted]
+17 error                        70.bundle.js.map  5.94 KiB      70  [emitted]
+17 error                            71.bundle.js  13.7 KiB      71  [emitted]
+17 error                        71.bundle.js.map  16.3 KiB      71  [emitted]
+17 error                            72.bundle.js  13.7 KiB      72  [emitted]
+17 error                        72.bundle.js.map  16.3 KiB      72  [emitted]
+17 error                            73.bundle.js  13.7 KiB      73  [emitted]
+17 error                        73.bundle.js.map  16.3 KiB      73  [emitted]
+17 error                            74.bundle.js  13.7 KiB      74  [emitted]
+17 error                        74.bundle.js.map  16.3 KiB      74  [emitted]
+17 error                            75.bundle.js  13.7 KiB      75  [emitted]
+17 error                        75.bundle.js.map  16.3 KiB      75  [emitted]
+17 error                            76.bundle.js  13.7 KiB      76  [emitted]
+17 error                        76.bundle.js.map  16.3 KiB      76  [emitted]
+17 error                            77.bundle.js  13.7 KiB      77  [emitted]
+17 error                        77.bundle.js.map  16.3 KiB      77  [emitted]
+17 error                            78.bundle.js  13.7 KiB      78  [emitted]
+17 error                        78.bundle.js.map  16.3 KiB      78  [emitted]
+17 error                            79.bundle.js  13.7 KiB      79  [emitted]
+17 error                        79.bundle.js.map  16.3 KiB      79  [emitted]
+17 error                             8.bundle.js   731 KiB       8  [emitted]
+17 error                         8.bundle.js.map   785 KiB       8  [emitted]
+17 error                            80.bundle.js  13.7 KiB      80  [emitted]
+17 error                        80.bundle.js.map  16.3 KiB      80  [emitted]
+17 error                            81.bundle.js  13.7 KiB      81  [emitted]
+17 error                        81.bundle.js.map  16.3 KiB      81  [emitted]
+17 error                            82.bundle.js  13.7 KiB      82  [emitted]
+17 error                        82.bundle.js.map  16.3 KiB      82  [emitted]
+17 error                            83.bundle.js  13.7 KiB      83  [emitted]
+17 error                        83.bundle.js.map  16.3 KiB      83  [emitted]
+17 error                            84.bundle.js  3.05 KiB      84  [emitted]
+17 error                        84.bundle.js.map  2.49 KiB      84  [emitted]
+17 error                            85.bundle.js  1.97 KiB      85  [emitted]
+17 error                        85.bundle.js.map  1.56 KiB      85  [emitted]
+17 error                             9.bundle.js    59 KiB       9  [emitted]
+17 error                         9.bundle.js.map  63.6 KiB       9  [emitted]
+17 error    912ec66d7572ff821749319396470bde.svg   434 KiB          [emitted]
+17 error    93cc7aa654ae36b0828716f5ec3159cd.ttf  27.4 KiB          [emitted]
+17 error  af7ae505a9eed503f8b8e6982036873e.woff2  75.4 KiB          [emitted]
+17 error    b06871f281fee6b241d60582ae9369b9.ttf   162 KiB          [emitted]
+17 error                               bundle.js  4.98 MiB    main  [emitted]  main
+17 error                           bundle.js.map  5.19 MiB    main  [emitted]  main
+17 error    cf2aabacdc2b3a5768b03545cb1d8330.svg    21 KiB          [emitted]
+17 error  de59a97248b44599e6747a27a943f738.woff2  19.8 KiB          [emitted]
+17 error  e19892df121e7f85c61754c54bbb7951.woff2  48.6 KiB          [emitted]
+17 error    e817279537a0417d042f62fbb1b99eea.gif  43.1 KiB          [emitted]
+17 error    eca2c26759a009a4a9361151efe99e74.svg  53.5 KiB          [emitted]
+17 error   f8f821a66b20e5801e35df5ec4565b30.wasm   583 KiB          [emitted]
+17 error   fee66e712a8a08eef5805a46892932ad.woff  95.7 KiB          [emitted]
+17 error            vs/base/worker/workerMain.js   489 KiB          [emitted]
+17 error        vs/base/worker/workerMain.js.map   661 KiB          [emitted]
+17 error               vs/editor/editor.main.css   255 KiB          [emitted]
+17 error                vs/editor/editor.main.js  5.19 MiB          [emitted]
+17 error            vs/editor/editor.main.js.map  8.03 MiB          [emitted]
+17 error         vs/editor/editor.main.nls.de.js  41.3 KiB          [emitted]
+17 error         vs/editor/editor.main.nls.es.js  41.8 KiB          [emitted]
+17 error         vs/editor/editor.main.nls.fr.js  45.2 KiB          [emitted]
+17 error         vs/editor/editor.main.nls.it.js  43.5 KiB          [emitted]
+17 error         vs/editor/editor.main.nls.ja.js  45.9 KiB          [emitted]
+17 error            vs/editor/editor.main.nls.js  35.6 KiB          [emitted]
+17 error         vs/editor/editor.main.nls.ko.js  41.9 KiB          [emitted]
+17 error         vs/editor/editor.main.nls.ru.js    63 KiB          [emitted]
+17 error      vs/editor/editor.main.nls.zh-cn.js  34.2 KiB          [emitted]
+17 error      vs/editor/editor.main.nls.zh-tw.js  34.3 KiB          [emitted]
+17 error              vs/language/css/cssMode.js  28.2 KiB          [emitted]
+17 error            vs/language/css/cssWorker.js   597 KiB          [emitted]
+17 error  vs/language/css/monaco.contribution.js  2.11 KiB          [emitted]
+17 error            vs/language/html/htmlMode.js  27.3 KiB          [emitted]
+17 error          vs/language/html/htmlWorker.js   337 KiB          [emitted]
+17 error vs/language/html/monaco.contribution.js  2.14 KiB          [emitted]
+17 error                            vs/loader.js  77.8 KiB          [emitted]
+17 error                        vs/loader.js.map    88 KiB          [emitted]
+17 error      worker-ext.2c9284b08bfaf50d55a6.js  1.28 MiB          [emitted]
+17 error  worker-ext.2c9284b08bfaf50d55a6.js.map  1.62 MiB          [emitted]
+17 error Entrypoint main = bundle.js bundle.js.map
+17 error [../demo/lib/browser/demo-contribution.js] 2.61 KiB {57} [built]
+17 error [../demo/lib/browser/demo-frontend-module.js] 2.4 KiB {57} [built]
+17 error [../demo/lib/browser/demo-widget.js] 4.82 KiB {57} [built]
+17 error [../demo/lib/common/demo-service.js] 125 bytes {57} [built]
+17 error [../demo/lib/common/test.js] 1.51 KiB {57} [built]
+17 error [../drawboard-extension/lib/browser/drawboard-decorator-service.js] 2.61 KiB {46} [built]
+17 error [../drawboard-extension/lib/browser/drawboard-view-contribution.js] 5.23 KiB {46} [built]
+17 error [../drawboard-extension/lib/browser/drawboard-view-frontend-module.js] 2.93 KiB {46} [built]
+17 error [../drawboard-extension/lib/browser/drawboard-view-service.js] 4.51 KiB {46} [built]
+17 error [../drawboard-extension/lib/browser/drawboard-view-widget.js] 9.81 KiB {46} [built]
+17 error [../drawboard-extension/lib/common/drawboardproxy.js] 1.63 KiB {46} [built]
+17 error [../drawboard-extension/lib/common/drawboardservice.js] 135 bytes {46} [built]
+17 error [../drawboard-extension/src/browser/styles/index.css] 1.08 KiB {46} [built]
+17 error [../udc-extension/lib/browser/udc-extension-frontend-module.js] 4.13 KiB {42} [built]
+17 error [./src-gen/frontend/index.js] 4.98 KiB {main} [built]
+17 error     + 1637 hidden modules
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js -> ..\node_modules\@theia\core\lib\browser\navigatable.js -> ..\node_modules\@theia\core\lib\browser\widget-open-handler.js -> ..\node_modules\@theia\core\lib\browser\shell\index.js -> ..\node_modules\@theia\core\lib\browser\shell\shell-layout-restorer.js -> ..\node_modules\@theia\core\lib\browser\theming.js -> ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\navigatable.js -> ..\node_modules\@theia\core\lib\browser\widget-open-handler.js -> ..\node_modules\@theia\core\lib\browser\shell\index.js -> ..\node_modules\@theia\core\lib\browser\shell\shell-layout-restorer.js -> ..\node_modules\@theia\core\lib\browser\theming.js -> ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js -> ..\node_modules\@theia\core\lib\browser\navigatable.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\shell\index.js -> ..\node_modules\@theia\core\lib\browser\shell\shell-layout-restorer.js -> ..\node_modules\@theia\core\lib\browser\theming.js -> ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js -> ..\node_modules\@theia\core\lib\browser\navigatable.js -> ..\node_modules\@theia\core\lib\browser\widget-open-handler.js -> ..\node_modules\@theia\core\lib\browser\shell\index.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\shell\shell-layout-restorer.js -> ..\node_modules\@theia\core\lib\browser\theming.js -> ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js -> ..\node_modules\@theia\core\lib\browser\navigatable.js -> ..\node_modules\@theia\core\lib\browser\widget-open-handler.js -> ..\node_modules\@theia\core\lib\browser\shell\index.js -> ..\node_modules\@theia\core\lib\browser\shell\shell-layout-restorer.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\shell\view-contribution.js -> ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js -> ..\node_modules\@theia\core\lib\browser\navigatable.js -> ..\node_modules\@theia\core\lib\browser\widget-open-handler.js -> ..\node_modules\@theia\core\lib\browser\shell\index.js -> ..\node_modules\@theia\core\lib\browser\shell\view-contribution.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\theming.js -> ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js -> ..\node_modules\@theia\core\lib\browser\navigatable.js -> ..\node_modules\@theia\core\lib\browser\widget-open-handler.js -> ..\node_modules\@theia\core\lib\browser\shell\index.js -> ..\node_modules\@theia\core\lib\browser\shell\shell-layout-restorer.js -> ..\node_modules\@theia\core\lib\browser\theming.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\tree\tree-widget-selection.js -> ..\node_modules\@theia\core\lib\browser\tree\tree-widget.js -> ..\node_modules\@theia\core\lib\browser\tree\tree-widget-selection.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\tree\tree-widget.js -> ..\node_modules\@theia\core\lib\browser\tree\tree-widget-selection.js -> ..\node_modules\@theia\core\lib\browser\tree\tree-widget.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\core\lib\browser\widget-open-handler.js -> ..\node_modules\@theia\core\lib\browser\shell\index.js -> ..\node_modules\@theia\core\lib\browser\shell\shell-layout-restorer.js -> ..\node_modules\@theia\core\lib\browser\theming.js -> ..\node_modules\@theia\core\lib\browser\common-frontend-contribution.js -> ..\node_modules\@theia\core\lib\browser\navigatable.js -> ..\node_modules\@theia\core\lib\browser\widget-open-handler.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\plugin-ext\lib\common\index.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js -> ..\node_modules\@theia\plugin-ext\lib\common\index.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js -> ..\node_modules\@theia\plugin-ext\lib\common\index.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js -> ..\node_modules\@theia\plugin-ext\lib\common\index.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\task\lib\browser\quick-open-task.js -> ..\node_modules\@theia\task\lib\browser\task-action-provider.js -> ..\node_modules\@theia\task\lib\browser\quick-open-task.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\@theia\task\lib\browser\task-action-provider.js -> ..\node_modules\@theia\task\lib\browser\quick-open-task.js -> ..\node_modules\@theia\task\lib\browser\task-action-provider.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\inversify\lib\syntax\binding_on_syntax.js -> ..\node_modules\inversify\lib\syntax\binding_when_syntax.js -> ..\node_modules\inversify\lib\syntax\binding_on_syntax.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\inversify\lib\syntax\binding_when_syntax.js -> ..\node_modules\inversify\lib\syntax\binding_on_syntax.js -> ..\node_modules\inversify\lib\syntax\binding_when_syntax.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\react-virtualized\dist\es\Grid\types.js -> ..\node_modules\react-virtualized\dist\es\Grid\utils\ScalingCellSizeAndPositionManager.js -> ..\node_modules\react-virtualized\dist\es\Grid\utils\CellSizeAndPositionManager.js -> ..\node_modules\react-virtualized\dist\es\Grid\types.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\react-virtualized\dist\es\Grid\utils\CellSizeAndPositionManager.js -> ..\node_modules\react-virtualized\dist\es\Grid\types.js -> ..\node_modules\react-virtualized\dist\es\Grid\utils\ScalingCellSizeAndPositionManager.js -> ..\node_modules\react-virtualized\dist\es\Grid\utils\CellSizeAndPositionManager.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\react-virtualized\dist\es\Grid\utils\ScalingCellSizeAndPositionManager.js -> ..\node_modules\react-virtualized\dist\es\Grid\utils\CellSizeAndPositionManager.js -> ..\node_modules\react-virtualized\dist\es\Grid\types.js -> ..\node_modules\react-virtualized\dist\es\Grid\utils\ScalingCellSizeAndPositionManager.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\react-virtualized\dist\es\WindowScroller\WindowScroller.js -> ..\node_modules\react-virtualized\dist\es\WindowScroller\utils\onScroll.js -> ..\node_modules\react-virtualized\dist\es\WindowScroller\WindowScroller.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\react-virtualized\dist\es\WindowScroller\utils\onScroll.js -> ..\node_modules\react-virtualized\dist\es\WindowScroller\WindowScroller.js -> ..\node_modules\react-virtualized\dist\es\WindowScroller\utils\onScroll.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\xterm\lib\Buffer.js -> ..\node_modules\xterm\lib\BufferLine.js -> ..\node_modules\xterm\lib\Buffer.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\node_modules\xterm\lib\BufferLine.js -> ..\node_modules\xterm\lib\Buffer.js -> ..\node_modules\xterm\lib\BufferLine.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\udc-extension\lib\browser\device-view-service.js -> ..\udc-extension\lib\browser\device-view-widget.js -> ..\udc-extension\lib\browser\udc-extension-contribution.js -> ..\udc-extension\lib\browser\device-view-service.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\udc-extension\lib\browser\device-view-widget.js -> ..\udc-extension\lib\browser\udc-extension-contribution.js -> ..\udc-extension\lib\browser\device-view-service.js -> ..\udc-extension\lib\browser\device-view-widget.js
+17 error
+17 error WARNING in Circular dependency detected:
+17 error ..\udc-extension\lib\browser\udc-extension-contribution.js -> ..\udc-extension\lib\browser\device-view-service.js -> ..\udc-extension\lib\browser\device-view-widget.js -> ..\udc-extension\lib\browser\udc-extension-contribution.js
+17 error
+17 error WARNING in ../node_modules/vscode-textmate/release/main.js 23:15-27
+17 error Critical dependency: the request of a dependency is an expression
+17 error  @ ../node_modules/@theia/monaco/lib/browser/textmate/monaco-textmate-service.js
+17 error  @ ../node_modules/@theia/monaco/lib/browser/textmate/index.js
+17 error  @ ../node_modules/@theia/plugin-ext/lib/main/browser/plugin-contribution-handler.js
+17 error  @ ../node_modules/@theia/plugin-ext/lib/main/browser/plugin-ext-frontend-module.js
+17 error  @ ../node_modules/@theia/plugin-ext/lib/plugin-ext-frontend-module.js
+17 error  @ ./src-gen/frontend/index.js
+17 error
+17 error WARNING in ../node_modules/vscode-textmate/release/main.js
+17 error Module Warning (from ../node_modules/source-map-loader/index.js):
+17 error (Emitted value instead of an instance of Error) Cannot find SourceMap 'main.js.map': Error: Can't resolve './main.js.map' in 'D:\webide\webide-back\node_modules\vscode-textmate\release'
+17 error  @ ../node_modules/@theia/monaco/lib/browser/textmate/monaco-textmate-service.js 73:24-50
+17 error  @ ../node_modules/@theia/monaco/lib/browser/textmate/index.js
+17 error  @ ../node_modules/@theia/plugin-ext/lib/main/browser/plugin-contribution-handler.js
+17 error  @ ../node_modules/@theia/plugin-ext/lib/main/browser/plugin-ext-frontend-module.js
+17 error  @ ../node_modules/@theia/plugin-ext/lib/plugin-ext-frontend-module.js
+17 error  @ ./src-gen/frontend/index.js
+17 error
+17 error WARNING in ../node_modules/typescript-language-server/lib/commands.js
+17 error Module Warning (from ../node_modules/source-map-loader/index.js):
+17 error (Emitted value instead of an instance of Error) Cannot find source file '../src/commands.ts': Error: Can't resolve '../src/commands.ts' in 'D:\webide\webide-back\node_modules\typescript-language-server\lib'
+17 error  @ ../node_modules/@theia/typescript/lib/browser/typescript-frontend-contribution.js 93:17-67
+17 error  @ ../node_modules/@theia/typescript/lib/browser/typescript-frontend-module.js
+17 error  @ ./src-gen/frontend/index.js
+17 error
+17 error ERROR in ../demo/lib/browser/demo-widget.js
+17 error Module not found: Error: Can't resolve '@theia/navigator/src/browser/' in 'D:\webide\webide-back\demo\lib\browser'
+17 error  @ ../demo/lib/browser/demo-widget.js 34:16-56
+17 error  @ ../demo/lib/browser/demo-frontend-module.js
+17 error  @ ./src-gen/frontend/index.js
+17 error Child worker:
+17 error                                      Asset      Size  Chunks             Chunk Names
+17 error         worker-ext.2c9284b08bfaf50d55a6.js  1.28 MiB    main  [emitted]  main
+17 error     worker-ext.2c9284b08bfaf50d55a6.js.map  1.62 MiB    main  [emitted]  main
+17 error     Entrypoint main = worker-ext.2c9284b08bfaf50d55a6.js worker-ext.2c9284b08bfaf50d55a6.js.map
+17 error        163 modules
+17 error
+17 error     WARNING in Circular dependency detected:
+17 error     ..\node_modules\@theia\plugin-ext\lib\common\index.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js -> ..\node_modules\@theia\plugin-ext\lib\common\index.js
+17 error
+17 error     WARNING in Circular dependency detected:
+17 error     ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js -> ..\node_modules\@theia\plugin-ext\lib\common\index.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js
+17 error
+17 error     WARNING in Circular dependency detected:
+17 error     ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js -> ..\node_modules\@theia\plugin-ext\lib\common\index.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\plugin-context.js -> ..\node_modules\@theia\plugin-ext\lib\plugin\tree\tree-views.js
+17 error
+17 error
+17 error     at Promise.all.then.arr (D:\webide\webide-back\node_modules\lerna\node_modules\execa\index.js:236:11)

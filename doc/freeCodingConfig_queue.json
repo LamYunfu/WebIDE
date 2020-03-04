@@ -1,0 +1,22 @@
+{
+    "deviceUsage": "QUEUE",
+    "hexFileDir": "hexFiles",
+    "projects": [
+        {
+            "projectName": "device",
+            "deviceType": "tinylink_platform_1",
+            "deviceName": "tinylink_platform_1",
+            "compilationMethod": "tinylink",
+            "burningDataQueue": {
+                "type": "QUEUE",
+                "program": 
+                    {
+                        "model": "tinylink_platform_1",
+                        "runtime": 30,
+                        "address": "0x10000"
+                    }
+                
+            }
+        }
+    ]
+}

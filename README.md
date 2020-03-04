@@ -27,3 +27,6 @@
 
     typescript &  inversify & react &nodejs
 ---
+## 问题
+文件模板创建：应该是先创建好项目，然后webide 打开
+编译服务：webide 打包 好代码 ，有编译服务器统一处理

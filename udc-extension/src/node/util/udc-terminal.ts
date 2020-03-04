@@ -196,9 +196,9 @@ export class UdcTerminal {
     try {
       infoRaw = fs.readFileSync(path.join(CONFIGPATH, dirName, "config.json"));
       let tulpeRaw = fs.readFileSync(
-        path.join(this.rootDir, dirName, "gateway", "config.json")
+        path.join(this.rootDir, dirName, "Config", "config.json")
       );
-      let tulpe = JSON.parse(tulpeRaw.toString());
+      let tulpe = JSON.parse(tulpeRaw.toString())["Certificate"];
       this.LinkEdgeConfig = JSON.parse(infoRaw);
       this.pidQueueInfo[pid].loginType = "queue";
       this.pidQueueInfo[pid].model = this.LinkEdgeConfig["gatewayType"];
@@ -206,18 +206,25 @@ export class UdcTerminal {
       if (threeTuple == undefined) return;
       let startCommand = "";
       if (threeTuple.action == "connect") {
+        this.outputResult("connect linkedge gateway......");
         startCommand = this.LinkEdgeConfig["gatewayConnectCommand"]
           .split("$ProductKey")
-          .join(tulpe["productKey"])
+          .join(tulpe["ProductKey"])
           .split("$DeviceName")
-          .join(tulpe["deviceName"])
+          .join(tulpe["DeviceName"])
           .split("$DeviceSecret")
-          .join(tulpe["deviceSecret"]);
+          .join(tulpe["DeviceSecret"]);
         Logger.info(startCommand, "connect command");
       } else if (threeTuple.action == "stop") {
+        this.outputResult("stop linkedge gateway......");
         startCommand = this.LinkEdgeConfig["gatewayStopCommand"];
         Logger.info(startCommand, "stop command");
       } else if (threeTuple.action == "start") {
+        this.outputResult("start linkedge gateway......");
+        startCommand = this.LinkEdgeConfig["gatewayStartCommand"];
+        Logger.info(startCommand, "start command");
+      } else if (threeTuple.action == "release") {
+        this.outputResult("release linkedge gateway......")
         startCommand = this.LinkEdgeConfig["gatewayStartCommand"];
         Logger.info(startCommand, "start command");
       } else {
@@ -453,7 +460,7 @@ export class UdcTerminal {
   async refreshConfiguration(pid: string) {
     let { dirName } = this.getPidInfos(pid);
     let infoRaw = fs.readFileSync(
-      path.join(CONFIGPATH, dirName, "config.json")
+      path.join(LINKLAB_WORKSPACE, dirName, "config.json")
     );
     let info: any;
     try {
@@ -602,8 +609,10 @@ export class UdcTerminal {
       this.udcClient!.onConfigLog({ name: "openShell", passwd: "" });
       if (
         this.pidQueueInfo[index]["type"] == "freecoding" ||
-        this.pidQueueInfo[index]["type"] == "OneLinkView"
+        this.pidQueueInfo[index]["type"] == "OneLinkView"||
+        index=="29"
       ) {
+
         if (OS.type() == OS.Type.Linux)
           this.udcClient!.onConfigLog({
             name: "openWorkspace",
@@ -879,7 +888,10 @@ export class UdcTerminal {
       this.cmd_excute_return = value;
       this.cmd_excute_state = type === Packet.CMD_DONE ? "done" : "error";
       this.events.emit("cmd-response");
-    } else if (type == Packet.DEVICE_LOG) {
+    }else if (type==Packet.MULTI_DEVICE_PROGRAM){
+      this.outputResult("burning option not set correctly")
+    }
+     else if (type == Packet.DEVICE_LOG) {
       let tmp = value
         .toString()
         .split(":")

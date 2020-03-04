@@ -227,4 +227,7 @@ export class UdcServiceImpl implements UdcService {
     openConfigFile(pid:string){
         this.linkEdgeManager.openConfigFile(pid)
     }
+    getIotId(){
+       return this.linkEdgeManager.getIotId()
+    }
 }

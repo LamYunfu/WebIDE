@@ -44,6 +44,7 @@ export interface UdcService {
     compileDevice:()=>Promise<boolean>
     initLinkedgeConfig:(pid:string )=>Promise<boolean>
     openConfigFile:(pid:string)=>void
+    getIotId:()=>string
 }
 
 

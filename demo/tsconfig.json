@@ -2,9 +2,10 @@
     "compilerOptions": {
         "strict": true,
         "skipLibCheck": true,
+        "strictPropertyInitialization":false,
         "declaration": true,
         "experimentalDecorators": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "declarationMap": true,

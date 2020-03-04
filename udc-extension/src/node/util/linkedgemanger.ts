@@ -9,6 +9,7 @@ import * as fs from "fs";
 import { Logger } from "./logger";
 import { CONFIGPATH } from "../../setting/backend-config";
 import { OS } from "@theia/core";
+import { rootDir } from "../globalconst";
 
 @injectable()
 export class LinkEdgeManager {
@@ -31,12 +32,23 @@ export class LinkEdgeManager {
     }
     return false;
   }
+   getIotId():string{
+    try {
+      let raw =fs.readFileSync(path.join(rootDir,"LinkEdge","Config","config.json")).toString()
+      let ob =JSON.parse(raw)
+      return ob["IoTId"]
+    } catch (error) {
+      this.ut.outputResult("config.json not set correctly")
+      return ""
+    }
+   
+  }
   async openConfigFile(pid: string) {
     let { dirName } = this.ut.pidQueueInfo[pid];
     let filePath = path.join(
       this.ut.rootDir,
       dirName,
-      "gateway",
+      "Config",
       "config.json"
     );
     if (OS.type() == OS.Type.Linux) {
