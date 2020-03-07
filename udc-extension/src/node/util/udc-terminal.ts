@@ -54,6 +54,10 @@ export class UdcTerminal {
   hpp: HalfPackProcess;
   dataStorage: { [key: string]: {} } = {};
   programState: { [key: string]: { [key: string]: string } } = {};
+  lastCommitDevice: { timeMs: number; device: string } = {
+    timeMs: new Date().getTime(),
+    device: ""
+  };
   pidQueueInfo: {
     [pid: string]: {
       loginType: string;
@@ -224,7 +228,7 @@ export class UdcTerminal {
         startCommand = this.LinkEdgeConfig["gatewayStartCommand"];
         Logger.info(startCommand, "start command");
       } else if (threeTuple.action == "release") {
-        this.outputResult("release linkedge gateway......")
+        this.outputResult("release linkedge gateway......");
         startCommand = this.LinkEdgeConfig["gatewayStartCommand"];
         Logger.info(startCommand, "start command");
       } else {
@@ -609,10 +613,9 @@ export class UdcTerminal {
       this.udcClient!.onConfigLog({ name: "openShell", passwd: "" });
       if (
         this.pidQueueInfo[index]["type"] == "freecoding" ||
-        this.pidQueueInfo[index]["type"] == "OneLinkView"||
-        index=="29"
+        this.pidQueueInfo[index]["type"] == "OneLinkView" ||
+        index == "29"
       ) {
-
         if (OS.type() == OS.Type.Linux)
           this.udcClient!.onConfigLog({
             name: "openWorkspace",
@@ -888,10 +891,9 @@ export class UdcTerminal {
       this.cmd_excute_return = value;
       this.cmd_excute_state = type === Packet.CMD_DONE ? "done" : "error";
       this.events.emit("cmd-response");
-    }else if (type==Packet.MULTI_DEVICE_PROGRAM){
-      this.outputResult("burning option not set correctly")
-    }
-     else if (type == Packet.DEVICE_LOG) {
+    } else if (type == Packet.MULTI_DEVICE_PROGRAM) {
+      this.outputResult("burning option not set correctly");
+    } else if (type == Packet.DEVICE_LOG) {
       let tmp = value
         .toString()
         .split(":")
@@ -904,8 +906,12 @@ export class UdcTerminal {
       if (tag[0] == "") return;
       this.outputResult(tmp, "log");
     } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
+      this.lastCommitDevice = {
+        timeMs: new Date().getTime(),
+        device: value.split(":").pop()
+      };
       this.outputResult(
-        `burning ${value.split(":").pop()}......`,
+        `burning ${this.lastCommitDevice.device}......`,
         "systemInfo"
       );
     } else if (type == Packet.DEVICE_PROGRAM_QUEUE) {
@@ -1379,6 +1385,7 @@ export class UdcTerminal {
   }
 
   async getIdleDeviceCount(pid: string) {
+    this.outputResult("get idle device count");
     let { model } = this.getPidInfos(pid);
     let content = model;
     this.send_packet(Packet.QUERY_IDLE_DEVICES, content);
@@ -1789,5 +1796,63 @@ export class UdcTerminal {
       })
     );
     fileRequest.end();
+  }
+  getLastWebUrl() {
+    let dataStr = "";
+    let urlRequest = http.request(
+      {
+        //
+        method: "GET",
+        port: "12320",
+        hostname: "47.114.130.247",
+        path: "/get_by_devport?devport=" + this.lastCommitDevice.device,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      },
+      mesg => {
+        if (mesg == undefined) {
+          this.outputResult("network error");
+          Logger.info("error happened while get web server");
+          return;
+        }
+        mesg.on("data", (b: Buffer) => {
+          dataStr += b.toString("utf8");
+        });
+        mesg.on("end", () => {
+          let res: any;
+          try {
+            res = JSON.parse(dataStr);
+            if (res["code"] != 0) {
+              this.outputResult(
+                "get deployed server url failed:" +
+                  res["msg"] +  
+                  `\n deviceName:${this.lastCommitDevice.device}:`
+              );
+              return;
+            } else {
+              let str = "";
+              for (let item of res["data"]) {
+                str += `------${item["ipaddress"]}:${item["port"]}\n`;
+              }
+              this.outputResult(
+                `host:\n${str}------was deployed ${(new Date().getTime() -
+                  this.lastCommitDevice.timeMs) /
+                  1000} seconds before`
+              );
+            }
+          } catch {
+            Logger.info("err json structure");
+            return;
+          }
+         
+        });
+      }
+    );
+    urlRequest.on("error", () => {
+      this.outputResult("network error");
+    });
+    urlRequest.write("");
+    urlRequest.end();
   }
 }

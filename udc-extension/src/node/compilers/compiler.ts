@@ -31,22 +31,26 @@ export class Compiler {
     Logger.info("start compiling");
     Logger.info("MODEL is:" + model);
     this.udcTerminal.outputResult("compiling......");
-    if (getCompilerType(model) == "alios") {
+    let cmType=getCompilerType(model) 
+    if (cmType == "alios") {
       // this.udcCompiler.outputResult("use alios compiler")
       Logger.info("use alios compiler");
       // await this.aliosCompiler.postNameAndType(pid)
       return await this.newAliosCompiler.postNameAndType(pid);
     }
-    if (getCompilerType(model) == "contiki") {
+    if (cmType == "contiki") {
       Logger.info("use contiki compiler");
       return await this.newContikiCompiler.postNameAndType(pid);
     }
-    if (getCompilerType(model) == "tinylink") {
+    if (cmType == "tinylink") {
       // this.udcCompiler.outputResult("use tinylink compiler")
       Logger.info("use tinylink compiler");
       let bv = await this.udcCompiler.postSrcFile(pid);
       if (bv != "scc") return "fail";
       return "scc";
+    }
+    if (cmType == "raspberry_pi") {
+      return "scc"
     }
 
     Logger.info("no this type");

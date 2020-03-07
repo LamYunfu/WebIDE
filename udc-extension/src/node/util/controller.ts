@@ -29,31 +29,15 @@ export class Controller {
   rootDir: string = `${LINKLAB_WORKSPACE}`;
   events = new events.EventEmitter();
   async processFreeCoding(pid: string) {
+    if (pid == "31")
+      setTimeout(() => {
+        this.ut.getLastWebUrl();
+      }, 10000);
     Logger.info("start process issue");
     this.ut.refreshConfiguration(pid);
     this.ut.parseFreeConfig(pid);
-    for (let i = 4; ; i--) {
-      //等待四秒分配设备
-      let devInfo = this.ut.get_devlist();
-      if (devInfo != undefined && devInfo != null) {
-        break;
-      }
-      if (i == 0) {
-        this.ut.outputResult(
-          "LDC doesn't give the information of devices.please disconnect and retry."
-        );
-        return "fail";
-      }
-      Logger.info("waiting for allocate device");
-      await new Promise(res => {
-        setTimeout(() => {
-          res();
-        }, 1000);
-      });
-    }
     this.processIssue(pid);
   }
-
   async processIssue(pid: string) {
     let { loginType, model, dirName } = this.ut.getPidInfos(pid);
     let devType = getCompilerType(model);
@@ -69,7 +53,12 @@ export class Controller {
             .then(async res => {
               if (res == "scc") {
                 Logger.info("compile scc");
-                if (devType == "alios" || devType == "contiki")
+                if (
+                  devType == "alios" ||
+                  devType == "contiki" ||
+                  "raspberry_pi" ||
+                  "err"
+                )
                   //alios 不需要解压
                   return "scc";
                 let eres = await _this.et.extract(pid); //文件提取结果
@@ -92,6 +81,25 @@ export class Controller {
               if (res == "scc") {
                 // if (devType == "alios")
                 //     return true;
+                for (let i = 4; ; i--) {
+                  //等待四秒分配设备
+                  let devInfo = this.ut.get_devlist();
+                  if (devInfo != undefined && devInfo != null) {
+                    break;
+                  }
+                  if (i == 0) {
+                    this.ut.outputResult(
+                      "LDC doesn't give the information of devices.please disconnect and retry."
+                    );
+                    return "fail";
+                  }
+                  Logger.info("waiting for allocate device");
+                  await new Promise(res => {
+                    setTimeout(() => {
+                      res();
+                    }, 1000);
+                  });
+                }
                 _this.ut.getIdleDeviceCount(pid); //查询空闲设备
                 let res = "";
                 res = await new Promise<string>(resolve => {

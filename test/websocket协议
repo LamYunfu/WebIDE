@@ -1,2 +1,0 @@
-'{' + type + ',' + value.length.toString().padStart(5, '0') + ',' + value + '}';
-type包类型：四个字节长度、 字长：五个字节长度

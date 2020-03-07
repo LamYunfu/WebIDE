@@ -146,7 +146,7 @@ export class DemoWidget extends FileNavigatorWidget {
             >
               <div className="fa fa-folder file-icon"></div> 消息路由开发
             </li>
-            <li
+            {/* <li
               style={{
                 cursor: "pointer",
                 color: "",
@@ -154,7 +154,7 @@ export class DemoWidget extends FileNavigatorWidget {
               }}
             >
               <div className="fa fa-folder file-icon"></div> 子设备开发
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>
@@ -165,16 +165,17 @@ export class DemoWidget extends FileNavigatorWidget {
     let id = await this.udcService.getIotId();
     console.log("id:" + id + ":");
     if (id == "") {
+      // alert("IoTId为空,请设置IoTId")
       return "";
     } else {
       return id;
     }
   }
   createUrl(id: string, key: string) {
-    return `https://iot.console.aliyun.com/le/instance/detail?id=${id}&activeKey=gateway&driverKey=${key}&monitorType=host`;
+    return `https://iot.console.aliyun.com/le/instance/detail?id=${id}&activeKey=${key}`;
   }
   creatEdgeInstance = async () => {
-    window.open(`https://iot.console.aliyun.com/le`);
+    window.open(`https://iot.console.aliyun.com/le/instance/list`);
   };
   createDeviceDriver = async () => {
     let id = await this.getIotID();

@@ -1,4 +1,9 @@
-yarn prepare
+cd udc-extension
+yarn build 
+cd ../demo 
+yarn build 
+cd drawboard-extension
+yarn build
 cd ./plugins/unity
 yarn 
 mv unity.theia ../node/unity.theia

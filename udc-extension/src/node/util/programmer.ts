@@ -150,7 +150,7 @@ export class Programer {
         let st = fs.createReadStream(filepath);
         Logger.info("append file");
         // fm.append("file", blob, filepath.split("/").pop())
-        fm.append("file", st, filepath.split("/").pop());
+        fm.append("file", st, filepath.split("/").pop()+".hex");
         fm.pipe(uploadRequest);
         Logger.info("file append ok");
       });
@@ -171,7 +171,6 @@ export class Programer {
   getHexName(fn: string) {
     return new Buffer(fn).toString("hex");
   }
-
   async freeCodingProgram(pid: string) {
     Logger.info("use freecodingprogram", "/");
     let { dirName } = this.ut.pidQueueInfo[pid];
@@ -184,7 +183,6 @@ export class Programer {
     deviceUsage == "QUEUE"
       ? this.ut.outputResult("multiplexing model ")
       : this.ut.outputResult("monopoly model");
-
     burnOption = {
       ...burnOption,
       type: deviceUsage,
@@ -196,39 +194,57 @@ export class Programer {
       program: []
     };
     try {
-      let option = [];
+      let option: any[] = [];
       for (let item of projects) {
         let projectBurningSetting =
           deviceUsage == "QUEUE"
             ? item["burningDataQueue"]["program"]
             : item["burningDataAdhoc"]["program"];
         projectBurningSetting["model"] = item["deviceType"];
-        let absHexPath = path.join(
-          absHexFileDir,
-          "B" + this.getHexName(item["projectName"]) + "sketch.ino.hex"
-        );
-        if (!fs.existsSync(absHexPath))
-          absHexPath = path.join(
+        //处理直接提交代码
+        if (item["compilationMethod"] == "none") {
+          Logger.info("without compile");
+          let srcDir = path.join(rootDir, dirName, item["projectName"]);
+          for (let val of fs.readdirSync(srcDir)) {
+            let hash = await this.fileUpload(path.join(srcDir, val));
+            option.push({
+              filehash: hash,
+              waitingId: (
+                Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
+                Math.pow(10, 15)
+              ).toString(),
+              ...projectBurningSetting
+            });
+            Logger.info("option：" + JSON.stringify(option));
+          }
+        } else {
+          let absHexPath = path.join(
             absHexFileDir,
-            this.getHexName(item["projectName"]) + ".hex"
+            "B" + this.getHexName(item["projectName"]) + "sketch.ino.hex"
           );
-        let filehash = await this.fileUpload(absHexPath);
-        // absHexPath = path.join(absHexFileDir, this.getHexName(item["projectName"]) + "sketch.ino.hex")
-        if (filehash == "err") return "err";
-        console.log(JSON.stringify(option));
-        option.push({
-          filehash: filehash,
-          waitingId: (
-            Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
-            Math.pow(10, 15)
-          ).toString(),
-          ...projectBurningSetting
-        });
-        
-        console.log(JSON.stringify(option));
+          if (!fs.existsSync(absHexPath))
+            absHexPath = path.join(
+              absHexFileDir,
+              this.getHexName(item["projectName"]) + ".hex"
+            );
+          let filehash = await this.fileUpload(absHexPath);
+          // absHexPath = path.join(absHexFileDir, this.getHexName(item["projectName"]) + "sketch.ino.hex")
+          if (filehash == "err") return "err";
+          console.log(JSON.stringify(option));
+          option.push({
+            filehash: filehash,
+            waitingId: (
+              Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
+              Math.pow(10, 15)
+            ).toString(),
+            ...projectBurningSetting
+          });
+
+          console.log(JSON.stringify(option));
+        }
       }
       burnOption["program"] = option;
-      console.log("burning option :"+JSON.stringify(burnOption))
+      console.log("burning option :" + JSON.stringify(burnOption));
       return await this.ut.program_device(pid, JSON.stringify(burnOption));
     } catch (e) {
       console.log(e);
