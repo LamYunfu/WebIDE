@@ -152,7 +152,7 @@ export class LinkEdgeView extends React.Component<
               alignItems: "center"
             }}
           >
-            LinkEdge
+            边缘计算
           </div>
           <div
             className="tuition col-4"

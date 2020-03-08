@@ -806,7 +806,7 @@ export class UdcTerminal {
       // })
       _this.udcServerClient.on("close", () => {
         // _this.outputResult("udc server interrupts this connection,please try to reconnect")
-        _this.udcServerClient!.destroy();
+        // _this.udcServerClient!.destroy();
         _this.udcServerClient = null;
         _this.dev_list = undefined;
         _this.outputResult("connection is disconnected");
