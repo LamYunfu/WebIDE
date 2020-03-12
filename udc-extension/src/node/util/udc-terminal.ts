@@ -579,6 +579,9 @@ export class UdcTerminal {
                           res.template[item][file]
                         );
                       }
+                      if(index=="32"){
+                        fs.writeFileSync(_this.rootDir, dirName,"Platform.json")
+                      }
                     }
                   }
 
@@ -614,7 +617,7 @@ export class UdcTerminal {
       if (
         this.pidQueueInfo[index]["type"] == "freecoding" ||
         this.pidQueueInfo[index]["type"] == "OneLinkView" ||
-        index == "29"
+        index == "32"
       ) {
         if (OS.type() == OS.Type.Linux)
           this.udcClient!.onConfigLog({

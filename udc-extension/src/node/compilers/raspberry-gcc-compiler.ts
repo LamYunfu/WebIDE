@@ -9,7 +9,7 @@ import { injectable, inject } from "inversify";
 import { Logger } from "../util/logger";
 import {
   RASPBERRY_GCC_IP,
-  RASPBERRY_GCC_PORT,
+  RASPBERRY_GCC_PORT
 } from "../../setting/backend-config";
 import * as path from "path";
 import { CompilerInterFace } from "./compilerInterface";
@@ -36,7 +36,13 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
       let st = fs.createWriteStream(outputPath); //打包
       let achst = ach.create("zip").directory(fileDir, false);
       achst.pipe(st);
-      await achst.finalize();
+      achst.finalize();
+      await new Promise(res =>
+        st.on("close", () => {
+          console.log("------------------finish archive")
+          res();
+        })
+      );
       return outputPath;
     } catch (error) {
       this.outputResult(error);
@@ -205,10 +211,10 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
     });
   }
   async compile(fileDir: string) {
-      if(!fs.existsSync(fileDir)){
-          this.outputResult("not exist "+fileDir)
-          return "err"
-      }
+    if (!fs.existsSync(fileDir)) {
+      this.outputResult("not exist " + fileDir);
+      return "err";
+    }
     let srczip = await this.archiveFile(
       fileDir,
       path.join(__dirname, "tmp.zip")
@@ -216,9 +222,10 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
     if (srczip == "err") {
       return "err";
     }
-    let buff = fs.readFileSync(srczip, { encoding: "binary" });
+    let buff = new Buffer(fs.readFileSync(srczip))
     let hashObj = crypto.createHash("sha1");
     let hasval = hashObj.update(buff).digest("hex");
+    console.log("hash------------------:"+hasval)
     let confRes = await this.config({ filehash: hasval });
     if (confRes == "err") {
       return "err";
@@ -229,6 +236,9 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
     if (uploadRes == "err") {
       return "err";
     }
-   return await this.getFile({ filehash: hasval }, path.join(__dirname, "abc.hex"));
+    return await this.getFile(
+      { filehash: hasval },
+      path.join(__dirname, "abc.hex")
+    );
   }
 }

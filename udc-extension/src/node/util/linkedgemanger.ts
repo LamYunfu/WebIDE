@@ -92,6 +92,8 @@ export class LinkEdgeManager {
     return true;
   }
   async programGateWay(pid: string, threeTuple: any) {
+    this.ut.parseLinkEdgeConfig(pid)
+    Logger.info("programGateWay:"+pid)
     let { dirName } = this.ut.pidQueueInfo[pid];
     this.ut.parseLinkEdgeConfig(pid, threeTuple);
     let filehash = await this.pm.fileUpload(

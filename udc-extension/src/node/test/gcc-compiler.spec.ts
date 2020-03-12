@@ -4,6 +4,7 @@ import { Container, ContainerModule } from "inversify";
 import { Logger } from "../util/logger";
 import { UdcTerminal } from "../util/udc-terminal";
 import { FileMapper } from "../util/filemapper";
+import * as path from "path"
 // import { ConfigSetter } from './../util/configsetter';
 // import { Container, ContainerModule } from "inversify";
 // import { UdcTerminal } from './../util/udc-terminal';
@@ -44,7 +45,7 @@ describe("extractor", () => {
     console.log(__dirname);
     let rs = testContainer.get(RaspeberryGccCompiler);
     // rs.archiveFile(__dirname, path.join(__dirname, "/abc.zip"));
-    let x=await rs.compile(__dirname)
+    let x=await rs.compile(path.join(__dirname,"aaa"))
     expect(x).toEqual("scc")
   });
 });

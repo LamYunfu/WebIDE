@@ -47,6 +47,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
 
 
 function createDeviceViewWeiget(parent: interfaces.Container): DeviceViewWidget {
+    
     const child = createTreeContainer(parent);
     child.rebind(TreeProps).toConstantValue({ ...defaultTreeProps, search: false });
     child.bind(DeviceViewWidget).toSelf();

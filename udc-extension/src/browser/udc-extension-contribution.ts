@@ -287,22 +287,22 @@ export class UdcExtensionCommandContribution
     });
     registry.registerCommand(UdcCommands.startLinkedge, {
       execute: () => {
-        this.udcService.linkEdgeConnect("29", { action: "start" });
+        this.udcService.linkEdgeConnect("32", { action: "start" });
       }
     });
     registry.registerCommand(UdcCommands.stopLinkedge, {
       execute: () => {
-        this.udcService.linkEdgeConnect("29", { action: "stop" });
+        this.udcService.linkEdgeConnect("32", { action: "stop" });
       }
     });
     registry.registerCommand(UdcCommands.connectLinkedge, {
       execute: () => {
-        this.udcService.linkEdgeConnect("29", { action: "connect" });
+        this.udcService.linkEdgeConnect("32", { action: "connect" });
       }
     });
     registry.registerCommand(UdcCommands.releaseLinkedge, {
       execute: () => {
-        this.udcService.linkEdgeConnect("29", { action: "release" });
+        this.udcService.linkEdgeConnect("32", { action: "release" });
       }
     });
     registry.registerCommand(UdcCommands.OpenCommand, {

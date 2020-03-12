@@ -4,6 +4,7 @@ import { MyContext } from "./context";
 import * as $ from "jquery"
 export namespace LinkEdge {
   export interface Props {
+    section:any
     saveAll: () => any;
     openConfigFile: (pid: string) => void;
     initLinkedgeConfig: (pid: string) => Promise<boolean>;
@@ -29,7 +30,6 @@ export class LinkEdgeView extends React.Component<
   LinkEdge.Props,
   LinkEdge.State
 > {
-  pid: string = "29";
   threeTuple: any = {};
   constructor(props: LinkEdge.Props) {
     super(props);
@@ -45,19 +45,20 @@ export class LinkEdgeView extends React.Component<
   }
   componentDidMount() {
     this.props.setSize(850);
-    let pid = this.getPid();
+    let pid = this.pid;
     this.props.initLinkedgeConfig(pid);
     setInterval(() => {
       this.props.saveAll();
     }, 5000);
+
   }
-  getPid(): string {
-    return "29";
+  get pid(): string {
+    return this.props.section["ppid"][0]
   }
   async componentWillMount() {
     console.log("mountI");
     let pidQueueInfo: any = {};
-    pidQueueInfo["29"] = { dirName: "LinkEdge", ppid: "29", type: "LinkEdge" };
+    pidQueueInfo[this.pid] = { dirName: "LinkEdge", ppid: this.pid, type: "LinkEdge" };
     await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
     let ra = await this.props.getDevicesInfo(this.pid);
     this.setState({ ra: ra });
@@ -71,7 +72,7 @@ export class LinkEdgeView extends React.Component<
     }, 3000);
     if (this.state.connectionStatus) {
       this.threeTuple["action"] = "stop";
-      await this.props.linkEdgeConnect("29", this.threeTuple);
+      await this.props.linkEdgeConnect(this.pid, this.threeTuple);
       this.props.linkEdgeDisconnect();
       this.setState({
         connectionStatus: !this.state.connectionStatus,
@@ -79,7 +80,7 @@ export class LinkEdgeView extends React.Component<
       });
     } else {
       this.threeTuple["action"] = "connect";
-      if (await this.props.linkEdgeConnect("29", this.threeTuple)) {
+      if (await this.props.linkEdgeConnect(this.pid, this.threeTuple)) {
         this.setState({
           connectionStatus: !this.state.connectionStatus
         });
@@ -94,7 +95,7 @@ export class LinkEdgeView extends React.Component<
     setTimeout(() => {
       this.setState({ executeLoading: false });
     }, 3000);
-    if (await this.props.linkEdgeConnect("29", this.threeTuple)) {
+    if (await this.props.linkEdgeConnect(this.pid, this.threeTuple)) {
       this.setState({
         executeStatus: !this.state.executeStatus
       });
@@ -135,7 +136,7 @@ export class LinkEdgeView extends React.Component<
     });
   };
   openConfigFile = () => {
-    this.props.openConfigFile(this.getPid());
+    this.props.openConfigFile(this.pid);
   };
   render(): JSX.Element {
     return (

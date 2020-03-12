@@ -325,6 +325,13 @@ export class View extends React.Component<View.Props, View.State> {
             );
             break;
           }
+          default:{
+            _this.title = data.data.title;
+            _this.ppid = data.data.ppid;
+            console.log(
+              `ppid.......................................${_this.ppid}`
+            );
+          }
         }
         _this.setState(state => ({
           ajaxNotFinish: false,
@@ -1520,6 +1527,8 @@ export class View extends React.Component<View.Props, View.State> {
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
         <LinkEdgeView
+  
+          section={{ ppid: [_this.ppid], sid: "experiment" }}
           saveAll={this.props.saveAll}
           openConfigFile={this.props.openConfigFile}
           initLinkedgeConfig={this.props.initLinkedge}
