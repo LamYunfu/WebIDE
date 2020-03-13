@@ -286,6 +286,7 @@ export class Programer {
       devArr.push(item);
     }
     let hex = this.fm.getFileNameMapper(pid);
+    Logger.info("mapper:"+JSON.stringify(hex))
     if (typeof hex == "string") {
       Logger.info("error file name map");
       return "fail";
@@ -300,7 +301,7 @@ export class Programer {
       pid: pid,
       program: arr
     };
-    // this.ut.outputResult("sending file to LDC......")
+    Logger.info("sending file to LDC......")
     switch (loginType) {
       case "queue": {
         for (let item of deviceRole!) {

@@ -13,14 +13,16 @@ import {
 } from "../../setting/backend-config";
 import * as path from "path";
 import { CompilerInterFace } from "./compilerInterface";
+import { UdcTerminal } from "../util/udc-terminal";
+import { rootDir } from "../globalconst";
 @injectable()
 export class RaspeberryGccCompiler implements CompilerInterFace {
   constructor(
-    // @inject(UdcTerminal) protected readonly udc: UdcTerminal,
+    @inject(UdcTerminal) protected readonly udc: UdcTerminal,
     @inject(FileMapper) protected readonly fm: FileMapper
   ) {}
   outputResult(str: string) {
-    console.log(str);
+    this.udc.outputResult(str)
   }
   //   async postNameAndType(pid: string) {
   //     let { dirName, deviceRole } = await this.getPidInfos(pid);
@@ -39,7 +41,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
       achst.finalize();
       await new Promise(res =>
         st.on("close", () => {
-          console.log("------------------finish archive")
+          console.log("------------------finish archive");
           res();
         })
       );
@@ -146,7 +148,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
   async getFile(data: any, filePath: string): Promise<string> {
     let _this = this;
     console.log("start downloading");
-    return new Promise(resolve => {
+    let res:string=await new Promise(resolve => {
       let downloadRequest = http.request(
         {
           //下载
@@ -203,14 +205,16 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
         }
       );
       downloadRequest.on("error", () => {
+        Logger.info("get file err")
         _this.outputResult("network error");
         resolve("err");
       });
       downloadRequest.write(JSON.stringify(data));
       downloadRequest.end();
     });
+    return res;
   }
-  async compile(fileDir: string) {
+  async compile(fileDir: string, outputPath: string) {
     if (!fs.existsSync(fileDir)) {
       this.outputResult("not exist " + fileDir);
       return "err";
@@ -220,25 +224,48 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
       path.join(__dirname, "tmp.zip")
     );
     if (srczip == "err") {
+      Logger.info("arvhive file err")
       return "err";
     }
-    let buff = new Buffer(fs.readFileSync(srczip))
+    let buff = new Buffer(fs.readFileSync(srczip));
     let hashObj = crypto.createHash("sha1");
     let hasval = hashObj.update(buff).digest("hex");
-    console.log("hash------------------:"+hasval)
+    console.log("hash------------------:" + hasval);
     let confRes = await this.config({ filehash: hasval });
     if (confRes == "err") {
+      Logger.info("config file err")
       return "err";
     }
     let fm = new FormData();
     fm.append("file", buff, "src.zip");
+    fs.unlinkSync(srczip);
     let uploadRes = await this.upload(fm);
     if (uploadRes == "err") {
+      Logger.info("upload file err")
       return "err";
     }
-    return await this.getFile(
-      { filehash: hasval },
-      path.join(__dirname, "abc.hex")
-    );
+    return await this.getFile({ filehash: hasval }, outputPath);
+  }
+  async processFreeCoding(pid: string) {
+    Logger.info("start compile raspberry");
+    try {
+      let { dirName } = this.udc.pidQueueInfo[pid];
+      let { projectName } = this.udc.freeCodingConfig["projects"][0];
+      let outputPath = path.join(
+        rootDir,
+        dirName,
+        "hexFiles",
+        new Buffer(projectName).toString("hex") + ".hex"
+      );
+      let fileDir = path.join(rootDir, dirName, projectName);
+      let res=await this.compile(fileDir, outputPath);
+      this.fm.setFileNameMapper(pid, {
+        projectName: new Buffer(projectName).toString("hex") + ".hex"
+      });
+      return res;
+    } catch (error) {
+      Logger.info(error);
+      return "err";
+    }
   }
 }

@@ -20,5 +20,7 @@ export const CONFIGPATH="D:/config"
 export const TINY_MOBILE_IP=`${DEPLOY_SERVER_DOMAIN}`
 export const TINY_MOBILE_PORT=`12355`
 
-export const RASPBERRY_GCC_IP="121.199.78.80"
-export const RASPBERRY_GCC_PORT="10086"
+// export const RASPBERRY_GCC_IP="121.199.78.80"
+// export const RASPBERRY_GCC_PORT="10086"
+export const RASPBERRY_GCC_IP="47.114.130.247"
+export const RASPBERRY_GCC_PORT="12400"

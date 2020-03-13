@@ -19,7 +19,8 @@
     "@theia/plugin-ext":  "^0.8.0",
     "@theia/mini-browser": "^0.8.0",
     "drawboard-extension":"0.0.0",
-    "udc-extension":"0.0.0"
+    "udc-extension":"0.0.0",
+    "demo":"0.0.0"
   },
   "devDependencies": {
     "@theia/cli": "latest"

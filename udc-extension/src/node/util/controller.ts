@@ -56,11 +56,12 @@ export class Controller {
                 if (
                   devType == "alios" ||
                   devType == "contiki" ||
-                  "raspberry_pi" ||
-                  "err"
-                )
-                  //alios 不需要解压
+                  devType== "raspberry_pi" 
+                ){
+                  Logger.info("skip extract")
                   return "scc";
+                }
+                 
                 let eres = await _this.et.extract(pid); //文件提取结果
                 Logger.info("eres:" + eres);
                 if (eres == "scc") {

@@ -30,50 +30,10 @@ export class Extractor {
         return x + new Buffer(fn).toString("hex")
     }
     async extract(pid: string) {//提取成功返回“scc”
+        Logger.info("start extract file")
         let _this = this
         let { deviceRole, dirName } = this.ut.getPidInfos(pid)
         this.init(dirName, "hexFiles")
-        // if (getCompilerType(model) == 'alios') {
-        //     for (let item of deviceRole!) {
-        //         let filePath = path.join(this.projectDir, `${item}Install.zip`)
-        //         await new Promise((res, reject) => fs.createReadStream(filePath)
-        //             .pipe(unzip.Parse())
-        //             .on('entry', function (entry) {
-        //                 let fileName: string = entry.path;
-        //                 let suffix = fileName.split(".").pop()
-        //                 let hexName = fileName.split('/').pop()
-        //                 if (suffix == 'hex' || suffix == 'bin') {
-        //                     Logger.info("find hex : " + hexName)
-        //                     let fss = fs.createWriteStream(path.join(_this.hexFileDir, _this.getHexName(item) + 'sketch.ino.hex'))
-        //                     entry.pipe(fss);
-        //                     fss.on("close", () => {
-        //                         fss.close()
-        //                         let tmp: { [rawname: string]: string } = {}
-        //                         //tslint
-        //                         tmp[item] = _this.getHexName(item) + 'sketch.ino.hex'
-        //                         Logger.info(`extract a hex file(raw:${item} transform:${tmp[item]})`)
-        //                         _this.fm.setFileNameMapper(pid, tmp)
-        //                         res("scc")
-        //                     }
-        //                     )
-        //                 } else {
-        //                     entry.autodrain();
-        //                 }
-        //             })
-        //         )
-        //     }
-        //     // let etArr = this.fm.getFileNameMapper(pid)
-        //     // if (typeof (etArr) == 'string')
-        //     //     return "failed"
-        //     // for (let item of deviceRole!) {
-        //     //     item = item.split(".")[0]
-        //     //     console.log(item)
-        //     //     if (etArr == undefined)
-        //     //         return "failed"
-        //     // }
-        //     // return "scc"
-        // }
-        // else {
         let filePath = ""
         for (let item of deviceRole!) {
             Logger.info("extract :" + item)

@@ -20,6 +20,7 @@ import { Compiler } from "./compilers/compiler"
 import { NewAliosCompiler } from './compilers/new-alios-compiler';
 import { LinkEdgeManager } from './util/linkedgemanger';
 import { OnelinkService } from './util/onelink';
+import { RaspeberryGccCompiler } from './compilers/raspberry-gcc-compiler';
 
 
 export default new ContainerModule(bind => {
@@ -48,5 +49,6 @@ export default new ContainerModule(bind => {
     bind(NewContikiCompiler).toSelf().inSingletonScope()
     bind(LinkEdgeManager).toSelf().inSingletonScope()
     bind(OnelinkService).toSelf().inSingletonScope()
+    bind(RaspeberryGccCompiler).toSelf().inSingletonScope()
     // bind(Controller).toSelf().inSingletonScope();
 });

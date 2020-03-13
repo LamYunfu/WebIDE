@@ -7,7 +7,8 @@ import { UdcCompiler } from "./udc-compiler";
 import { inject, injectable } from "inversify";
 import { getCompilerType, rootDir } from "../globalconst";
 import * as path from "path";
-import * as fs from "fs"
+import * as fs from "fs";
+import { RaspeberryGccCompiler } from "./raspberry-gcc-compiler";
 
 @injectable()
 /*
@@ -21,17 +22,18 @@ export class Compiler {
     protected readonly newAliosCompiler: NewAliosCompiler,
     @inject(NewContikiCompiler)
     protected readonly newContikiCompiler: NewContikiCompiler,
-    @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal
+    @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal,
+    @inject(RaspeberryGccCompiler) protected readonly rgc: RaspeberryGccCompiler
   ) {}
   async linkEdgeCompile(pid: string, index: string) {}
   async compile(pid: string) {
     let { model, dirName } = this.udcTerminal.getPidInfos(pid);
     let hexFilePath = path.join(rootDir, dirName, "hexFiles");
-    fs.existsSync(hexFilePath)?"":fs.mkdirSync(hexFilePath)
+    fs.existsSync(hexFilePath) ? "" : fs.mkdirSync(hexFilePath);
     Logger.info("start compiling");
     Logger.info("MODEL is:" + model);
     this.udcTerminal.outputResult("compiling......");
-    let cmType=getCompilerType(model) 
+    let cmType = getCompilerType(model);
     if (cmType == "alios") {
       // this.udcCompiler.outputResult("use alios compiler")
       Logger.info("use alios compiler");
@@ -50,7 +52,15 @@ export class Compiler {
       return "scc";
     }
     if (cmType == "raspberry_pi") {
-      return "scc"
+      if (
+        this.udcTerminal.pidQueueInfo[pid].type == "freecoding" &&
+        this.udcTerminal.freeCodingConfig["projects"][0]["compilationMethod"] ==
+          "none"
+      )
+        return "scc";
+      else {
+        return await this.rgc.processFreeCoding(pid);
+      }
     }
 
     Logger.info("no this type");
