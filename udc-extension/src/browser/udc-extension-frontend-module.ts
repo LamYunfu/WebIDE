@@ -19,6 +19,7 @@ import { DeviceViewWidgetFactory, DeviceViewWidget } from './device-view-widget'
 import { DeviceViewContribution } from './devices-view-contribution';
 import { DeviceViewService } from './device-view-service';
 import '../../src/browser/styles/index.css';
+import { LampWidget } from './lamp';
 export default new ContainerModule((bind: interfaces.Bind) => {
     bind(CommandContribution).to(UdcExtensionCommandContribution);
     bind(MenuContribution).to(UdcExtensionMenuContribution);
@@ -33,6 +34,8 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(AboutDialogProps).toConstantValue({ title: 'UDC' })
     bind(DeviceViewWidgetFactory).toFactory(ctx => () => createDeviceViewWeiget(ctx.container));
     bind(DeviceViewService).toSelf().inSingletonScope();
+    bind(LampWidget).toSelf().inSingletonScope()
+    // bind(LampViewWidgetFactory).toFactory(ctx=>()=>creatLamp(ctx.container))
     bind(WidgetFactory).toService(DeviceViewService);
     bindViewContribution(bind, DeviceViewContribution);
     // bind(ApplicationShell).toSelf().inSingletonScope()//

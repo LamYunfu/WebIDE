@@ -28,6 +28,8 @@ import URI from "@theia/core/lib/common/uri";
 import { FileTreeWidget } from "@theia/filesystem/lib/browser";
 import { ViewContainer } from "@theia/core/lib/browser/view-container";
 import { LINKLAB_WORKSPACE } from "../setting/backend-config";
+import { Lamp } from "./lamp";
+import ReactDOM from "react-dom";
 // import { LinkEdgeView } from "./component/linkedge";
 export interface DeviceViewSymbolInformationNode
   extends CompositeTreeNode,
@@ -74,7 +76,7 @@ export class DeviceViewWidget extends TreeWidget {
     @inject(WidgetManager) protected readonly wm: WidgetManager,
     @inject(FileTreeWidget) protected readonly ftw: FileTreeWidget,
     @inject(ViewContainer) protected readonly vc: ViewContainer
-  ) { 
+  ) {
     super(treePros, model, contextMenuRenderer);
     this.id = "device-view";
     // this.title.label = "题目目录";
@@ -108,64 +110,90 @@ export class DeviceViewWidget extends TreeWidget {
   };
   protected renderTree(): React.ReactNode {
     return (
-      <View
-        initPid={this.initPid}
-        openConfigFile={this.openConfigFile}
-        initLinkedge={this.initLinkedgeConfig}
-        gotoPhone={this.gotoPhone}
-        gotoUnity={this.gotoUnity}
-        openUnity={this.openUnity}
-        openDevice={this.openDevice}
-        openMobile={this.openMobile}
-        compileDevice={this.compileDevice}
-        complileMobile={this.complileMobile}
-        createOnelinkProject={this.createOnelinkProject}
-        remove={this.remove}
-        linkEdgeGetDevicesInfo={this.linkEdgeGetDevicesInfo}
-        linkEdgeProjectAdd={this.linkEdgeProjectAdd}
-        linkEdgeDevelop={this.linkEdgeDevelop}
-        linkEdgeConnect={this.linkEdgeConnect}
-        openDrawBoard={this.openDrawBoard}
-        gotoVirtualScene={this.gotoVirtualScene}
-        virtualOpen={this.virtualOpen}
-        virtualSubmit={this.virtualSubmit}
-        train={this.train}
-        openExplorer={this.openExplorer}
-        openFileView={this.openFileView}
-        openWorkSpace={this.openWorkSpace}
-        terminateExe={this.terminateExe}
-        continueExe={this.continueExe}
-        postSimFile={this.postSimFile}
-        isconnected={this.isconnected}
-        programSingleFile={this.programSingleFile}
-        getLocal={this.getLocal}
-        setLocal={this.saveLocal}
-        config={this.config}
-        setTinyLink={this.setTinyLink}
-        openShell={this.openShell}
-        initPidQueueInfo={this.initPidQueueInfo}
-        closeTabs={this.closeTabs}
-        setQueue={this.setQueue}
-        setSize={this.setSize}
-        storeData={this.storeData}
-        getData={this.getData}
-        outputResult={this.outputResult}
-        say={this.say}
-        gotoVideo={this.gotoVideo}
-        setCookie={this.setCookie}
-        disconnect={this.disconnect}
-        connect={this.connect}
-        callUpdate={this.callUpdate}
-        openSrcFile={this.openSrcFile}
-        postSrcFile={this.postSrcFile}
-        saveAll={this.saveAll}
-        getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
-        setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
-      />
-      // <LinkEdgeView initPidQueueInfo={this.initPidQueueInfo} linkEdgeConnect={this.linkEdgeConnect}></LinkEdgeView>
+      <div>
+        <View
+          delProject={this.delProject}
+          initPid={this.initPid}
+          openConfigFile={this.openConfigFile}
+          initLinkedge={this.initLinkedgeConfig}
+          gotoPhone={this.gotoPhone}
+          gotoUnity={this.gotoUnity}
+          openUnity={this.openUnity}
+          openDevice={this.openDevice}
+          openMobile={this.openMobile}
+          compileDevice={this.compileDevice}
+          complileMobile={this.complileMobile}
+          createOnelinkProject={this.createOnelinkProject}
+          remove={this.remove}
+          linkEdgeGetDevicesInfo={this.linkEdgeGetDevicesInfo}
+          linkEdgeProjectAdd={this.linkEdgeProjectAdd}
+          linkEdgeDevelop={this.linkEdgeDevelop}
+          linkEdgeConnect={this.linkEdgeConnect}
+          openDrawBoard={this.openDrawBoard}
+          gotoVirtualScene={this.gotoVirtualScene}
+          virtualOpen={this.virtualOpen}
+          virtualSubmit={this.virtualSubmit}
+          train={this.train}
+          openExplorer={this.openExplorer}
+          openFileView={this.openFileView}
+          openWorkSpace={this.openWorkSpace}
+          terminateExe={this.terminateExe}
+          continueExe={this.continueExe}
+          postSimFile={this.postSimFile}
+          isconnected={this.isconnected}
+          programSingleFile={this.programSingleFile}
+          getLocal={this.getLocal}
+          setLocal={this.saveLocal}
+          config={this.config}
+          setTinyLink={this.setTinyLink}
+          openShell={this.openShell}
+          initPidQueueInfo={this.initPidQueueInfo}
+          closeTabs={this.closeTabs}
+          setQueue={this.setQueue}
+          setSize={this.setSize}
+          storeData={this.storeData}
+          getData={this.getData}
+          outputResult={this.outputResult}
+          say={this.say}
+          gotoVideo={this.gotoVideo}
+          setCookie={this.setCookie}
+          disconnect={this.disconnect}
+          connect={this.connect}
+          callUpdate={this.callUpdate}
+          openSrcFile={this.openSrcFile}
+          postSrcFile={this.postSrcFile}
+          saveAll={this.saveAll}
+          getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
+          setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
+        />
+        <Lamp imgDisplay={this.imgDisplay} lampStatus={this.lampStatus}></Lamp>
+
+        {/* <LinkEdgeView
+          initPidQueueInfo={this.initPidQueueInfo}
+          linkEdgeConnect={this.linkEdgeConnect}
+        ></LinkEdgeView> */}
+      </div>
     );
   }
+  imgDisplay: string = "none";
+  lampStatus: boolean = false;
+  resetTo: any;
+  resetLamp() {
+    this.imgDisplay = "none";
+    this.lampStatus = false;
+  }
+  changeLampStatus(lampStatus: boolean) {
+    clearTimeout(this.resetTo);
+    this.imgDisplay = "inline";
+    this.lampStatus = lampStatus;
+    this.resetTo = setTimeout(() => {
+      this.resetLamp();
+      this.update();
+    }, 3000);
+    this.update();
+  }
   gotoPhone = () => {
+    // ReactDOM.render(<Lamp/>,document.body)
     window.blur();
     this.tinymobile!.focus();
   };
@@ -174,9 +202,7 @@ export class DeviceViewWidget extends TreeWidget {
     this.unity!.focus();
   };
   openUnity = () => {
-    this.unity = window.open(
-      "http://120.55.102.225:12359/publish/index.html"
-    );
+    this.unity = window.open("http://120.55.102.225:12359/publish/index.html");
   };
   openTinyMobile = (url: string) => {
     this.url = url;
@@ -341,14 +367,16 @@ export class DeviceViewWidget extends TreeWidget {
   };
   openExplorer = () => {
     this.viewType = "freeCoding";
-    // this.applicationShell.activateWidget("files")
+    this.applicationShell.activateWidget("files");
     // console.log("click file")
     // setTimeout(() => {
     //     $("#shell-tab-files").trigger("click")
 
     // }, 9000);
   };
-
+  delProject = (pid: string) => {
+    return this.udcService.delProject(pid);
+  };
   setCookie = (cookie: string) => {
     this.udcService.setCookie(`JSESSIONID=${cookie}; Path=/; HttpOnly`);
     // this.udcService.setCookie(cookie);
@@ -373,9 +401,9 @@ export class DeviceViewWidget extends TreeWidget {
   postFreeCodingFile = (pid: string) => {
     this.udcService.postFreeCodingFile(pid);
   };
-  initPid=(pid:string)=>{
-    this.ppid=pid
-  }
+  initPid = (pid: string) => {
+    this.ppid = pid;
+  };
   openSrcFile = (pid: string) => {
     // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id, uri)
     this.ppid = pid;

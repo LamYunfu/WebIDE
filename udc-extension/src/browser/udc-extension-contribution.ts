@@ -33,6 +33,7 @@ import { DeviceViewService } from "./device-view-service";
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager } from "@theia/editor/lib/browser";
 import { EditorQuickOpenService } from "@theia/editor/lib/browser/editor-quick-open-service";
+import { LampWidget } from "./lamp";
 export const UdcExtensionCommand = {
   id: "UdcExtension.command",
   label: "test node server"
@@ -98,6 +99,11 @@ export namespace UdcCommands {
     id: "udc.menu.about",
     category: UDC_MENU_CATEGORY,
     label: "About"
+  };
+  export const openLab: Command = {
+    id: "udc.menu.openLab",
+    category: UDC_MENU_CATEGORY,
+    label: "openLab"
   };
   export const JudgeButton: Command = {
     id: "udc.menu.judgebutton",
@@ -191,6 +197,7 @@ export class UdcExtensionCommandContribution
     @inject(MessageService) private readonly messageService: MessageService,
     @inject(UdcService) protected readonly udcService: UdcService,
     @inject(AboutDialog) private readonly aboutDialog: AboutDialog,
+    @inject(LampWidget) private readonly lp: LampWidget,
     @inject(WorkspaceService)
     protected readonly workspaceService: WorkspaceService,
     @inject(FileDialogService)
@@ -271,6 +278,11 @@ export class UdcExtensionCommandContribution
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
       // console.log(log);
+      let a = log.match("(light on)|(light off)");
+      if (a != null) {
+        if ((a[0].trim() == "light off")) this.deviceViewService.setLampStatus(false);
+        else this.deviceViewService.setLampStatus(true);
+      }
       this.udcConsoleSession.appendLine(log);
     });
 
@@ -283,6 +295,13 @@ export class UdcExtensionCommandContribution
     registry.registerCommand(UdcCommands.ABOUT, {
       execute: () => {
         this.aboutDialog.open();
+      }
+    });
+    registry.registerCommand(UdcCommands.openLab, {
+      execute: () => {
+        this.applicationShell.addWidget(this.lp, {
+          area: "right"
+        });
       }
     });
     registry.registerCommand(UdcCommands.startLinkedge, {

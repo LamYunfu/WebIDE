@@ -33,6 +33,10 @@ export class Controller {
       setTimeout(() => {
         this.ut.getLastWebUrl();
       }, 10000);
+      if (pid=="33")
+      setTimeout(() => {
+        this.ut.getSocket();
+      }, 10000);
     Logger.info("start process issue");
     this.ut.refreshConfiguration(pid);
     this.ut.parseFreeConfig(pid);

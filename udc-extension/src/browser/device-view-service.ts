@@ -40,6 +40,9 @@ export class DeviceViewService implements WidgetFactory {
         })
         return Promise.resolve(this.widget);
     }
+    setLampStatus(status:boolean){
+        this.widget!.changeLampStatus(status)
+    }
     approveClick() {
         this.widget!.setSubmitEnableWithJudgeTag(true)
     }

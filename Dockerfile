@@ -1,10 +1,10 @@
-ARG NODE_VERSION=11.15.0
-FROM node:${NODE_VERSION}-alpine
-#RUN apk add --no-cache make gcc g++ python bash
-#RUN apk add  make gcc g++ python bash
-WORKDIR /home/theia
-# 注意：plugin和 extension并不在docker中再次编译，故在docker build前一定注意要在本目录编译好plugin和 extension
-ADD ./ ./
+# ARG NODE_VERSION=11.15.0
+# FROM node:${NODE_VERSION}-alpine
+# #RUN apk add --no-cache make gcc g++ python bash
+# #RUN apk add  make gcc g++ python bash
+# WORKDIR /home/theia
+# # 注意：plugin和 extension并不在docker中再次编译，故在docker build前一定注意要在本目录编译好plugin和 extension
+# ADD ./ ./
 # RUN yarn 
 # yarn build && \
 # yarn --pure-lockfile && \
@@ -27,9 +27,10 @@ RUN chmod g+rw /home && \
     chown -R theia:theia /home/theia && \
     chown -R theia:theia /home/project;
 #RUN apk add  git openssh bash
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && apk add openssh make gcc g++ python bash
 ENV HOME /home/theia
 WORKDIR /home/theia
-COPY --from=0 --chown=theia:theia /home/theia /home/theia
+COPY --chown=theia:theia ./ /home/theia
 EXPOSE 3000
 ENV SHELL /bin/bash
 #ENV USE_LOCAL_GIT true

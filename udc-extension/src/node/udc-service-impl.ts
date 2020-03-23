@@ -230,4 +230,7 @@ export class UdcServiceImpl implements UdcService {
     getIotId(){
        return this.linkEdgeManager.getIotId()
     }
+    delProject(pid:string) :Promise<boolean>{
+        return this.udcTerminal.delProject(pid);
+    }
 }

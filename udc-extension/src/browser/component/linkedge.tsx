@@ -1,10 +1,10 @@
 import React = require("react");
 // import URI from "@theia/core/lib/common/uri";
 import { MyContext } from "./context";
-import * as $ from "jquery"
+import * as $ from "jquery";
 export namespace LinkEdge {
   export interface Props {
-    section:any
+    section: any;
     saveAll: () => any;
     openConfigFile: (pid: string) => void;
     initLinkedgeConfig: (pid: string) => Promise<boolean>;
@@ -50,15 +50,18 @@ export class LinkEdgeView extends React.Component<
     setInterval(() => {
       this.props.saveAll();
     }, 5000);
-
   }
   get pid(): string {
-    return this.props.section["ppid"][0]
+    return this.props.section["ppid"][0];
   }
   async componentWillMount() {
     console.log("mountI");
     let pidQueueInfo: any = {};
-    pidQueueInfo[this.pid] = { dirName: "LinkEdge", ppid: this.pid, type: "LinkEdge" };
+    pidQueueInfo[this.pid] = {
+      dirName: "LinkEdge",
+      ppid: this.pid,
+      type: "LinkEdge"
+    };
     await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
     let ra = await this.props.getDevicesInfo(this.pid);
     this.setState({ ra: ra });
@@ -140,7 +143,7 @@ export class LinkEdgeView extends React.Component<
   };
   render(): JSX.Element {
     return (
-      <div style={{ padding: "20px", height: "100%",marginTop:"-30px"}}>
+      <div style={{ padding: "20px", height: "100%", marginTop: "-30px" }}>
         <div className="row" style={{ height: "10%" }}>
           <div
             className="title col-8"
@@ -186,7 +189,14 @@ export class LinkEdgeView extends React.Component<
             <div className="" style={{ fontSize: "2em" }}>
               实验描述
             </div>
-            <div style={{ maxWidth: "70%", position: "absolute", zIndex: 1,padding:"2%" }}>
+            <div
+              style={{
+                maxWidth: "70%",
+                position: "absolute",
+                zIndex: 1,
+                padding: "2%"
+              }}
+            >
               实验描述
             </div>
             <div
@@ -269,6 +279,7 @@ export class LinkEdgeView extends React.Component<
 }
 export namespace Input {
   export interface Props {
+    value?: string;
     onChange?: (e: any) => void;
     disabled?: boolean;
     label: string;
@@ -279,9 +290,13 @@ export namespace Input {
 export class Input extends React.Component<Input.Props> {
   index: number = 0;
   str: string = "";
+  state = {
+    str: undefined
+  };
   onChange = (e: any) => {
     this.props.onChange!(e);
     // alert(e.target.value)
+    this.setState({ str: e.target.val });
     this.str = e.target.value;
   };
   render() {
@@ -491,9 +506,9 @@ class Form extends React.Component<Form.Props, Form.Status> {
     });
   };
   async remove(index: number) {
-    $("a").css("pointer-events","none")
+    $("a").css("pointer-events", "none");
     let ra = this.state.ra;
-    if ((!await this.props.remove(index.toString()))) {
+    if (!(await this.props.remove(index.toString()))) {
       alert("删除失败");
       return;
     }
@@ -501,7 +516,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
     this.setState({
       ra: ra
     });
-    $("a").css("pointer-events","auto ")
+    $("a").css("pointer-events", "auto ");
   }
   release = (index: number) => {};
   burning = (index: number) => {};

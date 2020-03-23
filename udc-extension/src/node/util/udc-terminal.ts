@@ -247,7 +247,14 @@ export class UdcTerminal {
       this.fileTag = false;
     }
   }
-
+  delProject(pid: string): Promise<boolean> {
+    let { dirName } = this.getPidInfos(pid);
+    let projectDir = path.join(this.rootDir, dirName);
+    fs.existsSync(projectDir) ? fs.removeSync(projectDir) : "";
+    return new Promise(res => {
+      res(true);
+    });
+  }
   parseVirtualConfig(pid: string) {
     let { dirName } = this.getPidInfos(pid);
     let infoRaw: any;
@@ -579,8 +586,11 @@ export class UdcTerminal {
                           res.template[item][file]
                         );
                       }
-                      if(index=="32"){
-                        fs.writeFileSync(_this.rootDir, dirName,"Platform.json")
+                      if (index == "32") {
+                        fs.writeFileSync(
+                          path.join(_this.rootDir, dirName, "Platform.json"),
+                          ""
+                        );
                       }
                     }
                   }
@@ -897,7 +907,7 @@ export class UdcTerminal {
     } else if (type == Packet.MULTI_DEVICE_PROGRAM) {
       this.outputResult("burning option not set correctly");
     } else if (type == Packet.DEVICE_LOG) {
-      let tmp = value
+      let tmp: string = value
         .toString()
         .split(":")
         .slice(2)
@@ -906,7 +916,10 @@ export class UdcTerminal {
       let tag = afterSplit.slice(0, 1);
       Logger.info(tag[0], "tg_");
       Logger.info(tmp, "tp_");
-      if (tag[0] == "") return;
+      if (tmp.startsWith("0E")) {
+        return;
+      }
+      // if (tag[0] == "") return;
       this.outputResult(tmp, "log");
     } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
       this.lastCommitDevice = {
@@ -944,6 +957,7 @@ export class UdcTerminal {
     } else if (type == Packet.LOG_JSON) {
       let logObj = JSON.parse(value);
       for (let item of logObj["logs"]) {
+        if (item.startsWith("0E")) continue;
         this.outputResult(item, "log");
       }
       // if (logObj["isEnd"] == true) {
@@ -1800,6 +1814,59 @@ export class UdcTerminal {
     );
     fileRequest.end();
   }
+  getSSHCMD() {
+    let dataStr = "";
+    let urlRequest = http.request(
+      {
+        //
+        method: "GET",
+        port: "12320",
+        hostname: "47.114.130.247",
+        path: "/get_by_devport?devport=" + this.lastCommitDevice.device,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      },
+      mesg => {
+        if (mesg == undefined) {
+          this.outputResult("network error");
+          Logger.info("error happened while get web server");
+          return;
+        }
+        mesg.on("data", (b: Buffer) => {
+          dataStr += b.toString("utf8");
+        });
+        mesg.on("end", () => {
+          let res: any;
+          try {
+            res = JSON.parse(dataStr);
+            if (res["code"] != 0) {
+              this.outputResult(
+                "get ssh_cmd failed:" +
+                  res["msg"] +
+                  `\n deviceName:${this.lastCommitDevice.device}:`
+              );
+              return;
+            } else {
+              let str = "";
+              for (let item of res["data"]) {
+                str += `------ssh_cmd:${item["sshcmd"]}  passwd:${item["port"]}\n`;
+              }
+              this.outputResult(`:\n${str}`);
+            }
+          } catch {
+            Logger.info("err json structure");
+            return;
+          }
+        });
+      }
+    );
+    urlRequest.on("error", () => {
+      this.outputResult("network error");
+    });
+    urlRequest.write("");
+    urlRequest.end();
+  }
   getLastWebUrl() {
     let dataStr = "";
     let urlRequest = http.request(
@@ -1829,7 +1896,7 @@ export class UdcTerminal {
             if (res["code"] != 0) {
               this.outputResult(
                 "get deployed server url failed:" +
-                  res["msg"] +  
+                  res["msg"] +
                   `\n deviceName:${this.lastCommitDevice.device}:`
               );
               return;
@@ -1848,7 +1915,64 @@ export class UdcTerminal {
             Logger.info("err json structure");
             return;
           }
-         
+        });
+      }
+    );
+    urlRequest.on("error", () => {
+      this.outputResult("network error");
+    });
+    urlRequest.write("");
+    urlRequest.end();
+  }
+  
+  getSocket() {
+    let dataStr = "";
+    let urlRequest = http.request(
+      {
+        //
+        method: "GET",
+        port: "12320",
+        hostname: "47.114.130.247",
+        path: "/get_by_devport?devport=" + this.lastCommitDevice.device,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      },
+      mesg => {
+        if (mesg == undefined) {
+          this.outputResult("network error");
+          Logger.info("error happened while get web server");
+          return;
+        }
+        mesg.on("data", (b: Buffer) => {
+          dataStr += b.toString("utf8");
+        });
+        mesg.on("end", () => {
+          let res: any;
+          try {
+            res = JSON.parse(dataStr);
+            if (res["code"] != 0) {
+              this.outputResult(
+                "get deployed server failed:" +
+                  res["msg"] +
+                  `\n deviceName:${this.lastCommitDevice.device}:`
+              );
+              return;
+            } else {
+              let str = "";
+              for (let item of res["data"]) {
+                str += `------ip:${item["ipaddress"]} port:${item["port"]}\n`;
+              }
+              this.outputResult(
+                `${str}------was deployed ${(new Date().getTime() -
+                  this.lastCommitDevice.timeMs) /
+                  1000} seconds before`
+              );
+            }
+          } catch {
+            Logger.info("err json structure");
+            return;
+          }
         });
       }
     );

@@ -293,7 +293,7 @@ export class Experiment extends React.Component<Experiment.Props, Experiment.Sta
                                 // alert(_this.judgeStatus[x.pid])
                                 if (_this.judgeStatus[x.pid] == '1') {
                                     if (x.wrongInfo != "")
-                                        _this.props.outputResult(x.wrongInfo)
+                                        _this.props.outputResult(x.wrongInfo,"wrongAnswer")
                                     _this.props.outputResult("WRONG_ANSWER" + `(${x.score})`, "wrongAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))

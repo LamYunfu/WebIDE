@@ -13,12 +13,15 @@ import {
   QUIZE_JUDGE_URL,
   CHOICE_JUDGE_URL
 } from "../../setting/front-end-config";
-import { LinkEdgeView } from "./linkedge";
+import { LinkEdgeView, Input } from "./linkedge";
 import { OneLinkView } from "./onelink-view";
+import { ProjectCreator } from "../projectCreator";
+import { FreeCodingDisplay } from "./freecoding-view-display";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
   export interface Props {
+    delProject: (pid: string) => Promise<boolean>;
     initPid: (pid: string) => void;
     openConfigFile: (pid: string) => void;
     initLinkedge: (pid: string) => Promise<boolean>;
@@ -325,7 +328,7 @@ export class View extends React.Component<View.Props, View.State> {
             );
             break;
           }
-          default:{
+          default: {
             _this.title = data.data.title;
             _this.ppid = data.data.ppid;
             console.log(
@@ -1515,11 +1518,8 @@ export class View extends React.Component<View.Props, View.State> {
           </MyContext.Provider>
         </div>
       )
-    ) :
-     this.state.viewType == "11" ?
-
-    // this.state.viewType == "5" ?
-     (
+    ) : this.state.viewType == "11" ? (
+      // this.state.viewType == "5" ?
       <MyContext.Provider
         value={{
           props: _this.props
@@ -1527,7 +1527,6 @@ export class View extends React.Component<View.Props, View.State> {
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
         <LinkEdgeView
-  
           section={{ ppid: [_this.ppid], sid: "experiment" }}
           saveAll={this.props.saveAll}
           openConfigFile={this.props.openConfigFile}
@@ -1645,7 +1644,8 @@ export class View extends React.Component<View.Props, View.State> {
           </div>
         </div>
       </MyContext.Provider>
-    ) : this.state.viewType == "5" ? ( //自由编程
+    ) : this.state.viewType == "55" ? (
+      //自由编程
       <MyContext.Provider
         value={{
           showTheDefaultFreeCodingView: () => {},
@@ -1672,6 +1672,51 @@ export class View extends React.Component<View.Props, View.State> {
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
         <FreeCoding
+          title={this.title}
+          programSingleFile={_this.props.programSingleFile}
+          config={_this.props.config}
+          openShell={_this.props.openShell}
+          initPidQueueInfo={_this.props.initPidQueueInfo}
+          closeTabs={_this.props.closeTabs}
+          setQueue={_this.props.setQueue}
+          section={{ ppid: [_this.ppid], sid: "experiment" }}
+          outputResult={_this.props.outputResult}
+          say={_this.props.say}
+          setCookie={_this.props.setCookie}
+          disconnect={_this.props.disconnect}
+          connect={_this.props.connect}
+          callUpdate={_this.props.callUpdate}
+          postSrcFile={_this.props.postSrcFile}
+        />
+      </MyContext.Provider>
+    ) : //自由编程演示
+    this.state.viewType == "5" ? (
+      <MyContext.Provider
+        value={{
+          showTheDefaultFreeCodingView: () => {},
+          setClickTime: () => {
+            _this.clickTime = new Date().getTime();
+          },
+          setOptionDescription: (a: string) => {
+            _this.setOptionDescription(a);
+          },
+          setOptionChoicesDescription: (a: JSX.Element[]) => {
+            _this.setOptionChoicesDescription(a);
+          },
+          setState: (tmp: object) => {
+            _this.setState({
+              ...tmp
+            });
+          },
+          getState: (key: string) => {
+            let tmp: any = this.state;
+            return tmp[key];
+          },
+          props: _this.props
+        }}
+      >
+        {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+        <FreeCodingDisplay
           title={this.title}
           programSingleFile={_this.props.programSingleFile}
           config={_this.props.config}
