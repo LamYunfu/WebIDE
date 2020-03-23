@@ -1690,7 +1690,7 @@ export class View extends React.Component<View.Props, View.State> {
         />
       </MyContext.Provider>
     ) : //自由编程演示
-    this.state.viewType == "5" ? (
+    this.state.viewType == "12" ? (
       <MyContext.Provider
         value={{
           showTheDefaultFreeCodingView: () => {},

@@ -110,7 +110,7 @@ export class DeviceViewWidget extends TreeWidget {
   };
   protected renderTree(): React.ReactNode {
     return (
-      <div>
+      <div style={{height:"100%"}}>
         <View
           delProject={this.delProject}
           initPid={this.initPid}
