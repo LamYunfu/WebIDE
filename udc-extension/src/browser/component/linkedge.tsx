@@ -16,6 +16,7 @@ export namespace LinkEdge {
     develop(pid: string, indexStr: string): Promise<boolean>;
     add(pid: string, info: any): Promise<boolean>;
     getDevicesInfo(pid: string): Promise<any>;
+    openExplore: () => void;
   }
   export interface State {
     connectionStatus: boolean;
@@ -44,9 +45,13 @@ export class LinkEdgeView extends React.Component<
     };
   }
   componentDidMount() {
-    this.props.setSize(850);
-    let pid = this.pid;
-    this.props.initLinkedgeConfig(pid);
+    if (this.pid == "32") {
+      this.props.setSize(850);
+      let pid = this.pid;
+      this.props.initLinkedgeConfig(pid);
+    } else {
+      this.props.openExplore();
+    }
     setInterval(() => {
       this.props.saveAll();
     }, 5000);
@@ -55,16 +60,20 @@ export class LinkEdgeView extends React.Component<
     return this.props.section["ppid"][0];
   }
   async componentWillMount() {
-    console.log("mountI");
+    console.log("mountI"); 
     let pidQueueInfo: any = {};
     pidQueueInfo[this.pid] = {
       dirName: "LinkEdge",
       ppid: this.pid,
       type: "LinkEdge"
     };
-    await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
-    let ra = await this.props.getDevicesInfo(this.pid);
-    this.setState({ ra: ra });
+    if (this.pid == "32") {
+      await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
+      let ra = await this.props.getDevicesInfo(this.pid);
+      this.setState({ ra: ra });
+    } else {
+      await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
+    }
   }
 
   toggleConnectionStatus = async () => {
@@ -142,139 +151,150 @@ export class LinkEdgeView extends React.Component<
     this.props.openConfigFile(this.pid);
   };
   render(): JSX.Element {
-    return (
-      <div style={{ padding: "20px", height: "100%", marginTop: "-30px" }}>
-        <div className="row" style={{ height: "10%" }}>
-          <div
-            className="title col-8"
-            style={{
-              color: "dimgray",
-              fontSize: "3em ",
-              padding: "auto",
-              display: "flex",
-              justifyItems: "center",
-              alignItems: "center"
-            }}
-          >
-            边缘计算
+    if (this.pid == "32")
+      return (
+        <div style={{ padding: "20px", height: "100%", marginTop: "-30px" }}>
+          <div id="edge_ppid" style={{ display: "none" }}>
+            {this.props.section["ppid"][0]}
           </div>
-          <div
-            className="tuition col-4"
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <div>
-              <div
-                style={{
-                  textDecorationLine: "underline",
-                  cursor: "pointer",
-                  textDecorationColor: "dodgerblue"
-                }}
-              >
-                开发平台
-              </div>
-              <div
-                style={{
-                  textDecorationLine: "underline",
-                  cursor: "pointer",
-                  textDecorationColor: "dodgerblue"
-                }}
-              >
-                官方文档
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row" style={{ height: "30%" }}>
-          <div className="col-12">
-            <div className="" style={{ fontSize: "2em" }}>
-              实验描述
-            </div>
+          <div className="row" style={{ height: "10%" }}>
             <div
+              className="title col-8"
               style={{
-                maxWidth: "70%",
-                position: "absolute",
-                zIndex: 1,
-                padding: "2%"
-              }}
-            >
-              实验描述
-            </div>
-            <div
-              className=""
-              style={{
-                width: "75%",
-                height: "80%",
-                border: "solid",
-                zIndex: -1,
-                position: "relative"
-              }}
-            ></div>
-          </div>
-        </div>
-        <div style={{ height: "10%" }}>
-          <div style={{ fontSize: "2em" }}>网关控制</div>
-          <div className="row">
-            <div
-              className="offset-1 col-2"
-              style={{
-                fontSize: "1.3em",
-                cursor: "pointer",
-                color: "dodgerblue",
-                textDecorationLine: "underline",
+                color: "dimgray",
+                fontSize: "3em ",
+                padding: "auto",
                 display: "flex",
+                justifyItems: "center",
                 alignItems: "center"
               }}
-              onClick={this.openConfigFile}
             >
-              配置文件
+              边缘计算
             </div>
-            <div className="col-6">
-              <ButtonGroup
-                connectionLoading={this.state.connectionLoading}
-                executeLoading={this.state.executeLoading}
-                toggleConnectionStatus={this.toggleConnectionStatus}
-                toggleExecuteStatus={this.toggleExecuteStatus}
-                connectionStatus={this.state.connectionStatus}
-                executeStatus={this.state.executeStatus}
-              ></ButtonGroup>
-            </div>
-          </div>
-        </div>
-        <div className="row" style={{ height: "5%" }}>
-          <div className="col-4" style={{ fontSize: "2em" }}>
-            子设备列表
-          </div>
-          <button
-            className=".btn btn-primary offset-5"
-            onClick={this.changeAddTag}
-            style={{ borderRadius: "3px" }}
-          >
-            创建
-          </button>
-        </div>
-        <div className="row" style={{ height: "45%" }}>
-          <div className="col-12">
             <div
-              style={{
-                width: "90%",
-                height: "80%"
-              }}
+              className="tuition col-4"
+              style={{ display: "flex", alignItems: "center" }}
             >
-              <Form
-                changeAddTag={this.changeAddTag}
-                addTag={this.state.addTag}
-                ra={this.state.ra}
-                getRa={this.getRa}
-                setRa={this.setRa}
-                add={this.add}
-                develop={this.develop}
-                remove={this.remove}
-              ></Form>
+              <div>
+                <div
+                  style={{
+                    textDecorationLine: "underline",
+                    cursor: "pointer",
+                    textDecorationColor: "dodgerblue"
+                  }}
+                >
+                  开发平台
+                </div>
+                <div
+                  style={{
+                    textDecorationLine: "underline",
+                    cursor: "pointer",
+                    textDecorationColor: "dodgerblue"
+                  }}
+                >
+                  官方文档
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row" style={{ height: "30%" }}>
+            <div className="col-12">
+              <div className="" style={{ fontSize: "2em" }}>
+                实验描述
+              </div>
+              <div
+                style={{
+                  maxWidth: "70%",
+                  position: "absolute",
+                  zIndex: 1,
+                  padding: "2%"
+                }}
+              >
+                实验描述
+              </div>
+              <div
+                className=""
+                style={{
+                  width: "75%",
+                  height: "80%",
+                  border: "solid",
+                  zIndex: -1,
+                  position: "relative"
+                }}
+              ></div>
+            </div>
+          </div>
+          <div style={{ height: "10%" }}>
+            <div style={{ fontSize: "2em" }}>网关控制</div>
+            <div className="row">
+              <div
+                className="offset-1 col-2"
+                style={{
+                  fontSize: "1.3em",
+                  cursor: "pointer",
+                  color: "dodgerblue",
+                  textDecorationLine: "underline",
+                  display: "flex",
+                  alignItems: "center"
+                }}
+                onClick={this.openConfigFile}
+              >
+                配置文件
+              </div>
+              <div className="col-6">
+                <ButtonGroup
+                  connectionLoading={this.state.connectionLoading}
+                  executeLoading={this.state.executeLoading}
+                  toggleConnectionStatus={this.toggleConnectionStatus}
+                  toggleExecuteStatus={this.toggleExecuteStatus}
+                  connectionStatus={this.state.connectionStatus}
+                  executeStatus={this.state.executeStatus}
+                ></ButtonGroup>
+              </div>
+            </div>
+          </div>
+          <div className="row" style={{ height: "5%" }}>
+            <div className="col-4" style={{ fontSize: "2em" }}>
+              子设备列表
+            </div>
+            <button
+              className=".btn btn-primary offset-5"
+              onClick={this.changeAddTag}
+              style={{ borderRadius: "3px" }}
+            >
+              创建
+            </button>
+          </div>
+          <div className="row" style={{ height: "45%" }}>
+            <div className="col-12">
+              <div
+                style={{
+                  width: "90%",
+                  height: "80%"
+                }}
+              >
+                <Form
+                  changeAddTag={this.changeAddTag}
+                  addTag={this.state.addTag}
+                  ra={this.state.ra}
+                  getRa={this.getRa}
+                  setRa={this.setRa}
+                  add={this.add}
+                  develop={this.develop}
+                  remove={this.remove}
+                ></Form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    else {
+      return (
+        <div id="edge_ppid" style={{ display: "none" }}>
+          {this.pid}
+        </div>
+      );
+    }
   }
 }
 export namespace Input {

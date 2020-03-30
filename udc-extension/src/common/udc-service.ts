@@ -71,4 +71,5 @@ export interface UdcService {
   openConfigFile: (pid: string) => void;
   getIotId: () => string;
   delProject: (pid: string) => Promise<boolean>;
+  tinyEdgeCompile: (pid: string) => Promise<string>;
 }

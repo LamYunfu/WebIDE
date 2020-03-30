@@ -1,6 +1,7 @@
 import { HalfPackProcess } from "./half-pkt-process";
 import * as path from "path";
 import * as http from "http";
+import * as FormData from "form-data";
 // import { certificate } from './../common/udc-config';
 import { UdcClient } from "../../common/udc-watcher";
 import { injectable, inject } from "inversify";
@@ -16,7 +17,7 @@ import * as Color from "colors";
 import * as WebSocket from "ws";
 // import { getCompilerType } from '../globalconst';
 import * as crypto from "crypto";
-import * as FormData from "form-data";
+
 import * as ach from "archiver";
 import {
   SENCE_SERVER_URL,
@@ -82,6 +83,7 @@ export class UdcTerminal {
   freeCodingConfig: any = {};
   LinkEdgeConfig: any = {};
   fileTag: boolean = false;
+  user: string=""
   constructor(@inject(Packet) protected readonly pkt: Packet) {
     this.event = new events.EventEmitter();
     this.hpp = new HalfPackProcess();
@@ -1924,7 +1926,7 @@ export class UdcTerminal {
     urlRequest.write("");
     urlRequest.end();
   }
-  
+
   getSocket() {
     let dataStr = "";
     let urlRequest = http.request(
@@ -1981,5 +1983,95 @@ export class UdcTerminal {
     });
     urlRequest.write("");
     urlRequest.end();
+  }
+  async tinyEdgeUpload(pid: string): Promise<string> {
+    let _this = this;
+    let { dirName } = this.pidQueueInfo[pid];
+    let projectDir = path.join(LINKLAB_WORKSPACE, dirName);
+    let zipPath = path.join(LINKLAB_WORKSPACE, dirName, "src.zip");
+    let installPath = path.join(
+      LINKLAB_WORKSPACE,
+      dirName,
+      "Deploy",
+      "install.sh"
+    );
+    let st = fs.createWriteStream(zipPath); //打包
+    let achst = ach
+      .create("zip")
+      .directory(path.join(projectDir, "Custom"), "TinyEdge/Custom")
+      .directory(path.join(projectDir, "Development"), "TinyEdge/Development");
+    let p = new Promise(resolve => {
+      st.on("close", () => {
+        _this.outputResult("compress file scc");
+        resolve("scc");
+      });
+    });
+    achst.pipe(st);
+    achst.finalize();
+    await p;
+    let fm = new FormData();
+    Logger.info("uploading hex file");
+    return await new Promise(async resolve => {
+      let uploadRequest = http.request(
+        {
+          //传zip
+          method: "POST",
+          hostname: "47.96.155.111",
+          port: 12381,
+          path: "/api/system/linklab/compile",
+          headers: fm.getHeaders()
+        },
+        mesg => {
+          if (mesg == undefined) {
+            _this.outputResult("network error");
+            Logger.info("error happened while upload");
+            resolve("err");
+            return;
+          }
+          let bf = "";
+          Logger.info("upload statuscode:" + mesg.statusCode);
+          mesg.on("data", (b: Buffer) => {
+            Logger.info("data comming");
+            bf += b.toString("utf8");
+          });
+          mesg.on("error", () => {
+            Logger.info("error happened while upload");
+            _this.outputResult("network error");
+            resolve("err");
+          });
+          mesg.on("end", () => {
+            Logger.info("bf:" + bf);
+            try {
+              let res: any = JSON.parse(bf);
+              if (res["code"] == "200") {
+                fs.writeFileSync(installPath, res["data"]);
+                fs.unlinkSync(zipPath);
+                this.outputResult("tinyEdge compile scc");
+                resolve("scc");
+              } else if (res["code"]) {
+                _this.outputResult(res.msg);
+                resolve(res.msg);
+              } else {
+                throw "error";
+              }
+            } catch {
+              _this.outputResult("compile edge error");
+            }
+          });
+        }
+      );
+      uploadRequest.on("error", () => {
+        _this.outputResult("network error");
+        resolve("err");
+      });
+      // let blob = fs.readFileSync(filepath)
+      let filepath = zipPath;
+      let st = fs.createReadStream(filepath);
+      Logger.info("append file");
+      fm.append("file", st, filepath.split("/").pop());
+      fm.append("userName", this.tinyLinkInfo.name);
+      fm.pipe(uploadRequest);
+      Logger.info("file append ok");
+    });
   }
 }

@@ -234,6 +234,7 @@ export class View extends React.Component<View.Props, View.State> {
         $(".userName").text(data.data.uname);
         ////alert(data.data.JSESSIONID)
         _this.props.setTinyLink(data.data.tinyId, data.data.tinyPasswd);
+        // _this.props.setTinyLink(data.data.tinyId, JSON.stringify(data.data));
         _this.props.setCookie(data.data.JSESSIONID);
       }
     });
@@ -1527,6 +1528,7 @@ export class View extends React.Component<View.Props, View.State> {
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
         <LinkEdgeView
+          openExplore={this.props.openExplorer}
           section={{ ppid: [_this.ppid], sid: "experiment" }}
           saveAll={this.props.saveAll}
           openConfigFile={this.props.openConfigFile}
@@ -1644,7 +1646,7 @@ export class View extends React.Component<View.Props, View.State> {
           </div>
         </div>
       </MyContext.Provider>
-    ) : this.state.viewType == "5" ? (
+    ) : this.state.viewType == "55" ? (
       //自由编程
       <MyContext.Provider
         value={{
@@ -1690,7 +1692,7 @@ export class View extends React.Component<View.Props, View.State> {
         />
       </MyContext.Provider>
     ) : //自由编程演示
-    this.state.viewType == "12" ? (
+    this.state.viewType == "5" ? (
       <MyContext.Provider
         value={{
           showTheDefaultFreeCodingView: () => {},

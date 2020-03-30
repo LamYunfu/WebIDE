@@ -41,7 +41,7 @@ export const UdcExtensionCommand = {
 
 export namespace UdcMenus {
   export const UDC = [...MAIN_MENU_BAR, "1_udc"];
-  export const linkedge = [...MAIN_MENU_BAR, "1_linkedge"];
+  export const linkedge = [...MAIN_MENU_BAR, "2_edge"];
   export const UDC_FUNCTION = [...UDC, "2_function"];
   export const UDC_ABOUT = [...UDC, "3_about"];
 }
@@ -151,6 +151,11 @@ export namespace UdcCommands {
     id: "realseLinkedge",
     category: LINKEDGE_CATEGORY,
     label: "release"
+  };
+  export const compileEdge: Command = {
+    id: "compileEdge",
+    category: LINKEDGE_CATEGORY,
+    label: "compile"
   };
   export const startLinkedge: Command = {
     id: "startLinkedge",
@@ -280,7 +285,8 @@ export class UdcExtensionCommandContribution
       // console.log(log);
       let a = log.match("(light on)|(light off)");
       if (a != null) {
-        if ((a[0].trim() == "light off")) this.deviceViewService.setLampStatus(false);
+        if (a[0].trim() == "light off")
+          this.deviceViewService.setLampStatus(false);
         else this.deviceViewService.setLampStatus(true);
       }
       this.udcConsoleSession.appendLine(log);
@@ -322,6 +328,11 @@ export class UdcExtensionCommandContribution
     registry.registerCommand(UdcCommands.releaseLinkedge, {
       execute: () => {
         this.udcService.linkEdgeConnect("32", { action: "release" });
+      }
+    });
+    registry.registerCommand(UdcCommands.compileEdge, {
+      execute: () => {
+        this.udcService.tinyEdgeCompile("32");
       }
     });
     registry.registerCommand(UdcCommands.OpenCommand, {
@@ -503,6 +514,13 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       icon: "x",
       order: "a_4"
     });
+    menus.registerMenuAction([...UdcMenus.linkedge], {
+      commandId: UdcCommands.compileEdge.id,
+      label: "compile",
+      icon: "x",
+      order: "a_5"
+    });
+
     // console.log(menus.getMenu(['menubar']).children.length)
     // for(let item of menus.getMenu(['menubar']).children ){
     //     console.log(item.id)

@@ -20,6 +20,7 @@ import {
 import { FileSystem } from "@theia/filesystem/lib/common/filesystem";
 import { CommandService, SelectionService } from "@theia/core";
 import { UdcService } from "udc-extension/lib/common/udc-service";
+import * as $ from "jquery";
 export interface DemoViewSymbolInformationNode
   extends CompositeTreeNode,
     SelectableTreeNode {
@@ -65,88 +66,100 @@ export class DemoWidget extends FileNavigatorWidget {
       fileSystem
     );
     this.id = "demo-view";
-    this.title.label = "linkedge";
+    this.title.label = "Edge";
     this.title.caption = "Demo";
     this.title.closable = true;
     this.title.iconClass = "fa fa-gg";
     this.addClass("theia-udcdevice-view");
   }
+  getPpid() {
+    let p = $("#edge_ppid");
+    if (p != undefined) {
+      return p.html()
+    } else {
+      return undefined;
+    }
+  }
   submitEnableWithJudgeTag: boolean = false;
   rootdir: string = ``;
   viewType: string = "";
+
   protected renderTree(): React.ReactNode {
-    return (
-      <div style={{ height: "100%" }}>
-        {/* <button onClick={this.say}>hello</button> */}
-        <div
-          style={{ height: "30%", overflowY: "scroll", overflowX: "hidden" }}
-        >
-          <div>{super.renderTree(this.model)}</div>
-        </div>
-        <div style={{ height: "55%" }}>
-          <div className="fa fa-folder file-icon"></div> Development
-          <ul>
-            <li
-              style={{
-                cursor: "pointer",
-                color: "",
-                textDecoration: "underline"
-              }}
-              onClick={this.creatEdgeInstance}
-            >
-              <div className="fa fa-folder file-icon"></div> 创建边缘实例
-            </li>
-            <li
-              style={{
-                cursor: "pointer",
-                color: "",
-                textDecoration: "underline"
-              }}
-              onClick={this.createDeviceDriver}
-            >
-              <div className="fa fa-folder file-icon"></div> 设备驱动开发
-            </li>
-            <li
-              style={{
-                cursor: "pointer",
-                color: "",
-                textDecoration: "underline"
-              }}
-              onClick={this.createRuleCaculation}
-            >
-              <div className="fa fa-folder file-icon"></div> 场景联动开发
-            </li>
-            <li
-              style={{
-                cursor: "pointer",
-                color: "",
-                textDecoration: "underline"
-              }}
-              onClick={this.createAppManagement}
-            >
-              <div className="fa fa-folder file-icon"></div>函数计算开发
-            </li>
-            <li
-              style={{
-                cursor: "pointer",
-                color: "",
-                textDecoration: "underline"
-              }}
-              onClick={this.createFlowCaculation}
-            >
-              <div className="fa fa-folder file-icon"></div>流数据分析与开发
-            </li>
-            <li
-              style={{
-                cursor: "pointer",
-                color: "",
-                textDecoration: "underline"
-              }}
-              onClick={this.createMessageRouting}
-            >
-              <div className="fa fa-folder file-icon"></div> 消息路由开发
-            </li>
-            {/* <li
+    let r = this.getPpid();
+    if (!r) return <div>not for this problem</div>;
+    if (r == "32")
+      return (
+        <div style={{ height: "100%" }}>
+          {/* <button onClick={this.say}>hello</button> */}
+          <div
+            style={{ height: "30%", overflowY: "scroll", overflowX: "hidden" }}
+          >
+            <div>{super.renderTree(this.model)}</div>
+          </div>
+          <div style={{ height: "55%" }}>
+            <div className="fa fa-folder file-icon"></div> Development
+            <ul>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "",
+                  textDecoration: "underline"
+                }}
+                onClick={this.creatEdgeInstance}
+              >
+                <div className="fa fa-folder file-icon"></div> 创建边缘实例
+              </li>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "",
+                  textDecoration: "underline"
+                }}
+                onClick={this.createDeviceDriver}
+              >
+                <div className="fa fa-folder file-icon"></div> 设备驱动开发
+              </li>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "",
+                  textDecoration: "underline"
+                }}
+                onClick={this.createRuleCaculation}
+              >
+                <div className="fa fa-folder file-icon"></div> 场景联动开发
+              </li>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "",
+                  textDecoration: "underline"
+                }}
+                onClick={this.createAppManagement}
+              >
+                <div className="fa fa-folder file-icon"></div>函数计算开发
+              </li>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "",
+                  textDecoration: "underline"
+                }}
+                onClick={this.createFlowCaculation}
+              >
+                <div className="fa fa-folder file-icon"></div>流数据分析与开发
+              </li>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "",
+                  textDecoration: "underline"
+                }}
+                onClick={this.createMessageRouting}
+              >
+                <div className="fa fa-folder file-icon"></div> 消息路由开发
+              </li>
+              {/* <li
               style={{
                 cursor: "pointer",
                 color: "",
@@ -155,11 +168,23 @@ export class DemoWidget extends FileNavigatorWidget {
             >
               <div className="fa fa-folder file-icon"></div> 子设备开发
             </li> */}
-          </ul>
+            </ul>
+          </div>
         </div>
-      </div>
-      // <LinkEdgeView initPidQueueInfo={this.initPidQueueInfo} linkEdgeConnect={this.linkEdgeConnect}></LinkEdgeView>
-    );
+        // <LinkEdgeView initPidQueueInfo={this.initPidQueueInfo} linkEdgeConnect={this.linkEdgeConnect}></LinkEdgeView>
+      );
+    else
+      return (
+        <div style={{ height: "100%" }}>
+          <div
+            style={{ height: "30%", overflowY: "scroll", overflowX: "hidden" }}
+          >
+            <div>{super.renderTree(this.model)}</div>
+          </div>
+        
+        </div>
+        // <LinkEdgeView initPidQueueInfo={this.initPidQueueInfo} linkEdgeConnect={this.linkEdgeConnect}></LinkEdgeView>
+      );
   }
   async getIotID(): Promise<string> {
     let id = await this.udcService.getIotId();

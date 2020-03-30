@@ -83,7 +83,7 @@ export class FreeCodingDisplay extends React.Component<
   }
 
   async componentWillMount() {
-    this.context.props.setSize(720);
+    this.context.props.setSize(500);
   }
   async componentDidMount() {
     if (this.state.ppid != undefined)
