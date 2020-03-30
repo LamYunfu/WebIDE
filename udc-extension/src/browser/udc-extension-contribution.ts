@@ -332,7 +332,7 @@ export class UdcExtensionCommandContribution
     });
     registry.registerCommand(UdcCommands.compileEdge, {
       execute: () => {
-        this.udcService.tinyEdgeCompile("32");
+        this.udcService.tinyEdgeCompile("35");
       }
     });
     registry.registerCommand(UdcCommands.OpenCommand, {

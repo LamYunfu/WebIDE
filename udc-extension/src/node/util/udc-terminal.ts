@@ -525,6 +525,7 @@ export class UdcTerminal {
     Logger.info(path.join(projectPath, rootDir + ".cpp"));
   }
   async initPidQueueInfo(infos: string): Promise<string> {
+    console.log("initPid")
     this.freeCodingConfig = "";
     this.initTag = false;
     Logger.info(infos, "info");
@@ -537,7 +538,7 @@ export class UdcTerminal {
         ppid
       } = this.pidQueueInfo[index];
       await new Promise(resolve => {
-        if (!fs.existsSync(path.join(_this.rootDir, dirName)) && ppid != null) {
+        if (ppid != null) {
           let fileRequest = http.request(
             {
               //
@@ -562,7 +563,7 @@ export class UdcTerminal {
                 Logger.info("error happened in initPidQueueInfo");
                 _this.outputResult("network error");
                 resolve("err");
-              });
+              }); 
               mesg.on("end", () => {
                 let res: any = JSON.parse(bf);
                 console.log("res:::" + bf);
@@ -629,7 +630,7 @@ export class UdcTerminal {
       if (
         this.pidQueueInfo[index]["type"] == "freecoding" ||
         this.pidQueueInfo[index]["type"] == "OneLinkView" ||
-        index == "32"
+        index == "32"||index=="35"
       ) {
         if (OS.type() == OS.Type.Linux)
           this.udcClient!.onConfigLog({
@@ -1986,6 +1987,7 @@ export class UdcTerminal {
   }
   async tinyEdgeUpload(pid: string): Promise<string> {
     let _this = this;
+    console.log("tinyEdgePid:"+pid)
     let { dirName } = this.pidQueueInfo[pid];
     let projectDir = path.join(LINKLAB_WORKSPACE, dirName);
     let zipPath = path.join(LINKLAB_WORKSPACE, dirName, "src.zip");
