@@ -9,20 +9,21 @@ import { injectable, inject } from "inversify";
 import { Logger } from "../util/logger";
 import {
   RASPBERRY_GCC_IP,
-  RASPBERRY_GCC_PORT
+  RASPBERRY_GCC_PORT,
+  RootDirPath,
 } from "../../setting/backend-config";
 import * as path from "path";
 import { CompilerInterFace } from "./compilerInterface";
 import { UdcTerminal } from "../util/udc-terminal";
-import { rootDir } from "../globalconst";
 @injectable()
 export class RaspeberryGccCompiler implements CompilerInterFace {
   constructor(
     @inject(UdcTerminal) protected readonly udc: UdcTerminal,
-    @inject(FileMapper) protected readonly fm: FileMapper
+    @inject(FileMapper) protected readonly fm: FileMapper,
+    @inject(RootDirPath) public rootDir: RootDirPath
   ) {}
   outputResult(str: string) {
-    this.udc.outputResult(str)
+    this.udc.outputResult(str);
   }
   //   async postNameAndType(pid: string) {
   //     let { dirName, deviceRole } = await this.getPidInfos(pid);
@@ -39,7 +40,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
       let achst = ach.create("zip").directory(fileDir, false);
       achst.pipe(st);
       achst.finalize();
-      await new Promise(res =>
+      await new Promise((res) =>
         st.on("close", () => {
           console.log("------------------finish archive");
           res();
@@ -53,7 +54,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
   }
   async config(data: any): Promise<string> {
     let _this = this;
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let configRequest = http.request(
         {
           //
@@ -62,10 +63,10 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
           port: RASPBERRY_GCC_PORT,
           path: "/config",
           headers: {
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         },
-        mesg => {
+        (mesg) => {
           if (mesg == null) {
             _this.outputResult("network error");
             resolve("err");
@@ -99,7 +100,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
   }
   async upload(fm: FormData): Promise<string> {
     let _this = this;
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let uploadRequest = http.request(
         {
           //传zip
@@ -107,9 +108,9 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
           hostname: RASPBERRY_GCC_IP,
           port: RASPBERRY_GCC_PORT,
           path: "/upload",
-          headers: fm.getHeaders()
+          headers: fm.getHeaders(),
         },
-        mesg => {
+        (mesg) => {
           if (mesg == null) {
             _this.outputResult("network error");
             resolve("err");
@@ -148,7 +149,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
   async getFile(data: any, filePath: string): Promise<string> {
     let _this = this;
     console.log("start downloading");
-    let res:string=await new Promise(resolve => {
+    let res: string = await new Promise((resolve) => {
       let downloadRequest = http.request(
         {
           //下载
@@ -157,10 +158,10 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
           port: RASPBERRY_GCC_PORT,
           path: "/download",
           headers: {
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         },
-        async mesg => {
+        async (mesg) => {
           if (mesg == undefined) {
             _this.outputResult("network error");
             Logger.info("error happened while downloading");
@@ -170,7 +171,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
           let bufferStore = "";
           if (mesg.headers["content-type"] == "application/octet-stream") {
             let ws = fs.createWriteStream(filePath, {
-              encoding: "binary"
+              encoding: "binary",
             });
             ws.on("close", () => {
               resolve("scc");
@@ -205,7 +206,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
         }
       );
       downloadRequest.on("error", () => {
-        Logger.info("get file err")
+        Logger.info("get file err");
         _this.outputResult("network error");
         resolve("err");
       });
@@ -224,7 +225,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
       path.join(__dirname, "tmp.zip")
     );
     if (srczip == "err") {
-      Logger.info("arvhive file err")
+      Logger.info("arvhive file err");
       return "err";
     }
     let buff = new Buffer(fs.readFileSync(srczip));
@@ -233,7 +234,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
     console.log("hash------------------:" + hasval);
     let confRes = await this.config({ filehash: hasval });
     if (confRes == "err") {
-      Logger.info("config file err")
+      Logger.info("config file err");
       return "err";
     }
     let fm = new FormData();
@@ -241,7 +242,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
     fs.unlinkSync(srczip);
     let uploadRes = await this.upload(fm);
     if (uploadRes == "err") {
-      Logger.info("upload file err")
+      Logger.info("upload file err");
       return "err";
     }
     return await this.getFile({ filehash: hasval }, outputPath);
@@ -252,15 +253,15 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
       let { dirName } = this.udc.pidQueueInfo[pid];
       let { projectName } = this.udc.freeCodingConfig["projects"][0];
       let outputPath = path.join(
-        rootDir,
+        this.rootDir.val,
         dirName,
         "hexFiles",
         new Buffer(projectName).toString("hex") + ".hex"
       );
-      let fileDir = path.join(rootDir, dirName, projectName);
-      let res=await this.compile(fileDir, outputPath);
+      let fileDir = path.join(this.rootDir.val, dirName, projectName);
+      let res = await this.compile(fileDir, outputPath);
       this.fm.setFileNameMapper(pid, {
-        projectName: new Buffer(projectName).toString("hex") + ".hex"
+        projectName: new Buffer(projectName).toString("hex") + ".hex",
       });
       return res;
     } catch (error) {

@@ -7,15 +7,15 @@ import { Programer } from "./programmer";
 import * as path from "path";
 import * as fs from "fs";
 import { Logger } from "./logger";
-import { CONFIGPATH } from "../../setting/backend-config";
+import { CONFIGPATH, RootDirPath } from "../../setting/backend-config";
 import { OS } from "@theia/core";
-import { rootDir } from "../globalconst";
 
 @injectable()
 export class LinkEdgeManager {
   constructor(
     @inject(UdcTerminal) protected readonly ut: UdcTerminal,
-    @inject(Programer) protected readonly pm: Programer
+    @inject(Programer) protected readonly pm: Programer,
+    @inject(RootDirPath) public rootDir: RootDirPath
   ) {}
   async delayNs(limit: number, f: (...[]) => boolean): Promise<boolean> {
     for (let i = 0; i < limit; i++) {
@@ -23,7 +23,7 @@ export class LinkEdgeManager {
       if (res) {
         return true;
       }
-      await new Promise(res => {
+      await new Promise((res) => {
         setTimeout(() => {
           res();
         }, 1000);
@@ -35,7 +35,9 @@ export class LinkEdgeManager {
   getIotId(): string {
     try {
       let raw = fs
-        .readFileSync(path.join(rootDir, "LinkEdge", "Config", "config.json"))
+        .readFileSync(
+          path.join(this.rootDir.val, "LinkEdge", "Config", "config.json")
+        )
         .toString();
       let ob = JSON.parse(raw);
       return ob["IoTId"];
@@ -46,18 +48,23 @@ export class LinkEdgeManager {
   }
   async openConfigFile(pid: string) {
     let { dirName } = this.ut.pidQueueInfo[pid];
-    let filePath = path.join(this.ut.rootDir, dirName, "Config", "config.json");
+    let filePath = path.join(
+      this.ut.rootDir.val,
+      dirName,
+      "Config",
+      "config.json"
+    );
     if (OS.type() == OS.Type.Linux) {
       this.ut.udcClient &&
         this.ut.udcClient.onConfigLog({
           name: "openSrcFile",
-          passwd: path.join(filePath)
+          passwd: path.join(filePath),
         });
     } else {
       this.ut.udcClient &&
         this.ut.udcClient.onConfigLog({
           name: "openSrcFile",
-          passwd: `/` + path.join(filePath)
+          passwd: `/` + path.join(filePath),
         });
     }
   }
@@ -92,8 +99,8 @@ export class LinkEdgeManager {
     return true;
   }
   async programGateWay(pid: string, threeTuple: any) {
-    this.ut.parseLinkEdgeConfig(pid)
-    Logger.info("programGateWay:"+pid)
+    this.ut.parseLinkEdgeConfig(pid);
+    Logger.info("programGateWay:" + pid);
     let { dirName } = this.ut.pidQueueInfo[pid];
     this.ut.parseLinkEdgeConfig(pid, threeTuple);
     let filehash = await this.pm.fileUpload(
@@ -111,9 +118,9 @@ export class LinkEdgeManager {
           waitingId: "9617087952215092",
           model: "tinylink_platform_1",
           runtime: 30,
-          address: "0x10000"
-        }
-      ]
+          address: "0x10000",
+        },
+      ],
     };
     burnOption = {
       ...this.ut.LinkEdgeConfig["burningDataQueue"],
@@ -122,7 +129,7 @@ export class LinkEdgeManager {
       groupId: (
         Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
         Math.pow(10, 15)
-      ).toString()
+      ).toString(),
     };
     burnOption["program"] = [
       {
@@ -132,8 +139,8 @@ export class LinkEdgeManager {
         waitingId: (
           Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
           Math.pow(10, 15)
-        ).toString()
-      }
+        ).toString(),
+      },
     ];
     this.ut.is_connected ? "" : this.ut.connect("", "", pid, "3");
     for (let i = 4; ; i--) {
@@ -149,7 +156,7 @@ export class LinkEdgeManager {
         return "fail";
       }
       Logger.info("waiting for allocate device");
-      await new Promise(res => {
+      await new Promise((res) => {
         setTimeout(() => {
           res();
         }, 1000);
@@ -165,7 +172,7 @@ export class LinkEdgeManager {
     let index = parseInt(deviceInfo.index);
     let p: any[] = this.ut.LinkEdgeConfig["projects"];
     if (
-      p.some(value => {
+      p.some((value) => {
         return value.deviceName == deviceInfo.deviceName;
       })
     ) {
@@ -176,12 +183,12 @@ export class LinkEdgeManager {
       ? this.ut.LinkEdgeConfig["projects"].push({
           projectName: deviceInfo.deviceName,
           deviceName: deviceInfo.deviceName,
-          deviceType: deviceInfo.deviceType
+          deviceType: deviceInfo.deviceType,
         })
       : (this.ut.LinkEdgeConfig["projects"][index] = {
           projectName: deviceInfo.deviceName,
           deviceName: deviceInfo.deviceName,
-          deviceType: deviceInfo.deviceType
+          deviceType: deviceInfo.deviceType,
         });
     this.ut.flushLinkEdgeConfig(pid);
     return true;
@@ -192,10 +199,15 @@ export class LinkEdgeManager {
     let { dirName } = this.ut.pidQueueInfo[pid];
     let project = this.ut.LinkEdgeConfig["projects"][index];
     let subDirName = project.projectName;
-    let subDirPath = path.join(this.ut.rootDir, dirName, "device", subDirName);
+    let subDirPath = path.join(
+      this.ut.rootDir.val,
+      dirName,
+      "device",
+      subDirName
+    );
     this.ut.LinkEdgeConfig["projects"].splice(index, 1);
     fs.existsSync(subDirPath) &&
-      fs.readdirSync(subDirPath).forEach(value => {
+      fs.readdirSync(subDirPath).forEach((value) => {
         fs.unlinkSync(path.join(subDirPath, value));
       });
     fs.existsSync(subDirPath) && fs.rmdirSync(subDirPath);

@@ -255,4 +255,10 @@ export class UdcServiceImpl implements UdcService {
   tinyEdgeCompile(pid: string): Promise<string> {
     return this.udcTerminal.tinyEdgeUpload(pid);
   }
+  async processDisplaySubmit(pid: string, info: string) {
+    await this.controller.processDisplaySubmit(pid, info);
+  }
+  async initDisplayBoard(info: string) {
+    await this.udcTerminal.initDisplayBoard(info);
+  }
 }

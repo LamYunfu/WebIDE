@@ -26,8 +26,11 @@ import {
   PROGRAM_SERVER_IP,
   PROGRAM_SERVER_PORT,
   TEMPLATE_SERVER,
-  LINKLAB_WORKSPACE,
-  CONFIGPATH
+  CONFIGPATH,
+  DEPLOY_SERVER_IP,
+  RootDirPath,
+  RASPBERRY_QUERRY_IP,
+  RASPBERRY_QUERRY_PORT,
 } from "../../setting/backend-config";
 import { OS } from "@theia/core";
 // import { networkInterfaces } from 'os';
@@ -57,7 +60,7 @@ export class UdcTerminal {
   programState: { [key: string]: { [key: string]: string } } = {};
   lastCommitDevice: { timeMs: number; device: string } = {
     timeMs: new Date().getTime(),
-    device: ""
+    device: "",
   };
   pidQueueInfo: {
     [pid: string]: {
@@ -77,14 +80,18 @@ export class UdcTerminal {
   aiConfig: any = {};
   virtualConfig: any = {};
   currentPid: string = ``;
-  rootDir: string = `${LINKLAB_WORKSPACE}`;
+
+  // rootDir: string = `${this.rootDir.val}`;
   tinyLinkInfo: { name: string; passwd: string } = { name: "", passwd: "" };
   initTag: boolean = true;
   freeCodingConfig: any = {};
   LinkEdgeConfig: any = {};
   fileTag: boolean = false;
-  user: string=""
-  constructor(@inject(Packet) protected readonly pkt: Packet) {
+  user: string = "";
+  constructor(
+    @inject(Packet) readonly pkt: Packet,
+    @inject(RootDirPath) public rootDir: RootDirPath
+  ) {
     this.event = new events.EventEmitter();
     this.hpp = new HalfPackProcess();
     Logger.val("current path:" + process.cwd());
@@ -95,7 +102,7 @@ export class UdcTerminal {
     let info: any;
     try {
       infoRaw = fs.readFileSync(
-        path.join(this.rootDir, dirName, "config.json")
+        path.join(this.rootDir.val, dirName, "config.json")
       );
       info = JSON.parse(infoRaw.toString("utf8"));
       this.freeCodingConfig = info;
@@ -111,7 +118,7 @@ export class UdcTerminal {
     let info: any;
     try {
       infoRaw = fs.readFileSync(
-        path.join(this.rootDir, dirName, "config.json")
+        path.join(this.rootDir.val, dirName, "config.json")
       );
 
       info = JSON.parse(infoRaw.toString("utf8")).projects[0];
@@ -131,14 +138,14 @@ export class UdcTerminal {
     let { dirName } = this.getPidInfos(pid);
     let trainServer = this.aiConfig["trainServer"];
     let st = fs.createWriteStream(
-      path.join(LINKLAB_WORKSPACE, dirName, "src.zip")
+      path.join(this.rootDir.val, dirName, "src.zip")
     ); //打包
     let achst = ach
       .create("zip")
-      .directory(path.join(LINKLAB_WORKSPACE, dirName), false);
+      .directory(path.join(this.rootDir.val, dirName), false);
     let hash = crypto.createHash("sha1");
     let hashVal = "";
-    let p = new Promise(resolve => {
+    let p = new Promise((resolve) => {
       st.on("close", () => {
         console.log("compress file scc");
         resolve("scc");
@@ -147,13 +154,13 @@ export class UdcTerminal {
     achst.pipe(st);
     achst.finalize();
     await p;
-    let rb = fs.readFileSync(path.join(LINKLAB_WORKSPACE, dirName, "src.zip"), {
-      encoding: "base64"
+    let rb = fs.readFileSync(path.join(this.rootDir.val, dirName, "src.zip"), {
+      encoding: "base64",
     }); //base64转码文件
     hashVal = hash.update(rb).digest("hex");
     let data = {
       hash: hashVal,
-      data: rb
+      data: rb,
     };
 
     console.log("train server" + trainServer + JSON.stringify(data));
@@ -162,7 +169,7 @@ export class UdcTerminal {
       _this.outputResult("open the port of server");
       let content = _this.pkt.construct("file", rb.toString());
       console.log(content);
-      ws.send(content, err => {
+      ws.send(content, (err) => {
         console.log(err);
       });
     });
@@ -170,7 +177,7 @@ export class UdcTerminal {
       Logger.info("error happened in train function");
       _this.outputResult("network error");
     });
-    ws.on("message", res => {
+    ws.on("message", (res) => {
       _this.outputResult(res.toString("utf8"));
     });
   }
@@ -188,7 +195,7 @@ export class UdcTerminal {
   async parseLinkEdgeConfig(pid: string, threeTuple: any = undefined) {
     for (let i = 0; i < 6; i++) {
       if (this.fileTag) {
-        await new Promise(res => {
+        await new Promise((res) => {
           setTimeout(() => {
             res();
           }, 1000);
@@ -202,7 +209,7 @@ export class UdcTerminal {
     try {
       infoRaw = fs.readFileSync(path.join(CONFIGPATH, dirName, "config.json"));
       let tulpeRaw = fs.readFileSync(
-        path.join(this.rootDir, dirName, "Config", "config.json")
+        path.join(this.rootDir.val, dirName, "Config", "config.json")
       );
       let tulpe = JSON.parse(tulpeRaw.toString())["Certificate"];
       this.LinkEdgeConfig = JSON.parse(infoRaw);
@@ -251,9 +258,9 @@ export class UdcTerminal {
   }
   delProject(pid: string): Promise<boolean> {
     let { dirName } = this.getPidInfos(pid);
-    let projectDir = path.join(this.rootDir, dirName);
+    let projectDir = path.join(this.rootDir.val, dirName);
     fs.existsSync(projectDir) ? fs.removeSync(projectDir) : "";
-    return new Promise(res => {
+    return new Promise((res) => {
       res(true);
     });
   }
@@ -263,7 +270,7 @@ export class UdcTerminal {
     let info: any;
     try {
       infoRaw = fs.readFileSync(
-        path.join(this.rootDir, dirName, "config.json")
+        path.join(this.rootDir.val, dirName, "config.json")
       );
       info = JSON.parse(infoRaw.toString("utf8")).projects[0];
       console.log(JSON.stringify(info));
@@ -282,14 +289,14 @@ export class UdcTerminal {
     let { dirName } = this.getPidInfos(pid);
     let simServer = this.virtualConfig["simServer"];
     let st = fs.createWriteStream(
-      path.join(LINKLAB_WORKSPACE, dirName, "src.zip")
+      path.join(this.rootDir.val, dirName, "src.zip")
     ); //打包
     let achst = ach
       .create("zip")
-      .directory(path.join(LINKLAB_WORKSPACE, dirName), false);
+      .directory(path.join(this.rootDir.val, dirName), false);
     let hash = crypto.createHash("sha1");
     let hashVal = "";
-    let p = new Promise(resolve => {
+    let p = new Promise((resolve) => {
       st.on("close", () => {
         console.log("compress file scc");
         resolve("scc");
@@ -298,14 +305,14 @@ export class UdcTerminal {
     achst.pipe(st);
     achst.finalize();
     await p;
-    let rb = fs.readFileSync(path.join(LINKLAB_WORKSPACE, dirName, "src.zip"), {
-      encoding: "base64"
+    let rb = fs.readFileSync(path.join(this.rootDir.val, dirName, "src.zip"), {
+      encoding: "base64",
     }); //base64转码文件
-    fs.unlinkSync(path.join(LINKLAB_WORKSPACE, dirName, "src.zip"));
+    fs.unlinkSync(path.join(this.rootDir.val, dirName, "src.zip"));
     hashVal = hash.update(rb).digest("hex");
     let data = {
       hash: hashVal,
-      data: rb
+      data: rb,
     };
 
     console.log("sim server" + simServer + JSON.stringify(data));
@@ -314,7 +321,7 @@ export class UdcTerminal {
       _this.outputResult("open the port of server");
       let content = _this.pkt.construct("file", rb.toString());
       console.log(content);
-      ws.send(content, err => {
+      ws.send(content, (err) => {
         console.log(err);
       });
     });
@@ -322,7 +329,7 @@ export class UdcTerminal {
       Logger.info("error happened in virtualSubmit");
       _this.outputResult("network error");
     });
-    ws.on("message", res => {
+    ws.on("message", (res) => {
       _this.outputResult(res.toString("utf8"));
     });
   }
@@ -332,7 +339,7 @@ export class UdcTerminal {
     type?: string,
     deviceRole?: string[]
   ) {
-    //         let rootdir = this.rootDir
+    //         let rootdir = this.rootDir.val
     //         new Promise((resolve) => {
     //             fs.exists(`/home/project/${dirName}/hexFiles`, async (res) => {
     //                 if (!res) {
@@ -473,7 +480,7 @@ export class UdcTerminal {
   async refreshConfiguration(pid: string) {
     let { dirName } = this.getPidInfos(pid);
     let infoRaw = fs.readFileSync(
-      path.join(LINKLAB_WORKSPACE, dirName, "config.json")
+      path.join(this.rootDir.val, dirName, "config.json")
     );
     let info: any;
     try {
@@ -484,7 +491,7 @@ export class UdcTerminal {
     }
     let preModel = this.pidQueueInfo[pid].model;
     this.pidQueueInfo[pid].loginType = "queue";
-    this.pidQueueInfo[pid].model = info[0].deviceType;
+    this.pidQueueInfo[pid].model = info[0].burningDataQueue.program.model;
     this.pidQueueInfo[pid].boardType = info[0].compilationMethod;
     // this.pidQueueInfo[pid].timeout = info[0].timeout
     this.pidQueueInfo[pid].timeout = "30";
@@ -496,13 +503,13 @@ export class UdcTerminal {
     this.pidQueueInfo[pid].deviceRole = deviceRole;
     if (preModel != this.pidQueueInfo[pid].model) {
       if (this.is_connected) await this.disconnect();
-      this.connect("", "", pid, this.pidQueueInfo[pid].timeout);
+      await this.connect("", "", pid, this.pidQueueInfo[pid].timeout);
     }
     console.log(JSON.stringify(this.pidQueueInfo[pid!]));
   }
   async requestFixedTemplate(pid: string, type: string, rootDir: string) {
     let { dirName } = this.pidQueueInfo[pid];
-    let devicePath = path.join(this.rootDir, dirName, "device");
+    let devicePath = path.join(this.rootDir.val, dirName, "device");
     !fs.existsSync(devicePath) ? fs.mkdirSync(devicePath) : "";
     let projectPath = path.join(devicePath, rootDir);
     if (!fs.existsSync(projectPath)) {
@@ -513,19 +520,25 @@ export class UdcTerminal {
       this.udcClient &&
         this.udcClient.onConfigLog({
           name: "openSrcFile",
-          passwd: path.join(projectPath, rootDir + ".cpp")
+          passwd: path.join(projectPath, rootDir + ".cpp"),
         });
     } else {
       this.udcClient &&
         this.udcClient.onConfigLog({
           name: "openSrcFile",
-          passwd: `/` + path.join(projectPath, rootDir + ".cpp")
+          passwd: `/` + path.join(projectPath, rootDir + ".cpp"),
         });
     }
     Logger.info(path.join(projectPath, rootDir + ".cpp"));
   }
-  async initPidQueueInfo(infos: string): Promise<string> {
-    console.log("initPid")
+  async initPidQueueInfo(
+    infos: string,
+    changeRootDir: boolean = false
+  ): Promise<string> {
+    if (!changeRootDir) {
+      this.rootDir.reset();
+    }
+    console.log("initPid");
     this.freeCodingConfig = "";
     this.initTag = false;
     Logger.info(infos, "info");
@@ -535,9 +548,9 @@ export class UdcTerminal {
       let {
         dirName,
         //  fns, model, deviceRole,
-        ppid
+        ppid,
       } = this.pidQueueInfo[index];
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         if (ppid != null) {
           let fileRequest = http.request(
             {
@@ -546,10 +559,10 @@ export class UdcTerminal {
               hostname: TEMPLATE_SERVER,
               path: "/problem/template",
               headers: {
-                "Content-Type": "application/json"
-              }
+                "Content-Type": "application/json",
+              },
             },
-            mesg => {
+            (mesg) => {
               if (mesg == undefined) {
                 _this.outputResult("network error");
                 Logger.info("error happened while get template");
@@ -563,35 +576,41 @@ export class UdcTerminal {
                 Logger.info("error happened in initPidQueueInfo");
                 _this.outputResult("network error");
                 resolve("err");
-              }); 
+              });
               mesg.on("end", () => {
                 let res: any = JSON.parse(bf);
                 console.log("res:::" + bf);
                 if (res.result) {
                   for (let item of Object.keys(res.template)) {
-                    if (!fs.existsSync(path.join(_this.rootDir, dirName)))
-                      fs.mkdirSync(path.join(_this.rootDir, dirName));
+                    if (!fs.existsSync(path.join(_this.rootDir.val, dirName)))
+                      fs.mkdirSync(path.join(_this.rootDir.val, dirName));
                     if (
-                      !fs.existsSync(path.join(_this.rootDir, dirName, item))
+                      !fs.existsSync(
+                        path.join(_this.rootDir.val, dirName, item)
+                      )
                     ) {
                       if (item == "config.json") {
                         fs.writeFileSync(
-                          path.join(_this.rootDir, dirName, item),
+                          path.join(_this.rootDir.val, dirName, item),
                           res.template[item]
                         );
                         this.refreshConfiguration(ppid!);
                         continue;
                       }
-                      fs.mkdirSync(path.join(_this.rootDir, dirName, item));
+                      fs.mkdirSync(path.join(_this.rootDir.val, dirName, item));
                       for (let file of Object.keys(res.template[item])) {
                         fs.writeFileSync(
-                          path.join(_this.rootDir, dirName, item, file),
+                          path.join(_this.rootDir.val, dirName, item, file),
                           res.template[item][file]
                         );
                       }
                       if (index == "32") {
                         fs.writeFileSync(
-                          path.join(_this.rootDir, dirName, "Platform.json"),
+                          path.join(
+                            _this.rootDir.val,
+                            dirName,
+                            "Platform.json"
+                          ),
                           ""
                         );
                       }
@@ -613,12 +632,12 @@ export class UdcTerminal {
           console.log(
             "ppid::::" +
               JSON.stringify({
-                ppid: ppid
+                ppid: ppid,
               })
           );
           fileRequest.write(
             JSON.stringify({
-              ppid: ppid
+              ppid: ppid,
             })
           );
           fileRequest.end();
@@ -630,29 +649,30 @@ export class UdcTerminal {
       if (
         this.pidQueueInfo[index]["type"] == "freecoding" ||
         this.pidQueueInfo[index]["type"] == "OneLinkView" ||
-        index == "32"||index=="35"
+        index == "32" ||
+        index == "35"
       ) {
         if (OS.type() == OS.Type.Linux)
           this.udcClient!.onConfigLog({
             name: "openWorkspace",
-            passwd: path.join(LINKLAB_WORKSPACE, dirName)
+            passwd: path.join(this.rootDir.val, dirName),
           });
         else
           this.udcClient!.onConfigLog({
             name: "openWorkspace",
-            passwd: `/` + LINKLAB_WORKSPACE + `/` + dirName
+            passwd: `/` + this.rootDir.val + `/` + dirName,
           });
       } else if (OS.type() == OS.Type.Linux)
         this.udcClient!.onConfigLog({
           name: "openWorkspace",
-          passwd: LINKLAB_WORKSPACE
+          passwd: this.rootDir.val,
         });
       else
         this.udcClient!.onConfigLog({
           name: "openWorkspace",
-          passwd: `/` + LINKLAB_WORKSPACE
+          passwd: `/` + this.rootDir.val,
         });
-      // this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `${path.join(LINKLAB_WORKSPACE) }` })
+      // this.udcClient!.onConfigLog({ name: "openWorkspace", passwd: `${path.join(this.rootDir.val) }` })
 
       // if (fileRequestResult != "scc") {
       //     console.log("create file fail")
@@ -728,7 +748,7 @@ export class UdcTerminal {
     // login_type = LOGINTYPE.QUEUE//temporary
     let uuid = this.uuid;
     let _this = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       // let server_ip = "118.31.76.36"
       // let server_port = 2000
       let server_ip = LDC_SERVER_IP;
@@ -748,10 +768,7 @@ export class UdcTerminal {
         Logger.info("Connection to Controller Closed!");
       });
       ctrFd.on("data", (data: Buffer) => {
-        let d = data
-          .toString("utf8")
-          .substr(1, data.length)
-          .split(",");
+        let d = data.toString("utf8").substr(1, data.length).split(",");
         let serverData = d.slice(2, d.length);
         Logger.val("d:" + d);
         Logger.val("serverData:" + serverData);
@@ -802,7 +819,7 @@ export class UdcTerminal {
     // }
     Logger.val("serverPort: " + server_port);
     let _this = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       // _this.udcServerClient = tls.connect(server_port, server_ip, options, () => {
       _this.udcServerClient = net.connect(server_port, server_ip, () => {
         resolve("success");
@@ -825,6 +842,7 @@ export class UdcTerminal {
         // _this.udcServerClient!.destroy();
         _this.udcServerClient = null;
         _this.dev_list = undefined;
+        _this.events.emit("disconnect");
         _this.outputResult("connection is disconnected");
         Logger.info("Connection to Udc Server Closed!");
       });
@@ -834,7 +852,7 @@ export class UdcTerminal {
         // Logger.info("hpp received <<<<<<<<<<:" + data.toString('utf8'))
         _this.hpp.putData(data);
       });
-      _this.hpp.on("data", data => {
+      _this.hpp.on("data", (data) => {
         // Logger.info("hpp  processed >>>>>>>>>>:" + data.toString('utf8'))
         _this.onUdcServerData(data, pid);
       });
@@ -910,11 +928,7 @@ export class UdcTerminal {
     } else if (type == Packet.MULTI_DEVICE_PROGRAM) {
       this.outputResult("burning option not set correctly");
     } else if (type == Packet.DEVICE_LOG) {
-      let tmp: string = value
-        .toString()
-        .split(":")
-        .slice(2)
-        .join(":");
+      let tmp: string = value.toString().split(":").slice(2).join(":");
       let afterSplit = tmp.split("0E");
       let tag = afterSplit.slice(0, 1);
       Logger.info(tag[0], "tg_");
@@ -927,7 +941,7 @@ export class UdcTerminal {
     } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
       this.lastCommitDevice = {
         timeMs: new Date().getTime(),
-        device: value.split(":").pop()
+        device: value.split(":").pop(),
       };
       this.outputResult(
         `burning ${this.lastCommitDevice.device}......`,
@@ -985,7 +999,7 @@ export class UdcTerminal {
       "stm32l432kc",
       "tinylink_platform_1",
       "tinylink_lora",
-      "tinylink_raspi"
+      "tinylink_raspi",
     ];
     return new Promise((resolve, reject) => resolve(default_devices));
   }
@@ -1027,7 +1041,7 @@ export class UdcTerminal {
     Logger.info(`type info :${type}`, "type");
     let tmp: { [key: string]: {} } = {};
     tmp[type] = this.dataStorage[type];
-    return new Promise(res => res(JSON.stringify(tmp)));
+    return new Promise((res) => res(JSON.stringify(tmp)));
   }
   async connect(
     loginTypeNotUse: string,
@@ -1059,7 +1073,7 @@ export class UdcTerminal {
       waitID: (
         Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
         Math.pow(10, 15)
-      ).toString()
+      ).toString(),
     };
     if (this.currentPid == pid && (await this.is_connected)) {
       this.outputResult(
@@ -1117,6 +1131,21 @@ export class UdcTerminal {
     // await this.AC.postNameAndType("helloworld", "esp32devkitc")
     return true;
   }
+  async waitDisconnect(): Promise<Boolean> {
+    return new Promise((res) => {
+      let x = setTimeout(() => {
+        res(false);
+        this.events.removeListener("disconnect", () => {
+          res(true);
+        });
+      }, 10000);
+
+      this.events.once("disconnect", () => {
+        clearTimeout(x);
+        res(true);
+      });
+    });
+  }
 
   async disconnect(): Promise<Boolean> {
     if (this.udcServerClient === null) {
@@ -1127,7 +1156,8 @@ export class UdcTerminal {
     // this.udcServerClient = null;
     // this.dev_list = undefined
     (await this.udcServerClient) == undefined ? "" : this.udcServerClient.end();
-    return true;
+
+    return await this.waitDisconnect();
   }
 
   async erase_device(dev_str: string) {
@@ -1236,7 +1266,7 @@ export class UdcTerminal {
   ): Promise<Boolean> {
     let _this = this;
     let uploadResult = "scc";
-    let configResult = await new Promise(resolve => {
+    let configResult = await new Promise((resolve) => {
       Logger.info("configuring burning program");
       let hash = crypto.createHash("sha1");
       let buff = fs.readFileSync(filepath);
@@ -1251,10 +1281,10 @@ export class UdcTerminal {
           port: PROGRAM_SERVER_PORT,
           path: "/config",
           headers: {
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         },
-        mesg => {
+        (mesg) => {
           let bf = "";
           if (mesg == undefined) {
             _this.outputResult("network error");
@@ -1290,7 +1320,7 @@ export class UdcTerminal {
       });
       configRequest.write(
         JSON.stringify({
-          filehash: hashVal
+          filehash: hashVal,
         })
       );
       configRequest.end();
@@ -1299,7 +1329,7 @@ export class UdcTerminal {
     if (configResult == "scc") {
       let fm = new FormData();
       Logger.info("uploading hex file");
-      uploadResult = await new Promise(async resolve => {
+      uploadResult = await new Promise(async (resolve) => {
         let uploadRequest = http.request(
           {
             //传zip
@@ -1311,9 +1341,9 @@ export class UdcTerminal {
             //     "Accept": "application/json",
             //     "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
             // },
-            headers: fm.getHeaders()
+            headers: fm.getHeaders(),
           },
-          mesg => {
+          (mesg) => {
             if (mesg == undefined) {
               _this.outputResult("network error");
               Logger.info("error happened while upload");
@@ -1394,7 +1424,7 @@ export class UdcTerminal {
     let operations: { [key: string]: string } = {
       start: Packet.DEVICE_START,
       stop: Packet.DEVICE_STOP,
-      reset: Packet.DEVICE_RESET
+      reset: Packet.DEVICE_RESET,
     };
     if (operations.hasOwnProperty(operation) === false) {
       return false;
@@ -1434,7 +1464,7 @@ export class UdcTerminal {
       }
       if (this.cmd_excute_return === "busy") {
         Logger.err("file send busy");
-        await new Promise(res => setTimeout(res, 5000));
+        await new Promise((res) => setTimeout(res, 5000));
         continue;
       }
       if (
@@ -1602,7 +1632,7 @@ export class UdcTerminal {
     this.parseVirtualConfig(pid);
     let { dirName } = this.pidQueueInfo[pid];
     let url = path.join(
-      this.rootDir,
+      this.rootDir.val,
       dirName,
       this.virtualConfig["projectName"],
       filename + ".cpp"
@@ -1616,7 +1646,7 @@ export class UdcTerminal {
         this.udcClient &&
           this.udcClient.onConfigLog({
             name: "openSrcFile",
-            passwd: `/` + url
+            passwd: `/` + url,
           });
     } else {
       this.outputResult(
@@ -1630,7 +1660,7 @@ export class UdcTerminal {
     for (i = 0; i < 5; i++) {
       if (this.initTag == false) {
         this.outputResult("wait for config file templates");
-        await new Promise(res => {
+        await new Promise((res) => {
           setTimeout(() => {
             res();
           }, 3000);
@@ -1646,31 +1676,33 @@ export class UdcTerminal {
     let { dirName } = this.pidQueueInfo[pid];
     if (
       this.pidQueueInfo[pid].type == "freecoding" ||
-      this.pidQueueInfo[pid].type == "ai"
+      this.pidQueueInfo[pid].type == "ai" ||
+      this.pidQueueInfo[pid].type == "displayboard"
     ) {
       let configRaw: any;
       configRaw = fs.readFileSync(
-        path.join(this.rootDir, dirName, "config.json")
+        path.join(this.rootDir.val, dirName, "config.json")
       );
       try {
         let config = JSON.parse(configRaw);
         for (let item of config["projects"]) {
           let srcDir = item["projectName"];
           let fileArr = fs.readdirSync(
-            path.join(this.rootDir, dirName, srcDir)
+            path.join(this.rootDir.val, dirName, srcDir)
           );
           for (let file of fileArr) {
             if (OS.type() == OS.Type.Linux)
               this.udcClient &&
                 this.udcClient.onConfigLog({
                   name: "openSrcFile",
-                  passwd: path.join(this.rootDir, dirName, srcDir, file)
+                  passwd: path.join(this.rootDir.val, dirName, srcDir, file),
                 });
             else {
               this.udcClient &&
                 this.udcClient.onConfigLog({
                   name: "openSrcFile",
-                  passwd: `/` + path.join(this.rootDir, dirName, srcDir, file)
+                  passwd:
+                    `/` + path.join(this.rootDir.val, dirName, srcDir, file),
                 });
             }
           }
@@ -1680,36 +1712,39 @@ export class UdcTerminal {
         return;
       }
     } else {
-      let fileArr = fs.readdirSync(path.join(this.rootDir, dirName));
-      fileArr.forEach(val => {
-        if (fs.statSync(path.join(this.rootDir, dirName, val)).isDirectory()) {
+      let fileArr = fs.readdirSync(path.join(this.rootDir.val, dirName));
+      fileArr.forEach((val) => {
+        if (
+          fs.statSync(path.join(this.rootDir.val, dirName, val)).isDirectory()
+        ) {
           let chidFileArr = fs.readdirSync(
-            path.join(this.rootDir, dirName, val)
+            path.join(this.rootDir.val, dirName, val)
           );
-          chidFileArr.forEach(file => {
+          chidFileArr.forEach((file) => {
             console.log(file);
             if (
               fs
-                .statSync(path.join(this.rootDir, dirName, val, file))
+                .statSync(path.join(this.rootDir.val, dirName, val, file))
                 .isFile() &&
               (file.split(".").pop() == "c" ||
                 file.split(".").pop() == "cpp") &&
               file.split(".")[0] != "app_entry"
             ) {
               console.log(
-                "openfile:" + path.join(this.rootDir, dirName, val, file)
+                "openfile:" + path.join(this.rootDir.val, dirName, val, file)
               );
               if (OS.type() == OS.Type.Linux)
                 this.udcClient &&
                   this.udcClient.onConfigLog({
                     name: "openSrcFile",
-                    passwd: path.join(this.rootDir, dirName, val, file)
+                    passwd: path.join(this.rootDir.val, dirName, val, file),
                   });
               else
                 this.udcClient &&
                   this.udcClient.onConfigLog({
                     name: "openSrcFile",
-                    passwd: `/` + path.join(this.rootDir, dirName, val, file)
+                    passwd:
+                      `/` + path.join(this.rootDir.val, dirName, val, file),
                   });
             }
           });
@@ -1727,7 +1762,7 @@ export class UdcTerminal {
       console.log("null device role ");
       return;
     }
-    let fileDir = path.join(this.rootDir, dirName, deviceRole[0]);
+    let fileDir = path.join(this.rootDir.val, dirName, deviceRole[0]);
     let fn = fs.readdirSync(fileDir)[0].split(".")[0];
     tmpPath = path.join(fileDir, fn + ".cpp");
     Logger.val(`tmpPath:${tmpPath}`);
@@ -1736,7 +1771,7 @@ export class UdcTerminal {
     let tinySimRequest = new WebSocket(SENCE_SERVER_URL, {
       // "ws://localhost:8765/", {
     });
-    await new Promise(res => {
+    await new Promise((res) => {
       tinySimRequest.on("message", (data: string) => {
         let tmp = new Buffer(data).toString("utf8");
         console.log(tmp.toString());
@@ -1769,7 +1804,9 @@ export class UdcTerminal {
     let _this = this;
     try {
       src = fs
-        .readFileSync(path.join(this.rootDir, dirName, "device", "device.cpp"))
+        .readFileSync(
+          path.join(this.rootDir.val, dirName, "device", "device.cpp")
+        )
         .toString("utf8");
     } catch {
       this.outputResult("file read err, check you file structure please");
@@ -1782,10 +1819,10 @@ export class UdcTerminal {
         hostname: "judge.tinylink.cn",
         path: "/problem/literal/judge",
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       },
-      mesg => {
+      (mesg) => {
         if (mesg == undefined) {
           _this.outputResult("network error");
           Logger.info("error happened while judge");
@@ -1812,7 +1849,7 @@ export class UdcTerminal {
     fileRequest.write(
       JSON.stringify({
         pid: pid,
-        src: src
+        src: src,
       })
     );
     fileRequest.end();
@@ -1824,13 +1861,13 @@ export class UdcTerminal {
         //
         method: "GET",
         port: "12320",
-        hostname: "47.114.130.247",
+        hostname: DEPLOY_SERVER_IP,
         path: "/get_by_devport?devport=" + this.lastCommitDevice.device,
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       },
-      mesg => {
+      (mesg) => {
         if (mesg == undefined) {
           this.outputResult("network error");
           Logger.info("error happened while get web server");
@@ -1876,14 +1913,14 @@ export class UdcTerminal {
       {
         //
         method: "GET",
-        port: "12320",
-        hostname: "47.114.130.247",
+        port: RASPBERRY_QUERRY_PORT,
+        hostname: RASPBERRY_QUERRY_IP,
         path: "/get_by_devport?devport=" + this.lastCommitDevice.device,
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       },
-      mesg => {
+      (mesg) => {
         if (mesg == undefined) {
           this.outputResult("network error");
           Logger.info("error happened while get web server");
@@ -1909,9 +1946,9 @@ export class UdcTerminal {
                 str += `------${item["ipaddress"]}:${item["port"]}\n`;
               }
               this.outputResult(
-                `host:\n${str}------was deployed ${(new Date().getTime() -
-                  this.lastCommitDevice.timeMs) /
-                  1000} seconds before`
+                `host:\n${str}------was deployed ${
+                  (new Date().getTime() - this.lastCommitDevice.timeMs) / 1000
+                } seconds before`
               );
             }
           } catch {
@@ -1934,14 +1971,14 @@ export class UdcTerminal {
       {
         //
         method: "GET",
-        port: "12320",
-        hostname: "47.114.130.247",
+        port: RASPBERRY_QUERRY_PORT,
+        hostname: RASPBERRY_QUERRY_IP,
         path: "/get_by_devport?devport=" + this.lastCommitDevice.device,
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       },
-      mesg => {
+      (mesg) => {
         if (mesg == undefined) {
           this.outputResult("network error");
           Logger.info("error happened while get web server");
@@ -1967,9 +2004,9 @@ export class UdcTerminal {
                 str += `------ip:${item["ipaddress"]} port:${item["port"]}\n`;
               }
               this.outputResult(
-                `${str}------was deployed ${(new Date().getTime() -
-                  this.lastCommitDevice.timeMs) /
-                  1000} seconds before`
+                `${str}------was deployed ${
+                  (new Date().getTime() - this.lastCommitDevice.timeMs) / 1000
+                } seconds before`
               );
             }
           } catch {
@@ -1987,12 +2024,12 @@ export class UdcTerminal {
   }
   async tinyEdgeUpload(pid: string): Promise<string> {
     let _this = this;
-    console.log("tinyEdgePid:"+pid)
+    console.log("tinyEdgePid:" + pid);
     let { dirName } = this.pidQueueInfo[pid];
-    let projectDir = path.join(LINKLAB_WORKSPACE, dirName);
-    let zipPath = path.join(LINKLAB_WORKSPACE, dirName, "src.zip");
+    let projectDir = path.join(this.rootDir.val, dirName);
+    let zipPath = path.join(this.rootDir.val, dirName, "src.zip");
     let installPath = path.join(
-      LINKLAB_WORKSPACE,
+      this.rootDir.val,
       dirName,
       "Deploy",
       "install.sh"
@@ -2002,7 +2039,7 @@ export class UdcTerminal {
       .create("zip")
       .directory(path.join(projectDir, "Custom"), "TinyEdge/Custom")
       .directory(path.join(projectDir, "Development"), "TinyEdge/Development");
-    let p = new Promise(resolve => {
+    let p = new Promise((resolve) => {
       st.on("close", () => {
         _this.outputResult("compress file scc");
         resolve("scc");
@@ -2013,17 +2050,18 @@ export class UdcTerminal {
     await p;
     let fm = new FormData();
     Logger.info("uploading hex file");
-    return await new Promise(async resolve => {
+    return await new Promise(async (resolve) => {
       let uploadRequest = http.request(
         {
           //传zip
           method: "POST",
-          hostname: "47.96.155.111",
+
+          hostname: DEPLOY_SERVER_IP,
           port: 12381,
           path: "/api/system/linklab/compile",
-          headers: fm.getHeaders()
+          headers: fm.getHeaders(),
         },
-        mesg => {
+        (mesg) => {
           if (mesg == undefined) {
             _this.outputResult("network error");
             Logger.info("error happened while upload");
@@ -2075,5 +2113,33 @@ export class UdcTerminal {
       fm.pipe(uploadRequest);
       Logger.info("file append ok");
     });
+  }
+  async initDisplayBoard(infoRaw: string) {
+    this.rootDir.reset();
+    try {
+      let info = JSON.parse(infoRaw);
+      let project = info.project;
+      info = info.info;
+      let x: { [key: string]: any } = {};
+      x[info.pid] = {
+        dirName: info.title,
+        ppid: info.pid,
+        loginType: "queue",
+        model: "#####",
+        type: "displayboard",
+      };
+      Logger.info("init Display");
+      this.rootDir.val = project;
+      !fs.existsSync(this.rootDir.val) ? fs.mkdirSync(this.rootDir.val) : "";
+      await this.initPidQueueInfo(JSON.stringify(x), true);
+      this.openPidFile(info.pid);
+      // await this.requestFixedTemplate(info.pid, "freecoding", this.rootDir.val);
+      this.refreshConfiguration(info.pid);
+      this.parseFreeConfig(info.pid);
+    } catch (e) {
+      console.log(e);
+      this.rootDir.reset();
+      this.outputResult("init display board failed");
+    }
   }
 }

@@ -5,11 +5,11 @@ import { UdcTerminal } from "../util/udc-terminal";
 import { UdcCompiler } from "./udc-compiler";
 // import { AliosCompiler } from './alios-compiler';
 import { inject, injectable } from "inversify";
-import { getCompilerType, rootDir } from "../globalconst";
+import { getCompilerType } from "../globalconst";
 import * as path from "path";
 import * as fs from "fs";
 import { RaspeberryGccCompiler } from "./raspberry-gcc-compiler";
-
+import { RootDirPath } from "../../setting/backend-config";
 @injectable()
 /*
 编译
@@ -23,12 +23,15 @@ export class Compiler {
     @inject(NewContikiCompiler)
     protected readonly newContikiCompiler: NewContikiCompiler,
     @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal,
-    @inject(RaspeberryGccCompiler) protected readonly rgc: RaspeberryGccCompiler
+    @inject(RaspeberryGccCompiler)
+    protected readonly rgc: RaspeberryGccCompiler,
+    @inject(RootDirPath) public rootDir: RootDirPath
   ) {}
+
   async linkEdgeCompile(pid: string, index: string) {}
   async compile(pid: string) {
     let { model, dirName } = this.udcTerminal.getPidInfos(pid);
-    let hexFilePath = path.join(rootDir, dirName, "hexFiles");
+    let hexFilePath = path.join(this.rootDir.val, dirName, "hexFiles");
     fs.existsSync(hexFilePath) ? "" : fs.mkdirSync(hexFilePath);
     Logger.info("start compiling");
     Logger.info("MODEL is:" + model);

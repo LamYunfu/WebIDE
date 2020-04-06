@@ -9,7 +9,7 @@ import {
   TreeNode,
   ApplicationShell,
   LocalStorageService,
-  WidgetManager
+  WidgetManager,
 } from "@theia/core/lib/browser";
 import React = require("react");
 import { Emitter } from "vscode-jsonrpc";
@@ -27,9 +27,10 @@ import { WorkspaceService } from "@theia/workspace/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { FileTreeWidget } from "@theia/filesystem/lib/browser";
 import { ViewContainer } from "@theia/core/lib/browser/view-container";
-import { LINKLAB_WORKSPACE } from "../setting/backend-config";
 import { Lamp } from "./lamp";
 import ReactDOM from "react-dom";
+import { DisplayBoard } from "./component/display-board";
+import { TestWidget } from "./test";
 // import { LinkEdgeView } from "./component/linkedge";
 export interface DeviceViewSymbolInformationNode
   extends CompositeTreeNode,
@@ -84,7 +85,7 @@ export class DeviceViewWidget extends TreeWidget {
     this.title.closable = true;
     this.title.iconClass = "fa fa-gg";
     this.addClass("theia-udcdevice-view");
-    window.addEventListener("message", message => {
+    window.addEventListener("message", (message) => {
       if (message.data == "scc") {
         // alert("get")
         this.tinymobile!.postMessage(this.url, "*");
@@ -94,7 +95,6 @@ export class DeviceViewWidget extends TreeWidget {
     });
   }
   submitEnableWithJudgeTag: boolean = false;
-  rootdir: string = `${LINKLAB_WORKSPACE}`;
   viewType: string = "";
   setSize = (size: number) => {
     console.log("rendering");
@@ -104,13 +104,13 @@ export class DeviceViewWidget extends TreeWidget {
       activeWidgetId: this.id,
       leftPanel: {
         type: "sidepanel",
-        size: size
-      }
+        size: size,
+      },
     });
   };
   protected renderTree(): React.ReactNode {
     return (
-      <div style={{height:"100%"}}>
+      <div style={{ height: "100%" }}>
         <View
           delProject={this.delProject}
           initPid={this.initPid}
@@ -165,6 +165,8 @@ export class DeviceViewWidget extends TreeWidget {
           saveAll={this.saveAll}
           getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
           setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
+           processDisplaySubmit={this.processDisplaySubmit}
+          attach={this.attach}
         />
         <Lamp imgDisplay={this.imgDisplay} lampStatus={this.lampStatus}></Lamp>
 
@@ -172,9 +174,14 @@ export class DeviceViewWidget extends TreeWidget {
           initPidQueueInfo={this.initPidQueueInfo}
           linkEdgeConnect={this.linkEdgeConnect}
         ></LinkEdgeView> */}
+   
       </div>
     );
   }
+  processDisplaySubmit = async (pid: string, info: string) => {
+    await this.udcService.processDisplaySubmit(pid, info);
+  };
+
   imgDisplay: string = "none";
   lampStatus: boolean = false;
   resetTo: any;
@@ -192,6 +199,11 @@ export class DeviceViewWidget extends TreeWidget {
     }, 3000);
     this.update();
   }
+  attach = () => {
+    this.applicationShell.addWidget(new TestWidget(), {
+      area: "bottom",
+    });
+  };
   gotoPhone = () => {
     // ReactDOM.render(<Lamp/>,document.body)
     window.blur();
@@ -268,9 +280,10 @@ export class DeviceViewWidget extends TreeWidget {
   }
   openWorkSpace = (urlStr: string) => {
     if (
-      decodeURI(window.location.href)
-        .split("/")
-        .pop() != urlStr.split("/").pop()
+      decodeURI(window.location.href).split("/").pop() !=
+        urlStr.split("/").pop() &&
+      decodeURI(window.location.href).split("\\").pop() !=
+        urlStr.split("\\").pop()
     )
       this.ws.open(new URI(`${urlStr}`), { preserveWindow: true });
   };

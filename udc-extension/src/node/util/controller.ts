@@ -10,7 +10,7 @@ import { Compiler } from "../compilers/compiler";
 import { Programer } from "./programmer";
 import { Logger } from "./logger";
 import { getCompilerType } from "../globalconst";
-import { LINKLAB_WORKSPACE } from "../../setting/backend-config";
+import { RootDirPath } from "../../setting/backend-config";
 import { FuzzySearch } from "@theia/core/lib/browser/tree/fuzzy-search";
 // import { Path } from '@theia/core';
 
@@ -24,16 +24,26 @@ export class Controller {
     @inject(Compiler) protected readonly cm: Compiler,
     @inject(Extractor) protected readonly et: Extractor,
     @inject(Programer) protected readonly pm: Programer,
-    @inject(ConfigSetter) protected readonly cs: ConfigSetter // @inject(Event) protected readonly evt: Event
+    @inject(ConfigSetter) protected readonly cs: ConfigSetter, // @inject(Event) protected readonly evt: Event
+    @inject(RootDirPath) public rootDir: RootDirPath
   ) {}
-  rootDir: string = `${LINKLAB_WORKSPACE}`;
+
   events = new events.EventEmitter();
+  async processDisplaySubmit(pid: string, info: string) {
+    Logger.info("start process issue");
+    if (pid == "") await this.ut.initDisplayBoard(info);
+    else {
+      // if (this.ut.is_connected) this.ut.disconnect();
+      // this.ut.connect("", "", "", "30");
+      await this.processIssue(pid);
+    }
+  }
   async processFreeCoding(pid: string) {
     if (pid == "31")
       setTimeout(() => {
         this.ut.getLastWebUrl();
       }, 10000);
-      if (pid=="33")
+    if (pid == "33")
       setTimeout(() => {
         this.ut.getSocket();
       }, 10000);
@@ -54,18 +64,18 @@ export class Controller {
         case "group":
           return await _this.cm
             .compile(pid)
-            .then(async res => {
+            .then(async (res) => {
               if (res == "scc") {
                 Logger.info("compile scc");
                 if (
                   devType == "alios" ||
                   devType == "contiki" ||
-                  devType== "raspberry_pi" 
-                ){
-                  Logger.info("skip extract")
+                  devType == "raspberry_pi"
+                ) {
+                  Logger.info("skip extract");
                   return "scc";
                 }
-                 
+
                 let eres = await _this.et.extract(pid); //文件提取结果
                 Logger.info("eres:" + eres);
                 if (eres == "scc") {
@@ -82,7 +92,7 @@ export class Controller {
                 throw "error happened";
               }
             })
-            .then(async res => {
+            .then(async (res) => {
               if (res == "scc") {
                 // if (devType == "alios")
                 //     return true;
@@ -99,7 +109,7 @@ export class Controller {
                     return "fail";
                   }
                   Logger.info("waiting for allocate device");
-                  await new Promise(res => {
+                  await new Promise((res) => {
                     setTimeout(() => {
                       res();
                     }, 1000);
@@ -107,7 +117,7 @@ export class Controller {
                 }
                 _this.ut.getIdleDeviceCount(pid); //查询空闲设备
                 let res = "";
-                res = await new Promise<string>(resolve => {
+                res = await new Promise<string>((resolve) => {
                   setTimeout(() => {
                     resolve("get idle device count timeout");
                     _this.ut.events.removeAllListeners("goSim");
@@ -123,7 +133,7 @@ export class Controller {
                     _this.ut.udcClient &&
                       _this.ut.udcClient.onConfigLog({
                         name: "executeSelectPanel",
-                        passwd: ""
+                        passwd: "",
                       }); //进入tinysim选择界面
                     _this.ut.events.removeAllListeners("goSim");
                     _this.ut.events.removeAllListeners("goDevice");
@@ -140,7 +150,7 @@ export class Controller {
                 if (res != "fw") {
                   //判断查询后的结果
                   this.ut.outputResult(res);
-                  res = await new Promise<string>(resolve => {
+                  res = await new Promise<string>((resolve) => {
                     setTimeout(() => {
                       resolve("get idle device count timeout");
                       _this.events.removeAllListeners("dev_fw");
@@ -166,7 +176,7 @@ export class Controller {
                   this.ut.udcClient &&
                     this.ut.udcClient.onConfigLog({
                       name: "submitEnable",
-                      passwd: "true"
+                      passwd: "true",
                     }); //解除提交连接按钮禁用状态
                   return "fail";
                 }
@@ -198,8 +208,8 @@ export class Controller {
       this.ut.udcClient &&
         this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" });
     } finally {
-      let dir = path.join(this.rootDir, dirName);
-      fs.readdirSync(dir).forEach(name => {
+      let dir = path.join(this.rootDir.val, dirName);
+      fs.readdirSync(dir).forEach((name) => {
         let suffix = name.split(".").pop();
         if (suffix == "zip") {
           fs.unlinkSync(path.join(dir, name));
@@ -216,13 +226,13 @@ export class Controller {
     let fn = tmp[1];
     return await _this.cm
       .compileSingleFile(pid, fn)
-      .then(async res => {
+      .then(async (res) => {
         //pid==pidAndFn
         if (res == "scc") {
           return _this.et.extractSingleFile(pid, fn);
         }
       })
-      .then(async res => {
+      .then(async (res) => {
         if (res == "scc") {
           return _this.pm.programSingleFile(pid, fn);
         }

@@ -11,12 +11,13 @@ import {
   USER_INFO_URL,
   VIEW_DETAIL_URL,
   QUIZE_JUDGE_URL,
-  CHOICE_JUDGE_URL
+  CHOICE_JUDGE_URL,
 } from "../../setting/front-end-config";
 import { LinkEdgeView, Input } from "./linkedge";
 import { OneLinkView } from "./onelink-view";
 import { ProjectCreator } from "../projectCreator";
 import { FreeCodingDisplay } from "./freecoding-view-display";
+import { DisplayBoard } from "./display-board";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
@@ -82,6 +83,8 @@ export namespace View {
     getSubmitEnableWithJudgeTag: () => boolean;
     openWorkSpace: (urlStr: string) => void;
     train: (pid: string) => void;
+    processDisplaySubmit: (pid: string, info: string) => Promise<void>;
+    attach: () => void;
   }
   export interface State {
     ajaxNotFinish: boolean;
@@ -119,7 +122,7 @@ export class View extends React.Component<View.Props, View.State> {
       type: "SC",
       defaultOptionViewToogle: false,
       redo: false,
-      viewState: false
+      viewState: false,
     };
   }
   vid = "";
@@ -185,7 +188,7 @@ export class View extends React.Component<View.Props, View.State> {
     tmp[index] = data;
     _this.answerPool[section] = {
       ...this.answerPool[section]!,
-      ...tmp
+      ...tmp,
     };
     ////alert(JSON.stringify(_this.answerPool))
   };
@@ -194,14 +197,14 @@ export class View extends React.Component<View.Props, View.State> {
     let _this = this;
     _this.setState({
       ..._this.state,
-      optionDescription: ds
+      optionDescription: ds,
     });
   };
   setOptionChoicesDescription = (dss: JSX.Element[]) => {
     let _this = this;
     _this.setState({
       ..._this.state,
-      optionChoicesDecription: dss
+      optionChoicesDecription: dss,
     });
   };
 
@@ -218,11 +221,11 @@ export class View extends React.Component<View.Props, View.State> {
     let _this = this;
     $.ajax({
       headers: {
-        accept: "application/json"
+        accept: "application/json",
       },
       crossDomain: true,
       xhrFields: {
-        withCredentials: true
+        withCredentials: true,
       },
       method: "GET",
       url: USER_INFO_URL,
@@ -230,27 +233,27 @@ export class View extends React.Component<View.Props, View.State> {
       dataType: "json",
       contentType: "text/plain",
       data: "", // serializes the form's elements.
-      success: function(data) {
+      success: function (data) {
         $(".userName").text(data.data.uname);
         ////alert(data.data.JSESSIONID)
         _this.props.setTinyLink(data.data.tinyId, data.data.tinyPasswd);
         // _this.props.setTinyLink(data.data.tinyId, JSON.stringify(data.data));
         _this.props.setCookie(data.data.JSESSIONID);
-      }
+      },
     });
     $.ajax({
       headers: {
-        accept: "application/json"
+        accept: "application/json",
       },
       xhrFields: {
-        withCredentials: true
+        withCredentials: true,
       },
       method: "GET",
       url: VIEW_DETAIL_URL,
       dataType: "json",
       contentType: "text/plain",
       data: "",
-      success: async function(data) {
+      success: async function (data) {
         // let x = data.question.slice(0, 3)
         console.log(JSON.stringify(data) + "****************************");
         let sidArray = _this.state.sidArray;
@@ -337,22 +340,22 @@ export class View extends React.Component<View.Props, View.State> {
             );
           }
         }
-        _this.setState(state => ({
+        _this.setState((state) => ({
           ajaxNotFinish: false,
           viewType: _this.type,
-          sidArray: sidArray
+          sidArray: sidArray,
         }));
         console.log("view type :" + _this.type);
-      }
+      },
     });
 
     console.log("rendering......................................");
     let viewState = await this.props.getLocal("viewState", {});
     if (viewState["viewState"] == undefined) viewState["viewState"] = false;
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
       ajaxNotFinish: true,
-      viewState: viewState["viewState"]
+      viewState: viewState["viewState"],
     }));
   }
   toggleRedoButton() {
@@ -425,7 +428,7 @@ export class View extends React.Component<View.Props, View.State> {
     $(".oneOptionDescription").removeClass("skyblueItem");
     $(".resultBoard").text("");
     setInterval(() => $("#timer").text(new Date().toLocaleString()), 1000);
-    $(document).on("click", ".oneOptionDescription", e => {
+    $(document).on("click", ".oneOptionDescription", (e) => {
       if (_this.state.type == "SC") {
         $(".oneOptionDescription").removeClass("skyblueItem");
       }
@@ -436,12 +439,12 @@ export class View extends React.Component<View.Props, View.State> {
     $(document).on(
       "click",
       ".btn:not([id*=submitSrc],[id*=connectButton])",
-      async e => {
+      async (e) => {
         let sp = $(e.currentTarget);
         sp.attr("disabled", "true");
-        await new Promise(res => {
+        await new Promise((res) => {
           setTimeout(
-            x => {
+            (x) => {
               $(x).removeAttr("disabled");
               res();
             },
@@ -451,16 +454,16 @@ export class View extends React.Component<View.Props, View.State> {
         });
       }
     );
-    $(document).on("click", ".next", async el => {
+    $(document).on("click", ".next", async (el) => {
       $(this).attr("disabled", "true");
       let csid = _this.state.sid;
       let pid = _this.state.pid;
       let newIsLast = _this.state.isLast;
       let index = _this.state.sidIndex;
-      $(document).one("optionSubmitFail", "body", el => {
+      $(document).one("optionSubmitFail", "body", (el) => {
         $(document).off("optionSubmitScc", "body");
       });
-      $(document).one("optionSubmitScc", "body", el => {
+      $(document).one("optionSubmitScc", "body", (el) => {
         $(el).removeAttr("disabled");
         //  new Promise((resolve) => {
         //     setTimeout(() => {
@@ -506,7 +509,7 @@ export class View extends React.Component<View.Props, View.State> {
                 borderWidth: "2px",
                 verticalAlign: "middle",
                 display: "inline-table",
-                margin: "5px 10px"
+                margin: "5px 10px",
               }}
               title={(parseInt(index) + 1).toString()}
             >
@@ -514,7 +517,7 @@ export class View extends React.Component<View.Props, View.State> {
                 className="option-choice"
                 style={{
                   display: "table-cell",
-                  verticalAlign: "middle"
+                  verticalAlign: "middle",
                 }}
               >
                 {choices[index]}
@@ -531,7 +534,7 @@ export class View extends React.Component<View.Props, View.State> {
             optionChoicesDecription: options,
             pid: pid,
             scid: _this.questionPool[csid]["scids"][pid],
-            type: _this.typeData[csid][pid]
+            type: _this.typeData[csid][pid],
           },
           () => {
             $(".list-group-item").removeClass("list-group-item-primary");
@@ -547,7 +550,7 @@ export class View extends React.Component<View.Props, View.State> {
     });
     $(document).on("click", ".displayStyle", async () => {
       await this.props.setLocal("viewState", {
-        viewState: !this.state.viewState
+        viewState: !this.state.viewState,
       });
       parent.location.reload();
       // alert("ok")
@@ -590,7 +593,7 @@ export class View extends React.Component<View.Props, View.State> {
                 borderWidth: "2px",
                 verticalAlign: "middle",
                 display: "inline-table",
-                margin: "5px 10px"
+                margin: "5px 10px",
               }}
               title={(parseInt(index) + 1).toString()}
             >
@@ -598,7 +601,7 @@ export class View extends React.Component<View.Props, View.State> {
                 className="option-choice"
                 style={{
                   display: "table-cell",
-                  verticalAlign: "middle"
+                  verticalAlign: "middle",
                 }}
               >
                 {choices[index]}
@@ -615,7 +618,7 @@ export class View extends React.Component<View.Props, View.State> {
             optionChoicesDecription: options,
             pid: pid,
             scid: _this.questionPool[csid]["scids"][pid],
-            type: _this.typeData[csid][pid]
+            type: _this.typeData[csid][pid],
           },
           () => {
             $(".list-group-item").removeClass("list-group-item-primary");
@@ -667,7 +670,7 @@ export class View extends React.Component<View.Props, View.State> {
 
       _this.clickTime = new Date().getTime();
 
-      await new Promise(res => {
+      await new Promise((res) => {
         setTimeout(() => {
           res();
         }, 1300);
@@ -709,7 +712,7 @@ export class View extends React.Component<View.Props, View.State> {
       uAnswers[_this.state.pid] = {
         answer: answers,
         uRight: undefined,
-        saved: true
+        saved: true,
       };
       _this.submittedAnswers[_this.state.sid][_this.state.pid] =
         uAnswers[_this.state.pid];
@@ -744,7 +747,7 @@ export class View extends React.Component<View.Props, View.State> {
             _this.submittedAnswers[_this.state.sid][indexStr] = {
               uAnswer: [],
               uRight: false,
-              saved: true
+              saved: true,
             };
             _this.notForAll && confirm(`提交全部不再提醒？`)
               ? (_this.notForAll = false)
@@ -755,7 +758,7 @@ export class View extends React.Component<View.Props, View.State> {
               _this.submittedAnswers[_this.state.sid][indexStr] = {
                 uAnswer: [],
                 uRight: false,
-                saved: true
+                saved: true,
               };
             } else {
               return;
@@ -769,10 +772,10 @@ export class View extends React.Component<View.Props, View.State> {
       _this.notForAll = true;
       $.ajax({
         headers: {
-          accept: "application/json"
+          accept: "application/json",
         },
         xhrFields: {
-          withCredentials: true
+          withCredentials: true,
         },
         method: "POST",
         url: QUIZE_JUDGE_URL,
@@ -780,9 +783,9 @@ export class View extends React.Component<View.Props, View.State> {
         contentType: "text/javascript",
         data: JSON.stringify({
           qzid: _this.state.qzid,
-          answer: answers
+          answer: answers,
         }),
-        success: async function(data) {
+        success: async function (data) {
           let correctItem: string[] = data.data.correct;
           for (let item in correctItem) {
             let pid = (parseInt(item) + 1).toString();
@@ -809,7 +812,7 @@ export class View extends React.Component<View.Props, View.State> {
             if (item == "1") crtCount++;
           }
           alert(`正确${crtCount}道,\n错误${correctItem.length - crtCount}道`);
-        }
+        },
       });
     });
     $(document).on("click", ".newSaveButton", async () => {
@@ -835,7 +838,7 @@ export class View extends React.Component<View.Props, View.State> {
       uAnswers[_this.state.pid] = {
         uAnswer: answers,
         uRight: undefined,
-        saved: true
+        saved: true,
       };
       _this.submittedAnswers[_this.state.sid][_this.state.pid] =
         uAnswers[_this.state.pid];
@@ -858,12 +861,12 @@ export class View extends React.Component<View.Props, View.State> {
       uAnswers[this.state.pid] = { uAnswer: [], uRight: undefined };
       this.submittedAnswers[this.state.sid][this.state.pid] = {
         ...uAnswers,
-        saved: undefined
+        saved: undefined,
       };
       let tmp = await _this.props.getLocal(_this.state.sid, {});
       let store = {
         ...tmp,
-        ...uAnswers
+        ...uAnswers,
       };
       await _this.props.setLocal(_this.state.sid, store);
       this.showSubmitButton();
@@ -898,10 +901,10 @@ export class View extends React.Component<View.Props, View.State> {
 
       $.ajax({
         headers: {
-          accept: "application/json"
+          accept: "application/json",
         },
         xhrFields: {
-          withCredentials: true
+          withCredentials: true,
         },
         method: "POST",
         url: CHOICE_JUDGE_URL,
@@ -909,9 +912,9 @@ export class View extends React.Component<View.Props, View.State> {
         contentType: "text/javascript",
         data: JSON.stringify({
           scid: _this.state.scid,
-          answer: answers.join(",")
+          answer: answers.join(","),
         }),
-        success: async function(data) {
+        success: async function (data) {
           let correctItem: string = data.correct;
           let pid = _this.state.pid;
           let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next();
@@ -936,12 +939,12 @@ export class View extends React.Component<View.Props, View.State> {
           let tmp = await _this.props.getLocal(_this.state.sid, {});
           let store = {
             ...tmp,
-            ...uAnswers
+            ...uAnswers,
           };
           await _this.props.setLocal(_this.state.sid, store);
           _this.showRedoButton();
           $("body").trigger("optionSubmitScc");
-        }
+        },
       });
     });
   }
@@ -951,22 +954,17 @@ export class View extends React.Component<View.Props, View.State> {
       exitTag = false;
     }, 20000);
     while (exitTag && $("[class*=codeItem]").length == 0)
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         setTimeout(() => {
           console.log("waiting data");
           resolve("scc");
         }, 300);
       });
     console.log("show experiment view:" + $("[class*=codeItem]").length);
-    exitTag &&
-      $("[class*=codeItem]")
-        .first()
-        .trigger("click");
+    exitTag && $("[class*=codeItem]").first().trigger("click");
   }
   async showTheDefaultSceneView() {
-    $("[class*=codeItem]")
-      .first()
-      .trigger("click");
+    $("[class*=codeItem]").first().trigger("click");
   }
   async showTheDefaultOptionView() {
     let _this = this;
@@ -977,7 +975,7 @@ export class View extends React.Component<View.Props, View.State> {
       exitTag = false;
     }, 10000);
     while (exitTag && _this.questionPool[csid] == undefined) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         setTimeout(() => {
           console.log("waiting data");
           resolve("scc");
@@ -1002,7 +1000,7 @@ export class View extends React.Component<View.Props, View.State> {
             borderWidth: "2px",
             verticalAlign: "middle",
             display: "inline-table",
-            margin: "5px 10px"
+            margin: "5px 10px",
           }}
           title={(parseInt(index) + 1).toString()}
         >
@@ -1010,7 +1008,7 @@ export class View extends React.Component<View.Props, View.State> {
             className="option-choice"
             style={{
               display: "table-cell",
-              verticalAlign: "middle"
+              verticalAlign: "middle",
             }}
           >
             {choices[index]}
@@ -1027,7 +1025,7 @@ export class View extends React.Component<View.Props, View.State> {
         optionChoicesDecription: options,
         pid: pid,
         scid: _this.questionPool[csid]["scids"][pid],
-        type: _this.typeData[csid][pid]
+        type: _this.typeData[csid][pid],
       },
       () => {
         $(".list-group-item").removeClass("list-group-item-primary");
@@ -1054,7 +1052,7 @@ export class View extends React.Component<View.Props, View.State> {
               top: "10%",
               right: "50px",
               borderRadius: "10px",
-              backgroundColor: "silver"
+              backgroundColor: "silver",
             }}
           >
             change style
@@ -1087,7 +1085,7 @@ export class View extends React.Component<View.Props, View.State> {
               },
               setState: (tmp: object) => {
                 _this.setState({
-                  ...tmp
+                  ...tmp,
                 });
               },
               getState: (key: string) => {
@@ -1097,7 +1095,7 @@ export class View extends React.Component<View.Props, View.State> {
               get sidArray() {
                 return _this.state.sidArray;
               },
-              props: _this.props
+              props: _this.props,
             }}
           >
             <div
@@ -1110,7 +1108,7 @@ export class View extends React.Component<View.Props, View.State> {
                 zIndex: 1,
                 position: "absolute",
                 boxShadow: "5px 5px 5px black",
-                paddingLeft: "0px"
+                paddingLeft: "0px",
               }}
             >
               <div
@@ -1120,7 +1118,7 @@ export class View extends React.Component<View.Props, View.State> {
                   overflow: "scroll",
 
                   backgroundColor: "#262527",
-                  zIndex: 1
+                  zIndex: 1,
                 }}
               >
                 <Chapter
@@ -1160,7 +1158,7 @@ export class View extends React.Component<View.Props, View.State> {
                 backgroundColor: "rgb(38, 37, 39,0)",
                 zIndex: 1,
                 position: "absolute",
-                bottom: "50%"
+                bottom: "50%",
               }}
             >
               <span className="oi oi-chevron-left"></span>
@@ -1177,7 +1175,7 @@ export class View extends React.Component<View.Props, View.State> {
                 zIndex: 1,
                 position: "absolute",
                 top: "5%",
-                display: "none"
+                display: "none",
               }}
             >
               {/* {`第${_this.state.sidIndex + 1}部分，`} */}
@@ -1194,7 +1192,7 @@ export class View extends React.Component<View.Props, View.State> {
               style={{
                 height: "90%",
                 margin: 0,
-                padding: 0
+                padding: 0,
               }}
             >
               {/* <hr /> */}
@@ -1208,7 +1206,7 @@ export class View extends React.Component<View.Props, View.State> {
                   color: "white",
                   float: "left",
                   fontSize: `26px`,
-                  height: "100%"
+                  height: "100%",
                 }}
               >
                 {_this.state.optionDescription}
@@ -1220,7 +1218,7 @@ export class View extends React.Component<View.Props, View.State> {
                   color: "white",
                   fontSize: `20px`,
                   float: "left",
-                  height: "100%"
+                  height: "100%",
                 }}
               >
                 <div className="choices">
@@ -1232,7 +1230,7 @@ export class View extends React.Component<View.Props, View.State> {
                   style={{
                     textAlign: "center",
                     fontSize: `30px`,
-                    marginTop: `80px`
+                    marginTop: `80px`,
                   }}
                 ></div>
                 <button
@@ -1254,7 +1252,7 @@ export class View extends React.Component<View.Props, View.State> {
                       style={{
                         right: "5px",
                         bottom: "10px",
-                        position: "absolute"
+                        position: "absolute",
                       }}
                     >
                       {" "}
@@ -1265,7 +1263,7 @@ export class View extends React.Component<View.Props, View.State> {
                       style={{
                         right: "5px",
                         bottom: "10px",
-                        position: "absolute"
+                        position: "absolute",
                       }}
                     >
                       提交
@@ -1277,7 +1275,7 @@ export class View extends React.Component<View.Props, View.State> {
                     style={{
                       right: "5px",
                       bottom: "10px",
-                      position: "absolute"
+                      position: "absolute",
                     }}
                   >
                     提交
@@ -1288,7 +1286,7 @@ export class View extends React.Component<View.Props, View.State> {
                     style={{
                       right: "5px",
                       bottom: "10px",
-                      position: "absolute"
+                      position: "absolute",
                     }}
                   >
                     保存
@@ -1337,7 +1335,7 @@ export class View extends React.Component<View.Props, View.State> {
               },
               setState: (tmp: object) => {
                 _this.setState({
-                  ...tmp
+                  ...tmp,
                 });
               },
               getState: (key: string) => {
@@ -1347,7 +1345,7 @@ export class View extends React.Component<View.Props, View.State> {
               get sidArray() {
                 return _this.state.sidArray;
               },
-              props: _this.props
+              props: _this.props,
             }}
           >
             <div
@@ -1362,7 +1360,7 @@ export class View extends React.Component<View.Props, View.State> {
                   backgroundColor: "#262527",
                   left: "10px",
                   //   position: "absolute",
-                  paddingLeft: "0px"
+                  paddingLeft: "0px",
                 }}
               >
                 <div
@@ -1371,7 +1369,7 @@ export class View extends React.Component<View.Props, View.State> {
                     height: "100%",
                     overflow: "scroll",
 
-                    backgroundColor: "#262527"
+                    backgroundColor: "#262527",
                   }}
                 >
                   <Chapter
@@ -1405,7 +1403,7 @@ export class View extends React.Component<View.Props, View.State> {
                 style={{
                   height: "100%",
                   margin: 0,
-                  paddingLeft: "70px"
+                  paddingLeft: "70px",
                 }}
               >
                 {/* <hr /> */}
@@ -1420,13 +1418,13 @@ export class View extends React.Component<View.Props, View.State> {
                     color: "white",
                     fontSize: `20px`,
                     float: "left",
-                    height: "100%"
+                    height: "100%",
                     // left: '450px'
                   }}
                 >
                   <div
                     style={{
-                      fontSize: "30px"
+                      fontSize: "30px",
                     }}
                   >
                     {_this.state.optionDescription}
@@ -1443,7 +1441,7 @@ export class View extends React.Component<View.Props, View.State> {
                     style={{
                       textAlign: "center",
                       fontSize: `30px`,
-                      marginTop: `80px`
+                      marginTop: `80px`,
                     }}
                   ></div>
                   <button
@@ -1451,7 +1449,7 @@ export class View extends React.Component<View.Props, View.State> {
                     style={{
                       left: "25px",
                       bottom: "10px",
-                      position: "absolute"
+                      position: "absolute",
                     }}
                   >
                     上一个
@@ -1461,7 +1459,7 @@ export class View extends React.Component<View.Props, View.State> {
                     style={{
                       left: "105px",
                       bottom: "10px",
-                      position: "absolute"
+                      position: "absolute",
                     }}
                   >
                     下一个
@@ -1473,7 +1471,7 @@ export class View extends React.Component<View.Props, View.State> {
                         style={{
                           right: "5px",
                           bottom: "10px",
-                          position: "absolute"
+                          position: "absolute",
                         }}
                       >
                         {" "}
@@ -1484,7 +1482,7 @@ export class View extends React.Component<View.Props, View.State> {
                         style={{
                           right: "5px",
                           bottom: "10px",
-                          position: "absolute"
+                          position: "absolute",
                         }}
                       >
                         提交
@@ -1496,7 +1494,7 @@ export class View extends React.Component<View.Props, View.State> {
                       style={{
                         right: "5px",
                         bottom: "10px",
-                        position: "absolute"
+                        position: "absolute",
                       }}
                     >
                       提交
@@ -1507,7 +1505,7 @@ export class View extends React.Component<View.Props, View.State> {
                       style={{
                         right: "5px",
                         bottom: "10px",
-                        position: "absolute"
+                        position: "absolute",
                       }}
                     >
                       保存
@@ -1523,7 +1521,7 @@ export class View extends React.Component<View.Props, View.State> {
       // this.state.viewType == "5" ?
       <MyContext.Provider
         value={{
-          props: _this.props
+          props: _this.props,
         }}
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
@@ -1560,14 +1558,14 @@ export class View extends React.Component<View.Props, View.State> {
           },
           setState: (tmp: object) => {
             _this.setState({
-              ...tmp
+              ...tmp,
             });
           },
           getState: (key: string) => {
             let tmp: any = this.state;
             return tmp[key];
           },
-          props: _this.props
+          props: _this.props,
         }}
       >
         <div>
@@ -1614,14 +1612,14 @@ export class View extends React.Component<View.Props, View.State> {
           },
           setState: (tmp: object) => {
             _this.setState({
-              ...tmp
+              ...tmp,
             });
           },
           getState: (key: string) => {
             let tmp: any = this.state;
             return tmp[key];
           },
-          props: _this.props
+          props: _this.props,
         }}
       >
         <div>
@@ -1662,14 +1660,14 @@ export class View extends React.Component<View.Props, View.State> {
           },
           setState: (tmp: object) => {
             _this.setState({
-              ...tmp
+              ...tmp,
             });
           },
           getState: (key: string) => {
             let tmp: any = this.state;
             return tmp[key];
           },
-          props: _this.props
+          props: _this.props,
         }}
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
@@ -1693,6 +1691,12 @@ export class View extends React.Component<View.Props, View.State> {
       </MyContext.Provider>
     ) : //自由编程演示
     this.state.viewType == "5" ? (
+      <DisplayBoard
+        setSize={this.props.setSize}
+        processDisplaySubmit={this.props.processDisplaySubmit}
+        attach={this.props.attach}
+      />
+    ) : this.state.viewType == "12" ? (
       <MyContext.Provider
         value={{
           showTheDefaultFreeCodingView: () => {},
@@ -1707,14 +1711,14 @@ export class View extends React.Component<View.Props, View.State> {
           },
           setState: (tmp: object) => {
             _this.setState({
-              ...tmp
+              ...tmp,
             });
           },
           getState: (key: string) => {
             let tmp: any = this.state;
             return tmp[key];
           },
-          props: _this.props
+          props: _this.props,
         }}
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
@@ -1751,14 +1755,14 @@ export class View extends React.Component<View.Props, View.State> {
           },
           setState: (tmp: object) => {
             _this.setState({
-              ...tmp
+              ...tmp,
             });
           },
           getState: (key: string) => {
             let tmp: any = this.state;
             return tmp[key];
           },
-          props: _this.props
+          props: _this.props,
         }}
       >
         <AIView
@@ -1785,14 +1789,14 @@ export class View extends React.Component<View.Props, View.State> {
           },
           setState: (tmp: object) => {
             _this.setState({
-              ...tmp
+              ...tmp,
             });
           },
           getState: (key: string) => {
             let tmp: any = this.state;
             return tmp[key];
           },
-          props: _this.props
+          props: _this.props,
         }}
       >
         <OneLinkView
@@ -1830,14 +1834,14 @@ export class View extends React.Component<View.Props, View.State> {
           },
           setState: (tmp: object) => {
             _this.setState({
-              ...tmp
+              ...tmp,
             });
           },
           getState: (key: string) => {
             let tmp: any = this.state;
             return tmp[key];
           },
-          props: _this.props
+          props: _this.props,
         }}
       >
         <VirtualSceneView

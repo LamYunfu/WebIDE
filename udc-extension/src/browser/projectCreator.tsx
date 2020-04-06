@@ -83,19 +83,19 @@ export class ProjectCreator extends React.Component<
       let x = item.match(`.*${projectType}.*`);
       if (x != null) return [x[0], this.tpMapping[x[0]]];
     }
-    alert("没有这样的设备类型");
+    alert("there is no this type");
     return undefined;
   }
 
   createProject = () => {
     // alert("create project");
     if (!this.projectName.match("^.[a-z0-9A-Z]*$" || !this.projectName)) {
-      alert("项目名为空，或者存在不为字母、数字、下划线的字符！");
+      alert("The project name is empty, or there are characters that are not letters, numbers, or underscores!");
     } else if (
       !this.projectName ||
       !this.projectType.match("^.[a-z_0-9A-Z]*$")
     ) {
-      alert("项目类型为空，或者存在不为字母、数字、下划线的字符！");
+      alert("The project type is empty, or there are characters that are not letters, numbers, or underscores!");
     } else {
       let ppid = "";
       let mr = this.matchProjectType(this.projectType);
@@ -166,15 +166,15 @@ export class ProjectCreator extends React.Component<
         }}
       >
         <Input
-          label="项目名："
-          hint="请输入项目名"
+          label="project name:"
+          hint="please input project name"
           onChange={(e: any) => {
             this.projectName = e.target.value;
           }}
         ></Input>
         <Input
-          label="项目类型："
-          hint="请输入项目类型"
+          label="project type:"
+          hint="please input project type"
           onChange={(e: any) => {
             this.projectType = e.target.value;
           }}
@@ -186,7 +186,7 @@ export class ProjectCreator extends React.Component<
             this.createProject();
           }}
         >
-          创建
+        create
         </button>
       </div>
     );
@@ -195,12 +195,12 @@ export class ProjectCreator extends React.Component<
     return (
       <div>
         <Input
-          label="项目名："
+          label="project name:"
           hint={this.state.projectName!}
           disabled={true}
         ></Input>
         <Input
-          label="项目类型："
+          label="project type:"
           hint={this.state.projectType!}
           disabled={true}
         ></Input>
@@ -211,7 +211,7 @@ export class ProjectCreator extends React.Component<
             this.resetProject();
           }}
         >
-          重置
+          reset
         </button>
       </div>
     );

@@ -3,7 +3,7 @@ import { Extractor } from "./extractor";
 import { FileMapper } from "./filemapper";
 import { UdcTerminal } from "./udc-terminal";
 import { injectable, inject } from "inversify";
-import { rootDir, hexFileDir, getCompilerType } from "../globalconst";
+import { hexFileDir, getCompilerType } from "../globalconst";
 import * as path from "path";
 import * as http from "http";
 import * as fs from "fs-extra";
@@ -11,7 +11,8 @@ import * as crypto from "crypto";
 import * as FormData from "form-data";
 import {
   PROGRAM_SERVER_IP,
-  PROGRAM_SERVER_PORT
+  PROGRAM_SERVER_PORT,
+  RootDirPath,
 } from "../../setting/backend-config";
 // import { networkInterfaces } from 'os';
 @injectable()
@@ -19,13 +20,14 @@ export class Programer {
   constructor(
     @inject(UdcTerminal) protected readonly ut: UdcTerminal,
     @inject(FileMapper) protected readonly fm: FileMapper,
-    @inject(Extractor) protected readonly et: Extractor
+    @inject(Extractor) protected readonly et: Extractor,
+    @inject(RootDirPath) public rootDir: RootDirPath
   ) {}
   async fileUpload(filepath: string) {
     let _this = this;
     let uploadResult = "scc";
     let gHash = "";
-    let configResult = await new Promise(resolve => {
+    let configResult = await new Promise((resolve) => {
       Logger.info("configuring burning program");
       let hash = crypto.createHash("sha1");
       let buff = fs.readFileSync(filepath);
@@ -41,10 +43,10 @@ export class Programer {
           port: "8081",
           path: "/config",
           headers: {
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         },
-        mesg => {
+        (mesg) => {
           if (mesg == undefined) {
             _this.ut.outputResult("network error");
             Logger.info("error happened while config");
@@ -52,7 +54,7 @@ export class Programer {
             return;
           }
           let bf = "";
-          mesg.on("error", err => {
+          mesg.on("error", (err) => {
             _this.ut.outputResult(
               "something error happened when configuring burning."
             );
@@ -85,7 +87,7 @@ export class Programer {
       });
       configRequest.write(
         JSON.stringify({
-          filehash: hashVal
+          filehash: hashVal,
         })
       );
       configRequest.end();
@@ -94,7 +96,7 @@ export class Programer {
     if (configResult == "scc") {
       let fm = new FormData();
       Logger.info("uploading hex file");
-      uploadResult = await new Promise(async resolve => {
+      uploadResult = await new Promise(async (resolve) => {
         let uploadRequest = http.request(
           {
             //传zip
@@ -106,9 +108,9 @@ export class Programer {
             //     "Accept": "application/json",
             //     "Content-Type": "multipart/form-data;boundary=" + fm.getBoundary(),
             // },
-            headers: fm.getHeaders()
+            headers: fm.getHeaders(),
           },
-          mesg => {
+          (mesg) => {
             if (mesg == undefined) {
               _this.ut.outputResult("network error");
               Logger.info("error happened while upload");
@@ -121,7 +123,7 @@ export class Programer {
               Logger.info("data comming");
               bf += b.toString("utf8");
             });
-            mesg.on("error", err => {
+            mesg.on("error", (err) => {
               _this.ut.outputResult(
                 "something error happened when uploading binary file."
               );
@@ -150,7 +152,7 @@ export class Programer {
         let st = fs.createReadStream(filepath);
         Logger.info("append file");
         // fm.append("file", blob, filepath.split("/").pop())
-        fm.append("file", st, filepath.split("/").pop()+".hex");
+        fm.append("file", st, filepath.split("/").pop() + ".hex");
         fm.pipe(uploadRequest);
         Logger.info("file append ok");
       });
@@ -177,7 +179,7 @@ export class Programer {
     let projects: any[] = this.ut.freeCodingConfig["projects"];
     // this.ut.outputResult(JSON.stringify(this.ut.freeCodingConfig))
     let hexFileDir = this.ut.freeCodingConfig["hexFileDir"];
-    let absHexFileDir = path.join(this.ut.rootDir, dirName, hexFileDir);
+    let absHexFileDir = path.join(this.ut.rootDir.val, dirName, hexFileDir);
     let deviceUsage = this.ut.freeCodingConfig["deviceUsage"];
     let burnOption: any = {};
     deviceUsage == "QUEUE"
@@ -191,7 +193,7 @@ export class Programer {
         Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
         Math.pow(10, 15)
       ).toString(),
-      program: []
+      program: [],
     };
     try {
       let option: any[] = [];
@@ -204,7 +206,11 @@ export class Programer {
         //处理直接提交代码
         if (item["compilationMethod"] == "none") {
           Logger.info("without compile");
-          let srcDir = path.join(rootDir, dirName, item["projectName"]);
+          let srcDir = path.join(
+            this.rootDir.val,
+            dirName,
+            item["projectName"]
+          );
           for (let val of fs.readdirSync(srcDir)) {
             let hash = await this.fileUpload(path.join(srcDir, val));
             option.push({
@@ -213,7 +219,7 @@ export class Programer {
                 Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
                 Math.pow(10, 15)
               ).toString(),
-              ...projectBurningSetting
+              ...projectBurningSetting,
             });
             Logger.info("option：" + JSON.stringify(option));
           }
@@ -237,7 +243,7 @@ export class Programer {
               Math.floor(Math.random() * (9 * Math.pow(10, 15) - 1)) +
               Math.pow(10, 15)
             ).toString(),
-            ...projectBurningSetting
+            ...projectBurningSetting,
           });
 
           console.log(JSON.stringify(option));
@@ -260,7 +266,7 @@ export class Programer {
       model,
       deviceRole,
       // waitID,
-      timeout
+      timeout,
     } = this.ut.getPidInfos(pid);
     let address = model == "developer_kit" ? "0x08000000" : "0x10000";
     let devArr = [];
@@ -276,7 +282,7 @@ export class Programer {
         return "fail";
       }
       Logger.info("waitting for allocate device");
-      await new Promise(res => {
+      await new Promise((res) => {
         setTimeout(() => {
           res();
         }, 1000);
@@ -286,7 +292,7 @@ export class Programer {
       devArr.push(item);
     }
     let hex = this.fm.getFileNameMapper(pid);
-    Logger.info("mapper:"+JSON.stringify(hex))
+    Logger.info("mapper:" + JSON.stringify(hex));
     if (typeof hex == "string") {
       Logger.info("error file name map");
       return "fail";
@@ -299,18 +305,18 @@ export class Programer {
         Math.pow(10, 15)
       ).toString(),
       pid: pid,
-      program: arr
+      program: arr,
     };
-    Logger.info("sending file to LDC......")
+    Logger.info("sending file to LDC......");
     switch (loginType) {
       case "queue": {
         for (let item of deviceRole!) {
           let hexFile = hex[item.split(".")[0]];
           console.log(
-            "path:" + [rootDir, dirName, hexFileDir, hexFile].join(";")
+            "path:" + [this.rootDir.val, dirName, hexFileDir, hexFile].join(";")
           );
           let hash = await this.fileUpload(
-            path.join(rootDir, dirName, hexFileDir, hexFile)
+            path.join(this.rootDir.val, dirName, hexFileDir, hexFile)
           );
           if (hash == "err") return false;
           // break
@@ -322,7 +328,7 @@ export class Programer {
             ).toString(),
             runtime: timeout,
             address: address,
-            filehash: hash
+            filehash: hash,
           });
         }
         return await this.ut.program_device(pid, JSON.stringify(setJson));
@@ -333,10 +339,10 @@ export class Programer {
           let hexFile = hex[item.split(".")[0]];
           console.log(item + ":hexFile:" + JSON.stringify(hex));
           console.log(
-            "path:" + [rootDir, dirName, hexFileDir, hexFile].join(";")
+            "path:" + [this.rootDir.val, dirName, hexFileDir, hexFile].join(";")
           );
           let hash = await this.fileUpload(
-            path.join(rootDir, dirName, hexFileDir, hexFile)
+            path.join(this.rootDir.val, dirName, hexFileDir, hexFile)
           );
           if (hash == "err") return false;
           setJson["program"].push({
@@ -347,7 +353,7 @@ export class Programer {
             ).toString(),
             runtime: timeout,
             address: address,
-            filehash: hash
+            filehash: hash,
           });
         }
         // setJson['program']=setJson['program'].reverse()
@@ -375,11 +381,11 @@ export class Programer {
           }
           let hexFile = hex[fnArr[index].split(".")[0]];
           console.log(
-            "path:" + [rootDir, dirName, hexFileDir, hexFile].join(";")
+            "path:" + [this.rootDir.val, dirName, hexFileDir, hexFile].join(";")
           );
-          // let bv = await this.ut.program_device_group(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[index], pid)
+          // let bv = await this.ut.program_device_group(path.join(this.rootDir.val, dirName, hexFileDir, hexFile), address, devArr[index], pid)
           let bv = await this.ut.program_device_group(
-            path.join(rootDir, dirName, hexFileDir, hexFile),
+            path.join(this.rootDir.val, dirName, hexFileDir, hexFile),
             address,
             devStr,
             pid
@@ -412,7 +418,7 @@ export class Programer {
         return "fail";
       }
       Logger.info("waiting for allocate device");
-      await new Promise(res => {
+      await new Promise((res) => {
         setTimeout(() => {
           res();
         }, 1000);
@@ -431,13 +437,13 @@ export class Programer {
     //     if (val.match(`${fn}|${fn}.cpp`))
     //         return true
     // })
-    // let bv = await this.ut.program_device(path.join(rootDir, dirName, hexFileDir, hexFile), address, devArr[index], pid)
+    // let bv = await this.ut.program_device(path.join(this.rootDir.val, dirName, hexFileDir, hexFile), address, devArr[index], pid)
     let hash = await this.fileUpload(
-      path.join(rootDir, dirName, hexFileDir, hexFile)
+      path.join(this.rootDir.val, dirName, hexFileDir, hexFile)
     );
     if (hash == "err") return false;
     let bv = await this.ut.program_device_scene(
-      path.join(rootDir, dirName, hexFileDir, hexFile),
+      path.join(this.rootDir.val, dirName, hexFileDir, hexFile),
       address,
       devArr[0],
       pid

@@ -4,7 +4,7 @@ export enum LOGINTYPE {
   ADHOC = "adhoc",
   FIXED = "fixed",
   GROUP = "group",
-  QUEUE = "queue"
+  QUEUE = "queue",
 }
 
 export interface UdcService {
@@ -72,4 +72,6 @@ export interface UdcService {
   getIotId: () => string;
   delProject: (pid: string) => Promise<boolean>;
   tinyEdgeCompile: (pid: string) => Promise<string>;
+  processDisplaySubmit: (pid: string, info: string) => Promise<void>;
+  initDisplayBoard: (info: string) => Promise<void>;
 }

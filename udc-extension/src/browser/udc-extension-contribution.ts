@@ -5,6 +5,13 @@ import { AboutDialog } from "./about-dailog";
 import { UdcService } from "../common/udc-service";
 import { injectable, inject } from "inversify";
 import {
+  DebugAdapterContribution,
+  DebugAdapterSessionFactory,
+  CommunicationProvider,
+  DebugAdapterSession
+} from "@theia/debug/lib/common/debug-model";
+import { DebugConfiguration } from "@theia/debug/lib/common/debug-configuration";
+import {
   CommandContribution,
   MenuContribution,
   MenuModelRegistry,
@@ -34,6 +41,7 @@ import URI from "@theia/core/lib/common/uri";
 import { EditorManager } from "@theia/editor/lib/browser";
 import { EditorQuickOpenService } from "@theia/editor/lib/browser/editor-quick-open-service";
 import { LampWidget } from "./lamp";
+import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-channel";
 export const UdcExtensionCommand = {
   id: "UdcExtension.command",
   label: "test node server"
@@ -470,7 +478,59 @@ export class UdcExtensionCommandContribution
     });
   }
 }
+@injectable()
+export class debugAdapterSessionFactory implements DebugAdapterSessionFactory {
+  get(
+    sessionId: string,
+    communicationProvider: CommunicationProvider
+  ): DebugAdapterSession {
+    return {
+      id: sessionId,
+      start: (channel: WebSocketChannel): Promise<void> => {
+        return new Promise<void>(res => {
+          res();
+        });
+      },
+      stop: (): Promise<void> => {
+        return new Promise<void>(res => {
+          res();
+        });
+      }
+    };
+  }
+}
 
+@injectable()
+export class DAC implements DebugAdapterContribution {
+  type = "embedcpp";
+  label = "embedcpp";
+  languages = ["cpp"];
+  debugAdapterSessionFactory = {
+    get(
+      sessionId: string,
+      communicationProvider: CommunicationProvider
+    ): DebugAdapterSession {
+      console.log("debug:+++");
+      return {
+        id: sessionId,
+        start: (channel: WebSocketChannel): Promise<void> => {
+          return new Promise<void>(res => {
+            res();
+          });
+        },
+        stop: (): Promise<void> => {
+          return new Promise<void>(res => {
+            res();
+          });
+        }
+      };
+    }
+  };
+  provideDebugAdapterExecutable = (config: DebugConfiguration) => {
+    console.log("type:"+config.type);
+    return undefined;
+  };
+}
 @injectable()
 export class UdcExtensionMenuContribution implements MenuContribution {
   registerMenus(menus: MenuModelRegistry): void {
