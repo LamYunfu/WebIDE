@@ -534,7 +534,7 @@ export class DAC implements DebugAdapterContribution {
 @injectable()
 export class UdcExtensionMenuContribution implements MenuContribution {
   registerMenus(menus: MenuModelRegistry): void {
-    menus.registerSubmenu(UdcMenus.UDC, "linklab");
+    menus.registerSubmenu(UdcMenus.UDC, "LinkLab");
     // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
     menus.registerMenuAction([...UdcMenus.UDC], {
       commandId: UdcCommands.SubmitOnMenu.id,
@@ -548,32 +548,32 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       icon: "x",
       order: "a_2"
     });
-    menus.registerSubmenu(UdcMenus.linkedge, "linkedge");
-    // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
-    menus.registerMenuAction([...UdcMenus.linkedge], {
-      commandId: UdcCommands.connectLinkedge.id,
-      label: "connect",
-      icon: "x",
-      order: "a_1"
-    });
-    menus.registerMenuAction([...UdcMenus.linkedge], {
-      commandId: UdcCommands.releaseLinkedge.id,
-      label: "release",
-      icon: "x",
-      order: "a_2"
-    });
-    menus.registerMenuAction([...UdcMenus.linkedge], {
-      commandId: UdcCommands.startLinkedge.id,
-      label: "start",
-      icon: "x",
-      order: "a_3"
-    });
-    menus.registerMenuAction([...UdcMenus.linkedge], {
-      commandId: UdcCommands.stopLinkedge.id,
-      label: "stop",
-      icon: "x",
-      order: "a_4"
-    });
+    // menus.registerSubmenu(UdcMenus.linkedge, "linkedge");
+    // // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
+    // menus.registerMenuAction([...UdcMenus.linkedge], {
+    //   commandId: UdcCommands.connectLinkedge.id,
+    //   label: "connect",
+    //   icon: "x",
+    //   order: "a_1"
+    // });
+    // menus.registerMenuAction([...UdcMenus.linkedge], {
+    //   commandId: UdcCommands.releaseLinkedge.id,
+    //   label: "release",
+    //   icon: "x",
+    //   order: "a_2"
+    // });
+    // menus.registerMenuAction([...UdcMenus.linkedge], {
+    //   commandId: UdcCommands.startLinkedge.id,
+    //   label: "start",
+    //   icon: "x",
+    //   order: "a_3"
+    // });
+    // menus.registerMenuAction([...UdcMenus.linkedge], {
+    //   commandId: UdcCommands.stopLinkedge.id,
+    //   label: "stop",
+    //   icon: "x",
+    //   order: "a_4"
+    // });
     menus.registerMenuAction([...UdcMenus.linkedge], {
       commandId: UdcCommands.compileEdge.id,
       label: "compile",

@@ -59,9 +59,10 @@ export class Compiler {
         this.udcTerminal.pidQueueInfo[pid].type == "freecoding" &&
         this.udcTerminal.freeCodingConfig["projects"][0]["compilationMethod"] ==
           "none"
-      )
+      ) {
+        Logger.info("skip compiling","skip")
         return "scc";
-      else {
+      } else {
         return await this.rgc.processFreeCoding(pid);
       }
     }

@@ -1644,7 +1644,7 @@ export class View extends React.Component<View.Props, View.State> {
           </div>
         </div>
       </MyContext.Provider>
-    ) : this.state.viewType == "55" ? (
+    ) : this.state.viewType == "5" ? (
       //自由编程
       <MyContext.Provider
         value={{
@@ -1690,7 +1690,7 @@ export class View extends React.Component<View.Props, View.State> {
         />
       </MyContext.Provider>
     ) : //自由编程演示
-    this.state.viewType == "5" ? (
+    this.state.viewType == "13" ? (
       <DisplayBoard
         setSize={this.props.setSize}
         processDisplaySubmit={this.props.processDisplaySubmit}

@@ -26,13 +26,16 @@
 15 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 15 error
 15 error npm ERR! A complete log of this run can be found in:
-15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-03-05T03_40_02_306Z-debug.log
+15 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-04-08T02_36_32_558Z-debug.log
 15 error
 15 error
 15 error > demo@0.0.0 prepare D:\webide\webide-back\demo
 15 error > yarn run clean && yarn run build
 15 error
+15 error yarn run v1.22.0
 15 error $ rimraf lib
+15 error Done in 0.25s.
+15 error yarn run v1.22.0
 15 error $ tsc  --jsx react
 15 error src/browser/demo-widget.tsx(22,28): error TS2307: Cannot find module 'udc-extension/lib/common/udc-service'.
 15 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

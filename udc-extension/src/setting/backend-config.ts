@@ -18,7 +18,7 @@ export const TEMPLATE_SERVER = `judge.${DEPLOY_SERVER_DOMAIN}`;
 // export const LINKLAB_WORKSPACE = `D:/all`;
 export const CONFIGPATH = "D:/config";
 export const RASPBERRY_QUERRY_IP = DEPLOY_SERVER_IP;
-export const RASPBERRY_QUERRY_PORT = "";
+export const RASPBERRY_QUERRY_PORT = "12320";
 // export const LINKLAB_WORKSPACE=`/home/project`
 // export const CONFIGPATH="/home/config"
 export const TINY_MOBILE_IP = `${DEPLOY_SERVER_DOMAIN}`;
@@ -26,7 +26,7 @@ export const TINY_MOBILE_PORT = `12320`;
 
 // export const RASPBERRY_GCC_IP="121.199.78.80"
 // export const RASPBERRY_GCC_PORT="10086"
-export const RASPBERRY_GCC_IP = DEPLOY_SERVER_DOMAIN;
+export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_GCC_PORT = "12400";
 @injectable()
 export class RootDirPath {
