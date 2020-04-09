@@ -1,4 +1,7 @@
-
+sed -i "s/\r//g" ./clean.sh
+sed -i "s/\r//g" ./deploy.sh
+chmod +x ./clean.sh
+chmod +x ./deploy.sh
 cd udc-extension
 yarn build 
 cd ../demo 

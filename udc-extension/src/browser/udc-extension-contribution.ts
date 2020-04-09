@@ -574,7 +574,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
     //   icon: "x",
     //   order: "a_4"
     // });
-    menus.registerMenuAction([...UdcMenus.linkedge], {
+    menus.registerMenuAction([...UdcMenus.UDC], {
       commandId: UdcCommands.compileEdge.id,
       label: "compile",
       icon: "x",
