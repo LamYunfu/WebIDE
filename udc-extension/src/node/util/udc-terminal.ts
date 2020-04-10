@@ -507,6 +507,7 @@ export class UdcTerminal {
     }
     console.log(JSON.stringify(this.pidQueueInfo[pid!]));
   }
+
   async requestFixedTemplate(pid: string, type: string, rootDir: string) {
     let { dirName } = this.pidQueueInfo[pid];
     let devicePath = path.join(this.rootDir.val, dirName, "device");
@@ -531,6 +532,16 @@ export class UdcTerminal {
     }
     Logger.info(path.join(projectPath, rootDir + ".cpp"));
   }
+  createDirStructure(cpath: string, res: any) {
+    for (let item of Object.keys(res)) {
+      if (typeof res[item] == "object") {
+        let dirPath = path.join(cpath, item);
+        fs.existsSync(dirPath) ? "" : fs.mkdirSync(dirPath);
+        this.createDirStructure(dirPath, res[item]);
+      } else fs.writeFileSync(path.join(cpath, item), res[item]);
+    }
+  }
+
   async initPidQueueInfo(
     infos: string,
     changeRootDir: boolean = false
@@ -581,41 +592,42 @@ export class UdcTerminal {
                 let res: any = JSON.parse(bf);
                 console.log("res:::" + bf);
                 if (res.result) {
-                  for (let item of Object.keys(res.template)) {
-                    if (!fs.existsSync(path.join(_this.rootDir.val, dirName)))
-                      fs.mkdirSync(path.join(_this.rootDir.val, dirName));
-                    if (
-                      !fs.existsSync(
-                        path.join(_this.rootDir.val, dirName, item)
-                      )
-                    ) {
-                      if (item == "config.json") {
-                        fs.writeFileSync(
-                          path.join(_this.rootDir.val, dirName, item),
-                          res.template[item]
-                        );
-                        this.refreshConfiguration(ppid!);
-                        continue;
-                      }
-                      fs.mkdirSync(path.join(_this.rootDir.val, dirName, item));
-                      for (let file of Object.keys(res.template[item])) {
-                        fs.writeFileSync(
-                          path.join(_this.rootDir.val, dirName, item, file),
-                          res.template[item][file]
-                        );
-                      }
-                      if (index == "32") {
-                        fs.writeFileSync(
-                          path.join(
-                            _this.rootDir.val,
-                            dirName,
-                            "Platform.json"
-                          ),
-                          ""
-                        );
-                      }
-                    }
-                  }
+                  let cpath = path.join(_this.rootDir.val, dirName);
+                  if (!fs.existsSync(cpath)) fs.mkdirSync(cpath);
+                  this.createDirStructure(cpath, res.template);
+                  // for (let item of Object.keys(res.template)) {
+                  //   if (
+                  //     !fs.existsSync(
+                  //       path.join(_this.rootDir.val, dirName, item)
+                  //     )
+                  //   ) {
+                  //     if (item == "config.json") {
+                  //       fs.writeFileSync(
+                  //         path.join(_this.rootDir.val, dirName, item),
+                  //         res.template[item]
+                  //       );
+                  //       this.refreshConfiguration(ppid!);
+                  //       continue;
+                  //     }
+                  //     fs.mkdirSync(path.join(_this.rootDir.val, dirName, item));
+                  //     for (let file of Object.keys(res.template[item])) {
+                  //       fs.writeFileSync(
+                  //         path.join(_this.rootDir.val, dirName, item, file),
+                  //         res.template[item][file]
+                  //       );
+                  //     }
+                  //     if (index == "32") {
+                  //       fs.writeFileSync(
+                  //         path.join(
+                  //           _this.rootDir.val,
+                  //           dirName,
+                  //           "Platform.json"
+                  //         ),
+                  //         ""
+                  //       );
+                  //     }
+                  //   }
+                  // }
 
                   resolve("scc");
                 } else {
@@ -748,7 +760,7 @@ export class UdcTerminal {
     // login_type = LOGINTYPE.QUEUE//temporary
     let uuid = this.uuid;
     let _this = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       // let server_ip = "118.31.76.36"
       // let server_port = 2000
       let server_ip = LDC_SERVER_IP;
@@ -768,7 +780,10 @@ export class UdcTerminal {
         Logger.info("Connection to Controller Closed!");
       });
       ctrFd.on("data", (data: Buffer) => {
-        let d = data.toString("utf8").substr(1, data.length).split(",");
+        let d = data
+          .toString("utf8")
+          .substr(1, data.length)
+          .split(",");
         let serverData = d.slice(2, d.length);
         Logger.val("d:" + d);
         Logger.val("serverData:" + serverData);
@@ -819,7 +834,7 @@ export class UdcTerminal {
     // }
     Logger.val("serverPort: " + server_port);
     let _this = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       // _this.udcServerClient = tls.connect(server_port, server_ip, options, () => {
       _this.udcServerClient = net.connect(server_port, server_ip, () => {
         resolve("success");
@@ -928,7 +943,11 @@ export class UdcTerminal {
     } else if (type == Packet.MULTI_DEVICE_PROGRAM) {
       this.outputResult("burning option not set correctly");
     } else if (type == Packet.DEVICE_LOG) {
-      let tmp: string = value.toString().split(":").slice(2).join(":");
+      let tmp: string = value
+        .toString()
+        .split(":")
+        .slice(2)
+        .join(":");
       let afterSplit = tmp.split("0E");
       let tag = afterSplit.slice(0, 1);
       Logger.info(tag[0], "tg_");
@@ -1946,9 +1965,9 @@ export class UdcTerminal {
                 str += `------${item["ipaddress"]}:${item["port"]}\n`;
               }
               this.outputResult(
-                `host:\n${str}------was deployed ${
-                  (new Date().getTime() - this.lastCommitDevice.timeMs) / 1000
-                } seconds before`
+                `host:\n${str}------was deployed ${(new Date().getTime() -
+                  this.lastCommitDevice.timeMs) /
+                  1000} seconds before`
               );
             }
           } catch {
@@ -2004,9 +2023,9 @@ export class UdcTerminal {
                 str += `------ip:${item["ipaddress"]} port:${item["port"]}\n`;
               }
               this.outputResult(
-                `${str}------was deployed ${
-                  (new Date().getTime() - this.lastCommitDevice.timeMs) / 1000
-                } seconds before`
+                `${str}------was deployed ${(new Date().getTime() -
+                  this.lastCommitDevice.timeMs) /
+                  1000} seconds before`
               );
             }
           } catch {
