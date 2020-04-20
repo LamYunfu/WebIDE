@@ -17,6 +17,7 @@ export namespace LinkEdge {
     add(pid: string, info: any): Promise<boolean>;
     getDevicesInfo(pid: string): Promise<any>;
     openExplore: () => void;
+    openLinkedge: () => void;
   }
   export interface State {
     connectionStatus: boolean;
@@ -41,16 +42,17 @@ export class LinkEdgeView extends React.Component<
       connectionStatus: false,
       executeStatus: true,
       ra: [],
-      addTag: false
+      addTag: false,
     };
   }
   componentDidMount() {
+    this.props.openLinkedge();
     if (this.pid == "32") {
-      this.props.setSize(850);
+      // this.props.setSize(850);
       let pid = this.pid;
       this.props.initLinkedgeConfig(pid);
     } else {
-      this.props.openExplore();
+      // this.props.openExplore();
     }
     setInterval(() => {
       this.props.saveAll();
@@ -60,12 +62,12 @@ export class LinkEdgeView extends React.Component<
     return this.props.section["ppid"][0];
   }
   async componentWillMount() {
-    console.log("mountI"); 
+    console.log("mountI");
     let pidQueueInfo: any = {};
     pidQueueInfo[this.pid] = {
       dirName: "LinkEdge",
       ppid: this.pid,
-      type: "LinkEdge"
+      type: "LinkEdge",
     };
     if (this.pid == "32") {
       await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
@@ -75,7 +77,7 @@ export class LinkEdgeView extends React.Component<
       pidQueueInfo[this.pid] = {
         dirName: "TinyEdge",
         ppid: this.pid,
-        type: "LinkEdge"
+        type: "LinkEdge",
       };
       await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
     }
@@ -93,13 +95,13 @@ export class LinkEdgeView extends React.Component<
       this.props.linkEdgeDisconnect();
       this.setState({
         connectionStatus: !this.state.connectionStatus,
-        executeStatus: true
+        executeStatus: true,
       });
     } else {
       this.threeTuple["action"] = "connect";
       if (await this.props.linkEdgeConnect(this.pid, this.threeTuple)) {
         this.setState({
-          connectionStatus: !this.state.connectionStatus
+          connectionStatus: !this.state.connectionStatus,
         });
       } else {
         alert("err:" + JSON.stringify(this.threeTuple));
@@ -114,7 +116,7 @@ export class LinkEdgeView extends React.Component<
     }, 3000);
     if (await this.props.linkEdgeConnect(this.pid, this.threeTuple)) {
       this.setState({
-        executeStatus: !this.state.executeStatus
+        executeStatus: !this.state.executeStatus,
       });
     } else {
       alert("err:" + JSON.stringify(this.threeTuple));
@@ -141,7 +143,7 @@ export class LinkEdgeView extends React.Component<
   setRa = (ra: any) => {
     alert(JSON.stringify(ra));
     this.setState({
-      ra: ra
+      ra: ra,
     });
   };
   remove = (index: string) => {
@@ -149,7 +151,7 @@ export class LinkEdgeView extends React.Component<
   };
   changeAddTag = () => {
     this.setState({
-      addTag: !this.state.addTag
+      addTag: !this.state.addTag,
     });
   };
   openConfigFile = () => {
@@ -158,7 +160,14 @@ export class LinkEdgeView extends React.Component<
   render(): JSX.Element {
     if (this.pid == "32")
       return (
-        <div style={{ padding: "20px", height: "100%", marginTop: "-30px" }}>
+        <div
+          style={{
+            display: "none",
+            padding: "20px",
+            height: "100%",
+            marginTop: "-30px",
+          }}
+        >
           <div id="edge_ppid" style={{ display: "none" }}>
             {this.props.section["ppid"][0]}
           </div>
@@ -171,7 +180,7 @@ export class LinkEdgeView extends React.Component<
                 padding: "auto",
                 display: "flex",
                 justifyItems: "center",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               边缘计算
@@ -185,7 +194,7 @@ export class LinkEdgeView extends React.Component<
                   style={{
                     textDecorationLine: "underline",
                     cursor: "pointer",
-                    textDecorationColor: "dodgerblue"
+                    textDecorationColor: "dodgerblue",
                   }}
                 >
                   开发平台
@@ -194,7 +203,7 @@ export class LinkEdgeView extends React.Component<
                   style={{
                     textDecorationLine: "underline",
                     cursor: "pointer",
-                    textDecorationColor: "dodgerblue"
+                    textDecorationColor: "dodgerblue",
                   }}
                 >
                   官方文档
@@ -212,7 +221,7 @@ export class LinkEdgeView extends React.Component<
                   maxWidth: "70%",
                   position: "absolute",
                   zIndex: 1,
-                  padding: "2%"
+                  padding: "2%",
                 }}
               >
                 实验描述
@@ -224,7 +233,7 @@ export class LinkEdgeView extends React.Component<
                   height: "80%",
                   border: "solid",
                   zIndex: -1,
-                  position: "relative"
+                  position: "relative",
                 }}
               ></div>
             </div>
@@ -240,7 +249,7 @@ export class LinkEdgeView extends React.Component<
                   color: "dodgerblue",
                   textDecorationLine: "underline",
                   display: "flex",
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
                 onClick={this.openConfigFile}
               >
@@ -275,7 +284,7 @@ export class LinkEdgeView extends React.Component<
               <div
                 style={{
                   width: "90%",
-                  height: "80%"
+                  height: "80%",
                 }}
               >
                 <Form
@@ -316,7 +325,7 @@ export class Input extends React.Component<Input.Props> {
   index: number = 0;
   str: string = "";
   state = {
-    str: undefined
+    str: undefined,
   };
   onChange = (e: any) => {
     this.props.onChange!(e);
@@ -334,7 +343,7 @@ export class Input extends React.Component<Input.Props> {
             alignItems: "center",
             justifyItems: "center",
             fontStyle: "oblique",
-            fontFamily: "fantasy"
+            fontFamily: "fantasy",
           }}
         >
           {this.props.label}
@@ -357,7 +366,7 @@ export class Input extends React.Component<Input.Props> {
               alignItems: "center",
               color: "blue",
               cursor: " pointer",
-              textDecoration: "underline"
+              textDecoration: "underline",
             }}
             onClick={this.copy}
           >
@@ -460,7 +469,7 @@ class Button extends React.Component<Button.Props> {
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <div className="spinner-border" role="status">
@@ -516,7 +525,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
     // }
 
     this.state = {
-      ra: this.props.ra
+      ra: this.props.ra,
     };
   }
   add = async (item: any) => {
@@ -527,7 +536,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
     }
     indexArr.push(item);
     this.setState({
-      ra: indexArr
+      ra: indexArr,
     });
   };
   async remove(index: number) {
@@ -539,7 +548,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
     }
     ra.splice(index, 1);
     this.setState({
-      ra: ra
+      ra: ra,
     });
     $("a").css("pointer-events", "auto ");
   }
@@ -551,7 +560,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
   };
   async componentWillMount() {
     let ra = await this.props.getRa();
-    await new Promise(res => {
+    await new Promise((res) => {
       this.setState({ ra: ra }, () => {
         res();
       });
@@ -570,7 +579,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
               borderWidth: "1px",
               display: "flex",
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             序号
@@ -582,7 +591,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
               borderWidth: "1px",
               display: "flex",
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             设备名
@@ -594,7 +603,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
               borderWidth: "1px",
               display: "flex",
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             设备类型
@@ -606,7 +615,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
               borderWidth: "1px",
               display: "flex",
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             状态
@@ -618,7 +627,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
               borderWidth: "1px",
               display: "flex",
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             IP
@@ -630,7 +639,7 @@ class Form extends React.Component<Form.Props, Form.Status> {
               borderWidth: "1px",
               display: "flex",
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             操作
@@ -709,7 +718,7 @@ class FormData extends React.Component<FormData.Props> {
         <div
           style={{
             border: "solid",
-            borderWidth: "1px"
+            borderWidth: "1px",
           }}
           className="col-3"
         >
@@ -719,7 +728,7 @@ class FormData extends React.Component<FormData.Props> {
             style={{
               cursor: "pointer",
               textDecorationColor: "blue",
-              textDecoration: "underline"
+              textDecoration: "underline",
             }}
           >
             开发|
@@ -728,7 +737,7 @@ class FormData extends React.Component<FormData.Props> {
             style={{
               cursor: "pointer",
               textDecorationColor: "blue",
-              textDecoration: "underline"
+              textDecoration: "underline",
             }}
           >
             提交|
@@ -737,7 +746,7 @@ class FormData extends React.Component<FormData.Props> {
             style={{
               cursor: "pointer",
               textDecorationColor: "blue",
-              textDecoration: "underline"
+              textDecoration: "underline",
             }}
             onClick={this.remove}
           >
@@ -775,14 +784,14 @@ class IndexAdder extends React.Component<IndexAdder.Props, IndexAdder.status> {
   };
   newIndex() {
     this.setState({
-      expand: !this.state.expand
+      expand: !this.state.expand,
     });
   }
   submitIndex() {
     this.props.add({
       projectName: this.deviceName,
       deviceName: this.deviceName,
-      deviceType: this.deviceType
+      deviceType: this.deviceType,
     });
     this.props.changeAddTag();
     this.reset();
@@ -797,18 +806,18 @@ class IndexAdder extends React.Component<IndexAdder.Props, IndexAdder.status> {
         style={{
           width: "80%",
           height: "100%",
-          display: "flex",
+
           justifyContent: "center",
           alignItems: "center",
           position: "absolute",
           top: 0,
-          zIndex: this.props.addTag ? 1 : -1
+          zIndex: this.props.addTag ? 1 : -1,
         }}
       >
         <div
           style={{
             width: "95%",
-            top: 0
+            top: 0,
           }}
         >
           {!this.props.addTag ? (
@@ -818,7 +827,7 @@ class IndexAdder extends React.Component<IndexAdder.Props, IndexAdder.status> {
               style={{
                 border: "solid",
                 backgroundColor: "blue",
-                padding: "40px"
+                padding: "40px",
               }}
             >
               <Input

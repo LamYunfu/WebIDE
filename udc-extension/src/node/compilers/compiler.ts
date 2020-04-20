@@ -30,6 +30,7 @@ export class Compiler {
 
   async linkEdgeCompile(pid: string, index: string) {}
   async compile(pid: string) {
+    this.udcTerminal.logEnable = false;
     let { model, dirName } = this.udcTerminal.getPidInfos(pid);
     let hexFilePath = path.join(this.rootDir.val, dirName, "hexFiles");
     fs.existsSync(hexFilePath) ? "" : fs.mkdirSync(hexFilePath);
@@ -38,9 +39,7 @@ export class Compiler {
     this.udcTerminal.outputResult("compiling......");
     let cmType = getCompilerType(model);
     if (cmType == "alios") {
-      // this.udcCompiler.outputResult("use alios compiler")
       Logger.info("use alios compiler");
-      // await this.aliosCompiler.postNameAndType(pid)
       return await this.newAliosCompiler.postNameAndType(pid);
     }
     if (cmType == "contiki") {
@@ -48,7 +47,6 @@ export class Compiler {
       return await this.newContikiCompiler.postNameAndType(pid);
     }
     if (cmType == "tinylink") {
-      // this.udcCompiler.outputResult("use tinylink compiler")
       Logger.info("use tinylink compiler");
       let bv = await this.udcCompiler.postSrcFile(pid);
       if (bv != "scc") return "fail";
@@ -60,7 +58,7 @@ export class Compiler {
         this.udcTerminal.freeCodingConfig["projects"][0]["compilationMethod"] ==
           "none"
       ) {
-        Logger.info("skip compiling","skip")
+        Logger.info("skip compiling", "skip");
         return "scc";
       } else {
         return await this.rgc.processFreeCoding(pid);

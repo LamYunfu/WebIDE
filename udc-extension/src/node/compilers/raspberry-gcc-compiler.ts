@@ -15,12 +15,14 @@ import {
 import * as path from "path";
 import { CompilerInterFace } from "./compilerInterface";
 import { UdcTerminal } from "../util/udc-terminal";
+import { DistributedCompiler } from "./distributedcompiler";
 @injectable()
 export class RaspeberryGccCompiler implements CompilerInterFace {
   constructor(
     @inject(UdcTerminal) protected readonly udc: UdcTerminal,
     @inject(FileMapper) protected readonly fm: FileMapper,
-    @inject(RootDirPath) public rootDir: RootDirPath
+    @inject(RootDirPath) public rootDir: RootDirPath,
+    @inject(DistributedCompiler) protected readonly dc: DistributedCompiler
   ) {}
   outputResult(str: string) {
     this.udc.outputResult(str);
@@ -259,7 +261,14 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
         new Buffer(projectName).toString("hex") + ".hex"
       );
       let fileDir = path.join(this.rootDir.val, dirName, projectName);
-      let res = await this.compile(fileDir, outputPath);
+      
+      // let res = await this.compile(fileDir, outputPath);
+      let res = await this.dc.compile(
+        fileDir,
+        outputPath,
+        "raspberrypi3",
+        "raspbian"
+      );
       this.fm.setFileNameMapper(pid, {
         projectName: new Buffer(projectName).toString("hex") + ".hex",
       });

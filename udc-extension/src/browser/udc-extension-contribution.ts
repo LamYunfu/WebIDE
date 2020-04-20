@@ -8,7 +8,7 @@ import {
   DebugAdapterContribution,
   DebugAdapterSessionFactory,
   CommunicationProvider,
-  DebugAdapterSession
+  DebugAdapterSession,
 } from "@theia/debug/lib/common/debug-model";
 import { DebugConfiguration } from "@theia/debug/lib/common/debug-configuration";
 import {
@@ -17,12 +17,12 @@ import {
   MenuModelRegistry,
   MessageService,
   MAIN_MENU_BAR,
-  Command
+  Command,
 } from "@theia/core/lib/common";
 import {
   LanguageGrammarDefinitionContribution,
   TextmateRegistry,
-  GrammarDefinition
+  GrammarDefinition,
 } from "@theia/monaco/lib/browser/textmate";
 import { WorkspaceService } from "@theia/workspace/lib/browser/";
 import { FileDialogService } from "@theia/filesystem/lib/browser";
@@ -33,7 +33,7 @@ import {
   QuickOpenItem,
   QuickOpenItemOptions,
   ApplicationShell,
-  KeybindingRegistry
+  KeybindingRegistry,
 } from "@theia/core/lib/browser";
 import { UdcConsoleSession } from "./udc-console-session";
 import { DeviceViewService } from "./device-view-service";
@@ -44,7 +44,7 @@ import { LampWidget } from "./lamp";
 import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-channel";
 export const UdcExtensionCommand = {
   id: "UdcExtension.command",
-  label: "test node server"
+  label: "test node server",
 };
 
 export namespace UdcMenus {
@@ -60,120 +60,120 @@ export namespace UdcCommands {
   export const OpenCommand: Command = {
     id: "OpenCommand",
     category: UDC_MENU_CATEGORY,
-    label: "no label"
+    label: "no label",
   };
 
   export const GotoCommand: Command = {
     id: "gotoCode",
     category: UDC_MENU_CATEGORY,
-    label: "no label"
+    label: "no label",
   };
   export const Connect: Command = {
     id: "udc.menu.connect",
     category: UDC_MENU_CATEGORY,
-    label: "connect"
+    label: "connect",
   };
 
   export const DisConnect: Command = {
     id: "udc.menu.disconnect",
     category: UDC_MENU_CATEGORY,
-    label: "disconnect"
+    label: "disconnect",
   };
 
   export const GetDevList: Command = {
     id: "udc.menu.get_devlist",
     category: UDC_MENU_CATEGORY,
-    label: "devlist"
+    label: "devlist",
   };
 
   export const Program: Command = {
     id: "udc.menu.program",
     category: UDC_MENU_CATEGORY,
-    label: "program"
+    label: "program",
   };
 
   export const Reset: Command = {
     id: "udc.menu.reset",
     category: UDC_MENU_CATEGORY,
-    label: "reset"
+    label: "reset",
   };
   export const Judge: Command = {
     id: "udc.menu.judge",
     category: UDC_MENU_CATEGORY,
-    label: "judge"
+    label: "judge",
   };
 
   export const ABOUT: Command = {
     id: "udc.menu.about",
     category: UDC_MENU_CATEGORY,
-    label: "About"
+    label: "About",
   };
   export const openLab: Command = {
     id: "udc.menu.openLab",
     category: UDC_MENU_CATEGORY,
-    label: "openLab"
+    label: "openLab",
   };
   export const JudgeButton: Command = {
     id: "udc.menu.judgebutton",
     category: UDC_MENU_CATEGORY,
-    label: "judgebutton"
+    label: "judgebutton",
   };
   export const PostSrcFile: Command = {
     id: "udc.menu.postsrcfile",
     category: UDC_MENU_CATEGORY,
-    label: "postsrcfile"
+    label: "postsrcfile",
   };
   export const literalAnalysis: Command = {
     id: "udc.menu.Analysis",
     category: UDC_MENU_CATEGORY,
-    label: "codeLiteralAnalysis"
+    label: "codeLiteralAnalysis",
   };
   export const QueryStatus: Command = {
     id: "udc.menu.querystatus",
     category: UDC_MENU_CATEGORY,
-    label: "querystatus"
+    label: "querystatus",
   };
   export const SetJudgeHostandPort: Command = {
     id: "udc.menu.setjudgehostandport",
     category: UDC_MENU_CATEGORY,
-    label: "setjudgehostandport"
+    label: "setjudgehostandport",
   };
   export const openViewPanel: Command = {
     id: "openViewPanel",
-    label: "no label"
+    label: "no label",
   };
   export const openFile: Command = {
     id: "openFile",
-    label: "no label"
+    label: "no label",
   };
   export const SubmitOnMenu: Command = {
     id: "submitonmenu",
-    label: "connect"
+    label: "connect",
   };
   export const connectLinkedge: Command = {
     id: "connectLinkedge",
     category: LINKEDGE_CATEGORY,
-    label: "connect"
+    label: "connect",
   };
   export const releaseLinkedge: Command = {
     id: "realseLinkedge",
     category: LINKEDGE_CATEGORY,
-    label: "release"
+    label: "release",
   };
   export const compileEdge: Command = {
     id: "compileEdge",
     category: LINKEDGE_CATEGORY,
-    label: "compile"
+    label: "Compile",
   };
   export const startLinkedge: Command = {
     id: "startLinkedge",
     category: LINKEDGE_CATEGORY,
-    label: "start"
+    label: "start",
   };
   export const stopLinkedge: Command = {
     id: "stopLinkedge",
     category: LINKEDGE_CATEGORY,
-    label: "stop"
+    label: "stop",
   };
 }
 
@@ -193,14 +193,14 @@ export class UdcExtensionCommandContribution
       items.push(lookFor);
     }
     let opts = items.map(
-      t =>
+      (t) =>
         new QuickOpenItem({
           label: t,
           description: t,
           run: (mode: any) => {
             this.selectDeviceModel = t;
             return true;
-          }
+          },
         })
     );
     acceptor(opts);
@@ -234,54 +234,56 @@ export class UdcExtensionCommandContribution
     @inject(EditorQuickOpenService) readonly eqos: EditorQuickOpenService,
     @inject(OpenerService) readonly os: OpenerService
   ) {
-    this.udcWatcher.onConfigLog((data: { name: string; passwd: string }) => {
-      let tmp = data;
-      if (data.name == "openSrcFile") {
-        console.log(data.passwd);
-        // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
-        this.os.getOpener(new URI(data.passwd)).then(res => {
-          res.open(new URI("file://" + data.passwd));
-        });
-        return;
-      } else if (data.name == "openWorkspace") {
-        this.ds.openWorkspace(data.passwd);
-        return;
-      } else if (data.name == "openShell") {
-        this.deviceViewService.openShell();
-        return;
-      } else if (data.name == "submitEnable") {
-        this.deviceViewService.enableClick();
-        return;
-      } else if (data.name == "submitEnableWithJudge") {
-        this.deviceViewService.approveClick();
-        return;
-      } else if (data.name == "executeSelectPanel") {
-        this.deviceViewService.openExecutePanel();
-        return;
-      } else if (data.name == "redirect") {
-        // // this.url=data.passwd
-        this.ds.openTinyMobile(data.passwd);
-        // this.x= window.open("http://120.55.102.225:12359/phone/index.html")
-        // setTimeout(() => {
-        //     this.x!.postMessage(this.url,"*")
-        // }, 2000);
-        return;
+    this.udcWatcher.onConfigLog(
+      async (data: { name: string; passwd: string }) => {
+        let tmp = data;
+        if (data.name == "openSrcFile") {
+          console.log(data.passwd);
+          // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
+          this.os.getOpener(new URI(data.passwd)).then(async (res) => {
+            await res.open(new URI("file://" + data.passwd));
+          });
+          return;
+        } else if (data.name == "openWorkspace") {
+          await this.ds.openWorkspace(data.passwd);
+          return;
+        } else if (data.name == "openShell") {
+          this.deviceViewService.openShell();
+          return;
+        } else if (data.name == "submitEnable") {
+          this.deviceViewService.enableClick();
+          return;
+        } else if (data.name == "submitEnableWithJudge") {
+          this.deviceViewService.approveClick();
+          return;
+        } else if (data.name == "executeSelectPanel") {
+          this.deviceViewService.openExecutePanel();
+          return;
+        } else if (data.name == "redirect") {
+          // // this.url=data.passwd
+          this.ds.openTinyMobile(data.passwd);
+          // this.x= window.open("http://120.55.102.225:12359/phone/index.html")
+          // setTimeout(() => {
+          //     this.x!.postMessage(this.url,"*")
+          // }, 2000);
+          return;
+        }
+        applicationShell.closeTabs("bottom");
+        // applicationShell.closeTabs("left")
+        console.log(JSON.stringify(data) + "::::::front ");
+        this.commandRegistry.executeCommand(
+          "iot.plugin.tinylink.scence.config",
+          "http://tinylink.cn:12352/tinylink/tinylinkApp/login.php",
+          tmp.name,
+          tmp.passwd
+        );
+        this.commandRegistry.executeCommand(
+          "iot.plugin.tinylink.scence.node",
+          tmp.name,
+          tmp.passwd
+        );
       }
-      applicationShell.closeTabs("bottom");
-      // applicationShell.closeTabs("left")
-      console.log(JSON.stringify(data) + "::::::front ");
-      this.commandRegistry.executeCommand(
-        "iot.plugin.tinylink.scence.config",
-        "http://tinylink.cn:12352/tinylink/tinylinkApp/login.php",
-        tmp.name,
-        tmp.passwd
-      );
-      this.commandRegistry.executeCommand(
-        "iot.plugin.tinylink.scence.node",
-        tmp.name,
-        tmp.passwd
-      );
-    });
+    );
     this.udcWatcher.onDeviceLog((data: string) => {
       // console.log("data is :" + data + "............................")
       let array = data.split(":");
@@ -300,7 +302,7 @@ export class UdcExtensionCommandContribution
       this.udcConsoleSession.appendLine(log);
     });
 
-    this.udcWatcher.onDeviceList(data => {
+    this.udcWatcher.onDeviceList((data) => {
       this.deviceViewService.push(data);
     });
   }
@@ -309,39 +311,39 @@ export class UdcExtensionCommandContribution
     registry.registerCommand(UdcCommands.ABOUT, {
       execute: () => {
         this.aboutDialog.open();
-      }
+      },
     });
     registry.registerCommand(UdcCommands.openLab, {
       execute: () => {
         this.applicationShell.addWidget(this.lp, {
-          area: "right"
+          area: "right",
         });
-      }
+      },
     });
     registry.registerCommand(UdcCommands.startLinkedge, {
       execute: () => {
         this.udcService.linkEdgeConnect("32", { action: "start" });
-      }
+      },
     });
     registry.registerCommand(UdcCommands.stopLinkedge, {
       execute: () => {
         this.udcService.linkEdgeConnect("32", { action: "stop" });
-      }
+      },
     });
     registry.registerCommand(UdcCommands.connectLinkedge, {
       execute: () => {
         this.udcService.linkEdgeConnect("32", { action: "connect" });
-      }
+      },
     });
     registry.registerCommand(UdcCommands.releaseLinkedge, {
       execute: () => {
         this.udcService.linkEdgeConnect("32", { action: "release" });
-      }
+      },
     });
     registry.registerCommand(UdcCommands.compileEdge, {
       execute: () => {
         this.udcService.tinyEdgeCompile("35");
-      }
+      },
     });
     registry.registerCommand(UdcCommands.OpenCommand, {
       execute: async (uri: URI | string) => {
@@ -352,17 +354,16 @@ export class UdcExtensionCommandContribution
           console.log(uri);
           uri = new URI(uri);
         }
-        this.em.open(uri).then(
-          res => console.log("openscc"),
-          err => console.log(err)
-        );
-      }
+        this.em
+          .open(uri)
+          .then((res) => console.log("openscc"), (err) => console.log(err));
+      },
     });
     registry.registerCommand(UdcCommands.openFile, {
       execute: async (pid: string, filename: string) => {
         // this.imr.add(uri,"")
-        this.udcService.openFile(pid, filename);
-      }
+        await this.udcService.openFile(pid, filename);
+      },
     });
 
     registry.registerCommand(UdcCommands.Connect, {
@@ -385,48 +386,48 @@ export class UdcExtensionCommandContribution
         //         this.messageService.error(err)
         //     })
         // }
-      }
+      },
     });
 
     registry.registerCommand(UdcCommands.DisConnect, {
       execute: () => {
         this.udcService
           .disconnect()
-          .then(re => {
+          .then((re) => {
             // this.messageService.info(re)
           })
-          .catch(err => {
+          .catch((err) => {
             this.messageService.error(err);
           });
-      }
+      },
     });
     registry.registerCommand(UdcCommands.literalAnalysis, {
-      execute: pid => {
+      execute: (pid) => {
         this.ds.literalAnalysis();
-      }
+      },
     });
     registry.registerCommand(UdcCommands.GotoCommand, {
       execute: (file: string) => {
         this.ds.gotoCode(file);
-      }
+      },
     });
     registry.registerCommand(UdcCommands.openViewPanel, {
       execute: async (uri: string, videoName: string) => {
         console.log("<<<<<<<<<<<<<<<<<<<<=video name" + videoName);
         registry.executeCommand("iot.plugin.tinylink.compile", uri, videoName);
-      }
+      },
     });
     registry.registerCommand(UdcCommands.JudgeButton, {
       execute: () => {
         this.udcService
           .disconnect()
-          .then(re => {
+          .then((re) => {
             this.messageService.info(re);
           })
-          .catch(err => {
+          .catch((err) => {
             this.messageService.error(err);
           });
-      }
+      },
     });
     // registry.registerCommand(UdcCommands.QueryStatus, {
     //     execute: (x: string) => {
@@ -439,19 +440,19 @@ export class UdcExtensionCommandContribution
 
     registry.registerCommand(UdcCommands.GetDevList, {
       execute: () => {
-        this.udcService.get_devices().then(re => {
+        this.udcService.get_devices().then((re) => {
           for (let k in re) {
             this.messageService.info(k + " use=" + re[k]);
           }
         });
-      }
+      },
     });
     registry.registerCommand(UdcCommands.SubmitOnMenu, {
       execute: () => {
         // this.applicationShell.activateWidget("files")
         this.applicationShell.saveAll();
         this.ds.submitOnMenu();
-      }
+      },
     });
     registry.registerCommand(UdcCommands.Reset, {
       execute: async () => {
@@ -463,18 +464,18 @@ export class UdcExtensionCommandContribution
         }
         this.udcService
           .control(devstr, "reset")
-          .then(re => {
+          .then((re) => {
             let result = re === true ? "reset succeed" : "reset failed";
             this.messageService.info(result);
           })
-          .catch(err => {
+          .catch((err) => {
             this.messageService.error(err);
           });
-      }
+      },
     });
     this.kr.registerKeybinding({
       command: "submitonmenu",
-      keybinding: "ctrl+m"
+      keybinding: "ctrl+m",
     });
   }
 }
@@ -487,15 +488,15 @@ export class debugAdapterSessionFactory implements DebugAdapterSessionFactory {
     return {
       id: sessionId,
       start: (channel: WebSocketChannel): Promise<void> => {
-        return new Promise<void>(res => {
+        return new Promise<void>((res) => {
           res();
         });
       },
       stop: (): Promise<void> => {
-        return new Promise<void>(res => {
+        return new Promise<void>((res) => {
           res();
         });
-      }
+      },
     };
   }
 }
@@ -514,20 +515,20 @@ export class DAC implements DebugAdapterContribution {
       return {
         id: sessionId,
         start: (channel: WebSocketChannel): Promise<void> => {
-          return new Promise<void>(res => {
+          return new Promise<void>((res) => {
             res();
           });
         },
         stop: (): Promise<void> => {
-          return new Promise<void>(res => {
+          return new Promise<void>((res) => {
             res();
           });
-        }
+        },
       };
-    }
+    },
   };
   provideDebugAdapterExecutable = (config: DebugConfiguration) => {
-    console.log("type:"+config.type);
+    console.log("type:" + config.type);
     return undefined;
   };
 }
@@ -540,13 +541,13 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       commandId: UdcCommands.SubmitOnMenu.id,
       label: "Submit",
       icon: "x",
-      order: "a_1"
+      order: "a_1",
     });
     menus.registerMenuAction([...UdcMenus.UDC], {
       commandId: UdcCommands.literalAnalysis.id,
       label: "LiteralAnalysis",
       icon: "x",
-      order: "a_2"
+      order: "a_2",
     });
     // menus.registerSubmenu(UdcMenus.linkedge, "linkedge");
     // // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
@@ -578,7 +579,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       commandId: UdcCommands.compileEdge.id,
       label: "compile",
       icon: "x",
-      order: "a_5"
+      order: "a_5",
     });
 
     // console.log(menus.getMenu(['menubar']).children.length)
@@ -602,71 +603,63 @@ export class UdcExtensionHighlightContribution
   readonly config: monaco.languages.LanguageConfiguration = {
     comments: {
       lineComment: "//",
-      blockComment: ["/*", "*/"]
+      blockComment: ["/*", "*/"],
     },
-    brackets: [
-      ["{", "}"],
-      ["[", "]"],
-      ["(", ")"]
-    ],
+    brackets: [["{", "}"], ["[", "]"], ["(", ")"]],
     autoClosingPairs: [
       { open: "[", close: "]" },
       { open: "{", close: "}" },
       { open: "(", close: ")" },
       { open: "'", close: "'", notIn: ["string", "comment"] },
       { open: '"', close: '"', notIn: ["string"] },
-      { open: "/*", close: " */", notIn: ["string"] }
+      { open: "/*", close: " */", notIn: ["string"] },
     ],
     surroundingPairs: [
       { open: "{", close: "}" },
       { open: "[", close: "]" },
       { open: "(", close: ")" },
       { open: '"', close: '"' },
-      { open: "'", close: "'" }
+      { open: "'", close: "'" },
     ],
     folding: {
       markers: {
         start: new RegExp("^\\s*#pragma\\s+region\\b"),
-        end: new RegExp("^\\s*#pragma\\s+endregion\\b")
-      }
-    }
+        end: new RegExp("^\\s*#pragma\\s+endregion\\b"),
+      },
+    },
   };
   readonly pyId = "python";
   readonly pyConfig: monaco.languages.LanguageConfiguration = {
     comments: {
-      lineComment: "#"
+      lineComment: "#",
     },
-    brackets: [
-      ["{", "}"],
-      ["[", "]"],
-      ["(", ")"]
-    ],
+    brackets: [["{", "}"], ["[", "]"], ["(", ")"]],
     autoClosingPairs: [
       { open: "[", close: "]" },
       { open: "{", close: "}" },
       { open: "(", close: ")" },
       { open: "'", close: "'", notIn: ["string", "comment"] },
-      { open: '"', close: '"', notIn: ["string"] }
+      { open: '"', close: '"', notIn: ["string"] },
     ],
     surroundingPairs: [
       { open: "{", close: "}" },
       { open: "[", close: "]" },
       { open: "(", close: ")" },
       { open: '"', close: '"' },
-      { open: "'", close: "'" }
+      { open: "'", close: "'" },
     ],
     folding: {
       markers: {
         start: new RegExp("^\\s*#pragma\\s+region\\b"),
-        end: new RegExp("^\\s*#pragma\\s+endregion\\b")
-      }
+        end: new RegExp("^\\s*#pragma\\s+endregion\\b"),
+      },
     },
     onEnterRules: [
       {
         beforeText: /^\s*(?:def|class|for|if|elif|else|while|try|with|finally|except|async).*?:\s*$/,
-        action: { indentAction: monaco.languages.IndentAction.Indent }
-      }
-    ]
+        action: { indentAction: monaco.languages.IndentAction.Indent },
+      },
+    ],
   };
 
   registerTextmateLanguage(registry: TextmateRegistry): void {
@@ -684,18 +677,18 @@ export class UdcExtensionHighlightContribution
         ".inl",
         ".ipp",
         "cl",
-        ".c"
+        ".c",
       ],
-      aliases: ["C++", "Cpp", "cpp", "c"]
+      aliases: ["C++", "Cpp", "cpp", "c"],
     });
     monaco.languages.setLanguageConfiguration(this.id, this.config);
     registry.registerTextmateGrammarScope(this.scopeName, {
       async getGrammarDefinition() {
         return {
           format: "json",
-          content: require("../../data/cpp.tmLanguage.json")
+          content: require("../../data/cpp.tmLanguage.json"),
         };
-      }
+      },
     });
     registry.mapLanguageIdToTextmateGrammar(this.id, this.scopeName);
     monaco.languages.register({
@@ -708,10 +701,10 @@ export class UdcExtensionHighlightContribution
         ".gyp",
         ".gypi",
         ".snakefile",
-        ".smk"
+        ".smk",
       ],
       aliases: ["Python", "py"],
-      firstLine: "^#!\\s*/.*\\bpython[0-9.-]*\\b"
+      firstLine: "^#!\\s*/.*\\bpython[0-9.-]*\\b",
     });
 
     monaco.languages.setLanguageConfiguration(this.pyId, this.pyConfig);
@@ -721,9 +714,9 @@ export class UdcExtensionHighlightContribution
       async getGrammarDefinition(): Promise<GrammarDefinition> {
         return {
           format: "json",
-          content: platformGrammar
+          content: platformGrammar,
         };
-      }
+      },
     });
 
     const cGrammar = require("../../data/MagicRegExp.tmLanguage.json");
@@ -731,9 +724,9 @@ export class UdcExtensionHighlightContribution
       async getGrammarDefinition(): Promise<GrammarDefinition> {
         return {
           format: "json",
-          content: cGrammar
+          content: cGrammar,
         };
-      }
+      },
     });
     registry.mapLanguageIdToTextmateGrammar(this.pyId, "source.python");
   }

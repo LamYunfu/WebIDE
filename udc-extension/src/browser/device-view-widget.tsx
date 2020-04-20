@@ -112,6 +112,7 @@ export class DeviceViewWidget extends TreeWidget {
     return (
       <div style={{ height: "100%" }}>
         <View
+          openLinkEdge={this.openLinkedge}
           delProject={this.delProject}
           initPid={this.initPid}
           openConfigFile={this.openConfigFile}
@@ -165,16 +166,15 @@ export class DeviceViewWidget extends TreeWidget {
           saveAll={this.saveAll}
           getSubmitEnableWithJudgeTag={this.getSubmitEnableWithJudgeTag}
           setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
-           processDisplaySubmit={this.processDisplaySubmit}
+          processDisplaySubmit={this.processDisplaySubmit}
           attach={this.attach}
         />
-        <Lamp imgDisplay={this.imgDisplay} lampStatus={this.lampStatus}></Lamp>
+        {/* <Lamp imgDisplay={this.imgDisplay} lampStatus={this.lampStatus}></Lamp> */}
 
         {/* <LinkEdgeView
           initPidQueueInfo={this.initPidQueueInfo}
           linkEdgeConnect={this.linkEdgeConnect}
         ></LinkEdgeView> */}
-   
       </div>
     );
   }
@@ -199,6 +199,55 @@ export class DeviceViewWidget extends TreeWidget {
     }, 3000);
     this.update();
   }
+  openLinkedge = async () => {
+    let wg = this.applicationShell.widgets.find((wg) => {
+      if (wg.id == "device-view") return !!wg;
+    });
+
+    let tag = this.applicationShell.widgets.some((res) => {
+      if (res.id == "demo-view") {
+        // res.activate();
+        return true;
+      }
+    });
+
+    if (tag == false) {
+      await this.commandRegistry.executeCommand("something");
+      // alert("exec");
+    }
+    setTimeout(async () => {
+      let wgl = this.applicationShell.widgets.find((wg) => {
+        if (wg.id == "demo-view") return !!wg;
+      });
+      !!wg &&
+        (await this.applicationShell.setLayoutData({
+          ...this.applicationShell.getLayoutData(),
+          leftPanel: {
+            type: "sidepanel",
+            size: 500,
+            items: [
+              {
+                widget: wgl,
+                expanded: true,
+              },
+            ],
+          },
+          rightPanel: {
+            type: "sidepanel",
+            items: [
+              {
+                widget: wg,
+                expanded: false,
+              },
+            ],
+          },
+        }));
+      if (!this.applicationShell.activateWidget("demo-view")) {
+        // alert("err");
+      }
+    }, 0);
+    await this.openShell();
+  };
   attach = () => {
     this.applicationShell.addWidget(new TestWidget(), {
       area: "bottom",
@@ -280,10 +329,12 @@ export class DeviceViewWidget extends TreeWidget {
   }
   openWorkSpace = (urlStr: string) => {
     if (
-      decodeURI(window.location.href).split("/").pop() !=
-        urlStr.split("/").pop() &&
-      decodeURI(window.location.href).split("\\").pop() !=
-        urlStr.split("\\").pop()
+      decodeURI(window.location.href)
+        .split("/")
+        .pop() != urlStr.split("/").pop() &&
+      decodeURI(window.location.href)
+        .split("\\")
+        .pop() != urlStr.split("\\").pop()
     )
       this.ws.open(new URI(`${urlStr}`), { preserveWindow: true });
   };
@@ -298,12 +349,18 @@ export class DeviceViewWidget extends TreeWidget {
   terminateExe = () => {
     this.udcService.terminateExe();
   };
-  openShell = () => {
+  openShell = async () => {
     // if (this.applicationShell.activateWidget("udc-shell")) {
     //     alert("shell open")
     // }
-    if (!this.applicationShell.isExpanded("bottom")) {
-      this.commandRegistry.executeCommand("udc:shell:toggle");
+    if (
+      !this.applicationShell.widgets.find((it) => {
+        if (it.id == "udc-shell") {
+          return true;
+        }
+      })
+    ) {
+      await this.commandRegistry.executeCommand("udc:shell:toggle");
     }
   };
   closeTabs = async () => {
@@ -314,13 +371,21 @@ export class DeviceViewWidget extends TreeWidget {
   openFile(pid: string, filename: string) {
     this.udcService.openFile(pid, filename);
   }
-  openFileView = () => {
+  openFileView = async () => {
     let _this = this;
     let wds = this.applicationShell.widgets;
-    for (let item of wds) {
-      console.log(item.id);
+    if (
+      !wds.find((it) => {
+        if (it.id == "files") {
+          return true;
+        }
+      })
+    ) {
+
+      await _this.commandRegistry.executeCommand("fileNavigator:toggle");
     }
     // _this.commandRegistry.executeCommand("UDC devices")
+
     _this.applicationShell.activateWidget("files");
     // _this.applicationShell.leftPanelHandler.dockPanel.addClass("theia-maximized")
     // _this.applicationShell.leftPanelHandler.setLayoutData({})

@@ -22,6 +22,7 @@ import { DisplayBoard } from "./display-board";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
   export interface Props {
+    openLinkEdge: () => void;
     delProject: (pid: string) => Promise<boolean>;
     initPid: (pid: string) => void;
     openConfigFile: (pid: string) => void;
@@ -130,7 +131,7 @@ export class View extends React.Component<View.Props, View.State> {
   title: string = "";
   ppid: string = "";
   sections: [{ [key: string]: string }] = [{}];
-  renderView: JSX.Element = (<div>**</div>);
+  renderView: JSX.Element = <div>**</div>;
   typeDataPool: { [key: string]: { [key: string]: {} } } = {};
   answerPool: {
     [section: string]: {
@@ -233,7 +234,7 @@ export class View extends React.Component<View.Props, View.State> {
       dataType: "json",
       contentType: "text/plain",
       data: "", // serializes the form's elements.
-      success: function (data) {
+      success: function(data) {
         $(".userName").text(data.data.uname);
         ////alert(data.data.JSESSIONID)
         _this.props.setTinyLink(data.data.tinyId, data.data.tinyPasswd);
@@ -253,7 +254,7 @@ export class View extends React.Component<View.Props, View.State> {
       dataType: "json",
       contentType: "text/plain",
       data: "",
-      success: async function (data) {
+      success: async function(data) {
         // let x = data.question.slice(0, 3)
         console.log(JSON.stringify(data) + "****************************");
         let sidArray = _this.state.sidArray;
@@ -785,7 +786,7 @@ export class View extends React.Component<View.Props, View.State> {
           qzid: _this.state.qzid,
           answer: answers,
         }),
-        success: async function (data) {
+        success: async function(data) {
           let correctItem: string[] = data.data.correct;
           for (let item in correctItem) {
             let pid = (parseInt(item) + 1).toString();
@@ -914,7 +915,7 @@ export class View extends React.Component<View.Props, View.State> {
           scid: _this.state.scid,
           answer: answers.join(","),
         }),
-        success: async function (data) {
+        success: async function(data) {
           let correctItem: string = data.correct;
           let pid = _this.state.pid;
           let sp = $(`.optionItem.${_this.state.sid} a[id=${pid}]`).next();
@@ -961,10 +962,15 @@ export class View extends React.Component<View.Props, View.State> {
         }, 300);
       });
     console.log("show experiment view:" + $("[class*=codeItem]").length);
-    exitTag && $("[class*=codeItem]").first().trigger("click");
+    exitTag &&
+      $("[class*=codeItem]")
+        .first()
+        .trigger("click");
   }
   async showTheDefaultSceneView() {
-    $("[class*=codeItem]").first().trigger("click");
+    $("[class*=codeItem]")
+      .first()
+      .trigger("click");
   }
   async showTheDefaultOptionView() {
     let _this = this;
@@ -1526,6 +1532,7 @@ export class View extends React.Component<View.Props, View.State> {
       >
         {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
         <LinkEdgeView
+          openLinkedge={this.props.openLinkEdge}
           openExplore={this.props.openExplorer}
           section={{ ppid: [_this.ppid], sid: "experiment" }}
           saveAll={this.props.saveAll}
@@ -1648,7 +1655,10 @@ export class View extends React.Component<View.Props, View.State> {
       //自由编程
       <MyContext.Provider
         value={{
-          showTheDefaultFreeCodingView: () => {},
+          showTheDefaultFreeCodingView: async () => {
+            await this.props.openShell();
+            await this.props.openFileView();
+          },
           setClickTime: () => {
             _this.clickTime = new Date().getTime();
           },
@@ -1690,7 +1700,7 @@ export class View extends React.Component<View.Props, View.State> {
         />
       </MyContext.Provider>
     ) : //自由编程演示
-    this.state.viewType == "13" ? (
+    this.state.viewType == "5" ? (
       <DisplayBoard
         setSize={this.props.setSize}
         processDisplaySubmit={this.props.processDisplaySubmit}

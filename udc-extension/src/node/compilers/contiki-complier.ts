@@ -14,22 +14,44 @@ import {
   RootDirPath,
 } from "../../setting/backend-config";
 import * as path from "path";
+import { DistributedCompiler } from "./distributedcompiler";
 // let this.rootDir.val = LINKLAB_WORKSPACE;
 @injectable()
 export class NewContikiCompiler {
   constructor(
     @inject(UdcTerminal) protected readonly udc: UdcTerminal,
     @inject(FileMapper) protected readonly fm: FileMapper,
-    @inject(RootDirPath) public rootDir: RootDirPath
+    @inject(RootDirPath) public rootDir: RootDirPath,
+    @inject(DistributedCompiler) protected readonly dc: DistributedCompiler
   ) {}
   async postNameAndType(pid: string) {
     let { dirName, deviceRole } = await this.udc.getPidInfos(pid);
     for (let item of deviceRole!) {
       this.udc.outputResult(`compile:${item}`);
-      let res = await this.postSingleSrcFile(dirName, item, pid);
+      // let res = await this.postSingleSrcFile(dirName, item, pid);
+      let res = await this.compileSingleFile(dirName, item, pid);
       if (res != "scc") return "err";
     }
     return "scc";
+  }
+  async compileSingleFile(dirName: string, item: string, pid: string) {
+    let p = await this.dc.compile(
+      path.join(this.rootDir.val, dirName, item),
+      path.join(
+        this.rootDir.val,
+        dirName,
+        "hexFiles",
+        `${new Buffer(`${item}`).toString("hex")}.hex`
+      ),
+      "sky",
+      "contiki"
+    );
+    if (p == "scc") {
+      let tmp: any = {};
+      tmp[item] = new Buffer(`${item}`).toString("hex") + ".hex";
+      this.fm.setFileNameMapper(pid, tmp);
+    }
+    return p;
   }
   async postSingleSrcFile(projectName: string, role: string, pid: string) {
     Logger.info("postSingleSrcFile");
@@ -53,7 +75,9 @@ export class NewContikiCompiler {
         if (res == "scc") {
           hash = crypto.createHash("sha1");
           let buff = new Buffer(
-            fs.readFileSync(path.join(this.rootDir.val, projectName, `${role}.zip`))
+            fs.readFileSync(
+              path.join(this.rootDir.val, projectName, `${role}.zip`)
+            )
           ); //初始化
           hashVal = hash.update(buff).digest("hex");
           return new Promise((resolve) => {

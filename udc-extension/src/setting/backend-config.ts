@@ -15,7 +15,6 @@ export const SENCE_SERVER_URL = "ws://47.98.249.190:8004/";
 export const LDC_SERVER_IP = `${DEPLOY_SERVER_IP}`;
 export const LDC_SERVER_PORT = 5000;
 export const TEMPLATE_SERVER = `judge.${DEPLOY_SERVER_DOMAIN}`;
-// export const LINKLAB_WORKSPACE = `D:/all`;
 
 export const RASPBERRY_QUERRY_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_QUERRY_PORT = "12320";
@@ -23,11 +22,12 @@ export const CONFIGPATH="/home/config"
 // export const CONFIGPATH = "D:/config";
 export const TINY_MOBILE_IP = `${DEPLOY_SERVER_DOMAIN}`;
 export const TINY_MOBILE_PORT = `12320`;
-
+export const TINYLINEDGECOMPILE_IP=`47.96.155.111`
 // export const RASPBERRY_GCC_IP="121.199.78.80"
 // export const RASPBERRY_GCC_PORT="10086"
 export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_GCC_PORT = "12400";
+export const DISTRIBUTEDCOMPILER_IP="compilev2.spottedhyena.xyz"
 // @injectable()
 // export class RootDirPath {
 //   private rootDir: string = `D:/all`;

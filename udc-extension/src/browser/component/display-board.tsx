@@ -13,28 +13,45 @@ namespace DisplayBoard {
 
 export class DisplayBoard extends React.Component<DisplayBoard.pro> {
   componentDidMount() {
-    this.props.setSize(550)
+    this.props.setSize(550);
   }
   state = {
     index: 0,
     project: "场景模拟",
     info: [
       {
-        title: "智能灯控系统",
-        desciption: "描述",
-        pid: "19",
+        title: "智能灯光系统-智能LED1",
+        desciption: `借助阿里云IoT Studio，远程Web页面直接控制LED1。并通过服务编排，实现一个开关同时控制LED1和LED2。
+远程环境Wifi信息：
+SSID：AZFT
+密码：AZFT123456`,
+        pid: "19"
+      },
+      {
+        title: "智能灯光系统-智能LED2",
+        desciption: `借助阿里云IoT Studio，远程Web页面直接控制LED1。并通过服务编排，实现一个开关同时控制LED1和LED2。
+远程环境Wifi信息：
+SSID：AZFT
+密码：AZFT123456`,
+        pid: "19"
       },
       {
         title: "温湿度监测",
-        desciption: "描述",
-        pid: "19",
+        desciption: `设备端将采集到的数据上传到阿里云IoT Studio物联网平台，并通过Web应用，实时显示温湿度数据
+远程环境Wifi信息：
+SSID：AZFT
+密码：AZFT123456`,
+        pid: "19"
       },
       {
         title: "温控风扇",
-        desciption: "描述",
-        pid: "19",
-      },
-    ],
+        desciption: `风扇设备根据上报的温度数据，由阿里云IoT Studio云端IFTTT规则控制，实现智能开关
+远程环境Wifi信息：
+SSID：AZFT
+密码：AZFT123456`,
+        pid: "19"
+      }
+    ]
   };
   setIndex = (index: number) => {
     // alert(index);
@@ -42,11 +59,11 @@ export class DisplayBoard extends React.Component<DisplayBoard.pro> {
       "",
       JSON.stringify({
         info: this.state.info[index],
-        project: this.state.project,
+        project: this.state.project
       })
     );
     this.setState({
-      index: index,
+      index: index
     });
   };
   render(): React.ReactNode {
@@ -64,7 +81,7 @@ export class DisplayBoard extends React.Component<DisplayBoard.pro> {
           className="board col-7"
           style={{
             backgroundColor: "gray",
-            borderRadius: "3px",
+            borderRadius: "3px"
           }}
         >
           <Board
@@ -99,10 +116,10 @@ export class Board extends React.Component<Board.prop> {
         className="container"
         style={{
           width: "100%",
-          height: "100%",
+          height: "100%"
         }}
       >
-        <div style={{ fontSize: "30px" }}>
+        <div style={{ fontSize: "20px" }}>
           {this.props.state.info[this.props.state.index].title}
         </div>
         <div
@@ -110,10 +127,10 @@ export class Board extends React.Component<Board.prop> {
             border: "solid",
             height: "70%",
             borderRadius: "3px",
-            padding: "10px",
+            padding: "10px"
           }}
         >
-          {this.props.state.info[this.props.state.index].desciption}
+          <pre>{this.props.state.info[this.props.state.index].desciption}</pre>
         </div>
         <div className="row" style={{ position: "absolute", bottom: "20px" }}>
           <button
@@ -185,7 +202,7 @@ export class Key extends React.Component<Key.pro> {
           alignItems: "center",
           justifyContent: "center",
           color: "black",
-          cursor: "pointer",
+          cursor: "pointer"
         }}
       >
         <span>{this.props.name}</span>
@@ -200,7 +217,7 @@ export class Key extends React.Component<Key.pro> {
           alignItems: "center",
           justifyContent: "center",
           color: "black",
-          cursor: "pointer",
+          cursor: "pointer"
         }}
       >
         <span>{this.props.name}</span>

@@ -19,7 +19,7 @@ export const getCompilerType = (model: string): string => {
   if (model.startsWith("tinylink") || TinylinkType.indexOf(model) != -1) {
     return "tinylink";
   }
-  if (model == "contiki_telosb") return "contiki";
+  if (model.startsWith("contiki")) return "contiki";
   if (model.startsWith("raspberry_pi")) {
     return "raspberry_pi";
   }

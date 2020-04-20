@@ -25,6 +25,7 @@ import { LinkEdgeManager } from "./util/linkedgemanger";
 import { OnelinkService } from "./util/onelink";
 import { RaspeberryGccCompiler } from "./compilers/raspberry-gcc-compiler";
 import { RootDirPath } from "../setting/backend-config";
+import { DistributedCompiler } from "./compilers/distributedcompiler";
 
 export default new ContainerModule((bind) => {
   bind(UdcService).to(UdcServiceImpl).inSingletonScope();
@@ -56,5 +57,6 @@ export default new ContainerModule((bind) => {
   bind(OnelinkService).toSelf().inSingletonScope();
   bind(RaspeberryGccCompiler).toSelf().inSingletonScope();
   bind(RootDirPath).toSelf().inSingletonScope();
+  bind(DistributedCompiler).toSelf().inSingletonScope()
   // bind(Controller).toSelf().inSingletonScope();
 });

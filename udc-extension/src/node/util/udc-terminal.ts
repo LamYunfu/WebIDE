@@ -31,6 +31,7 @@ import {
   RootDirPath,
   RASPBERRY_QUERRY_IP,
   RASPBERRY_QUERRY_PORT,
+  TINYLINEDGECOMPILE_IP,
 } from "../../setting/backend-config";
 import { OS } from "@theia/core";
 // import { networkInterfaces } from 'os';
@@ -62,6 +63,7 @@ export class UdcTerminal {
     timeMs: new Date().getTime(),
     device: "",
   };
+  logEnable: boolean = false;
   pidQueueInfo: {
     [pid: string]: {
       loginType: string;
@@ -80,6 +82,7 @@ export class UdcTerminal {
   aiConfig: any = {};
   virtualConfig: any = {};
   currentPid: string = ``;
+  currentWaitId: string = "";
 
   // rootDir: string = `${this.rootDir.val}`;
   tinyLinkInfo: { name: string; passwd: string } = { name: "", passwd: "" };
@@ -538,7 +541,10 @@ export class UdcTerminal {
         let dirPath = path.join(cpath, item);
         fs.existsSync(dirPath) ? "" : fs.mkdirSync(dirPath);
         this.createDirStructure(dirPath, res[item]);
-      } else fs.writeFileSync(path.join(cpath, item), res[item]);
+      } else
+        fs.existsSync(path.join(cpath, item))
+          ? ""
+          : fs.writeFileSync(path.join(cpath, item), res[item]);
     }
   }
 
@@ -590,7 +596,7 @@ export class UdcTerminal {
               });
               mesg.on("end", () => {
                 let res: any = JSON.parse(bf);
-                console.log("res:::" + bf);
+                // console.log("res:::" + bf);
                 if (res.result) {
                   let cpath = path.join(_this.rootDir.val, dirName);
                   if (!fs.existsSync(cpath)) fs.mkdirSync(cpath);
@@ -845,6 +851,7 @@ export class UdcTerminal {
         _this.udcServerClient = null;
         _this.dev_list = undefined;
         _this.outputResult("network error");
+        _this.hpp.removeAllListeners();
         Logger.info("error happened with the connection to server");
         reject("fail");
       });
@@ -857,6 +864,7 @@ export class UdcTerminal {
         // _this.udcServerClient!.destroy();
         _this.udcServerClient = null;
         _this.dev_list = undefined;
+        _this.hpp.removeAllListeners();
         _this.events.emit("disconnect");
         _this.outputResult("connection is disconnected");
         Logger.info("Connection to Udc Server Closed!");
@@ -956,7 +964,7 @@ export class UdcTerminal {
         return;
       }
       // if (tag[0] == "") return;
-      this.outputResult(tmp, "log");
+      this.logEnable && this.outputResult(tmp, "log");
     } else if (type == Packet.DEVICE_PROGRAM_BEGIN) {
       this.lastCommitDevice = {
         timeMs: new Date().getTime(),
@@ -970,6 +978,7 @@ export class UdcTerminal {
       let status = value.split(",").pop();
       this.outputResult("program " + status, "systemInfo");
       if (status == "success") {
+        this.logEnable = true;
         this.cmd_excute_state = "done";
         this.events.emit("cmd-response");
       } else {
@@ -992,9 +1001,11 @@ export class UdcTerminal {
       // this.setTinyLink("executeSelectPanel", "")
     } else if (type == Packet.LOG_JSON) {
       let logObj = JSON.parse(value);
+      console.log(this.currentWaitId);
+      if (logObj["waitingId"] != this.currentWaitId) return;
       for (let item of logObj["logs"]) {
         if (item.startsWith("0E")) continue;
-        this.outputResult(item, "log");
+        this.logEnable && this.outputResult(item, "log");
       }
       // if (logObj["isEnd"] == true) {
       //     this.outputResult('error happened when checking your answer,review your code to see if you code is terminated by a "end" output')
@@ -1256,6 +1267,8 @@ export class UdcTerminal {
     let _this = this;
     // let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
     _this.outputResult("burning......");
+    let js = JSON.parse(setJson);
+    this.currentWaitId = js["program"][0]["waitingId"];
     this.send_packet(Packet.MULTI_DEVICE_PROGRAM, setJson);
     await this.wait_cmd_excute_done(27000);
     return this.cmd_excute_state === "done" ? true : false;
@@ -1678,7 +1691,7 @@ export class UdcTerminal {
     let i = 0;
     for (i = 0; i < 5; i++) {
       if (this.initTag == false) {
-        this.outputResult("wait for config file templates");
+        // this.outputResult("wait for config file templates");
         await new Promise((res) => {
           setTimeout(() => {
             res();
@@ -2075,7 +2088,7 @@ export class UdcTerminal {
           //传zip
           method: "POST",
 
-          hostname: DEPLOY_SERVER_IP,
+          hostname: TINYLINEDGECOMPILE_IP,
           port: 12381,
           path: "/api/system/linklab/compile",
           headers: fm.getHeaders(),
@@ -2108,8 +2121,8 @@ export class UdcTerminal {
                 this.outputResult("tinyEdge compile scc");
                 resolve("scc");
               } else if (res["code"]) {
-                _this.outputResult(res.msg);
-                resolve(res.msg);
+                _this.outputResult("compile error:" + res.message);
+                resolve(res.message);
               } else {
                 throw "error";
               }

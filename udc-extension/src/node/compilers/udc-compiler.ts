@@ -5,10 +5,7 @@ import { UdcTerminal } from "../util/udc-terminal";
 import * as http from "http";
 import { Logger } from "../util/logger";
 import { injectable, inject, LazyServiceIdentifer } from "inversify";
-import {
-  TINYLINK_HOST,
-  RootDirPath,
-} from "../../setting/backend-config";
+import { TINYLINK_HOST, RootDirPath } from "../../setting/backend-config";
 @injectable()
 export class UdcCompiler {
   constructor(
@@ -76,11 +73,6 @@ export class UdcCompiler {
                 return;
               }
               let tmp = JSON.parse(res);
-              // if (tmp.status != '200') {
-              //     this.outputResult(`${tmp.error}`)
-              //     this.outputResult(`${tmp.message}`)
-              //     return
-              // }
               Logger.info(`compile data back:${res}`);
               let data = JSON.parse(tmp.data);
               Logger.val("compiler return data :" + data);
@@ -122,15 +114,11 @@ export class UdcCompiler {
                       path.join(this.rootDir.val, dirName, fn + "Install.zip")
                     );
                     let count = 0;
-
-                    // let x = new Buffer("")
-
                     mesg.setTimeout(1, () => {
                       _this.outputResult("print scc");
                     });
                     mesg.on("data", (b: Buffer) => {
                       if (count++ % 60 == 0) Logger.info("downloading");
-                      // x.write(b.toString("hex"))
                       ws.write(b);
                     });
 
@@ -141,9 +129,7 @@ export class UdcCompiler {
                       _this.outputResult("download hex error ");
                     });
                     mesg.on("end", async () => {
-                      // ws.write(x)
                       ws.close();
-                      // _this.outputResult('extracting hex file......')
                       resolve("scc");
                       return;
                     });
@@ -260,11 +246,9 @@ export class UdcCompiler {
       );
     });
   }
-
   setCookie(cookie: string): boolean {
     return this.udc.setCookie(cookie);
   }
-
   outputResult(res: string, types: string = "systemInfo") {
     this.udc.outputResult(res, types);
   }
