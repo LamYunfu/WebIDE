@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Input } from "./component/linkedge";
+import { Input, Selection } from "./component/linkedge";
 export namespace ProjectCreator {
   export interface pro {
     initPidQueueInfo(infos: string): Promise<string>;
@@ -33,12 +33,12 @@ export class ProjectCreator extends React.Component<
       buildTag: false,
       ppid: undefined,
       projectName: undefined,
-      projectType: undefined
+      projectType: undefined,
     };
   }
   componentDidMount() {
     if (this.state.ppid) {
-      setTimeout(() => {
+      setTimeout(async () => {
         this.props.showDefault();
       }, 2000);
     }
@@ -60,7 +60,7 @@ export class ProjectCreator extends React.Component<
         x[info.ppid] = {
           dirName: info.projectName,
           ppid: info.ppid,
-          type: "freecoding"
+          type: "freecoding",
         };
         await this.props.initPidQueueInfo(JSON.stringify(x));
       }
@@ -75,7 +75,7 @@ export class ProjectCreator extends React.Component<
     tinylink_platform_1: "19",
     alios_esp32: "20",
     contiki_telosb: "21",
-    tinylink_lora: "22"
+    tinylink_lora: "22",
   };
   buttonState = false;
   matchProjectType(projectType: string): string[] | undefined {
@@ -90,12 +90,16 @@ export class ProjectCreator extends React.Component<
   createProject = () => {
     // alert("create project");
     if (!this.projectName.match("^.[a-z0-9A-Z]*$" || !this.projectName)) {
-      alert("The project name is empty, or there are characters that are not letters, numbers, or underscores!");
+      alert(
+        "The project name is empty, or there are characters that are not letters, numbers, or underscores!"
+      );
     } else if (
       !this.projectName ||
       !this.projectType.match("^.[a-z_0-9A-Z]*$")
     ) {
-      alert("The project type is empty, or there are characters that are not letters, numbers, or underscores!");
+      alert(
+        "The project type is empty, or there are characters that are not letters, numbers, or underscores!"
+      );
     } else {
       let ppid = "";
       let mr = this.matchProjectType(this.projectType);
@@ -110,8 +114,8 @@ export class ProjectCreator extends React.Component<
         ppid: {
           dirName: this.projectName,
           ppid: ppid,
-          type: "freecoding"
-        }
+          type: "freecoding",
+        },
       };
 
       this.setState(
@@ -120,12 +124,12 @@ export class ProjectCreator extends React.Component<
           ppid: ppid,
           buildTag: true,
           projectName: this.projectName,
-          projectType: this.projectType
+          projectType: this.projectType,
         },
         async () => {
           this.storageProjectInfo(this.state);
           await this.props.initPidQueueInfo(JSON.stringify(pidInfo));
-          window.location.reload()
+          window.location.reload();
           // this.props.showDefault();
         }
       );
@@ -140,7 +144,7 @@ export class ProjectCreator extends React.Component<
         ppid: undefined,
         buildTag: false,
         projectName: undefined,
-        projectType: undefined
+        projectType: "",
       },
       () => {
         this.storageProjectInfo(this.state);
@@ -162,7 +166,7 @@ export class ProjectCreator extends React.Component<
         style={{
           width: "100%",
           height: "100%",
-          position: "relative"
+          position: "relative",
         }}
       >
         <Input
@@ -172,13 +176,28 @@ export class ProjectCreator extends React.Component<
             this.projectName = e.target.value;
           }}
         ></Input>
-        <Input
+        {/* tpMapping: { [key: string]: string } = {
+    raspeberry_pi: "33",
+    tinylink_platform_1: "19",
+    alios_esp32: "20",
+    contiki_telosb: "21",
+    tinylink_lora: "22"
+  }; */}
+
+        {/* <Input
           label="project type:"
           hint="please input project type"
           onChange={(e: any) => {
             this.projectType = e.target.value;
           }}
-        ></Input>
+        ></Input> */}
+        <Selection
+          label="project type:"
+          hint={this.state.projectType!}
+          onChange={(e: any) => {
+            this.projectType = e.target.value;
+          }}
+        ></Selection>
         <button
           className=" btn btn-primary"
           onClick={() => {
@@ -186,7 +205,7 @@ export class ProjectCreator extends React.Component<
             this.createProject();
           }}
         >
-        create
+          create
         </button>
       </div>
     );
@@ -199,11 +218,19 @@ export class ProjectCreator extends React.Component<
           hint={this.state.projectName!}
           disabled={true}
         ></Input>
-        <Input
+        {/* <Input
           label="project type:"
           hint={this.state.projectType!}
           disabled={true}
-        ></Input>
+        ></Input> */}
+        <Selection
+          label="project type:"
+          hint={this.state.projectType!}
+          disabled={true}
+          onChange={(e: any) => {
+            this.projectType = e.target.value;
+          }}
+        ></Selection>
         <button
           className="btn btn-primary"
           onClick={() => {

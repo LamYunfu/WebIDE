@@ -114,16 +114,16 @@ export class UdcCompiler {
                       path.join(this.rootDir.val, dirName, fn + "Install.zip")
                     );
                     let count = 0;
-                    mesg.setTimeout(1, () => {
-                      _this.outputResult("print scc");
-                    });
+                    // mesg.setTimeout(1, () => {
+                    //   _this.outputResult("print scc");
+                    // });
                     mesg.on("data", (b: Buffer) => {
                       if (count++ % 60 == 0) Logger.info("downloading");
                       ws.write(b);
                     });
 
                     mesg.on("timeout", () => {
-                      _this.outputResult("download hex failed ");
+                      _this.outputResult("download hex timeout");
                     });
                     mesg.on("error", () => {
                       _this.outputResult("download hex error ");

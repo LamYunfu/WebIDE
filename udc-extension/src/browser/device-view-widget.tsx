@@ -381,7 +381,6 @@ export class DeviceViewWidget extends TreeWidget {
         }
       })
     ) {
-
       await _this.commandRegistry.executeCommand("fileNavigator:toggle");
     }
     // _this.commandRegistry.executeCommand("UDC devices")
@@ -445,7 +444,7 @@ export class DeviceViewWidget extends TreeWidget {
   };
   openExplorer = () => {
     this.viewType = "freeCoding";
-    this.applicationShell.activateWidget("files");
+    this.openFileView();
     // console.log("click file")
     // setTimeout(() => {
     //     $("#shell-tab-files").trigger("click")

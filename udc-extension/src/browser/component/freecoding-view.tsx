@@ -170,7 +170,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
         //         }, 300)
         //     })
         this.context.showTheDefaultFreeCodingView()
-
+        
     }
 
     render(): JSX.Element {

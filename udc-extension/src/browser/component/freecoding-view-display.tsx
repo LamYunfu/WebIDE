@@ -57,7 +57,7 @@ export class FreeCodingDisplay extends React.Component<
     0x0012: "PROG_ERR",
     0x0020: "ACCEPT",
     0x0021: "WRONG_ANSWER",
-    0x0022: "TIMEOUT"
+    0x0022: "TIMEOUT",
   };
   statusColors: { [key: number]: string } = {
     0x0000: "white",
@@ -67,7 +67,7 @@ export class FreeCodingDisplay extends React.Component<
     0x0012: "black",
     0x0020: "green",
     0x0021: "red",
-    0x0022: "grey"
+    0x0022: "grey",
   };
   pids: string[] = [];
   codingItems: JSX.Element[] = [];
@@ -78,7 +78,7 @@ export class FreeCodingDisplay extends React.Component<
     super(props);
     this.state = {
       codingItems: [],
-      ppid: undefined
+      ppid: undefined,
     };
   }
 
@@ -97,7 +97,7 @@ export class FreeCodingDisplay extends React.Component<
       // })
     });
     $(document).ready(() => {
-      $("#connectButton" + _this.props.section.sid).click(e => {
+      $("#connectButton" + _this.props.section.sid).click((e) => {
         if ($(e.currentTarget).text() == "断开") {
           _this.currentFocusCodingIndex[0] = "-1";
           _this.props.disconnect();
@@ -123,7 +123,7 @@ export class FreeCodingDisplay extends React.Component<
           $(e.currentTarget).text("断开");
         }
       });
-      $(document).on("click", ".list-group-item", e => {
+      $(document).on("click", ".list-group-item", (e) => {
         $(".list-group-item").each((i, _this) => {
           $(_this).removeClass("list-group-item-primary");
         });
@@ -134,29 +134,29 @@ export class FreeCodingDisplay extends React.Component<
       _this.pids.length != 0 &&
         $.ajax({
           headers: {
-            accept: "application/json"
+            accept: "application/json",
           },
           crossDomain: true,
           xhrFields: {
-            withCredentials: true
+            withCredentials: true,
           },
           method: "POST",
           url: PROBLEM_STATUS_URL,
 
           contentType: "text/plain",
           data: JSON.stringify({ pid: _this.pids.join().trim() }),
-          success: function(data) {}
+          success: function(data) {},
         });
     }, 5000);
   }
   setPPid = (pid: string | undefined) => {
     this.setState({ ppid: pid });
   };
-  showDefault = () => {
-    this.props.openShell();
-    this.context.props.openExplorer();
-    this.context.props.openSrcFile(this.state.ppid);
-    this.context.showTheDefaultFreeCodingView();
+  showDefault = async () => {
+    await this.props.openShell();
+    await this.context.props.openExplorer();
+    await this.context.props.openSrcFile(this.state.ppid);
+    await this.context.showTheDefaultFreeCodingView();
   };
   delProject = (pid: string) => {
     return this.context.props.delProject(pid);

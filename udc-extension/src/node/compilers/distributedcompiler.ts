@@ -88,7 +88,7 @@ export class DistributedCompiler {
         }
       );
       uf.on("error", () => {
-        this.outputResult("can't connect to distributed compiler");
+        this.outputResult("network error");
         resolve("error");
       });
       fm.pipe(uf);
@@ -130,7 +130,7 @@ export class DistributedCompiler {
         }
       );
       gf.on("error", () => {
-        this.outputResult("can't connect to distributed compiler");
+        this.outputResult("network error");
         resolve("error");
       });
       gf.end();

@@ -183,7 +183,7 @@ export class Programer {
     let deviceUsage = this.ut.freeCodingConfig["deviceUsage"];
     let burnOption: any = {};
     deviceUsage == "QUEUE"
-      ? this.ut.outputResult("multiplexing model ")
+      ? this.ut.outputResult("multiplexing model")
       : this.ut.outputResult("monopoly model");
     burnOption = {
       ...burnOption,

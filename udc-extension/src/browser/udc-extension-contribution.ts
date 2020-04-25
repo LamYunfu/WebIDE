@@ -577,7 +577,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
     // });
     menus.registerMenuAction([...UdcMenus.UDC], {
       commandId: UdcCommands.compileEdge.id,
-      label: "compile",
+      label: "Compile",
       icon: "x",
       order: "a_5",
     });

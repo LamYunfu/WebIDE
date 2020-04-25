@@ -389,6 +389,83 @@ export class Input extends React.Component<Input.Props> {
   };
 }
 
+export class Selection extends React.Component<Input.Props> {
+  index: number = 0;
+  str: string = "";
+  state = {
+    str: undefined,
+  };
+  onChange = (e: any) => {
+    this.props.onChange!(e);
+    // alert(e.target.value)
+    this.setState({ str: e.target.val });
+    this.str = e.target.value;
+  };
+  render() {
+    return (
+      <div className="row cols-1">
+        <div
+          className="col-3"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyItems: "center",
+            fontStyle: "oblique",
+            fontFamily: "fantasy",
+          }}
+        >
+          {this.props.label}
+        </div>
+        <select
+          className="form-control col-8"
+          id="name"
+          disabled={this.props.disabled}
+          placeholder={this.props.hint}
+          style={
+            this.props.disabled
+              ? {
+                  backgroundColor: "#ADAFAE",
+                  color: "black",
+                  borderRadius: "0.25rem",
+                }
+              : {
+                  backgroundColor: "white",
+                  color: "black",
+                  borderRadius: "0.25rem",
+                }
+          }
+          unselectable={this.props.disabled ? "off" : "on"}
+          onChange={this.onChange}
+        >
+          <option
+            selected={this.props.hint == "raspeberry_pi" ? true : false}
+            value="raspeberry_pi"
+            label="raspeberry_pi"
+          ></option>
+          <option
+            selected={this.props.hint == "alios_esp32" ? true : false}
+            value="alios_esp32"
+            label="alios_esp32"
+          ></option>
+          <option
+            selected={this.props.hint == "contiki_telosb" ? true : false}
+            value="contiki_telosb"
+            label="contiki_telosb"
+          ></option>
+          <option
+            selected={this.props.hint == "tinylink_lora" ? true : false}
+            value="tinylink_lora"
+            label="tinylink_lora"
+          ></option>
+          <option
+            selected={!this.props.hint || this.props.hint == "" ? true : false}
+            label="drop down---------------"
+          ></option>
+        </select>
+      </div>
+    );
+  }
+}
 namespace ButtonGroup {
   /* eslint-disable */
   export interface Props {

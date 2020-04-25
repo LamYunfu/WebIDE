@@ -151,7 +151,7 @@ export class LinkEdgeManager {
       }
       if (i == 0) {
         this.ut.outputResult(
-          "LDC doesn't allocate device to you.please disconnect and retry."
+          "LDC doesn't give the information of devices.please disconnect and retry."
         );
         return "fail";
       }

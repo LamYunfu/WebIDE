@@ -48,9 +48,9 @@ export class AliosCompiler {
       }
     }
     if (this.devs[index] == undefined) {
-      this.outputResult("no dev remaining " + JSON.stringify(this.devs));
+      this.outputResult("no dev " + JSON.stringify(this.devs));
       return new Promise((res, err) => {
-        err("no dev remaining");
+        err("no dev");
       });
     }
     let rootDir = this.rootDir.val;

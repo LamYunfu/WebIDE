@@ -1823,7 +1823,7 @@ export class UdcTerminal {
         });
       });
       tinySimRequest.on("error", () => {
-        _this.outputResult("bad connection with simulator");
+        _this.outputResult("network error");
       });
       tinySimRequest.on("close", () => {
         this.udcClient!.onConfigLog({ name: "submitEnable", passwd: "" });
