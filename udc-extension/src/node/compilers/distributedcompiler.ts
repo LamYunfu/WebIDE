@@ -113,7 +113,7 @@ export class DistributedCompiler {
           });
           response.on("close", () => {
             let bf = Buffer.concat(x);
-            console.log(bf.toString());
+            // console.log(bf.toString());
             if (
               response.headers["content-type"] == "application/octet-stream"
             ) {

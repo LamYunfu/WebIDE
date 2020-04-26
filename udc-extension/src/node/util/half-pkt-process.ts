@@ -12,7 +12,7 @@ export class HalfPackProcess extends EventEmitor {
     this.cursorEnd = 0;
     this.currentDataSize = 0;
   }
-  maxSize: number = 2000;
+  maxSize: number = 200000;
   dataBuffer: Buffer;
   cursorStart: number;
   cursorEnd: number;
