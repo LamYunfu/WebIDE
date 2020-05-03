@@ -32,8 +32,11 @@ import {
   RASPBERRY_QUERRY_IP,
   RASPBERRY_QUERRY_PORT,
   TINYLINEDGECOMPILE_IP,
+  Call_Log_Path,
 } from "../../setting/backend-config";
 import { OS } from "@theia/core";
+import { CallSymbol } from "../../setting/callsymbol";
+import { CallInfoStorer } from "./callinfostorer";
 // import { networkInterfaces } from 'os';
 @injectable()
 /*
@@ -93,7 +96,8 @@ export class UdcTerminal {
   user: string = "";
   constructor(
     @inject(Packet) readonly pkt: Packet,
-    @inject(RootDirPath) public rootDir: RootDirPath
+    @inject(RootDirPath) public rootDir: RootDirPath,
+    @inject(CallInfoStorer) readonly cis: CallInfoStorer
   ) {
     this.event = new events.EventEmitter();
     this.hpp = new HalfPackProcess();
@@ -319,8 +323,10 @@ export class UdcTerminal {
     };
 
     console.log("sim server" + simServer + JSON.stringify(data));
+    this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
     let ws = new WebSocket(simServer);
     ws.on("open", () => {
+      this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
       _this.outputResult("open the port of server");
       let content = _this.pkt.construct("file", rb.toString());
       console.log(content);
@@ -567,6 +573,7 @@ export class UdcTerminal {
         //  fns, model, deviceRole,
         ppid,
       } = this.pidQueueInfo[index];
+      this.cis.storeCallInfoInstantly("start", CallSymbol.GTML);
       await new Promise((resolve) => {
         if (ppid != null) {
           let fileRequest = http.request(
@@ -596,47 +603,14 @@ export class UdcTerminal {
               });
               mesg.on("end", () => {
                 let res: any = JSON.parse(bf);
-                // console.log("res:::" + bf);
                 if (res.result) {
                   let cpath = path.join(_this.rootDir.val, dirName);
                   if (!fs.existsSync(cpath)) fs.mkdirSync(cpath);
                   this.createDirStructure(cpath, res.template);
-                  // for (let item of Object.keys(res.template)) {
-                  //   if (
-                  //     !fs.existsSync(
-                  //       path.join(_this.rootDir.val, dirName, item)
-                  //     )
-                  //   ) {
-                  //     if (item == "config.json") {
-                  //       fs.writeFileSync(
-                  //         path.join(_this.rootDir.val, dirName, item),
-                  //         res.template[item]
-                  //       );
-                  //       this.refreshConfiguration(ppid!);
-                  //       continue;
-                  //     }
-                  //     fs.mkdirSync(path.join(_this.rootDir.val, dirName, item));
-                  //     for (let file of Object.keys(res.template[item])) {
-                  //       fs.writeFileSync(
-                  //         path.join(_this.rootDir.val, dirName, item, file),
-                  //         res.template[item][file]
-                  //       );
-                  //     }
-                  //     if (index == "32") {
-                  //       fs.writeFileSync(
-                  //         path.join(
-                  //           _this.rootDir.val,
-                  //           dirName,
-                  //           "Platform.json"
-                  //         ),
-                  //         ""
-                  //       );
-                  //     }
-                  //   }
-                  // }
-
+                  this.cis.storeCallInfoInstantly("end", CallSymbol.GTML);
                   resolve("scc");
                 } else {
+                  this.cis.storeCallInfoInstantly(res.mes, CallSymbol.GTML, 1);
                   console.log(res.mes);
                   resolve("err");
                 }
@@ -644,6 +618,11 @@ export class UdcTerminal {
             }
           );
           fileRequest.on("error", () => {
+            this.cis.storeCallInfoInstantly(
+              "broken network",
+              CallSymbol.GTML,
+              1
+            );
             this.outputResult("network error");
             resolve("err");
           });
@@ -865,7 +844,9 @@ export class UdcTerminal {
         _this.udcServerClient = null;
         _this.dev_list = undefined;
         _this.hpp.removeAllListeners();
-        _this.events.emit("disconnect");
+        setTimeout(() => {
+          _this.events.emit("disconnect");
+        }, 1000);
         _this.outputResult("connection is disconnected");
         Logger.info("Connection to Udc Server Closed!");
       });
@@ -894,6 +875,7 @@ export class UdcTerminal {
     Logger.info(`Received: type=${type}  value= ${value}`);
 
     if (type === Packet.ALL_DEV) {
+      this.cis.storeCallInfoInstantly("end", CallSymbol.LDDC);
       let new_dev_list: { [key: string]: number } = {};
       let clients = value.split(":");
       for (let c of clients) {
@@ -980,8 +962,10 @@ export class UdcTerminal {
       if (status == "success") {
         this.logEnable = true;
         this.cmd_excute_state = "done";
+        this.cis.storeCallInfoInstantly("end", CallSymbol.LDDP);
         this.events.emit("cmd-response");
       } else {
+        this.cis.storeCallInfoInstantly("unfinish", CallSymbol.LDDP, 1);
         this.cmd_excute_state = "unfinish";
       }
     } else if (type == Packet.DEVICE_WAIT) {
@@ -1136,6 +1120,7 @@ export class UdcTerminal {
     this.login_type = login_type;
     Logger.val(`>>>>>>>>>login type :${login_type} model :${model}`);
     Logger.val(">>>>>>>>>pid" + pid);
+    this.cis.storeCallInfoInstantly("start", CallSymbol.LDDC);
     let rets = await this.login_and_get_server(login_type, model);
     if (rets === []) {
       return false;
@@ -1269,7 +1254,9 @@ export class UdcTerminal {
     _this.outputResult("burning......");
     let js = JSON.parse(setJson);
     this.currentWaitId = js["program"][0]["waitingId"];
+    this.cis.storeCallInfoInstantly("start", CallSymbol.LDDP);
     this.send_packet(Packet.MULTI_DEVICE_PROGRAM, setJson);
+
     await this.wait_cmd_excute_done(27000);
     return this.cmd_excute_state === "done" ? true : false;
   }
@@ -1655,7 +1642,8 @@ export class UdcTerminal {
   config() {
     this.udcClient && this.udcClient.onConfigLog(this.tinyLinkInfo);
   }
-  setTinyLink(name: string, passwd: string): void {
+  setTinyLink(name: string, passwd: string, uid: string): void {
+    this.user = uid;
     this.tinyLinkInfo.name = name;
     this.tinyLinkInfo.passwd = passwd;
     console.log("userName&passwd:" + JSON.stringify(this.tinyLinkInfo));
@@ -1800,6 +1788,7 @@ export class UdcTerminal {
     Logger.val(`tmpPath:${tmpPath}`);
     let b = fs.readFileSync(tmpPath);
     _this.outputResult("try to build the connection with simulator");
+    _this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
     let tinySimRequest = new WebSocket(SENCE_SERVER_URL, {
       // "ws://localhost:8765/", {
     });
@@ -1810,10 +1799,12 @@ export class UdcTerminal {
         _this.outputResult(tmp.toString(), "log");
       });
       tinySimRequest.on("close", () => {
+        _this.cis.storeCallInfoInstantly("end", CallSymbol.TISM);
         res();
       });
       tinySimRequest.on("open", async () => {
         _this.outputResult("sending buffer to simulator......");
+
         // let buff = fs.readFileSync(`/home/project/${dirName}/${filename}.cpp`, { encoding: 'utf8' })
         tinySimRequest.send(b, () => {
           _this.outputResult("send buffer to simulator success");
@@ -1823,6 +1814,7 @@ export class UdcTerminal {
         });
       });
       tinySimRequest.on("error", () => {
+        _this.cis.storeCallInfoInstantly("broken network", CallSymbol.TISM, 1);
         _this.outputResult("network error");
       });
       tinySimRequest.on("close", () => {
@@ -1888,6 +1880,7 @@ export class UdcTerminal {
   }
   getSSHCMD() {
     let dataStr = "";
+    this.cis.storeCallInfoInstantly("start", CallSymbol.GESI);
     let urlRequest = http.request(
       {
         //
@@ -1913,21 +1906,28 @@ export class UdcTerminal {
           try {
             res = JSON.parse(dataStr);
             if (res["code"] != 0) {
-              this.outputResult(
+              let log =
                 "get ssh_cmd failed:" +
-                  res["msg"] +
-                  `\n deviceName:${this.lastCommitDevice.device}:`
-              );
+                res["msg"] +
+                `\n deviceName:${this.lastCommitDevice.device}`;
+              this.outputResult(log);
+              this.cis.storeCallInfoInstantly(log, CallSymbol.GESI, 1);
               return;
             } else {
               let str = "";
               for (let item of res["data"]) {
                 str += `------ssh_cmd:${item["sshcmd"]}  passwd:${item["port"]}\n`;
               }
+              this.cis.storeCallInfoInstantly("end", CallSymbol.GESI);
               this.outputResult(`:\n${str}`);
             }
           } catch {
             Logger.info("err json structure");
+            this.cis.storeCallInfoInstantly(
+              "error back value",
+              CallSymbol.GESI,
+              1
+            );
             return;
           }
         });
@@ -1935,12 +1935,14 @@ export class UdcTerminal {
     );
     urlRequest.on("error", () => {
       this.outputResult("network error");
+      this.cis.storeCallInfoInstantly("broken network", CallSymbol.GESI, 1);
     });
     urlRequest.write("");
     urlRequest.end();
   }
   getLastWebUrl() {
     let dataStr = "";
+    this.cis.storeCallInfoInstantly("start", CallSymbol.GTSD);
     let urlRequest = http.request(
       {
         //
@@ -1954,8 +1956,13 @@ export class UdcTerminal {
       },
       (mesg) => {
         if (mesg == undefined) {
-          this.outputResult("network error");
+          this.outputResult("error back value");
           Logger.info("error happened while get web server");
+          this.cis.storeCallInfoInstantly(
+            "error back value",
+            CallSymbol.GTSD,
+            1
+          );
           return;
         }
         mesg.on("data", (b: Buffer) => {
@@ -1971,20 +1978,30 @@ export class UdcTerminal {
                   res["msg"] +
                   `\n deviceName:${this.lastCommitDevice.device}:`
               );
+              this.cis.storeCallInfoInstantly(
+                "error back value",
+                CallSymbol.GTSD,
+                1
+              );
               return;
             } else {
               let str = "";
               for (let item of res["data"]) {
                 str += `------${item["ipaddress"]}:${item["port"]}\n`;
               }
-              this.outputResult(
-                `host:\n${str}------was deployed ${(new Date().getTime() -
-                  this.lastCommitDevice.timeMs) /
-                  1000} seconds before`
-              );
+              let log = `host:\n${str}------was deployed ${(new Date().getTime() -
+                this.lastCommitDevice.timeMs) /
+                1000} seconds before`;
+              this.outputResult(log);
+              this.cis.storeCallInfoInstantly(log, CallSymbol.GTSD);
             }
           } catch {
             Logger.info("err json structure");
+            this.cis.storeCallInfoInstantly(
+              "error back value",
+              CallSymbol.GTSD,
+              1
+            );
             return;
           }
         });
@@ -1999,6 +2016,7 @@ export class UdcTerminal {
 
   getSocket() {
     let dataStr = "";
+    this.cis.storeCallInfoInstantly("start", CallSymbol.GTSD);
     let urlRequest = http.request(
       {
         //
@@ -2024,11 +2042,13 @@ export class UdcTerminal {
           try {
             res = JSON.parse(dataStr);
             if (res["code"] != 0) {
-              this.outputResult(
+              let log =
                 "get deployed server failed:" +
-                  res["msg"] +
-                  `\n deviceName:${this.lastCommitDevice.device}:`
-              );
+                res["msg"] +
+                `\n deviceName:${this.lastCommitDevice.device}:`;
+              this.outputResult(log);
+
+              this.cis.storeCallInfoInstantly(log, CallSymbol.GTSD, 1);
               return;
             } else {
               let str = "";
@@ -2040,15 +2060,23 @@ export class UdcTerminal {
                   this.lastCommitDevice.timeMs) /
                   1000} seconds before`
               );
+
+              this.cis.storeCallInfoInstantly("start", CallSymbol.GTSD);
             }
           } catch {
             Logger.info("err json structure");
+            this.cis.storeCallInfoInstantly(
+              "error back value",
+              CallSymbol.GTSD,
+              1
+            );
             return;
           }
         });
       }
     );
     urlRequest.on("error", () => {
+      this.cis.storeCallInfoInstantly("broken network", CallSymbol.GTSD, 1);
       this.outputResult("network error");
     });
     urlRequest.write("");
@@ -2082,6 +2110,7 @@ export class UdcTerminal {
     await p;
     let fm = new FormData();
     Logger.info("uploading hex file");
+    this.cis.storeCallInfoInstantly("start", CallSymbol.TECC);
     return await new Promise(async (resolve) => {
       let uploadRequest = http.request(
         {
@@ -2098,6 +2127,11 @@ export class UdcTerminal {
             _this.outputResult("network error");
             Logger.info("error happened while upload");
             resolve("err");
+            this.cis.storeCallInfoInstantly(
+              "error back value",
+              CallSymbol.TECC,
+              1
+            );
             return;
           }
           let bf = "";
@@ -2119,20 +2153,32 @@ export class UdcTerminal {
                 fs.writeFileSync(installPath, res["data"]);
                 fs.unlinkSync(zipPath);
                 this.outputResult("tinyEdge compile scc");
+                this.cis.storeCallInfoInstantly("end", CallSymbol.TECC);
                 resolve("scc");
               } else if (res["code"]) {
                 _this.outputResult("compile error:" + res.message);
+                this.cis.storeCallInfoInstantly(
+                  res.message,
+                  CallSymbol.TECC,
+                  1
+                );
                 resolve(res.message);
               } else {
                 throw "error";
               }
             } catch {
+              this.cis.storeCallInfoInstantly(
+                "compile edge error",
+                CallSymbol.TECC,
+                1
+              );
               _this.outputResult("compile edge error");
             }
           });
         }
       );
       uploadRequest.on("error", () => {
+        this.cis.storeCallInfoInstantly("broken network", CallSymbol.TECC, 1);
         _this.outputResult("network error");
         resolve("err");
       });

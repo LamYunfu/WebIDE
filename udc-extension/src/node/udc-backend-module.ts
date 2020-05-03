@@ -26,6 +26,7 @@ import { OnelinkService } from "./util/onelink";
 import { RaspeberryGccCompiler } from "./compilers/raspberry-gcc-compiler";
 import { RootDirPath } from "../setting/backend-config";
 import { DistributedCompiler } from "./compilers/distributedcompiler";
+import { CallInfoStorer } from "./util/callinfostorer";
 
 export default new ContainerModule((bind) => {
   bind(UdcService).to(UdcServiceImpl).inSingletonScope();
@@ -59,4 +60,5 @@ export default new ContainerModule((bind) => {
   bind(RootDirPath).toSelf().inSingletonScope();
   bind(DistributedCompiler).toSelf().inSingletonScope()
   // bind(Controller).toSelf().inSingletonScope();
+  bind(CallInfoStorer).toSelf().inSingletonScope()
 });

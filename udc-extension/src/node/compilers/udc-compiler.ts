@@ -6,12 +6,15 @@ import * as http from "http";
 import { Logger } from "../util/logger";
 import { injectable, inject, LazyServiceIdentifer } from "inversify";
 import { TINYLINK_HOST, RootDirPath } from "../../setting/backend-config";
+import { CallInfoStorer } from "../util/callinfostorer";
+import { CallSymbol } from "../../setting/callsymbol";
 @injectable()
 export class UdcCompiler {
   constructor(
     @inject(new LazyServiceIdentifer(() => UdcTerminal))
     protected readonly udc: UdcTerminal,
-    @inject(RootDirPath) public rootDir: RootDirPath
+    @inject(RootDirPath) public rootDir: RootDirPath,
+    @inject(CallInfoStorer) readonly cis: CallInfoStorer
   ) {}
   DEBUG: boolean = false;
 
@@ -48,6 +51,7 @@ export class UdcCompiler {
       let fm = new FormData();
       fm.append("file", b, fn + ".cpp");
       let _this = this;
+      this.cis.storeCallInfoInstantly("start", CallSymbol.CDAT);
       let res = await new Promise((resolve) => {
         _this
           .submitForm(
@@ -65,6 +69,11 @@ export class UdcCompiler {
                 res == "" ||
                 res == "err"
               ) {
+                this.cis.storeCallInfoInstantly(
+                  "error back value",
+                  CallSymbol.CDAT,
+                  1
+                );
                 Logger.info(
                   "Compile No Data Back,Mabye your login info expired,try login again"
                 );
@@ -85,14 +94,26 @@ export class UdcCompiler {
                   );
                 this.outputResult(data.compileDebug);
                 resolve("srcFile Post failed");
+                this.cis.storeCallInfoInstantly(
+                  data.compileDebug,
+                  CallSymbol.CDAT,
+                  1
+                );
                 return;
               } else if (data.verbose != "") {
                 resolve("online compiler error");
                 this.udc.udcClient != undefined &&
                   this.outputResult(`${data.verbose}`);
+                this.cis.storeCallInfoInstantly(
+                  data.verbose,
+                  CallSymbol.CDAT,
+                  1
+                );
                 resolve("failed");
                 return;
               } else {
+                this.cis.storeCallInfoInstantly("end", CallSymbol.CDAT);
+                this.cis.storeCallInfoInstantly("start", CallSymbol.DHFT);
                 let downloadFd = http.request(
                   {
                     method: "GET",
@@ -107,6 +128,11 @@ export class UdcCompiler {
                     if (mesg == undefined) {
                       _this.udc.outputResult("network error");
                       Logger.info("error happened while download hex");
+                      this.cis.storeCallInfoInstantly(
+                        "error back value",
+                        CallSymbol.DHFT,
+                        1
+                      );
                       resolve("error");
                       return;
                     }
@@ -123,6 +149,11 @@ export class UdcCompiler {
                     });
 
                     mesg.on("timeout", () => {
+                      this.cis.storeCallInfoInstantly(
+                        "timeout",
+                        CallSymbol.DHFT,
+                        1
+                      );
                       _this.outputResult("download hex timeout");
                     });
                     mesg.on("error", () => {
@@ -130,12 +161,18 @@ export class UdcCompiler {
                     });
                     mesg.on("end", async () => {
                       ws.close();
+                      this.cis.storeCallInfoInstantly("end", CallSymbol.DHFT);
                       resolve("scc");
                       return;
                     });
                   }
                 );
                 downloadFd.on("error", () => {
+                  this.cis.storeCallInfoInstantly(
+                    "broken network",
+                    CallSymbol.DHFT,
+                    1
+                  );
                   _this.outputResult("network error");
 
                   downloadFd.abort();

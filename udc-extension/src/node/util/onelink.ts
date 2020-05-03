@@ -11,6 +11,8 @@ import * as http from "http";
 import * as FormData from "form-data";
 import { Logger } from "./logger";
 import { OS } from "@theia/core";
+import { CallInfoStorer } from "./callinfostorer";
+import { CallSymbol } from "../../setting/callsymbol";
 @injectable()
 export class OnelinkService {
   ready: boolean;
@@ -22,7 +24,8 @@ export class OnelinkService {
   } = { projectName: "", token: "" };
   constructor(
     @inject(UdcTerminal) protected readonly ut: UdcTerminal,
-    @inject(RootDirPath) public rootDir: RootDirPath
+    @inject(RootDirPath) public rootDir: RootDirPath,
+    @inject(CallInfoStorer) readonly cis: CallInfoStorer
   ) {
     this.ready = false;
   }
@@ -113,6 +116,7 @@ export class OnelinkService {
       setTimeout(() => {
         resolve(false);
       }, 30000);
+      this.cis.storeCallInfoInstantly("start", CallSymbol.CTPJ);
       let uploadRequest = http.request(
         {
           //传zip
@@ -144,12 +148,14 @@ export class OnelinkService {
             Logger.info("custom back value:" + bf);
             let res: any = JSON.parse(bf);
             backValue = res;
+            this.cis.storeCallInfoInstantly("end", CallSymbol.CTPJ);
             resolve(true);
           });
         }
       );
       uploadRequest.on("error", () => {
         this.ut.outputResult("network error");
+        this.cis.storeCallInfoInstantly("broken network", CallSymbol.CTPJ, 1);
         resolve(false);
       });
       fm.pipe(uploadRequest).end();
@@ -211,7 +217,7 @@ export class OnelinkService {
         setTimeout(() => {
           resolve(false);
         }, 30000);
-
+        this.cis.storeCallInfoInstantly("start", CallSymbol.UPTP);
         let uploadRequest = http.request(
           {
             //传zip
@@ -243,11 +249,13 @@ export class OnelinkService {
               Logger.info("updateConfig back value:" + bf);
               let res: any = JSON.parse(bf);
               backValue = res;
+              this.cis.storeCallInfoInstantly("end", CallSymbol.UPTP);
               resolve(true);
             });
           }
         );
         uploadRequest.on("error", () => {
+          this.cis.storeCallInfoInstantly("broken", CallSymbol.CTPJ, 1);
           this.ut.outputResult("network error");
           resolve(false);
         });

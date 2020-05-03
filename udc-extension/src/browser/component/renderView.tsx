@@ -18,10 +18,17 @@ import { OneLinkView } from "./onelink-view";
 import { ProjectCreator } from "../projectCreator";
 import { FreeCodingDisplay } from "./freecoding-view-display";
 import { DisplayBoard } from "./display-board";
+import { CallSymbol } from "../../setting/callsymbol";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
   export interface Props {
+    storeCallInfo: (
+      time: string,
+      info: string,
+      api: string,
+      serverity: number
+    ) => void;
     openLinkEdge: () => void;
     delProject: (pid: string) => Promise<boolean>;
     initPid: (pid: string) => void;
@@ -72,7 +79,7 @@ export namespace View {
     closeTabs: () => void;
     initPidQueueInfo(infos: string): Promise<string>;
     openShell: () => void;
-    setTinyLink: (name: string, passwd: string) => void;
+    setTinyLink: (name: string, passwd: string, uid: string) => void;
     config: () => void;
     setLocal: (key: string, obj: object) => void;
     getLocal: (key: string, obj: object) => any;
@@ -220,6 +227,8 @@ export class View extends React.Component<View.Props, View.State> {
   async componentWillMount() {
     $("title").html("WebIDE");
     let _this = this;
+    let time = new Date().toISOString().replace(/T|Z/gi, " ");
+    _this.props.storeCallInfo(time, "start", CallSymbol.QUIF, 0);
     $.ajax({
       headers: {
         accept: "application/json",
@@ -235,13 +244,26 @@ export class View extends React.Component<View.Props, View.State> {
       contentType: "text/plain",
       data: "", // serializes the form's elements.
       success: function(data) {
+        let time = new Date().toISOString().replace(/T|Z/gi, " ");
+        _this.props.storeCallInfo(time, "end", CallSymbol.QUIF, 0);
         $(".userName").text(data.data.uname);
         ////alert(data.data.JSESSIONID)
-        _this.props.setTinyLink(data.data.tinyId, data.data.tinyPasswd);
+        _this.props.setTinyLink(
+          data.data.tinyId,
+          data.data.tinyPasswd,
+          data.data.UID
+        );
         // _this.props.setTinyLink(data.data.tinyId, JSON.stringify(data.data));
         _this.props.setCookie(data.data.JSESSIONID);
       },
     });
+
+    _this.props.storeCallInfo(
+      new Date().toISOString().replace(/T|Z/gi, " "),
+      "start",
+      CallSymbol.QCVI,
+      0
+    );
     $.ajax({
       headers: {
         accept: "application/json",
@@ -256,6 +278,12 @@ export class View extends React.Component<View.Props, View.State> {
       data: "",
       success: async function(data) {
         // let x = data.question.slice(0, 3)
+        _this.props.storeCallInfo(
+          new Date().toISOString().replace(/T|Z/gi, " "),
+          "end",
+          CallSymbol.QCVI,
+          0
+        );
         console.log(JSON.stringify(data) + "****************************");
         let sidArray = _this.state.sidArray;
         if (data.message != "success") {

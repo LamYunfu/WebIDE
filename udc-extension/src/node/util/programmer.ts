@@ -14,6 +14,8 @@ import {
   PROGRAM_SERVER_PORT,
   RootDirPath,
 } from "../../setting/backend-config";
+import { CallInfoStorer } from "./callinfostorer";
+import { CallSymbol } from "../../setting/callsymbol";
 // import { networkInterfaces } from 'os';
 @injectable()
 export class Programer {
@@ -21,7 +23,8 @@ export class Programer {
     @inject(UdcTerminal) protected readonly ut: UdcTerminal,
     @inject(FileMapper) protected readonly fm: FileMapper,
     @inject(Extractor) protected readonly et: Extractor,
-    @inject(RootDirPath) public rootDir: RootDirPath
+    @inject(RootDirPath) public rootDir: RootDirPath,
+    @inject(CallInfoStorer) readonly cis: CallInfoStorer
   ) {}
   async fileUpload(filepath: string) {
     let _this = this;
@@ -35,6 +38,7 @@ export class Programer {
       let hashVal = hash.update(buff).digest("hex");
       gHash = hashVal;
       Logger.info("hex hashval:" + hashVal);
+      this.cis.storeCallInfoInstantly("start", CallSymbol.IPCF);
       let configRequest = http.request(
         {
           //
@@ -51,6 +55,11 @@ export class Programer {
             _this.ut.outputResult("network error");
             Logger.info("error happened while config");
             resolve("err");
+            this.cis.storeCallInfoInstantly(
+              "error back value",
+              CallSymbol.IPCF,
+              1
+            );
             return;
           }
           let bf = "";
@@ -71,9 +80,11 @@ export class Programer {
               Logger.info("config burning success");
               _this.ut.outputResult("config burning success");
               Logger.info(res.status);
+              this.cis.storeCallInfoInstantly("end", CallSymbol.IPCF);
               resolve("scc");
             } else {
               Logger.info(res.status); //已经存在
+              this.cis.storeCallInfoInstantly("end", CallSymbol.IPCF);
               resolve("exist");
             }
           });
@@ -82,6 +93,7 @@ export class Programer {
       configRequest.on("error", () => {
         _this.ut.outputResult("network error");
         Logger.info("error happened while config");
+        this.cis.storeCallInfoInstantly("broken network", CallSymbol.IPCF, 1);
         resolve("err");
         return;
       });
@@ -96,6 +108,7 @@ export class Programer {
     if (configResult == "scc") {
       let fm = new FormData();
       Logger.info("uploading hex file");
+      this.cis.storeCallInfoInstantly("start", CallSymbol.FLUP);
       uploadResult = await new Promise(async (resolve) => {
         let uploadRequest = http.request(
           {
@@ -127,6 +140,7 @@ export class Programer {
               _this.ut.outputResult(
                 "something error happened when uploading binary file."
               );
+
               Logger.info(err, "upload");
               resolve("err");
             });
@@ -134,10 +148,12 @@ export class Programer {
               Logger.info("bf:" + bf);
               let res: any = JSON.parse(bf);
               if (res.result) {
+                this.cis.storeCallInfoInstantly("end", CallSymbol.FLUP);
                 this.ut.outputResult("upload a file to ldc file server.");
                 resolve("scc");
               } else {
                 _this.ut.outputResult(res.msg);
+                this.cis.storeCallInfoInstantly(res.msg, CallSymbol.FLUP, 1);
                 resolve(res.msg);
               }
             });
@@ -145,6 +161,7 @@ export class Programer {
         );
         uploadRequest.on("error", () => {
           _this.ut.outputResult("network error");
+          this.cis.storeCallInfoInstantly("broken network", CallSymbol.FLUP, 1);
           Logger.info("error happened while upload");
           resolve("err");
           return;

@@ -10,6 +10,7 @@ import { ILogger } from "@theia/core";
 import { RawProcessFactory } from "@theia/process/lib/node";
 import { LinkEdgeManager } from "./util/linkedgemanger";
 import { OnelinkService } from "./util/onelink";
+import { CallInfoStorer } from "./util/callinfostorer";
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -21,7 +22,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(Compiler) protected readonly compiler: Compiler,
     @inject(LinkEdgeManager)
     protected readonly linkEdgeManager: LinkEdgeManager,
-    @inject(OnelinkService) protected readonly ols: OnelinkService
+    @inject(OnelinkService) protected readonly ols: OnelinkService,
+    @inject(CallInfoStorer) readonly cis: CallInfoStorer
   ) {}
 
   is_connected(): Promise<Boolean> {
@@ -168,8 +170,9 @@ export class UdcServiceImpl implements UdcService {
   initPidQueueInfo(infos: string): Promise<string> {
     return this.udcTerminal.initPidQueueInfo(infos);
   }
-  setTinyLink(name: string, passwd: string): void {
-    this.udcTerminal.setTinyLink(name, passwd);
+  setTinyLink(name: string, passwd: string, uid: string): void {
+    this.udcTerminal.setTinyLink(name, passwd, uid);
+    this.cis.setUser(uid);
   }
   config(): any {
     this.udcTerminal.config();
@@ -260,5 +263,13 @@ export class UdcServiceImpl implements UdcService {
   }
   async initDisplayBoard(info: string) {
     await this.udcTerminal.initDisplayBoard(info);
+  }
+  storeCallInfo(
+    time: string,
+    info: string,
+    api: string,
+    serverity: number = 0
+  ) {
+    this.cis.storeCallInfoLatter(time, info, api, serverity);
   }
 }

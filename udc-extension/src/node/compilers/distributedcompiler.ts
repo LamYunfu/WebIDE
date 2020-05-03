@@ -7,6 +7,8 @@ import * as Path from "path";
 import * as Ha from "crypto";
 import { inject, injectable } from "inversify";
 import { UdcTerminal } from "../util/udc-terminal";
+import { CallInfoStorer } from "../util/callinfostorer";
+import { CallSymbol } from "../../setting/callsymbol";
 // @injectable()
 // export class terminal {
 //   outputResult(str: string) {
@@ -16,7 +18,10 @@ import { UdcTerminal } from "../util/udc-terminal";
 @injectable()
 export class DistributedCompiler {
   //   constructor(@inject(UdcTerminal) readonly udc: UdcTerminal) {}
-  constructor(@inject(UdcTerminal) readonly udc: UdcTerminal) {}
+  constructor(
+    @inject(UdcTerminal) readonly udc: UdcTerminal,
+    @inject(CallInfoStorer) readonly cis: CallInfoStorer
+  ) {}
   outputResult(mes: string) {
     this.udc.outputResult(mes);
   }
@@ -53,6 +58,7 @@ export class DistributedCompiler {
     fm.append("parameters", JSON.stringify(parameters));
     fm.append("file", fileData, "file.zip");
     let p = new Promise<string>((resolve) => {
+      this.cis.storeCallInfoInstantly("start", CallSymbol.CCCE);
       let uf = Hs.request(
         {
           protocol: "https:",
@@ -73,13 +79,20 @@ export class DistributedCompiler {
             console.log(data.toString());
             if (ob["code"] == "-1") {
               this.outputResult(ob["msg"]);
+              this.cis.storeCallInfoInstantly(ob["msg"], CallSymbol.CCCE, 1);
               resolve("error");
             }
             if (ob["msg"] == "error") {
               this.outputResult(ob["data"]["message"]);
+              this.cis.storeCallInfoInstantly(
+                ob["data"]["message"],
+                CallSymbol.CCCE,
+                1
+              );
               resolve("error");
             }
             let p;
+            this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
             resolve(
               (p = `/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
             );
@@ -89,6 +102,7 @@ export class DistributedCompiler {
       );
       uf.on("error", () => {
         this.outputResult("network error");
+        this.cis.storeCallInfoInstantly("broken network", CallSymbol.CCCE, 1);
         resolve("error");
       });
       fm.pipe(uf);
@@ -97,7 +111,8 @@ export class DistributedCompiler {
   }
   async getHexFile(path: string, output: string) {
     let p = new Promise<string>((resolve) => {
-      console.log;
+      console.log(p);
+      this.cis.storeCallInfoInstantly("start", CallSymbol.DNHX);
       let gf = Hs.request(
         {
           protocol: "https:",
@@ -118,12 +133,18 @@ export class DistributedCompiler {
               response.headers["content-type"] == "application/octet-stream"
             ) {
               Fs.writeFileSync(output, bf);
+              this.cis.storeCallInfoInstantly("end", CallSymbol.DNHX);
               resolve("scc");
             } else {
-              console.log(JSON.stringify(response.headers));
+              console.log(bf.toString());
               let ob = JSON.parse(bf.toString());
               if (ob["msg"] == "error")
                 this.outputResult(ob["data"]["message"]);
+              this.cis.storeCallInfoInstantly(
+                ob["data"]["message"],
+                CallSymbol.DNHX,
+                1
+              );
               resolve("error");
             }
           });
@@ -131,6 +152,7 @@ export class DistributedCompiler {
       );
       gf.on("error", () => {
         this.outputResult("network error");
+        this.cis.storeCallInfoInstantly("broken network", CallSymbol.DNHX, 1);
         resolve("error");
       });
       gf.end();

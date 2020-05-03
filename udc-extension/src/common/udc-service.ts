@@ -45,7 +45,7 @@ export interface UdcService {
     }
   ): void;
   initPidQueueInfo(infos: string): Promise<string>;
-  setTinyLink(name: string, passwd: string): void;
+  setTinyLink(name: string, passwd: string, uid: string): void;
   config(): void;
   programSingleFile: (pidAndFn: string) => void;
   postSimFile: (pid: string) => void;
@@ -74,4 +74,10 @@ export interface UdcService {
   tinyEdgeCompile: (pid: string) => Promise<string>;
   processDisplaySubmit: (pid: string, info: string) => Promise<void>;
   initDisplayBoard: (info: string) => Promise<void>;
+  storeCallInfo: (
+    time: string,
+    info: string,
+    api: string,
+    serverity: number
+  ) => void;
 }

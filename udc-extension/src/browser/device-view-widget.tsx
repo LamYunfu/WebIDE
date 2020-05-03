@@ -112,6 +112,7 @@ export class DeviceViewWidget extends TreeWidget {
     return (
       <div style={{ height: "100%" }}>
         <View
+          storeCallInfo={this.storeCallInfo}
           openLinkEdge={this.openLinkedge}
           delProject={this.delProject}
           initPid={this.initPid}
@@ -409,7 +410,14 @@ export class DeviceViewWidget extends TreeWidget {
   say = (verbose: string) => {
     this.messageService.info(verbose);
   };
-
+  storeCallInfo = (
+    time: string,
+    info: string,
+    api: string,
+    serverity: number = 0
+  ) => {
+    this.udcService.storeCallInfo(time, info, api, serverity);
+  };
   openDrawBoard = () => {
     this.commandRegistry.executeCommand("drawboardView:toggle");
   };
@@ -532,8 +540,8 @@ export class DeviceViewWidget extends TreeWidget {
     infos = JSON.stringify(infoObj);
     return this.udcService.initPidQueueInfo(infos);
   };
-  setTinyLink = (name: string, passwd: string) => {
-    this.udcService.setTinyLink(name, passwd);
+  setTinyLink = (name: string, passwd: string, uid: string) => {
+    this.udcService.setTinyLink(name, passwd, uid);
   };
   config = () => {
     this.udcService.config();
