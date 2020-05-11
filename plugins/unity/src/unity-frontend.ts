@@ -53,7 +53,7 @@ namespace IoTWebview {
             frameborder="0" 
             scrolling="no"
             style="display: block;
-             margin: 0px; overflow: hidden; position: absolute; width: 1600px; height: 900px; visibility: visible;"
+             margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 80%; visibility: visible;"
               sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
         </body>
         </html>

@@ -12,6 +12,7 @@ import { DeviceViewWidget } from "./device-view-widget";
 import { FrontendApplicationStateService } from "@theia/core/lib/browser/frontend-application-state";
 import { CommandRegistry } from "@theia/core";
 import { find } from "@phosphor/algorithm";
+import { UdcService } from "../common/udc-service";
 // import { UdcConsoleContribution } from "./udc-console-contribution";
 // import { MaybePromise } from "@theia/core";
 export const DEVICE_WIDGET_FACTORY_ID = "device-view";
@@ -27,7 +28,8 @@ export class DeviceViewContribution
     @inject(CommandRegistry) protected registry: CommandRegistry,
     @inject(WorkspaceService) protected ws: WorkspaceService,
     @inject(WidgetManager) protected wm: WidgetManager,
-    @inject(DeviceViewService) protected ds: DeviceViewService
+    @inject(DeviceViewService) protected ds: DeviceViewService,
+    @inject(UdcService) readonly udc: UdcService
   ) {
     super({
       widgetId: DEVICE_WIDGET_FACTORY_ID,
@@ -80,6 +82,10 @@ export class DeviceViewContribution
       if (e == "ready") {
         // await this.applicationShell.revealWidget(DEVICE_WIDGET_FACTORY_ID)
         this.ds.openExplorer();
+      }
+      if(e=="closing_window"){
+        console.log("close window")
+        this.udc.disconnect()
       }
       // if (e == 'closing_window') {
       //     console.log("save")

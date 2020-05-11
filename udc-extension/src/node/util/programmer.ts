@@ -52,7 +52,7 @@ export class Programer {
         },
         (mesg) => {
           if (mesg == undefined) {
-            _this.ut.outputResult("network error");
+            _this.ut.outputResult("Network error!");
             Logger.info("error happened while config");
             resolve("err");
             this.cis.storeCallInfoInstantly(
@@ -77,8 +77,8 @@ export class Programer {
             Logger.info("bf:" + bf);
             let res: any = JSON.parse(bf);
             if (!res.result) {
-              Logger.info("config burning success");
-              _this.ut.outputResult("config burning success");
+              Logger.info("Initializing burning tools successful!");
+              _this.ut.outputResult("Initializing burning tools successful!");
               Logger.info(res.status);
               this.cis.storeCallInfoInstantly("end", CallSymbol.IPCF);
               resolve("scc");
@@ -91,7 +91,7 @@ export class Programer {
         }
       );
       configRequest.on("error", () => {
-        _this.ut.outputResult("network error");
+        _this.ut.outputResult("Network error!");
         Logger.info("error happened while config");
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.IPCF, 1);
         resolve("err");
@@ -125,7 +125,7 @@ export class Programer {
           },
           (mesg) => {
             if (mesg == undefined) {
-              _this.ut.outputResult("network error");
+              _this.ut.outputResult("Network error!");
               Logger.info("error happened while upload");
               resolve("err");
               return;
@@ -149,7 +149,7 @@ export class Programer {
               let res: any = JSON.parse(bf);
               if (res.result) {
                 this.cis.storeCallInfoInstantly("end", CallSymbol.FLUP);
-                this.ut.outputResult("upload a file to ldc file server.");
+                this.ut.outputResult("Uploading source file to compiler successful!");
                 resolve("scc");
               } else {
                 _this.ut.outputResult(res.msg);
@@ -160,7 +160,7 @@ export class Programer {
           }
         );
         uploadRequest.on("error", () => {
-          _this.ut.outputResult("network error");
+          _this.ut.outputResult("Network error!");
           this.cis.storeCallInfoInstantly("broken network", CallSymbol.FLUP, 1);
           Logger.info("error happened while upload");
           resolve("err");
@@ -179,7 +179,7 @@ export class Programer {
 
     if (uploadResult != "scc") {
       Logger.info("uploading binary file error");
-      _this.ut.outputResult("binary file uploading error");
+      _this.ut.outputResult("Uploading source file to compiler failed!r");
       return "err";
     } else {
       // Logger.info("uploading zip file scc")
@@ -200,8 +200,8 @@ export class Programer {
     let deviceUsage = this.ut.freeCodingConfig["deviceUsage"];
     let burnOption: any = {};
     deviceUsage == "QUEUE"
-      ? this.ut.outputResult("multiplexing model")
-      : this.ut.outputResult("monopoly model");
+      ? this.ut.outputResult("Entered multiplexed compiling mode. Queuing...")
+      : this.ut.outputResult("Entered exclusive compiling mode...");
     burnOption = {
       ...burnOption,
       type: deviceUsage,
@@ -271,7 +271,7 @@ export class Programer {
       return await this.ut.program_device(pid, JSON.stringify(burnOption));
     } catch (e) {
       console.log(e);
-      this.ut.outputResult("config.json is not set correctly");
+      this.ut.outputResult("config.json is incorrect!");
       return;
     }
   }

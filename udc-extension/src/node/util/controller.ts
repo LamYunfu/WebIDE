@@ -48,8 +48,8 @@ export class Controller {
         this.ut.getSocket();
       }, 10000);
     Logger.info("start process issue");
-    this.ut.refreshConfiguration(pid);
-    this.ut.parseFreeConfig(pid);
+    await this.ut.refreshConfiguration(pid);
+    await this.ut.parseFreeConfig(pid);
     this.processIssue(pid);
   }
   async processIssue(pid: string) {
@@ -88,7 +88,7 @@ export class Controller {
                 return eres;
                 // return
               } else {
-                _this.ut.outputResult("error happend while compiling");
+                _this.ut.outputResult("Online compiling error!");
                 throw "error happened";
               }
             })
@@ -104,7 +104,7 @@ export class Controller {
                   }
                   if (i == 0) {
                     this.ut.outputResult(
-                      "LDC doesn't give the information of devices.please disconnect and retry."
+                      "No device information returned from LDC. Please disconnect and retry!."
                     );
                     return "fail";
                   }
@@ -119,7 +119,7 @@ export class Controller {
                 let res = "";
                 res = await new Promise<string>((resolve) => {
                   setTimeout(() => {
-                    resolve("get idle device count timeout");
+                    resolve("Received number of idle device timeout");
                     _this.ut.events.removeAllListeners("goSim");
                     _this.ut.events.removeAllListeners("goDevice");
                   }, 3000);
@@ -152,7 +152,7 @@ export class Controller {
                   this.ut.outputResult(res);
                   res = await new Promise<string>((resolve) => {
                     setTimeout(() => {
-                      resolve("get idle device count timeout");
+                      resolve("Received number of idle device timeout");
                       _this.events.removeAllListeners("dev_fw");
                       _this.events.removeAllListeners("sim_rt");
                     }, 20000);
@@ -203,7 +203,7 @@ export class Controller {
     } catch (e) {
       Logger.err(e);
       this.ut.outputResult(
-        "something error happened when backend process the submit"
+        "Detected error when compiling!"
       );
       this.ut.udcClient &&
         this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" });

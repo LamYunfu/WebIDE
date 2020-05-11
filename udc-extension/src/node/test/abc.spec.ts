@@ -13,7 +13,7 @@
 //         let hashVal = ""
 //         new Promise(resolve => {
 //             st.on("close", () => {
-//                 console.log('compress file scc')
+//                 console.log('Packing files successful!')
 //                 resolve("scc")
 //             }
 //             )

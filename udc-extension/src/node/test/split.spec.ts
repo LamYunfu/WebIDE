@@ -58,7 +58,7 @@
 //         },
 //         (mesg) => {
 //           if (mesg == undefined) {
-//             console.log("network error");
+//             console.log("Network error!");
 //             Logger.info("error happened while upload");
 //             resolve("err");
 //             return;
@@ -71,7 +71,7 @@
 //           });
 //           mesg.on("error", () => {
 //             Logger.info("error happened while upload");
-//             console.log("network error");
+//             console.log("Network error!");
 //             resolve("err");
 //           });
 //           mesg.on("end", () => {
@@ -87,7 +87,7 @@
 //         }
 //       );
 //       uploadRequest.on("error", () => {
-//         console.log("network error");
+//         console.log("Network error!");
 //         resolve("err");
 //       });
 //       // let blob = fs.readFileSync(filepath)
@@ -109,7 +109,7 @@
 //       .directory("./Development", "TinyEdge/Development");
 //     new Promise((resolve) => {
 //       st.on("close", () => {
-//         console.log("compress file scc");
+//         console.log("Packing files successful!");
 //         resolve("scc");
 //       });
 //     });

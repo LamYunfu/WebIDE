@@ -131,7 +131,7 @@ export class AliosCompiler {
       deviceRole,
     } = await this.udc.getPidInfos(pid);
     for (let item of deviceRole!) {
-      this.outputResult(`compile:${item}`);
+      this.outputResult(`Compile:${item}`);
       let fm = new FormData();
       fm.append("Pname", projectName);
       fm.append("Board", boardType);
@@ -198,7 +198,7 @@ export class AliosCompiler {
           (res) => {
             if (res == null || res == undefined) {
               Logger.info("Compile No Data Back");
-              _this.outputResult("There are no Response from Compiler ");
+              _this.outputResult("No response returned from compiler! ");
               return;
             }
             let data = JSON.parse(res);
@@ -232,7 +232,7 @@ export class AliosCompiler {
                     ws.close();
                     resolve("scc");
                     _this.outputResult(
-                      "download hex.zip completed ,extracting hex file"
+                      "Downloaded hex.zip, extracting *.hex file..."
                     );
                     Logger.info("download scc");
                   });

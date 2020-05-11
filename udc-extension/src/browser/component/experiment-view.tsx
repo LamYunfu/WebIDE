@@ -61,7 +61,7 @@ export class Experiment extends React.Component<
     0x0010: "NO_SUB",
     0x0011: "JUDGING",
     0x0012: "PROG_ERR",
-    0x0020: "ACCEPT",
+    0x0020: "ACCEPTED",
     0x0021: "WRONG_ANSWER",
     0x0022: "TIMEOUT",
   };
@@ -315,7 +315,7 @@ export class Experiment extends React.Component<
                 sp.show();
                 _this.judgeStatus[x.pid] = "1";
                 continue;
-              } else if (status == "ACCEPT") {
+              } else if (status == "ACCEPTED") {
                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
                 _this.context.props.setSubmitEnableWithJudgeTag(false);
@@ -328,7 +328,7 @@ export class Experiment extends React.Component<
                   //9.27
                   if (x.wrongInfo != "") _this.props.outputResult(x.wrongInfo);
                   _this.props.outputResult(
-                    "ACCEPT" + `(${x.score})`,
+                    "ACCEPTED" + `(${x.score})`,
                     "rightAnswer"
                   );
                   _this.submittedCodingIssue.splice(

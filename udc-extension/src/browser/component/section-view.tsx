@@ -455,7 +455,7 @@ export class SectionUI extends React.Component<SectionUI.Props, SectionUI.State>
                                 if (_this.judgeStatus[x.pid] == '1') { //9.27
                                     if (x.wrongInfo != "")
                                         _this.props.outputResult(x.wrongInfo)
-                                    _this.props.outputResult("ACCEPT" + `(${x.score})`, "rightAnswer")
+                                    _this.props.outputResult("ACCEPTED" + `(${x.score})`, "rightAnswer")
                                     _this.submittedCodingIssue.splice(_this.submittedCodingIssue.indexOf(x.pid))
                                     _this.judgeStatus.splice(_this.judgeStatus.indexOf(x.pid))
                                     $("[id*=connectButton]").removeAttr("disabled")

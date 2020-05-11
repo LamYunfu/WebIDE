@@ -19,7 +19,6 @@ import {
 } from "@theia/navigator/lib/browser/";
 import { FileSystem } from "@theia/filesystem/lib/common/filesystem";
 import { CommandService, SelectionService } from "@theia/core"
-import { TabBarToolbarContribution } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import {createFileNavigatorContainer} from "@theia/navigator/lib/browser/navigator-container"
 import {NAVIGATOR_CONTEXT_MENU} from "@theia/navigator/lib/browser/navigator-contribution"
 export const FILE_NAVIGATOR_PROPS = <TreeProps>{
@@ -46,7 +45,6 @@ export default new ContainerModule(bind => {
     // bind(ApplicationShell).toSelf().inSingletonScope()
     // bind(FileSystem).toSelf().inSingletonScope()
     bind(FrontendApplicationContribution).toService(DemoContribution);
-    bind(TabBarToolbarContribution).toService(DemoContribution);
     bind(KeybindingContext).to(NavigatorActiveContext).inSingletonScope();
     bind(DemoWidget).toDynamicValue(ctx =>
         createDemoWeiget(ctx.container)

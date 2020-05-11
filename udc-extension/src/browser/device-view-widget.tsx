@@ -313,7 +313,7 @@ export class DeviceViewWidget extends TreeWidget {
     // $(".simInfo").css("display","inline")
     $(".simInfo").show();
   }
-  submitOnMenu() {
+  async submitOnMenu() {
     // alert($("textarea").text())
     $(document).on(".freeCodingSubmit", () => {});
     let val = $(".title_timer").attr("title");

@@ -30,7 +30,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
   //   async postNameAndType(pid: string) {
   //     let { dirName, deviceRole } = await this.getPidInfos(pid);
   //     for (let item of deviceRole!) {
-  //       this.outputResult(`compile:${item}`);
+  //       this.outputResult(`Compile:${item}`);
   //       let res = await this.postSingleSrcFile(dirName, item, pid);
   //       if (res != "scc") return "err";
   //     }
@@ -70,7 +70,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
         },
         (mesg) => {
           if (mesg == null) {
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             resolve("err");
             return;
           }
@@ -95,7 +95,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
       configRequest.write(JSON.stringify(data));
       configRequest.end();
       configRequest.on("error", () => {
-        _this.outputResult("network error");
+        _this.outputResult("Network error!");
         resolve("err");
       });
     });
@@ -114,7 +114,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
         },
         (mesg) => {
           if (mesg == null) {
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             resolve("err");
             return;
           }
@@ -125,7 +125,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
           });
           mesg.on("error", () => {
             Logger.info("error happened while upload in RASPBERRY_GCC");
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             resolve("err");
           });
           mesg.on("end", () => {
@@ -142,7 +142,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
         }
       );
       uploadRequest.on("error", () => {
-        _this.outputResult("network error");
+        _this.outputResult("Network error!");
         resolve("err");
       });
       fm.pipe(uploadRequest);
@@ -165,7 +165,7 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
         },
         async (mesg) => {
           if (mesg == undefined) {
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             Logger.info("error happened while downloading");
             resolve("err");
             return;
@@ -202,14 +202,14 @@ export class RaspeberryGccCompiler implements CompilerInterFace {
           }
           mesg.on("error", () => {
             Logger.info("error happened while download in RASPBERRY_GCC");
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             resolve("err");
           });
         }
       );
       downloadRequest.on("error", () => {
         Logger.info("get file err");
-        _this.outputResult("network error");
+        _this.outputResult("Network error!");
         resolve("err");
       });
       downloadRequest.write(JSON.stringify(data));

@@ -55,7 +55,7 @@ export class FreeCodingDisplay extends React.Component<
     0x0010: "NO_SUB",
     0x0011: "JUDGING",
     0x0012: "PROG_ERR",
-    0x0020: "ACCEPT",
+    0x0020: "ACCEPTED",
     0x0021: "WRONG_ANSWER",
     0x0022: "TIMEOUT",
   };

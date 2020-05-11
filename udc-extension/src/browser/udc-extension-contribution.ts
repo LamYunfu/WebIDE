@@ -3,6 +3,7 @@ import { CommandRegistry, InMemoryResources } from "@theia/core";
 import { UdcWatcher } from "./../common/udc-watcher";
 import { AboutDialog } from "./about-dailog";
 import { UdcService } from "../common/udc-service";
+import { NewWidgetFactory } from "../../../new_widget/lib/browser/new-widget-factory";
 import { injectable, inject } from "inversify";
 import {
   DebugAdapterContribution,
@@ -219,6 +220,7 @@ export class UdcExtensionCommandContribution
     @inject(UdcWatcher) protected readonly udcWatcher: UdcWatcher,
     @inject(QuickOpenService)
     protected readonly quickOpenService: QuickOpenService,
+
     @inject(UdcConsoleSession)
     protected readonly udcConsoleSession: UdcConsoleSession,
     @inject(DeviceViewService)
@@ -232,7 +234,8 @@ export class UdcExtensionCommandContribution
     @inject(DeviceViewService) protected ds: DeviceViewService,
     @inject(WidgetManager) protected wm: WidgetManager,
     @inject(EditorQuickOpenService) readonly eqos: EditorQuickOpenService,
-    @inject(OpenerService) readonly os: OpenerService
+    @inject(OpenerService) readonly os: OpenerService,
+    @inject(NewWidgetFactory) readonly nf: NewWidgetFactory
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -293,13 +296,24 @@ export class UdcExtensionCommandContribution
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
       // console.log(log);
-      let a = log.match("(light on)|(light off)");
+      let lp = this.nf.widget;
+      let a = log.match("(0E0010)|(0E0011)");
+      // if (a != null) {
+      //   if (a[0].trim() == "light off")
+      //     this.deviceViewService.setLampStatus(false);
+      //   else this.deviceViewService.setLampStatus(true);
+      // }
       if (a != null) {
-        if (a[0].trim() == "light off")
-          this.deviceViewService.setLampStatus(false);
-        else this.deviceViewService.setLampStatus(true);
-      }
-      this.udcConsoleSession.appendLine(log);
+        if (lp.lp) {
+          if (a[0].trim() == "0E0010") {
+            lp.lp.lightoff();
+            return;
+          } else if (a[0].trim() == "0E0011") {
+            lp.lp.lighton();
+            return;
+          }
+        }
+      } else this.udcConsoleSession.appendLine(log);
     });
 
     this.udcWatcher.onDeviceList((data) => {

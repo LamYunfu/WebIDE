@@ -1,20 +1,27 @@
 import React = require("react");
-// import URI from "@theia/core/lib/common/uri";
-import * as $ from "jquery";
-import { MyContext } from "./context";
-import { black } from "colors";
 namespace DisplayBoard {
   export interface pro {
     setSize: (size: number) => void;
     processDisplaySubmit: (pid: string, info: string) => Promise<void>;
     attach: () => void;
+    openWorkSpace: (url: string) => void;
   }
 }
-
 export class DisplayBoard extends React.Component<DisplayBoard.pro> {
+  constructor(props: any) {
+    super(props);
+  }
   componentDidMount() {
     this.props.setSize(550);
+    let urlstr = window.location.href.toString();
+    if (
+      urlstr.split("/").pop() != "场景模拟" ||
+      urlstr.split("\\").pop() != "场景模拟"
+    ) {
+      this.setIndex(0);
+    }
   }
+
   state = {
     index: 0,
     project: "场景模拟",
@@ -25,7 +32,7 @@ export class DisplayBoard extends React.Component<DisplayBoard.pro> {
 远程环境Wifi信息：
 SSID：AZFT
 密码：AZFT123456`,
-        pid: "19"
+        pid: "19",
       },
       {
         title: "智能灯光系统-智能LED2",
@@ -33,7 +40,7 @@ SSID：AZFT
 远程环境Wifi信息：
 SSID：AZFT
 密码：AZFT123456`,
-        pid: "19"
+        pid: "19",
       },
       {
         title: "温湿度监测",
@@ -41,7 +48,7 @@ SSID：AZFT
 远程环境Wifi信息：
 SSID：AZFT
 密码：AZFT123456`,
-        pid: "19"
+        pid: "19",
       },
       {
         title: "温控风扇",
@@ -49,9 +56,9 @@ SSID：AZFT
 远程环境Wifi信息：
 SSID：AZFT
 密码：AZFT123456`,
-        pid: "19"
-      }
-    ]
+        pid: "19",
+      },
+    ],
   };
   setIndex = (index: number) => {
     // alert(index);
@@ -59,11 +66,11 @@ SSID：AZFT
       "",
       JSON.stringify({
         info: this.state.info[index],
-        project: this.state.project
+        project: this.state.project,
       })
     );
     this.setState({
-      index: index
+      index: index,
     });
   };
   render(): React.ReactNode {
@@ -81,7 +88,7 @@ SSID：AZFT
           className="board col-7"
           style={{
             backgroundColor: "gray",
-            borderRadius: "3px"
+            borderRadius: "3px",
           }}
         >
           <Board
@@ -116,7 +123,7 @@ export class Board extends React.Component<Board.prop> {
         className="container"
         style={{
           width: "100%",
-          height: "100%"
+          height: "100%",
         }}
       >
         <div style={{ fontSize: "20px" }}>
@@ -127,7 +134,7 @@ export class Board extends React.Component<Board.prop> {
             border: "solid",
             height: "70%",
             borderRadius: "3px",
-            padding: "10px"
+            padding: "10px",
           }}
         >
           <pre>{this.props.state.info[this.props.state.index].desciption}</pre>
@@ -202,7 +209,7 @@ export class Key extends React.Component<Key.pro> {
           alignItems: "center",
           justifyContent: "center",
           color: "black",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         <span>{this.props.name}</span>
@@ -217,7 +224,7 @@ export class Key extends React.Component<Key.pro> {
           alignItems: "center",
           justifyContent: "center",
           color: "black",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         <span>{this.props.name}</span>

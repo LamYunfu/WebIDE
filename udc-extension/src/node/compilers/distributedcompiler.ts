@@ -101,7 +101,7 @@ export class DistributedCompiler {
         }
       );
       uf.on("error", () => {
-        this.outputResult("network error");
+        this.outputResult("Network error!");
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.CCCE, 1);
         resolve("error");
       });
@@ -151,7 +151,7 @@ export class DistributedCompiler {
         }
       );
       gf.on("error", () => {
-        this.outputResult("network error");
+        this.outputResult("Network error!");
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.DNHX, 1);
         resolve("error");
       });

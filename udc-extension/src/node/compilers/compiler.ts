@@ -36,7 +36,7 @@ export class Compiler {
     fs.existsSync(hexFilePath) ? "" : fs.mkdirSync(hexFilePath);
     Logger.info("start compiling");
     Logger.info("MODEL is:" + model);
-    this.udcTerminal.outputResult("compiling......");
+    this.udcTerminal.outputResult("Compiling...");
     let cmType = getCompilerType(model);
     if (cmType == "alios") {
       Logger.info("use alios compiler");

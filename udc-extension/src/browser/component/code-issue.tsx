@@ -91,12 +91,12 @@ export class CodingInfo extends React.Component<CodingInfo.Props, CodingInfo.Sta
             () => {
                 $(document).on("click", "#submitSrcButton" + _this.props.sid,
                     async (e) => {
+                        $("[id*=submitSrcButton]").attr("disabled", "true")
                         if(!confirm("即将提交到判题系统，是否继续？"))
                             return
                         let pid =$("#codingInfoArea" + _this.props.sid).attr("title")
                         await _this.context.props.connect("","",pid,30)
-                        $("[id*=connectButton]").attr("disabled", "true")
-                        $("[id*=submitSrcButton]").attr("disabled", "true")
+                        $("[id*=connectButton]").attr("disabled", "true")                  
                         _this.context.props.setSubmitEnableWithJudgeTag(false)
                         await _this.context.props.saveAll()
                         let index = $("#codingInfoArea" + this.props.sid).attr("title")

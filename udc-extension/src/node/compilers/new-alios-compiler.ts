@@ -27,7 +27,7 @@ export class NewAliosCompiler {
   async postNameAndType(pid: string) {
     let { dirName, model, deviceRole } = await this.udc.getPidInfos(pid);
     for (let item of deviceRole!) {
-      this.udc.outputResult(`compile:${item}`);
+      this.udc.outputResult(`Compile:${item}`);
       // let res = await this.postSingleSrcFile(dirName, item, pid);
       let res = await this.compileSingleFile(dirName, item, pid, model);
       if (res != "scc") return "err";
@@ -72,7 +72,7 @@ export class NewAliosCompiler {
     let hashVal = "";
     let p = new Promise((resolve) => {
       st.on("close", () => {
-        console.log("compress file scc");
+        console.log("Packing files successful!");
         resolve("scc");
       });
     })
@@ -99,7 +99,7 @@ export class NewAliosCompiler {
               },
               (mesg) => {
                 if (mesg == null) {
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   resolve("err");
                   return;
                 }
@@ -133,7 +133,7 @@ export class NewAliosCompiler {
             );
             configRequest.end();
             configRequest.on("error", () => {
-              _this.udc.outputResult("network error");
+              _this.udc.outputResult("Network error!");
               resolve("err");
             });
           });
@@ -155,7 +155,7 @@ export class NewAliosCompiler {
               },
               (mesg) => {
                 if (mesg == null) {
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   resolve("err");
                   return;
                 }
@@ -166,7 +166,7 @@ export class NewAliosCompiler {
                 });
                 mesg.on("error", () => {
                   Logger.info("error happened while upload in Alios");
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   resolve("err");
                 });
                 mesg.on("end", () => {
@@ -185,7 +185,7 @@ export class NewAliosCompiler {
               }
             );
             uploadRequest.on("error", () => {
-              _this.udc.outputResult("network error");
+              _this.udc.outputResult("Network error!");
               resolve("err");
             });
             let blob = fs.readFileSync(
@@ -213,7 +213,7 @@ export class NewAliosCompiler {
               },
               async (mesg) => {
                 if (mesg == undefined) {
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   Logger.info("error happened while downloading");
                   resolve("err");
                   return;
@@ -263,13 +263,13 @@ export class NewAliosCompiler {
                 }
                 mesg.on("error", () => {
                   Logger.info("error happened while download in Alios");
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   resolve("err");
                 });
               }
             );
             downloadRequest.on("error", () => {
-              _this.udc.outputResult("network error");
+              _this.udc.outputResult("Network error!");
               resolve("err");
             });
             downloadRequest.write(

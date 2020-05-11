@@ -1,20 +1,17 @@
 {
     "compilerOptions": {
-        
-        "strict": true,
         "skipLibCheck": true,
         "declaration": true,
-        "experimentalDecorators": true,
-        "noUnusedLocals": false,
-        "emitDecoratorMetadata": true,
-        "downlevelIteration": true,
         "declarationMap": true,
         "noImplicitAny": true,
         "noEmitOnError": false,
         "noImplicitThis": true,
+        "noUnusedLocals": false,
         "strictNullChecks": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
         "resolveJsonModule": true,
-        "allowSyntheticDefaultImports":true,
         "module": "commonjs",
         "moduleResolution": "node",
         "target": "es5",
@@ -29,6 +26,5 @@
     },
     "include": [
         "src"
-    ],
-    
+    ]
 }

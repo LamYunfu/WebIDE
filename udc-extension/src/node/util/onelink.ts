@@ -61,8 +61,8 @@ export class OnelinkService {
           throw "error";
         }
       } catch (error) {
-        this.ut.outputResult("token file is corrupted");
-        Logger.info("token file is corrupted");
+        this.ut.outputResult("Token file is corrupted!");
+        Logger.info("Token file is corrupted!");
         return null;
       }
     } else {
@@ -82,7 +82,7 @@ export class OnelinkService {
       this.ready = projectInfo.token == "" ? false : true;
     }
     if (this.isReady()) {
-      this.ut.outputResult("project has been set up");
+      this.ut.outputResult("Project established!");
       return true;
     } else {
       this.ready = await this.createMobileApp(
@@ -96,7 +96,7 @@ export class OnelinkService {
     if (this.ready) {
       return true;
     } else {
-      this.ut.outputResult("onelink project has not been created yet");
+      this.ut.outputResult("Project has not been created yet!");
       return false;
     }
   }
@@ -128,7 +128,7 @@ export class OnelinkService {
         },
         (mesg) => {
           if (mesg == undefined) {
-            _this.ut.outputResult("network error");
+            _this.ut.outputResult("Network error!");
             Logger.info("error happened when custom mobile");
             resolve(false);
             return;
@@ -141,7 +141,7 @@ export class OnelinkService {
           });
           mesg.on("error", () => {
             Logger.info("error happened when custom mobile");
-            _this.ut.outputResult("network error");
+            _this.ut.outputResult("Network error!");
             resolve(false);
           });
           mesg.on("end", () => {
@@ -154,20 +154,20 @@ export class OnelinkService {
         }
       );
       uploadRequest.on("error", () => {
-        this.ut.outputResult("network error");
+        this.ut.outputResult("Network error!");
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.CTPJ, 1);
         resolve(false);
       });
       fm.pipe(uploadRequest).end();
     });
     if (res == false) {
-      this.ut.outputResult("network error");
+      this.ut.outputResult("Network error!");
       return false;
     } else {
       if (this.processBackValue(backValue)) {
         this.projectInfo.token = backValue["data"]["token"];
         fs.writeFileSync(this.tokenPath, JSON.stringify(this.projectInfo));
-        this.ut.outputResult("project has been set up");
+        this.ut.outputResult("Project established!");
         return true;
       } else {
         return false;
@@ -176,15 +176,15 @@ export class OnelinkService {
   }
   processBackValue(backValue: any) {
     if (backValue["code"] == "11000") {
-      this.ut.outputResult("app name has been registered");
+      this.ut.outputResult("Application name duplicated!");
       return false;
     } else if (backValue["code"] == "11001") {
-      this.ut.outputResult("app compile failed");
+      this.ut.outputResult("Compiling mobile app failed!");
       this.ut.outputResult(backValue["message"]);
     } else if (backValue["code"] == "11002") {
-      this.ut.outputResult("the token is consistent with the appName");
+      this.ut.outputResult("The tocken is not consistent with the application name!");
     } else if (backValue["code"] == "200") {
-      this.ut.outputResult("compile successfully");
+      this.ut.outputResult("Compiling mobile application successful!");
       return true;
     }
     return false;
@@ -229,7 +229,7 @@ export class OnelinkService {
           },
           (mesg) => {
             if (mesg == undefined) {
-              _this.ut.outputResult("network error");
+              _this.ut.outputResult("Network error!");
               Logger.info("error happened when updateConfig mobile");
               resolve(false);
               return;
@@ -242,7 +242,7 @@ export class OnelinkService {
             });
             mesg.on("error", () => {
               Logger.info("error happened when updateConfig mobile");
-              _this.ut.outputResult("network error");
+              _this.ut.outputResult("Network error!");
               resolve(false);
             });
             mesg.on("end", () => {
@@ -256,7 +256,7 @@ export class OnelinkService {
         );
         uploadRequest.on("error", () => {
           this.cis.storeCallInfoInstantly("broken", CallSymbol.CTPJ, 1);
-          this.ut.outputResult("network error");
+          this.ut.outputResult("Network error!");
           resolve(false);
         });
         fm.pipe(uploadRequest).end();
@@ -274,11 +274,11 @@ export class OnelinkService {
           return false;
         }
       } else {
-        this.ut.outputResult("network error");
+        this.ut.outputResult("Network error!");
         return false;
       }
     } else {
-      this.ut.outputResult("onelink project has not been created yet");
+      this.ut.outputResult("Project has not been created yet!");
       return false;
     }
   }

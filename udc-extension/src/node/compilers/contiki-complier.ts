@@ -27,7 +27,7 @@ export class NewContikiCompiler {
   async postNameAndType(pid: string) {
     let { dirName, deviceRole } = await this.udc.getPidInfos(pid);
     for (let item of deviceRole!) {
-      this.udc.outputResult(`compile:${item}`);
+      this.udc.outputResult(`Compile:${item}`);
       // let res = await this.postSingleSrcFile(dirName, item, pid);
       let res = await this.compileSingleFile(dirName, item, pid);
       if (res != "scc") return "err";
@@ -67,7 +67,7 @@ export class NewContikiCompiler {
     let hashVal = "";
     let p = new Promise((resolve) => {
       st.on("close", () => {
-        console.log("compress file scc");
+        console.log("Packing files successful!");
         resolve("scc");
       });
     })
@@ -99,7 +99,7 @@ export class NewContikiCompiler {
                 });
                 mesg.on("error", () => {
                   Logger.info("error happened while config in contiki");
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   resolve("err");
                 });
                 mesg.on("end", () => {
@@ -126,7 +126,7 @@ export class NewContikiCompiler {
               })
             );
             configRequest.on("error", () => {
-              _this.udc.outputResult("network error");
+              _this.udc.outputResult("Network error!");
               resolve("err");
             });
             configRequest.end();
@@ -155,7 +155,7 @@ export class NewContikiCompiler {
                 });
                 mesg.on("error", () => {
                   Logger.info("error happened while upload in contiki");
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   resolve("err");
                 });
                 mesg.on("end", () => {
@@ -174,7 +174,7 @@ export class NewContikiCompiler {
               }
             );
             uploadRequest.on("error", () => {
-              _this.udc.outputResult("network error");
+              _this.udc.outputResult("Network error!");
               resolve("err");
             });
             let blob = fs.readFileSync(
@@ -246,13 +246,13 @@ export class NewContikiCompiler {
                 }
                 mesg.on("error", () => {
                   Logger.info("error happened while downloading in contiki");
-                  _this.udc.outputResult("network error");
+                  _this.udc.outputResult("Network error!");
                   resolve("err");
                 });
               }
             );
             downloadRequest.on("error", () => {
-              _this.udc.outputResult("network error");
+              _this.udc.outputResult("Network error!");
               resolve("err");
             });
             downloadRequest.write(

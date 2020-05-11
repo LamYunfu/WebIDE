@@ -66,7 +66,9 @@ export class UdcTerminal {
     timeMs: new Date().getTime(),
     device: "",
   };
+
   logEnable: boolean = false;
+  tinySimRequest: WebSocket | null = null;
   pidQueueInfo: {
     [pid: string]: {
       loginType: string;
@@ -115,7 +117,7 @@ export class UdcTerminal {
       this.freeCodingConfig = info;
     } catch {
       this.freeCodingConfig = undefined;
-      this.outputResult("the config.json is not set correctly");
+      this.outputResult("theconfig.json is incorrect!");
       return;
     }
   }
@@ -134,7 +136,7 @@ export class UdcTerminal {
       this.aiConfig["trainServer"] = info.trainServer;
       this.aiConfig["exeServer"] = info.exeServer;
     } catch {
-      this.outputResult("the config.json is not set correctly");
+      this.outputResult("theconfig.json is incorrect!");
       return;
     }
   }
@@ -154,7 +156,7 @@ export class UdcTerminal {
     let hashVal = "";
     let p = new Promise((resolve) => {
       st.on("close", () => {
-        console.log("compress file scc");
+        console.log("Packing files successful!");
         resolve("scc");
       });
     });
@@ -173,7 +175,7 @@ export class UdcTerminal {
     console.log("train server" + trainServer + JSON.stringify(data));
     let ws = new WebSocket(trainServer);
     ws.on("open", () => {
-      _this.outputResult("open the port of server");
+      _this.outputResult("Port of server is open...");
       let content = _this.pkt.construct("file", rb.toString());
       console.log(content);
       ws.send(content, (err) => {
@@ -182,7 +184,7 @@ export class UdcTerminal {
     });
     ws.on("error", () => {
       Logger.info("error happened in train function");
-      _this.outputResult("network error");
+      _this.outputResult("Network error!");
     });
     ws.on("message", (res) => {
       _this.outputResult(res.toString("utf8"));
@@ -257,7 +259,7 @@ export class UdcTerminal {
       );
     } catch (e) {
       Logger.info(JSON.stringify(e));
-      this.outputResult("the config.json is not set correctly");
+      this.outputResult("theconfig.json is incorrect!");
       throw "error";
     } finally {
       this.fileTag = false;
@@ -284,7 +286,7 @@ export class UdcTerminal {
       this.virtualConfig["projectName"] = info.projectName;
       this.virtualConfig["simServer"] = info.simServer;
     } catch {
-      this.outputResult("the config.json is not set correctly");
+      this.outputResult("theconfig.json is incorrect!");
       return;
     }
   }
@@ -305,7 +307,7 @@ export class UdcTerminal {
     let hashVal = "";
     let p = new Promise((resolve) => {
       st.on("close", () => {
-        console.log("compress file scc");
+        console.log("Packing files successful!");
         resolve("scc");
       });
     });
@@ -327,7 +329,7 @@ export class UdcTerminal {
     let ws = new WebSocket(simServer);
     ws.on("open", () => {
       this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
-      _this.outputResult("open the port of server");
+      _this.outputResult("Port of server is open...");
       let content = _this.pkt.construct("file", rb.toString());
       console.log(content);
       ws.send(content, (err) => {
@@ -336,156 +338,13 @@ export class UdcTerminal {
     });
     ws.on("error", () => {
       Logger.info("error happened in virtualSubmit");
-      _this.outputResult("network error");
+      _this.outputResult("Network error!");
     });
     ws.on("message", (res) => {
       _this.outputResult(res.toString("utf8"));
     });
   }
-  creatSrcFile(
-    fnJSON: string,
-    dirName: string,
-    type?: string,
-    deviceRole?: string[]
-  ) {
-    //         let rootdir = this.rootDir.val
-    //         new Promise((resolve) => {
-    //             fs.exists(`/home/project/${dirName}/hexFiles`, async (res) => {
-    //                 if (!res) {
-    //                     fs.mkdir(`/home/project/${dirName}/hexFiles`, () => {
-    //                         resolve()
-    //                     })
-    //                 }
-    //             })
-    //         })
-    //         if (type == undefined) {
-    //             Logger.info(`FNJSON:${fnJSON}`)
-    //             let fn = JSON.parse(fnJSON)
-    //             fs.exists(path.join(rootdir, dirName), (res) => {
-    //                 if (!res) {
-    //                     fs.mkdir(path.join(rootdir, dirName), (err) => {
-    //                         Logger.info(err)
-    //                         for (let i of fn) {
-    //                             let x: string[] = i.split(".")
-    //                             let tmpPath = ""
-    //                             if (x.length == 1)
-    //                                 tmpPath = path.join(rootdir, dirName, i + ".cpp")
-    //                             else
-    //                                 tmpPath = path.join(rootdir, dirName, i)
-    //                             fs.exists(tmpPath, (res) => {
-    //                                 if (!res)
-    //                                     fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
-    //                             })
-    //                         }
-    //                     })
-    //                 }
-    //                 else
-    //                     for (let i of fn) {
-    //                         let x: string[] = i.split(".")
-    //                         let tmpPath = ""
-    //                         if (x.length == 1)
-    //                             tmpPath = path.join(rootdir, dirName, i + ".cpp")
-    //                         else
-    //                             tmpPath = path.join(rootdir, dirName, i)
-    //                         fs.exists(tmpPath, (res) => {
-    //                             if (!res)
-    //                                 fs.writeFile(tmpPath, '', {}, (err) => { if (err != null) console.log(err) })
-    //                         })
-    //                     }
-    //             })
-    //         }
-    //         else {
-    //             fs.exists(path.join(rootdir, dirName), (res) => {
-    //                 if (!res) {
-    //                     fs.mkdir(path.join(rootdir, dirName), (err) => {
-    //                         for (let item of deviceRole!) {
-    //                             fs.mkdir(path.join(rootdir, dirName, item), (rv) => {
-    //                                 if (rv == null) {
-    //                                     fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
-    //                                     `)
-    //                                     fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
-    // src     = Split('''
-    // main.c
-    // ''')
-    // component = aos_component('helloworld', src)
-    // component.add_comp_deps('kernel/yloop', 'kernel/cli')
-    // component.add_global_macros('AOS_NO_WIFI')`)
-    //                                     fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
-    // /* user space */
-    // #ifndef RHINO_CONFIG_USER_SPACE
-    // #define RHINO_CONFIG_USER_SPACE              0
-    // #endif
-    // `)
-    //                                     fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
-    // config AOS_APP_HELLOWORLD
-    // bool "HelloWorld"
-    // select AOS_COMP_OSAL_AOS
-    // help
-    // Hello World
-    // if AOS_APP_HELLOWORLD
-    // # Configurations for app helloworld
-    // endif
-    // `)
-    //                                     fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
-    // NAME := helloworld
-    // $(NAME)_SOURCES := main.c
-    // GLOBAL_DEFINES += AOS_NO_WIFI
-    // $(NAME)_COMPONENTS := yloop cli
-    // ifeq ($(BENCHMARKS),1)
-    // $(NAME)_COMPONENTS  += benchmarks
-    // GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
-    // endif
-    // `)
-    //                                 }
-    //                             })
-    //                         }
-    //                     })
-    //                 }
-    //                 else
-    //                     for (let item of deviceRole!) {
-    //                         fs.exists(path.join(rootdir, dirName, item, 'main.c'), (rv) => {
-    //                             if (rv == false) {
-    //                                 fs.writeFile(path.join(rootdir, dirName, item, "main.c"), `
-    //                                 `)
-    //                                 fs.writeFile(path.join(rootdir, dirName, item, "ucube.py"), `
-    // src     = Split('''
-    // main.c
-    // ''')
-    // component = aos_component('helloworld', src)
-    // component.add_comp_deps('kernel/yloop', 'kernel/cli')
-    // component.add_global_macros('AOS_NO_WIFI')`)
-    //                                 fs.writeFile(path.join(rootdir, dirName, item, "k_app_config.h"), `
-    // /* user space */
-    // #ifndef RHINO_CONFIG_USER_SPACE
-    // #define RHINO_CONFIG_USER_SPACE              0
-    // #endif
-    // `)
-    //                                 fs.writeFile(path.join(rootdir, dirName, item, "Config.in"), `
-    // config AOS_APP_HELLOWORLD
-    // bool "HelloWorld"
-    // select AOS_COMP_OSAL_AOS
-    // help
-    //     Hello World
-    // if AOS_APP_HELLOWORLD
-    // # Configurations for app helloworld
-    // endif
-    // `)
-    //                                 fs.writeFile(path.join(rootdir, dirName, item, "aos.mk"), `
-    // NAME := helloworld
-    // $(NAME)_SOURCES := helloworld.c
-    // GLOBAL_DEFINES += AOS_NO_WIFI
-    // $(NAME)_COMPONENTS := yloop cli
-    // ifeq ($(BENCHMARKS),1)
-    // $(NAME)_COMPONENTS  += benchmarks
-    // GLOBAL_DEFINES      += CONFIG_CMD_BENCHMARKS
-    // endif
-    // `)
-    //                             }
-    //                         })
-    //                     }
-    //             })
-    //         }
-  }
+
   async refreshConfiguration(pid: string) {
     let { dirName } = this.getPidInfos(pid);
     let infoRaw = fs.readFileSync(
@@ -495,7 +354,7 @@ export class UdcTerminal {
     try {
       info = JSON.parse(infoRaw.toString("utf8")).projects;
     } catch {
-      this.outputResult("the config.json is not set correctly");
+      this.outputResult("theconfig.json is incorrect!");
       return;
     }
     let preModel = this.pidQueueInfo[pid].model;
@@ -588,7 +447,7 @@ export class UdcTerminal {
             },
             (mesg) => {
               if (mesg == undefined) {
-                _this.outputResult("network error");
+                _this.outputResult("Network error!");
                 Logger.info("error happened while get template");
                 return;
               }
@@ -598,7 +457,7 @@ export class UdcTerminal {
               });
               mesg.on("error", () => {
                 Logger.info("error happened in initPidQueueInfo");
-                _this.outputResult("network error");
+                _this.outputResult("Network error!");
                 resolve("err");
               });
               mesg.on("end", () => {
@@ -623,7 +482,7 @@ export class UdcTerminal {
               CallSymbol.GTML,
               1
             );
-            this.outputResult("network error");
+            this.outputResult("Network error!");
             resolve("err");
           });
           console.log(
@@ -758,7 +617,7 @@ export class UdcTerminal {
       });
       ctrFd.on("error", () => {
         Logger.info("error happened with the connection to controller");
-        _this.outputResult("network error");
+        _this.outputResult("Network error!");
         reject("error");
       });
       ctrFd.on("close", () => {
@@ -773,12 +632,12 @@ export class UdcTerminal {
         Logger.val("d:" + d);
         Logger.val("serverData:" + serverData);
         if (serverData.join().trim() == `no available device}`) {
-          _this.outputResult("device allocate err: no more device in server");
+          _this.outputResult("Device allocation error: no free device in LinkLab.");
           reject("error");
         } else if (
           serverData.pop()!.trim() == `all this model type are working!}`
         ) {
-          _this.outputResult("there is no more this kind of server");
+          _this.outputResult("Device allocation error: no free device in LinkLab.");
           reject("error");
         }
         resolve(serverData);
@@ -829,7 +688,7 @@ export class UdcTerminal {
         // _this.udcServerClient!.destroy()
         _this.udcServerClient = null;
         _this.dev_list = undefined;
-        _this.outputResult("network error");
+        _this.outputResult("Network error!");
         _this.hpp.removeAllListeners();
         Logger.info("error happened with the connection to server");
         reject("fail");
@@ -847,7 +706,7 @@ export class UdcTerminal {
         setTimeout(() => {
           _this.events.emit("disconnect");
         }, 1000);
-        _this.outputResult("connection is disconnected");
+        _this.outputResult("The connection to LinkLab is disconnected!");
         Logger.info("Connection to Udc Server Closed!");
       });
       Logger.val("server pid:" + pid);
@@ -911,9 +770,9 @@ export class UdcTerminal {
         //     devTab += "                   " + item + "\n"
         // }
         // this.outputResult(devTab)
-        this.outputResult("device ready");
+        this.outputResult("LinkLab device ready...");
       }
-
+      this.events.emit("build");
       if (this.udcClient) {
         this.udcClient.onDeviceList(new_dev_list);
       }
@@ -931,7 +790,7 @@ export class UdcTerminal {
       this.cmd_excute_state = type === Packet.CMD_DONE ? "done" : "error";
       this.events.emit("cmd-response");
     } else if (type == Packet.MULTI_DEVICE_PROGRAM) {
-      this.outputResult("burning option not set correctly");
+      this.outputResult("Burning option is not set correctly!");
     } else if (type == Packet.DEVICE_LOG) {
       let tmp: string = value
         .toString()
@@ -942,6 +801,7 @@ export class UdcTerminal {
       let tag = afterSplit.slice(0, 1);
       Logger.info(tag[0], "tg_");
       Logger.info(tmp, "tp_");
+
       if (tmp.startsWith("0E")) {
         return;
       }
@@ -953,12 +813,12 @@ export class UdcTerminal {
         device: value.split(":").pop(),
       };
       this.outputResult(
-        `burning ${this.lastCommitDevice.device}......`,
+        `Burning ${this.lastCommitDevice.device}...`,
         "systemInfo"
       );
     } else if (type == Packet.DEVICE_PROGRAM_QUEUE) {
       let status = value.split(",").pop();
-      this.outputResult("program " + status, "systemInfo");
+      this.outputResult("Programming " + status, "systemInfo");
       if (status == "success") {
         this.logEnable = true;
         this.cmd_excute_state = "done";
@@ -975,7 +835,7 @@ export class UdcTerminal {
       );
     } else if (type == Packet.QUERY_IDLE_DEVICES) {
       let num = parseInt(value.split(":").pop());
-      this.outputResult("remaining device:" + num, "systemInfo");
+      this.outputResult("Remaining device:" + num, "systemInfo");
       if (num <= 0) {
         this.events.emit("goSim");
       } else {
@@ -988,7 +848,24 @@ export class UdcTerminal {
       console.log(this.currentWaitId);
       if (logObj["waitingId"] != this.currentWaitId) return;
       for (let item of logObj["logs"]) {
-        if (item.startsWith("0E")) continue;
+        if (item.startsWith("0E")) {
+          if (
+            item
+              .split("0010")
+              .pop()
+              .trim() == ""
+          ) {
+            this.logEnable && this.outputResult("0E0010", "log");
+          } else if (
+            item
+              .split("0011")
+              .pop()
+              .trim() == ""
+          ) {
+            this.logEnable && this.outputResult("0E0011", "log");
+          }
+          continue;
+        }
         this.logEnable && this.outputResult(item, "log");
       }
       // if (logObj["isEnd"] == true) {
@@ -1057,6 +934,21 @@ export class UdcTerminal {
     tmp[type] = this.dataStorage[type];
     return new Promise((res) => res(JSON.stringify(tmp)));
   }
+  async awaitConnnect(): Promise<boolean> {
+    return await new Promise((res) => {
+      let p = setTimeout(() => {
+        res(false);
+        this.events.removeListener("build", () => {
+          clearTimeout(p);
+          res(true);
+        });
+      }, 5000);
+      this.events.once("build", () => {
+        clearTimeout(p);
+        res(true);
+      });
+    });
+  }
   async connect(
     loginTypeNotUse: string,
     modelNotUse: string,
@@ -1091,7 +983,7 @@ export class UdcTerminal {
     };
     if (this.currentPid == pid && (await this.is_connected)) {
       this.outputResult(
-        "connect server some time before,no need for more opreation"
+       "Duplicated connection to server. No need for further operation."
       );
       return true;
     }
@@ -1129,7 +1021,7 @@ export class UdcTerminal {
     if (re != "success") {
       return false;
     }
-    this.outputResult("connect to controller success");
+    this.outputResult("Connected to device controller!");
     let result = await this.connect_to_server(
       server_ip,
       server_port,
@@ -1138,13 +1030,14 @@ export class UdcTerminal {
     );
     Logger.val("result-----------------------------" + result);
     if (result !== "success") return false;
-    this.outputResult("connect to server success");
+    this.outputResult("Connected to server!");
     await this.send_packet(
       Packet.packet_type.TERMINAL_LOGIN,
       `${this.uuid},${token},${pid}`
     ); //modifiy,timeout/
     // await this.AC.postNameAndType("helloworld", "esp32devkitc")
-    return true;
+
+    return this.awaitConnnect();
   }
   async waitDisconnect(): Promise<Boolean> {
     return new Promise((res) => {
@@ -1157,7 +1050,9 @@ export class UdcTerminal {
 
       this.events.once("disconnect", () => {
         clearTimeout(x);
-        res(true);
+        setTimeout(() => {
+          res(true);
+        }, 1000);      
       });
     });
   }
@@ -1166,6 +1061,13 @@ export class UdcTerminal {
     if (this.udcServerClient === null) {
       return true;
     }
+    try {
+      !this.tinySimRequest ? "" : this.tinySimRequest.close();
+    } catch (error) {
+      this.tinySimRequest = null;
+      Logger.info(error);
+    }
+
     this.hpp.removeAllListeners("data");
     // await this.udcServerClient.destroy();
     // this.udcServerClient = null;
@@ -1234,7 +1136,7 @@ export class UdcTerminal {
         this.programState[waitID].devicePort
       },0x10000,${await this.pkt.hash_of_file(filepath)},${waitID},${pid}`;
       Logger.info(content, "content:");
-      // this.outputResult('burning......')
+      // this.outputResult('Burning ${this.lastCommitDevice.device}...')
       this.send_packet(Packet.DEVICE_PROGRAM_QUEUE, content);
       await this.wait_cmd_excute_done(270000);
       if (this.cmd_excute_state === "done") {
@@ -1251,7 +1153,7 @@ export class UdcTerminal {
   async program_device(pid: string, setJson: string): Promise<Boolean> {
     let _this = this;
     // let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
-    _this.outputResult("burning......");
+    _this.outputResult(`Burning ${this.lastCommitDevice.device}...`);
     let js = JSON.parse(setJson);
     this.currentWaitId = js["program"][0]["waitingId"];
     this.cis.storeCallInfoInstantly("start", CallSymbol.LDDP);
@@ -1271,7 +1173,7 @@ export class UdcTerminal {
     let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(
       filepath
     )}:${pid}`;
-    _this.outputResult("burning......");
+    _this.outputResult(`Burning ${this.lastCommitDevice.device}...`);
     this.send_packet(Packet.DEVICE_WAIT, content);
     await this.wait_cmd_excute_done(27000);
     return this.cmd_excute_state === "done" ? true : false;
@@ -1306,7 +1208,7 @@ export class UdcTerminal {
         (mesg) => {
           let bf = "";
           if (mesg == undefined) {
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             Logger.info("error happened while config");
             return;
           }
@@ -1315,15 +1217,15 @@ export class UdcTerminal {
           });
           mesg.on("error", () => {
             Logger.info("error happened while config");
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             resolve("err");
           });
           mesg.on("end", () => {
             Logger.info("bf:" + bf);
             let res: any = JSON.parse(bf);
             if (!res.result) {
-              Logger.info("config burning success");
-              _this.outputResult("config burning success");
+              Logger.info("Initializing burning tools successful!");
+              _this.outputResult("Initializing burning tools successful!");
               Logger.info(res.status);
               resolve("scc");
             } else {
@@ -1334,7 +1236,7 @@ export class UdcTerminal {
         }
       );
       configRequest.on("error", () => {
-        this.outputResult("network error");
+        this.outputResult("Network error!");
         resolve("err");
       });
       configRequest.write(
@@ -1364,7 +1266,7 @@ export class UdcTerminal {
           },
           (mesg) => {
             if (mesg == undefined) {
-              _this.outputResult("network error");
+              _this.outputResult("Network error!");
               Logger.info("error happened while upload");
               resolve("err");
               return;
@@ -1377,7 +1279,7 @@ export class UdcTerminal {
             });
             mesg.on("error", () => {
               Logger.info("error happened while upload");
-              _this.outputResult("network error");
+              _this.outputResult("Network error!");
               resolve("err");
             });
             mesg.on("end", () => {
@@ -1393,7 +1295,7 @@ export class UdcTerminal {
           }
         );
         uploadRequest.on("error", () => {
-          this.outputResult("network error");
+          this.outputResult("Network error!");
           resolve("err");
         });
         // let blob = fs.readFileSync(filepath)
@@ -1419,7 +1321,7 @@ export class UdcTerminal {
     let content = `${devstr},${address},${await this.pkt.hash_of_file(
       filepath
     )},${pid}`;
-    this.outputResult("burning......");
+    this.outputResult(`Burning ${this.lastCommitDevice.device}...`);
     // this.outputResult('program content:' + content)
     this.send_packet(Packet.DEVICE_PROGRAM, content);
     await this.wait_cmd_excute_done(270000);
@@ -1454,7 +1356,7 @@ export class UdcTerminal {
   }
 
   async getIdleDeviceCount(pid: string) {
-    this.outputResult("get idle device count");
+    this.outputResult("Received number of idle device");
     let { model } = this.getPidInfos(pid);
     let content = model;
     this.send_packet(Packet.QUERY_IDLE_DEVICES, content);
@@ -1690,7 +1592,7 @@ export class UdcTerminal {
       }
     }
     if (i == 5) {
-      this.outputResult("something wrong with the file templates server");
+      this.outputResult("Retriving file template failed!");
       return;
     }
     let { dirName } = this.pidQueueInfo[pid];
@@ -1728,7 +1630,7 @@ export class UdcTerminal {
           }
         }
       } catch (e) {
-        this.outputResult("config.json is not set correctly");
+        this.outputResult("config.json is incorrect!");
         return;
       }
     } else {
@@ -1787,37 +1689,41 @@ export class UdcTerminal {
     tmpPath = path.join(fileDir, fn + ".cpp");
     Logger.val(`tmpPath:${tmpPath}`);
     let b = fs.readFileSync(tmpPath);
-    _this.outputResult("try to build the connection with simulator");
+    _this.outputResult("Connecting to device simulator...");
     _this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
-    let tinySimRequest = new WebSocket(SENCE_SERVER_URL, {
+    this.tinySimRequest = new WebSocket(SENCE_SERVER_URL, {
       // "ws://localhost:8765/", {
     });
     await new Promise((res) => {
-      tinySimRequest.on("message", (data: string) => {
+      if (!this.tinySimRequest) {
+        res();
+        return;
+      }
+      this.tinySimRequest.on("message", (data: string) => {
         let tmp = new Buffer(data).toString("utf8");
         console.log(tmp.toString());
         _this.outputResult(tmp.toString(), "log");
       });
-      tinySimRequest.on("close", () => {
+      this.tinySimRequest.on("close", () => {
+        this.tinySimRequest = null;
         _this.cis.storeCallInfoInstantly("end", CallSymbol.TISM);
         res();
       });
-      tinySimRequest.on("open", async () => {
-        _this.outputResult("sending buffer to simulator......");
-
-        // let buff = fs.readFileSync(`/home/project/${dirName}/${filename}.cpp`, { encoding: 'utf8' })
-        tinySimRequest.send(b, () => {
-          _this.outputResult("send buffer to simulator success");
-          tinySimRequest.send(new Buffer(`pid:${pid}:quit`), () => {
+      this.tinySimRequest.on("open", async () => {
+        _this.outputResult("Sending data to device simulator...");
+        this.tinySimRequest!.send(b, () => {
+          _this.outputResult("Sending data to device simulator successful!");
+          this.tinySimRequest!.send(new Buffer(`pid:${pid}:quit`), () => {
             _this.outputResult("quit");
           });
         });
       });
-      tinySimRequest.on("error", () => {
+      this.tinySimRequest.on("error", () => {
+        this.tinySimRequest = null;
         _this.cis.storeCallInfoInstantly("broken network", CallSymbol.TISM, 1);
-        _this.outputResult("network error");
+        _this.outputResult("Network error!");
       });
-      tinySimRequest.on("close", () => {
+      this.tinySimRequest.on("close", () => {
         this.udcClient!.onConfigLog({ name: "submitEnable", passwd: "" });
       });
     });
@@ -1833,7 +1739,7 @@ export class UdcTerminal {
         )
         .toString("utf8");
     } catch {
-      this.outputResult("file read err, check you file structure please");
+      this.outputResult("Reading file error, check your file structure please");
     }
     let dataStr = "";
     let fileRequest = http.request(
@@ -1848,7 +1754,7 @@ export class UdcTerminal {
       },
       (mesg) => {
         if (mesg == undefined) {
-          _this.outputResult("network error");
+          _this.outputResult("Network error!");
           Logger.info("error happened while judge");
           return;
         }
@@ -1868,7 +1774,7 @@ export class UdcTerminal {
       }
     );
     fileRequest.on("error", () => {
-      this.outputResult("network error");
+      this.outputResult("Network error!");
     });
     fileRequest.write(
       JSON.stringify({
@@ -1894,7 +1800,7 @@ export class UdcTerminal {
       },
       (mesg) => {
         if (mesg == undefined) {
-          this.outputResult("network error");
+          this.outputResult("Network error!");
           Logger.info("error happened while get web server");
           return;
         }
@@ -1907,7 +1813,7 @@ export class UdcTerminal {
             res = JSON.parse(dataStr);
             if (res["code"] != 0) {
               let log =
-                "get ssh_cmd failed:" +
+                "Get ssh_cmd failed:" +
                 res["msg"] +
                 `\n deviceName:${this.lastCommitDevice.device}`;
               this.outputResult(log);
@@ -1916,7 +1822,7 @@ export class UdcTerminal {
             } else {
               let str = "";
               for (let item of res["data"]) {
-                str += `------ssh_cmd:${item["sshcmd"]}  passwd:${item["port"]}\n`;
+                str += `Recieved Raspberry Pi login command!------ssh_cmd:${item["sshcmd"]}  passwd:${item["port"]}\n`;
               }
               this.cis.storeCallInfoInstantly("end", CallSymbol.GESI);
               this.outputResult(`:\n${str}`);
@@ -1934,7 +1840,7 @@ export class UdcTerminal {
       }
     );
     urlRequest.on("error", () => {
-      this.outputResult("network error");
+      this.outputResult("Network error!");
       this.cis.storeCallInfoInstantly("broken network", CallSymbol.GESI, 1);
     });
     urlRequest.write("");
@@ -1974,7 +1880,7 @@ export class UdcTerminal {
             res = JSON.parse(dataStr);
             if (res["code"] != 0) {
               this.outputResult(
-                "get deployed server url failed:" +
+                "Get deployed server url failed:" +
                   res["msg"] +
                   `\n deviceName:${this.lastCommitDevice.device}:`
               );
@@ -2008,7 +1914,7 @@ export class UdcTerminal {
       }
     );
     urlRequest.on("error", () => {
-      this.outputResult("network error");
+      this.outputResult("Network error!");
     });
     urlRequest.write("");
     urlRequest.end();
@@ -2030,7 +1936,7 @@ export class UdcTerminal {
       },
       (mesg) => {
         if (mesg == undefined) {
-          this.outputResult("network error");
+          this.outputResult("Network error!");
           Logger.info("error happened while get web server");
           return;
         }
@@ -2077,7 +1983,7 @@ export class UdcTerminal {
     );
     urlRequest.on("error", () => {
       this.cis.storeCallInfoInstantly("broken network", CallSymbol.GTSD, 1);
-      this.outputResult("network error");
+      this.outputResult("Network error!");
     });
     urlRequest.write("");
     urlRequest.end();
@@ -2101,7 +2007,7 @@ export class UdcTerminal {
       .directory(path.join(projectDir, "Development"), "TinyEdge/Development");
     let p = new Promise((resolve) => {
       st.on("close", () => {
-        _this.outputResult("compress file scc");
+        _this.outputResult("Packing files successful!");
         resolve("scc");
       });
     });
@@ -2124,7 +2030,7 @@ export class UdcTerminal {
         },
         (mesg) => {
           if (mesg == undefined) {
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             Logger.info("error happened while upload");
             resolve("err");
             this.cis.storeCallInfoInstantly(
@@ -2142,7 +2048,7 @@ export class UdcTerminal {
           });
           mesg.on("error", () => {
             Logger.info("error happened while upload");
-            _this.outputResult("network error");
+            _this.outputResult("Network error!");
             resolve("err");
           });
           mesg.on("end", () => {
@@ -2152,11 +2058,11 @@ export class UdcTerminal {
               if (res["code"] == "200") {
                 fs.writeFileSync(installPath, res["data"]);
                 fs.unlinkSync(zipPath);
-                this.outputResult("tinyEdge compile scc");
+                this.outputResult("TinyEdge compiling successful!");
                 this.cis.storeCallInfoInstantly("end", CallSymbol.TECC);
                 resolve("scc");
               } else if (res["code"]) {
-                _this.outputResult("compile error:" + res.message);
+                _this.outputResult("TinyEdge compiling failed!:" + res.message);
                 this.cis.storeCallInfoInstantly(
                   res.message,
                   CallSymbol.TECC,
@@ -2179,7 +2085,7 @@ export class UdcTerminal {
       );
       uploadRequest.on("error", () => {
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.TECC, 1);
-        _this.outputResult("network error");
+        _this.outputResult("Network error!");
         resolve("err");
       });
       // let blob = fs.readFileSync(filepath)
@@ -2217,7 +2123,7 @@ export class UdcTerminal {
     } catch (e) {
       console.log(e);
       this.rootDir.reset();
-      this.outputResult("init display board failed");
+      this.outputResult("Initializing example failed!");
     }
   }
 }

@@ -22,7 +22,8 @@
     "drawboard-extension",
     "udc-extension",
     "browser-app",
-    "demo"
+    "demo",
+    "new_widget"
   ],
   "dependencies": {
     "@projectstorm/react-diagrams": "^6.0.1-beta.7",

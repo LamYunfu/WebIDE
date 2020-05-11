@@ -1730,6 +1730,7 @@ export class View extends React.Component<View.Props, View.State> {
     ) : //自由编程演示
     this.state.viewType == "13" ? (
       <DisplayBoard
+        openWorkSpace={this.props.openWorkSpace}
         setSize={this.props.setSize}
         processDisplaySubmit={this.props.processDisplaySubmit}
         attach={this.props.attach}
