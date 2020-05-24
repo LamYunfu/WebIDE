@@ -126,7 +126,7 @@ export class AliosCompiler {
   async postNameAndType(pid: string) {
     let {
       projectName,
-      boardType,
+      compilerType,
       dirName,
       deviceRole,
     } = await this.udc.getPidInfos(pid);
@@ -134,8 +134,8 @@ export class AliosCompiler {
       this.outputResult(`Compile:${item}`);
       let fm = new FormData();
       fm.append("Pname", projectName);
-      fm.append("Board", boardType);
-      this.setDownloadHexPathName(projectName!, boardType!);
+      fm.append("Board", compilerType);
+      this.setDownloadHexPathName(projectName!, compilerType!);
       await this.submitForm(
         fm,
         this.AliosAPIs["hostname"],

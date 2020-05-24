@@ -1,4 +1,9 @@
-import { WidgetManager, OpenerService } from "@theia/core/lib/browser";
+import {
+  WidgetManager,
+  OpenerService,
+  CommonMenus,
+  quickCommand,
+} from "@theia/core/lib/browser";
 import { CommandRegistry, InMemoryResources } from "@theia/core";
 import { UdcWatcher } from "./../common/udc-watcher";
 import { AboutDialog } from "./about-dailog";
@@ -313,7 +318,20 @@ export class UdcExtensionCommandContribution
             return;
           }
         }
-      } else this.udcConsoleSession.appendLine(log);
+      } else {
+        this.udcConsoleSession.appendLine(log);
+        log = log.replace(
+          /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+          ""
+        );
+        let nt = log.replace(/^\[.*\]/g, "").trim();
+        if (!lp.lp) return;
+        if (nt.length > 13) {
+          lp.lp.writeOnScreen(nt.substr(0, 10) + "...");
+        } else {
+          lp.lp.writeOnScreen(nt);
+        }
+      }
     });
 
     this.udcWatcher.onDeviceList((data) => {
@@ -589,13 +607,32 @@ export class UdcExtensionMenuContribution implements MenuContribution {
     //   icon: "x",
     //   order: "a_4"
     // });
+
     menus.registerMenuAction([...UdcMenus.UDC], {
       commandId: UdcCommands.compileEdge.id,
       label: "Compile",
       icon: "x",
       order: "a_5",
     });
-
+    menus.unregisterMenuAction({
+      commandId: "outlineView:toggle ",
+    });
+    menus.unregisterMenuAction({
+      commandId: "callhierachy:toggle",
+    });
+    menus.unregisterMenuAction({
+      commandId: "output:toggle",
+    });
+    menus.unregisterMenuAction({
+      commandId: "scmView:toggle",
+    });
+    menus.unregisterMenuAction({
+      commandId: "scmView:toggle",
+    });
+    menus.unregisterMenuAction({
+      commandId: quickCommand.id,
+      label: "Find Command....",
+    });
     // console.log(menus.getMenu(['menubar']).children.length)
     // for(let item of menus.getMenu(['menubar']).children ){
     //     console.log(item.id)
@@ -604,6 +641,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
     menuBar.removeNode("9_help");
     menuBar.removeNode("7_terminal");
     menuBar.removeNode("6_debug");
+    menuBar.removeNode("");
 
     // menus.registerMenuAction([...UdcMenus.UDC], { commandId:UdcCommands.OpenCommand.id });
   }

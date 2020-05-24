@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 import * as path from "path";
-// export const DEPLOY_SERVER_IP = "10.200.20.5";
-// export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn";
-export const DEPLOY_SERVER_IP = "120.55.102.225";
-export const DEPLOY_SERVER_DOMAIN = "tinylink.cn";
+export const DEPLOY_SERVER_IP = "10.200.20.5";
+export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn";
+// export const DEPLOY_SERVER_IP = "120.55.102.225";
+// export const DEPLOY_SERVER_DOMAIN = "tinylink.cn";
 export const CONTIKI_IP = `${DEPLOY_SERVER_IP}`;
 export const CONTIKI_PORT = "12382";
 export const ALIOS_IP = `${DEPLOY_SERVER_IP}`;
@@ -25,7 +25,7 @@ export const TINYLINEDGECOMPILE_IP = `47.96.155.111`;
 // export const RASPBERRY_GCC_PORT="10086"
 export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_GCC_PORT = "12400";
-export const DISTRIBUTEDCOMPILER_IP = "compilev2.spottedhyena.xyz";
+export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
 // export const CONFIGPATH = "D:/config";
 // export const Call_Log_Path = "D:/call_info.log";
 // @injectable()

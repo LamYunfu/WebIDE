@@ -99,7 +99,7 @@ export class NewContikiCompiler {
                 });
                 mesg.on("error", () => {
                   Logger.info("error happened while config in contiki");
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   resolve("err");
                 });
                 mesg.on("end", () => {
@@ -126,7 +126,7 @@ export class NewContikiCompiler {
               })
             );
             configRequest.on("error", () => {
-              _this.udc.outputResult("Network error!");
+              _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
               resolve("err");
             });
             configRequest.end();
@@ -155,7 +155,7 @@ export class NewContikiCompiler {
                 });
                 mesg.on("error", () => {
                   Logger.info("error happened while upload in contiki");
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   resolve("err");
                 });
                 mesg.on("end", () => {
@@ -174,7 +174,7 @@ export class NewContikiCompiler {
               }
             );
             uploadRequest.on("error", () => {
-              _this.udc.outputResult("Network error!");
+              _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
               resolve("err");
             });
             let blob = fs.readFileSync(
@@ -246,13 +246,13 @@ export class NewContikiCompiler {
                 }
                 mesg.on("error", () => {
                   Logger.info("error happened while downloading in contiki");
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   resolve("err");
                 });
               }
             );
             downloadRequest.on("error", () => {
-              _this.udc.outputResult("Network error!");
+              _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
               resolve("err");
             });
             downloadRequest.write(

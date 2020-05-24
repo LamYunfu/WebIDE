@@ -12,7 +12,13 @@ export class Lamp {
   downPort: number[];
   upPort: number[];
   dimData: Blob;
-
+  screenOn: ImageBitmap;
+  screenOff: ImageBitmap;
+  screenScheduler: any;
+  constructor(screenOn: ImageBitmap, screenOff: ImageBitmap) {
+    this.screenOff = screenOff;
+    this.screenOn = screenOn;
+  }
   set(cor: number[], cv: HTMLCanvasElement) {
     this.position[0] = (cv.width * cor[0]) / 100;
     this.position[1] = (cv.height * cor[1]) / 100;
@@ -56,6 +62,43 @@ export class Lamp {
       0.7 * this.marginY,
       "L2"
     );
+  }
+  async turnOffScreen() {
+    let ctx = this.cv.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(
+      this.screenOff,
+      400 * 0.348,
+      600 * 0.456,
+      400 * 0.307,
+      600 * 0.109
+    );
+  }
+  async turnOnScreen() {
+    let ctx = this.cv.getContext("2d");
+    if (!ctx) return;
+    clearTimeout(this.screenScheduler);
+    ctx.drawImage(
+      this.screenOn,
+      400 * 0.348,
+      600 * 0.456,
+      400 * 0.307,
+      600 * 0.109
+    );
+  }
+
+  async writeOnScreen(something: string) {
+    let ctx = this.cv.getContext("2d");
+    if (!ctx) return;
+    await this.turnOnScreen();
+    let w = this.cv.width;
+    let h = this.cv.height;
+    ctx.fillStyle = "white";
+    ctx.font = "TimesNewRoman";
+    ctx.fillText(something, w * 0.379, h * 0.499, w * 0.25);
+    this.screenScheduler = setTimeout(() => {
+      this.turnOffScreen();
+    }, 1000);
   }
   drawSlot() {
     let ctx = this.cv.getContext("2d");
@@ -206,7 +249,7 @@ export class Lamp {
       await new Promise((res) => {
         setTimeout(() => {
           res();
-        }, 1000);
+        }, 3000);
       });
       await this.restore();
     }

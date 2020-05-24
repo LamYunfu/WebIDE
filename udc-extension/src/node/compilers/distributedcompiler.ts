@@ -1,4 +1,4 @@
-import * as Hs from "https";
+import * as Hs from "http";
 import { DISTRIBUTEDCOMPILER_IP } from "../../setting/backend-config";
 import * as FormData from "form-data";
 import * as Arc from "archiver";
@@ -22,8 +22,8 @@ export class DistributedCompiler {
     @inject(UdcTerminal) readonly udc: UdcTerminal,
     @inject(CallInfoStorer) readonly cis: CallInfoStorer
   ) {}
-  outputResult(mes: string) {
-    this.udc.outputResult(mes);
+  outputResult(mes: string,type:string="sys") {
+    this.udc.outputResult(mes,type);
   }
   async upload(
     path: string,
@@ -61,12 +61,12 @@ export class DistributedCompiler {
       this.cis.storeCallInfoInstantly("start", CallSymbol.CCCE);
       let uf = Hs.request(
         {
-          protocol: "https:",
+          // protocol: "https:",
           method: "POST",
           host: DISTRIBUTEDCOMPILER_IP,
-          path: "/api/compile",
+          path: "/linklab/compilev2/api/compile",
           headers: fm.getHeaders(),
-          auth: "api_gateway:api_gateway",
+          // auth: "api_gateway:api_gateway",
         },
         (res) => {
           let x: Buffer[] = [];
@@ -94,14 +94,14 @@ export class DistributedCompiler {
             let p;
             this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
             resolve(
-              (p = `/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+              (p = `/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
             );
             console.log(p);
           });
         }
       );
       uf.on("error", () => {
-        this.outputResult("Network error!");
+        this.outputResult("Network error!\nYou can check your network connection and retry.","err");
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.CCCE, 1);
         resolve("error");
       });
@@ -115,15 +115,18 @@ export class DistributedCompiler {
       this.cis.storeCallInfoInstantly("start", CallSymbol.DNHX);
       let gf = Hs.request(
         {
-          protocol: "https:",
+          // protocol: "https:",
           method: "GET",
           host: DISTRIBUTEDCOMPILER_IP,
           path: path,
-          auth: "api_gateway:api_gateway",
+          // auth: "api_gateway:api_gateway",
         },
         (response) => {
           let x: Buffer[] = [];
+          
           response.on("data", (buffer: Buffer) => {
+            if(x.length%10000)
+              console.log("downloading")
             x.push(buffer);
           });
           response.on("close", () => {
@@ -151,7 +154,7 @@ export class DistributedCompiler {
         }
       );
       gf.on("error", () => {
-        this.outputResult("Network error!");
+        this.outputResult("Network error!\nYou can check your network connection and retry.","err");
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.DNHX, 1);
         resolve("error");
       });

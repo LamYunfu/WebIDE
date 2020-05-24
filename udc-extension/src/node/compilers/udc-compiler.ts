@@ -90,7 +90,8 @@ export class UdcCompiler {
               if (data.verbose == "Cross Compiling Error.") {
                 this.udc.udcClient != undefined &&
                   this.outputResult(
-                    "Online compiling error!"
+                    "Online compiling error!\nPlease check your source file!",
+                    "err"
                   );
                 this.outputResult(data.compileDebug);
                 resolve("srcFile Post failed");
@@ -126,7 +127,10 @@ export class UdcCompiler {
                   },
                   (mesg) => {
                     if (mesg == undefined) {
-                      _this.udc.outputResult("Network error!");
+                      _this.udc.outputResult(
+                        "Network error!\nYou can check your network connection and retry.",
+                        "err"
+                      );
                       Logger.info("error happened while Download hex");
                       this.cis.storeCallInfoInstantly(
                         "error back value",
@@ -154,10 +158,13 @@ export class UdcCompiler {
                         CallSymbol.DHFT,
                         1
                       );
-                      _this.outputResult("Download hex timeout");
+                      _this.outputResult("Download hex timeout\n", "err");
                     });
                     mesg.on("error", () => {
-                      _this.outputResult("Download hex error ");
+                      _this.outputResult(
+                        "Download hex error\nlease try again later.",
+                        "err"
+                      );
                     });
                     mesg.on("end", async () => {
                       ws.close();
@@ -173,7 +180,10 @@ export class UdcCompiler {
                     CallSymbol.DHFT,
                     1
                   );
-                  _this.outputResult("Network error!");
+                  _this.outputResult(
+                    "Network error!\nYou can check your network connection and retry.",
+                    "err"
+                  );
 
                   downloadFd.abort();
                   resolve("err");
@@ -213,7 +223,10 @@ export class UdcCompiler {
         },
         (res) => {
           if (res == undefined) {
-            _this.udc.outputResult("Network error!");
+            _this.udc.outputResult(
+              "Network error!\nYou can check your network connection and retry.",
+              "err"
+            );
             Logger.info("error happened while post data");
             resolve("err");
           }
@@ -228,7 +241,10 @@ export class UdcCompiler {
       );
       if (req != null) {
         req.on("error", () => {
-          _this.udc.outputResult("Network error!");
+          _this.udc.outputResult(
+            "Network error!\nYou can check your network connection and retry.",
+            "err"
+          );
           resolve("err");
         });
         req.write(datastr);
@@ -260,7 +276,10 @@ export class UdcCompiler {
         },
         (err, res) => {
           if (res == undefined) {
-            _this.udc.outputResult("Network error!");
+            _this.udc.outputResult(
+              "Network error!\nYou can check your network connection and retry.",
+              "err"
+            );
             Logger.info("error happened while submit form");
             resolve("err");
             return;

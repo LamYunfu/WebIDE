@@ -73,7 +73,7 @@ export class UdcTerminal {
     [pid: string]: {
       loginType: string;
       projectName: string | undefined;
-      boardType: string | undefined;
+      compilerType: string | undefined;
       timeout: string;
       model: string;
       waitID: string;
@@ -184,7 +184,10 @@ export class UdcTerminal {
     });
     ws.on("error", () => {
       Logger.info("error happened in train function");
-      _this.outputResult("Network error!");
+      _this.outputResult(
+        "Network error!\nYou can check your network connection and retry.",
+        "err"
+      );
     });
     ws.on("message", (res) => {
       _this.outputResult(res.toString("utf8"));
@@ -338,7 +341,10 @@ export class UdcTerminal {
     });
     ws.on("error", () => {
       Logger.info("error happened in virtualSubmit");
-      _this.outputResult("Network error!");
+      _this.outputResult(
+        "Network error!\nYou can check your network connection and retry.",
+        "err"
+      );
     });
     ws.on("message", (res) => {
       _this.outputResult(res.toString("utf8"));
@@ -360,7 +366,7 @@ export class UdcTerminal {
     let preModel = this.pidQueueInfo[pid].model;
     this.pidQueueInfo[pid].loginType = "queue";
     this.pidQueueInfo[pid].model = info[0].burningDataQueue.program.model;
-    this.pidQueueInfo[pid].boardType = info[0].compilationMethod;
+    this.pidQueueInfo[pid].compilerType = info[0].compilationMethod;
     // this.pidQueueInfo[pid].timeout = info[0].timeout
     this.pidQueueInfo[pid].timeout = "30";
     let deviceRole = [];
@@ -430,8 +436,10 @@ export class UdcTerminal {
       let {
         dirName,
         //  fns, model, deviceRole,
+        model,
         ppid,
       } = this.pidQueueInfo[index];
+      // this.pidQueueInfo[index]
       this.cis.storeCallInfoInstantly("start", CallSymbol.GTML);
       await new Promise((resolve) => {
         if (ppid != null) {
@@ -447,7 +455,10 @@ export class UdcTerminal {
             },
             (mesg) => {
               if (mesg == undefined) {
-                _this.outputResult("Network error!");
+                _this.outputResult(
+                  "Network error!\nYou can check your network connection and retry.",
+                  "err"
+                );
                 Logger.info("error happened while get template");
                 return;
               }
@@ -457,7 +468,10 @@ export class UdcTerminal {
               });
               mesg.on("error", () => {
                 Logger.info("error happened in initPidQueueInfo");
-                _this.outputResult("Network error!");
+                _this.outputResult(
+                  "Network error!\nYou can check your network connection and retry.",
+                  "err"
+                );
                 resolve("err");
               });
               mesg.on("end", () => {
@@ -482,7 +496,10 @@ export class UdcTerminal {
               CallSymbol.GTML,
               1
             );
-            this.outputResult("Network error!");
+            this.outputResult(
+              "Network error!\nYou can check your network connection and retry.",
+              "err"
+            );
             resolve("err");
           });
           console.log(
@@ -549,7 +566,7 @@ export class UdcTerminal {
     content: {
       loginType: string;
       projectName: string | undefined;
-      boardType: string | undefined;
+      compilerType: string | undefined;
       timeout: string;
       model: string;
       waitID: string;
@@ -617,7 +634,10 @@ export class UdcTerminal {
       });
       ctrFd.on("error", () => {
         Logger.info("error happened with the connection to controller");
-        _this.outputResult("Network error!");
+        _this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
         reject("error");
       });
       ctrFd.on("close", () => {
@@ -631,13 +651,20 @@ export class UdcTerminal {
         let serverData = d.slice(2, d.length);
         Logger.val("d:" + d);
         Logger.val("serverData:" + serverData);
+        let info = serverData.join().trim();
         if (serverData.join().trim() == `no available device}`) {
-          _this.outputResult("Device allocation error: no free device in LinkLab.");
+          _this.outputResult(
+            "Device allocation error: no free device in LinkLab.\nPlease try again later.",
+            "err"
+          );
           reject("error");
         } else if (
           serverData.pop()!.trim() == `all this model type are working!}`
         ) {
-          _this.outputResult("Device allocation error: no free device in LinkLab.");
+          _this.outputResult(
+            "Device allocation error: no free device in LinkLab.\nPlease try again later.",
+            "err"
+          );
           reject("error");
         }
         resolve(serverData);
@@ -688,7 +715,10 @@ export class UdcTerminal {
         // _this.udcServerClient!.destroy()
         _this.udcServerClient = null;
         _this.dev_list = undefined;
-        _this.outputResult("Network error!");
+        _this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
         _this.hpp.removeAllListeners();
         Logger.info("error happened with the connection to server");
         reject("fail");
@@ -790,7 +820,10 @@ export class UdcTerminal {
       this.cmd_excute_state = type === Packet.CMD_DONE ? "done" : "error";
       this.events.emit("cmd-response");
     } else if (type == Packet.MULTI_DEVICE_PROGRAM) {
-      this.outputResult("Burning option is not set correctly!");
+      this.outputResult(
+        "Burning option is not set correctly!\nPlease check your config.json",
+        "err"
+      );
     } else if (type == Packet.DEVICE_LOG) {
       let tmp: string = value
         .toString()
@@ -983,7 +1016,7 @@ export class UdcTerminal {
     };
     if (this.currentPid == pid && (await this.is_connected)) {
       this.outputResult(
-       "Duplicated connection to server. No need for further operation."
+        "Duplicated connection to server. No need for further operation."
       );
       return true;
     }
@@ -1052,7 +1085,7 @@ export class UdcTerminal {
         clearTimeout(x);
         setTimeout(() => {
           res(true);
-        }, 1000);      
+        }, 1000);
       });
     });
   }
@@ -1153,7 +1186,7 @@ export class UdcTerminal {
   async program_device(pid: string, setJson: string): Promise<Boolean> {
     let _this = this;
     // let content = `${model}:${waitID}:${timeout}:${address}:${await this.pkt.hash_of_file(filepath)}:${pid}`
-    _this.outputResult(`Burning ${this.lastCommitDevice.device}...`);
+    // _this.outputResult(`Burning ${this.lastCommitDevice.device}...`);
     let js = JSON.parse(setJson);
     this.currentWaitId = js["program"][0]["waitingId"];
     this.cis.storeCallInfoInstantly("start", CallSymbol.LDDP);
@@ -1208,7 +1241,10 @@ export class UdcTerminal {
         (mesg) => {
           let bf = "";
           if (mesg == undefined) {
-            _this.outputResult("Network error!");
+            _this.outputResult(
+              "Network error!\nYou can check your network connection and retry.",
+              "err"
+            );
             Logger.info("error happened while config");
             return;
           }
@@ -1217,7 +1253,10 @@ export class UdcTerminal {
           });
           mesg.on("error", () => {
             Logger.info("error happened while config");
-            _this.outputResult("Network error!");
+            _this.outputResult(
+              "Network error!\nYou can check your network connection and retry.",
+              "err"
+            );
             resolve("err");
           });
           mesg.on("end", () => {
@@ -1236,7 +1275,10 @@ export class UdcTerminal {
         }
       );
       configRequest.on("error", () => {
-        this.outputResult("Network error!");
+        this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
         resolve("err");
       });
       configRequest.write(
@@ -1266,7 +1308,10 @@ export class UdcTerminal {
           },
           (mesg) => {
             if (mesg == undefined) {
-              _this.outputResult("Network error!");
+              _this.outputResult(
+                "Network error!\nYou can check your network connection and retry.",
+                "err"
+              );
               Logger.info("error happened while upload");
               resolve("err");
               return;
@@ -1279,7 +1324,10 @@ export class UdcTerminal {
             });
             mesg.on("error", () => {
               Logger.info("error happened while upload");
-              _this.outputResult("Network error!");
+              _this.outputResult(
+                "Network error!\nYou can check your network connection and retry.",
+                "err"
+              );
               resolve("err");
             });
             mesg.on("end", () => {
@@ -1295,7 +1343,10 @@ export class UdcTerminal {
           }
         );
         uploadRequest.on("error", () => {
-          this.outputResult("Network error!");
+          this.outputResult(
+            "Network error!\nYou can check your network connection and retry.",
+            "err"
+          );
           resolve("err");
         });
         // let blob = fs.readFileSync(filepath)
@@ -1435,35 +1486,6 @@ export class UdcTerminal {
       }
       seq++;
     }
-    // while (seq * 1024 < fileBuffer.length) {
-    //     Logger.info(seq, "seq:")
-    //     let header = `${devstr}:${filehash}:${seq}:`;
-    //     let end = (seq + 1) * 1024;
-    //     if (end > fileBuffer.length) {
-    //         end = fileBuffer.length;
-    //     }
-    //     retry = 4;
-    //     while (retry > 0) {
-    //         Logger.info("sending data");
-    //         // this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 1024, end).toString('ascii'));
-    //         this.send_packet(Packet.FILE_DATA, header + fileBuffer.slice(seq * 1024, end).toString("ascii"));
-    //         await this.wait_cmd_excute_done(2000);
-    //         if (this.cmd_excute_return === null) {
-    //             Logger.info("cmd retuen null");
-
-    //             retry--;
-    //             continue;
-    //         } else if (this.cmd_excute_return != 'ok') {
-    //             Logger.info("cmd not ok");
-    //             return false;
-    //         }
-    //         break;
-    //     }
-    //     if (retry === 0) {
-    //         return false;
-    //     }
-    //     seq++;
-    // }
     content = `${devstr}:${filehash}:${filename}`;
     retry = 4;
     while (retry > 0) {
@@ -1528,15 +1550,32 @@ export class UdcTerminal {
     return true;
   }
   outputResult(res: string, types: string = "systemInfo") {
+    res = res.replace(
+      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+      ""
+    );
+    let d = new Date().toLocaleTimeString();
     Color.enable();
     switch (types) {
       case undefined:
+      default:
       case "systemInfo": {
-        this.udcClient && this.udcClient.OnDeviceLog("::" + `*${res}`.green);
+        this.udcClient &&
+          this.udcClient.OnDeviceLog(
+            "::" + `[INFO][${d}][WebIDE] ${res}`.green
+          );
         break;
       }
       case "log": {
-        this.udcClient && this.udcClient.OnDeviceLog("::" + res.gray);
+        this.udcClient &&
+          this.udcClient.OnDeviceLog(
+            "::" + `[LOG][${d}][WebIDE] ${res.gray}`.white
+          );
+        break;
+      }
+      case "err": {
+        this.udcClient &&
+          this.udcClient.OnDeviceLog("::" + `[ERROR][${d}][WebIDE] ${res}`.red);
         break;
       }
     }
@@ -1592,7 +1631,10 @@ export class UdcTerminal {
       }
     }
     if (i == 5) {
-      this.outputResult("Retriving file template failed!");
+      this.outputResult(
+        "Retriving file template failed!\nPlease try again later.",
+        "err"
+      );
       return;
     }
     let { dirName } = this.pidQueueInfo[pid];
@@ -1630,7 +1672,10 @@ export class UdcTerminal {
           }
         }
       } catch (e) {
-        this.outputResult("config.json is incorrect!");
+        this.outputResult(
+          "config.json is incorrect!\nPlease check it or restore it to default!",
+          "err"
+        );
         return;
       }
     } else {
@@ -1721,7 +1766,10 @@ export class UdcTerminal {
       this.tinySimRequest.on("error", () => {
         this.tinySimRequest = null;
         _this.cis.storeCallInfoInstantly("broken network", CallSymbol.TISM, 1);
-        _this.outputResult("Network error!");
+        _this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
       });
       this.tinySimRequest.on("close", () => {
         this.udcClient!.onConfigLog({ name: "submitEnable", passwd: "" });
@@ -1754,7 +1802,10 @@ export class UdcTerminal {
       },
       (mesg) => {
         if (mesg == undefined) {
-          _this.outputResult("Network error!");
+          _this.outputResult(
+            "Network error!\nYou can check your network connection and retry.",
+            "err"
+          );
           Logger.info("error happened while judge");
           return;
         }
@@ -1774,7 +1825,10 @@ export class UdcTerminal {
       }
     );
     fileRequest.on("error", () => {
-      this.outputResult("Network error!");
+      this.outputResult(
+        "Network error!\nYou can check your network connection and retry.",
+        "err"
+      );
     });
     fileRequest.write(
       JSON.stringify({
@@ -1800,7 +1854,10 @@ export class UdcTerminal {
       },
       (mesg) => {
         if (mesg == undefined) {
-          this.outputResult("Network error!");
+          this.outputResult(
+            "Network error!\nYou can check your network connection and retry.",
+            "err"
+          );
           Logger.info("error happened while get web server");
           return;
         }
@@ -1815,8 +1872,8 @@ export class UdcTerminal {
               let log =
                 "Get ssh_cmd failed:" +
                 res["msg"] +
-                `\n deviceName:${this.lastCommitDevice.device}`;
-              this.outputResult(log);
+                `\n deviceName:${this.lastCommitDevice.device}\nPlease try again later.`;
+              this.outputResult(log, "err");
               this.cis.storeCallInfoInstantly(log, CallSymbol.GESI, 1);
               return;
             } else {
@@ -1840,7 +1897,10 @@ export class UdcTerminal {
       }
     );
     urlRequest.on("error", () => {
-      this.outputResult("Network error!");
+      this.outputResult(
+        "Network error!\nYou can check your network connection and retry.",
+        "err"
+      );
       this.cis.storeCallInfoInstantly("broken network", CallSymbol.GESI, 1);
     });
     urlRequest.write("");
@@ -1882,7 +1942,8 @@ export class UdcTerminal {
               this.outputResult(
                 "Get deployed server url failed:" +
                   res["msg"] +
-                  `\n deviceName:${this.lastCommitDevice.device}:`
+                  `\n deviceName:${this.lastCommitDevice.device}\nPlease try again later.`,
+                "err"
               );
               this.cis.storeCallInfoInstantly(
                 "error back value",
@@ -1914,7 +1975,10 @@ export class UdcTerminal {
       }
     );
     urlRequest.on("error", () => {
-      this.outputResult("Network error!");
+      this.outputResult(
+        "Network error!\nYou can check your network connection and retry.",
+        "err"
+      );
     });
     urlRequest.write("");
     urlRequest.end();
@@ -1936,7 +2000,10 @@ export class UdcTerminal {
       },
       (mesg) => {
         if (mesg == undefined) {
-          this.outputResult("Network error!");
+          this.outputResult(
+            "Network error!\nYou can check your network connection and retry.",
+            "err"
+          );
           Logger.info("error happened while get web server");
           return;
         }
@@ -1983,7 +2050,10 @@ export class UdcTerminal {
     );
     urlRequest.on("error", () => {
       this.cis.storeCallInfoInstantly("broken network", CallSymbol.GTSD, 1);
-      this.outputResult("Network error!");
+      this.outputResult(
+        "Network error!\nYou can check your network connection and retry.",
+        "err"
+      );
     });
     urlRequest.write("");
     urlRequest.end();
@@ -2030,7 +2100,10 @@ export class UdcTerminal {
         },
         (mesg) => {
           if (mesg == undefined) {
-            _this.outputResult("Network error!");
+            _this.outputResult(
+              "Network error!\nYou can check your network connection and retry.",
+              "err"
+            );
             Logger.info("error happened while upload");
             resolve("err");
             this.cis.storeCallInfoInstantly(
@@ -2048,7 +2121,10 @@ export class UdcTerminal {
           });
           mesg.on("error", () => {
             Logger.info("error happened while upload");
-            _this.outputResult("Network error!");
+            _this.outputResult(
+              "Network error!\nYou can check your network connection and retry.",
+              "err"
+            );
             resolve("err");
           });
           mesg.on("end", () => {
@@ -2062,7 +2138,12 @@ export class UdcTerminal {
                 this.cis.storeCallInfoInstantly("end", CallSymbol.TECC);
                 resolve("scc");
               } else if (res["code"]) {
-                _this.outputResult("TinyEdge compiling failed!:" + res.message);
+                _this.outputResult(
+                  "TinyEdge compiling failed!:" +
+                    res.message +
+                    "\nPlease check your code",
+                  "err"
+                );
                 this.cis.storeCallInfoInstantly(
                   res.message,
                   CallSymbol.TECC,
@@ -2085,7 +2166,10 @@ export class UdcTerminal {
       );
       uploadRequest.on("error", () => {
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.TECC, 1);
-        _this.outputResult("Network error!");
+        _this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
         resolve("err");
       });
       // let blob = fs.readFileSync(filepath)
@@ -2123,7 +2207,10 @@ export class UdcTerminal {
     } catch (e) {
       console.log(e);
       this.rootDir.reset();
-      this.outputResult("Initializing example failed!");
+      this.outputResult(
+        "Initializing example failed!\nPlease check your code template",
+        "err"
+      );
     }
   }
 }

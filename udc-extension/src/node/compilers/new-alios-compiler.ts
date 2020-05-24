@@ -99,7 +99,7 @@ export class NewAliosCompiler {
               },
               (mesg) => {
                 if (mesg == null) {
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   resolve("err");
                   return;
                 }
@@ -133,7 +133,7 @@ export class NewAliosCompiler {
             );
             configRequest.end();
             configRequest.on("error", () => {
-              _this.udc.outputResult("Network error!");
+              _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
               resolve("err");
             });
           });
@@ -155,7 +155,7 @@ export class NewAliosCompiler {
               },
               (mesg) => {
                 if (mesg == null) {
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   resolve("err");
                   return;
                 }
@@ -166,7 +166,7 @@ export class NewAliosCompiler {
                 });
                 mesg.on("error", () => {
                   Logger.info("error happened while upload in Alios");
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   resolve("err");
                 });
                 mesg.on("end", () => {
@@ -185,7 +185,7 @@ export class NewAliosCompiler {
               }
             );
             uploadRequest.on("error", () => {
-              _this.udc.outputResult("Network error!");
+              _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
               resolve("err");
             });
             let blob = fs.readFileSync(
@@ -213,7 +213,7 @@ export class NewAliosCompiler {
               },
               async (mesg) => {
                 if (mesg == undefined) {
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   Logger.info("error happened while downloading");
                   resolve("err");
                   return;
@@ -263,13 +263,13 @@ export class NewAliosCompiler {
                 }
                 mesg.on("error", () => {
                   Logger.info("error happened while download in Alios");
-                  _this.udc.outputResult("Network error!");
+                  _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
                   resolve("err");
                 });
               }
             );
             downloadRequest.on("error", () => {
-              _this.udc.outputResult("Network error!");
+              _this.udc.outputResult("Network error!\nYou can check your network connection and retry.","err");
               resolve("err");
             });
             downloadRequest.write(

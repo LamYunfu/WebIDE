@@ -37,20 +37,26 @@ export class Extractor {
     let { deviceRole, dirName } = this.ut.getPidInfos(pid);
     this.init(dirName, "hexFiles");
     let filePath = "";
+    let r = "";
     for (let item of deviceRole!) {
       Logger.info("extract :" + item);
       item = item.split(".")[0];
       filePath = path.join(this.rootDir.val, dirName, `${item}Install.zip`);
-      await new Promise((res, reject) =>
-        fs
-          .createReadStream(filePath)
+      r = await new Promise((res, reject) => {
+        let p = setTimeout(() => {
+          this.ut.outputResult("Can't find the hex file in this zip", "err");
+          res("err");
+        }, 20000);
+        fs.createReadStream(filePath)
           .pipe(unzip.Parse())
-          .on("entry", function (entry) {
+          .on("entry", function(entry) {
             let fileName: string = entry.path;
             let suffix = fileName.split(".").pop();
             let hexName = fileName.split("/").pop();
             if (suffix == "hex" || suffix == "bin") {
               Logger.info("find hex : " + hexName);
+              clearTimeout(p);
+
               let fss = fs.createWriteStream(
                 path.join(
                   _this.rootDir.val,
@@ -74,8 +80,8 @@ export class Extractor {
             } else {
               entry.autodrain();
             }
-          })
-      );
+          });
+      });
     }
     // let etArr = this.fm.getFileNameMapper(pid)
     // if (typeof (etArr) == 'string')
@@ -88,7 +94,8 @@ export class Extractor {
     // }
     // return "scc"
     // }
-    return "scc";
+    if (r == "scc") return "scc";
+    else return "err";
   }
   async extractSingleFile(pid: string, fn: string) {
     //提取成功返回“scc”
@@ -102,7 +109,7 @@ export class Extractor {
       fs
         .createReadStream(filePath)
         .pipe(unzip.Parse())
-        .on("entry", function (entry) {
+        .on("entry", function(entry) {
           let fileName: string = entry.path;
           let suffix = fileName.split(".").pop();
           let hexName = fileName.split("/").pop();

@@ -27,6 +27,7 @@ import { RaspeberryGccCompiler } from "./compilers/raspberry-gcc-compiler";
 import { RootDirPath } from "../setting/backend-config";
 import { DistributedCompiler } from "./compilers/distributedcompiler";
 import { CallInfoStorer } from "./util/callinfostorer";
+import { BoardAndCompileType } from "./compilers/boardtocompilemethod";
 
 export default new ContainerModule((bind) => {
   bind(UdcService).to(UdcServiceImpl).inSingletonScope();
@@ -61,4 +62,5 @@ export default new ContainerModule((bind) => {
   bind(DistributedCompiler).toSelf().inSingletonScope()
   // bind(Controller).toSelf().inSingletonScope();
   bind(CallInfoStorer).toSelf().inSingletonScope()
+  bind(BoardAndCompileType).toSelf().inSingletonScope()
 });

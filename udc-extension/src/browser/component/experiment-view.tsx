@@ -106,7 +106,7 @@ export class Experiment extends React.Component<
         dataType: "json",
         contentType: "text/plain",
         data: JSON.stringify({ ppid: _this.props.section.ppid }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
-        success: function(data) {
+        success:  (data) => {
           // alert(JSON.stringify(data))
           console.log(JSON.stringify(data));
           let x = data.data; // show response from the php script.
@@ -117,8 +117,10 @@ export class Experiment extends React.Component<
             _this.pidQueueInfo[item.pid] = {};
             _this.ppids[`${item.pid}`] = item.ppid;
             let tmp = {};
+            fns=item.deviceRole;
             if (item.deviceAmount == "1") {
               // _this.loginType[`${item.pid}`] = 'fixed'
+           
               _this.loginType[`${item.pid}`] = "adhoc";
               _this.model[`${item.pid}`] = item.deviceType;
               tmp = { ...tmp, loginType: "adhoc", model: item.deviceType };
@@ -131,37 +133,22 @@ export class Experiment extends React.Component<
             console.log("login type is :" + _this.loginType[`${item.pid}`]);
             _this.timeout[item.pid] = item.timeout;
             _this.codingIssues[item.pid] = item.title;
-            if (_this.role[`${item.pid}`] == undefined) fns.push("helloworld");
-            else {
-              for (let r of _this.role[`${item.pid}`]) {
-                fns.push("helloworld" + "_" + r);
-              }
-            }
-            if (getCompilerType(item.deviceType) == "alios") {
-              fns.push("helloworld" + ".mk");
-              fns.push("ucube.py");
-              fns.push("README.md");
-            }
             tmp = {
               ...tmp,
-              fns: JSON.stringify(fns),
+              fns:JSON.stringify(fns),
               timeout: item.timeout,
               dirName: item.title,
               projectName: "helloworld",
-              boardType: "esp32devkitc",
               deviceRole: _this.role[`${item.pid}`],
               ppid: _this.ppids[`${item.pid}`],
             };
             _this.pidQueueInfo[item.pid] = tmp;
-            _this.props
-              .initPidQueueInfo(JSON.stringify(_this.pidQueueInfo))
-              .then(() => {
-                console.log("initpidqueue scc");
-              });
+            _this.props.initPidQueueInfo(
+              JSON.stringify(_this.pidQueueInfo)
+            );
             _this.codingInfos[item.pid] = item.content;
             _this.pids.push(item.pid);
           }
-
           for (let entry in _this.codingIssues)
             _this.codingItems.push(
               <CodeItem
@@ -247,12 +234,12 @@ export class Experiment extends React.Component<
       });
     });
     setInterval(() => {
-      _this.context.props.storeCallInfo(
-        new Date().toISOString().replace(/T|Z/gi, " "),
-        "start",
-        CallSymbol.QJST,
-        0
-      );
+      // _this.context.props.storeCallInfo(
+      //   new Date().toISOString().replace(/T|Z/gi, " "),
+      //   "start",
+      //   CallSymbol.QJST,
+      //   0
+      // );
       _this.pids.length != 0 &&
         $.ajax({
           headers: {
@@ -268,12 +255,12 @@ export class Experiment extends React.Component<
           contentType: "text/plain",
           data: JSON.stringify({ pid: _this.pids.join().trim() }),
           success: function(data) {
-            _this.context.props.storeCallInfo(
-              new Date().toISOString().replace(/T|Z/gi, " "),
-              "end",
-              CallSymbol.QJST,
-              0
-            );
+            // _this.context.props.storeCallInfo(
+            //   new Date().toISOString().replace(/T|Z/gi, " "),
+            //   "end",
+            //   CallSymbol.QJST,
+            //   0
+            // );
             // alert(JSON.stringify(data))
             if (data.code != "0") {
               _this.props.outputResult(data.message);

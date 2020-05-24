@@ -52,7 +52,7 @@ export class Programer {
         },
         (mesg) => {
           if (mesg == undefined) {
-            _this.ut.outputResult("Network error!");
+            _this.ut.outputResult("Network error!\nYou can check your network connection and retry.","err");
             Logger.info("error happened while config");
             resolve("err");
             this.cis.storeCallInfoInstantly(
@@ -91,7 +91,7 @@ export class Programer {
         }
       );
       configRequest.on("error", () => {
-        _this.ut.outputResult("Network error!");
+        _this.ut.outputResult("Network error!\nYou can check your network connection and retry.","err");
         Logger.info("error happened while config");
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.IPCF, 1);
         resolve("err");
@@ -125,7 +125,7 @@ export class Programer {
           },
           (mesg) => {
             if (mesg == undefined) {
-              _this.ut.outputResult("Network error!");
+              _this.ut.outputResult("Network error!\nYou can check your network connection and retry.","err");
               Logger.info("error happened while upload");
               resolve("err");
               return;
@@ -160,7 +160,7 @@ export class Programer {
           }
         );
         uploadRequest.on("error", () => {
-          _this.ut.outputResult("Network error!");
+          _this.ut.outputResult("Network error!\nYou can check your network connection and retry.","err");
           this.cis.storeCallInfoInstantly("broken network", CallSymbol.FLUP, 1);
           Logger.info("error happened while upload");
           resolve("err");
@@ -179,7 +179,7 @@ export class Programer {
 
     if (uploadResult != "scc") {
       Logger.info("uploading binary file error");
-      _this.ut.outputResult("Uploading source file to compiler failed!r");
+      _this.ut.outputResult("Uploading source file to compiler failed!","err");
       return "err";
     } else {
       // Logger.info("uploading zip file scc")
@@ -271,7 +271,7 @@ export class Programer {
       return await this.ut.program_device(pid, JSON.stringify(burnOption));
     } catch (e) {
       console.log(e);
-      this.ut.outputResult("config.json is incorrect!");
+      this.ut.outputResult("config.json is incorrect!\nPlease check it or restore it to default!","err");
       return;
     }
   }

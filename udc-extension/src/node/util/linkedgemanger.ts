@@ -42,7 +42,7 @@ export class LinkEdgeManager {
       let ob = JSON.parse(raw);
       return ob["IoTId"];
     } catch (error) {
-      this.ut.outputResult("config.json is incorrect!");
+      this.ut.outputResult("config.json is incorrect!\nPlease check it or restore it to default!","err");
       return "";
     }
   }
@@ -151,7 +151,7 @@ export class LinkEdgeManager {
       }
       if (i == 0) {
         this.ut.outputResult(
-          "No device information returned from LDC. Please disconnect and retry!."
+          "No device information returned from LDC.\n Please disconnect and retry!.","err"
         );
         return "fail";
       }

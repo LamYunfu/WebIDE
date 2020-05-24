@@ -58,7 +58,7 @@
 //         },
 //         (mesg) => {
 //           if (mesg == undefined) {
-//             console.log("Network error!");
+//             console.log("Network error!\n// You can check your network connection and retry.");
 //             Logger.info("error happened while upload");
 //             resolve("err");
 //             return;
@@ -71,7 +71,7 @@
 //           });
 //           mesg.on("error", () => {
 //             Logger.info("error happened while upload");
-//             console.log("Network error!");
+//             console.log("Network error!\n// You can check your network connection and retry.");
 //             resolve("err");
 //           });
 //           mesg.on("end", () => {
@@ -87,7 +87,7 @@
 //         }
 //       );
 //       uploadRequest.on("error", () => {
-//         console.log("Network error!");
+//         console.log("Network error!\nYou can check your network connection and retry.","err");
 //         resolve("err");
 //       });
 //       // let blob = fs.readFileSync(filepath)

@@ -12,6 +12,7 @@ import { Logger } from "./logger";
 import { getCompilerType } from "../globalconst";
 import { RootDirPath } from "../../setting/backend-config";
 import { FuzzySearch } from "@theia/core/lib/browser/tree/fuzzy-search";
+import { BoardAndCompileType } from "../compilers/boardtocompilemethod";
 // import { Path } from '@theia/core';
 
 @injectable()
@@ -20,6 +21,7 @@ import { FuzzySearch } from "@theia/core/lib/browser/tree/fuzzy-search";
 */
 export class Controller {
   constructor(
+    @inject(BoardAndCompileType) protected readonly bat: BoardAndCompileType,
     @inject(UdcTerminal) protected readonly ut: UdcTerminal,
     @inject(Compiler) protected readonly cm: Compiler,
     @inject(Extractor) protected readonly et: Extractor,
@@ -54,7 +56,7 @@ export class Controller {
   }
   async processIssue(pid: string) {
     let { loginType, model, dirName } = this.ut.getPidInfos(pid);
-    let devType = getCompilerType(model);
+    let devType = this.bat.getCompileType(model);
     try {
       let _this = this;
       Logger.info("compiling");
@@ -68,9 +70,7 @@ export class Controller {
               if (res == "scc") {
                 Logger.info("compile scc");
                 if (
-                  devType == "alios" ||
-                  devType == "contiki" ||
-                  devType == "raspberry_pi"
+                  devType !="tinylink"
                 ) {
                   Logger.info("skip extract");
                   return "scc";
@@ -88,7 +88,10 @@ export class Controller {
                 return eres;
                 // return
               } else {
-                _this.ut.outputResult("Online compiling error!");
+                _this.ut.outputResult(
+                  "Online compiling error!\nPlease check your source file!",
+                  "err"
+                );
                 throw "error happened";
               }
             })
@@ -104,7 +107,8 @@ export class Controller {
                   }
                   if (i == 0) {
                     this.ut.outputResult(
-                      "No device information returned from LDC. Please disconnect and retry!."
+                      "No device information returned from LDC.\n Please disconnect and retry!.",
+                      "err"
                     );
                     return "fail";
                   }
@@ -202,9 +206,7 @@ export class Controller {
       }
     } catch (e) {
       Logger.err(e);
-      this.ut.outputResult(
-        "Detected error when compiling!"
-      );
+      this.ut.outputResult("Detected error when compiling!", "err");
       this.ut.udcClient &&
         this.ut.udcClient.onConfigLog({ name: "submitEnable", passwd: "true" });
     } finally {

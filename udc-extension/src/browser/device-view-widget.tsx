@@ -520,24 +520,22 @@ export class DeviceViewWidget extends TreeWidget {
   setQueue = () => {
     this.udcService.setQueue();
   };
-  setPidQueueInfo = (
-    pid: string,
-    content: {
-      loginType: string;
-      timeout: string;
-      model: string;
-      waitID: string;
-      fns?: string;
-      dirName?: string;
-      deviceRole: string[] | undefined;
-    }
-  ) => {
-    this.udcService.setPidInfos(pid, content);
-  };
+  // setPidQueueInfo = (
+  //   pid: string,
+  //   content: {
+  //     loginType: string;
+  //     timeout: string;
+  //     model: string;
+  //     waitID: string;
+  //     fns?: string;
+  //     dirName?: string;
+  //     deviceRole: string[] | undefined;
+  //   }
+  // ) => {
+  //   this.udcService.setPidInfos(pid, content);
+  // };
   initPidQueueInfo = (infos: string): Promise<string> => {
     console.log(infos + "....................................info");
-    let infoObj = JSON.parse(infos);
-    infos = JSON.stringify(infoObj);
     return this.udcService.initPidQueueInfo(infos);
   };
   setTinyLink = (name: string, passwd: string, uid: string) => {
