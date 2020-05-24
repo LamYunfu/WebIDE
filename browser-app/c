@@ -1,7 +1,7 @@
-if [ "$1" == "demo" ]
+if [ "$1" != "" ]
 then 
 echo "enter demo"
-cd  ../demo
+cd  "../$1"
 else 
 echo "enter udc"
 cd ../udc-extension
