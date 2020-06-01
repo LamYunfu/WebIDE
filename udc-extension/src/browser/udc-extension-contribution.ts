@@ -248,9 +248,11 @@ export class UdcExtensionCommandContribution
         if (data.name == "openSrcFile") {
           console.log(data.passwd);
           // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
-          this.os.getOpener(new URI(data.passwd)).then(async (res) => {
-            await res.open(new URI("file://" + data.passwd));
-          });
+          await this.em.open(new URI("file://" + data.passwd));
+          // this.os.getOpener(new URI(data.passwd)).then(async (res) => {
+
+          //   await res.open(new URI("file://" + data.passwd));
+          // });
           return;
         } else if (data.name == "openWorkspace") {
           await this.ds.openWorkspace(data.passwd);

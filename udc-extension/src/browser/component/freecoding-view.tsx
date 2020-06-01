@@ -74,7 +74,7 @@ export class FreeCoding extends React.Component<FreeCoding.Props, FreeCoding.Sta
     }
 
 
-    async   componentWillMount() {
+    async componentWillMount() {
         this.context.props.setSize(500)
         let _this = this
         // let uriArr = decodeURI(window.location.href).split("/")

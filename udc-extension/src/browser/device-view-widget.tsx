@@ -329,15 +329,15 @@ export class DeviceViewWidget extends TreeWidget {
     // this.ws.open(new URI("file:/home/project/串口打印"))
   }
   openWorkSpace = (urlStr: string) => {
-    if (
-      decodeURI(window.location.href)
-        .split("/")
-        .pop() != urlStr.split("/").pop() &&
-      decodeURI(window.location.href)
-        .split("\\")
-        .pop() != urlStr.split("\\").pop()
-    )
-      this.ws.open(new URI(`${urlStr}`), { preserveWindow: true });
+    // if (
+    //   decodeURI(window.location.href)
+    //     .split("/")
+    //     .pop() != urlStr.split("/").pop() &&
+    //   decodeURI(window.location.href)
+    //     .split("\\")
+    //     .pop() != urlStr.split("\\").pop()
+    // )
+    //   this.ws.open(new URI(`${urlStr}`), { preserveWindow: true });
   };
   enableClick() {
     Logger.info("enableclick");

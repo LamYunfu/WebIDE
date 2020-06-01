@@ -1,0 +1,6 @@
+aos make helloworld@linuxhost -c config  && aos make
+gdb -x ~/AliOS-Things/platform/mcu/linux/tools/gdbinit --args ~/AliOS-Things/out/helloworld@linuxhost/binary/helloworld@linuxhost.elf
+dir /root/AliOS-Things/application/example/example_legacy/helloworld
+b helloworld.c:15
+run 
+print count
