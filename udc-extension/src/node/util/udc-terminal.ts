@@ -73,6 +73,7 @@ export class UdcTerminal {
     [pid: string]: {
       loginType: string;
       projectName: string | undefined;
+      boardType:string;
       compilerType: string | undefined;
       timeout: string;
       model: string;
@@ -568,6 +569,7 @@ export class UdcTerminal {
       projectName: string | undefined;
       compilerType: string | undefined;
       timeout: string;
+      boardType:string
       model: string;
       waitID: string;
       fns: string;

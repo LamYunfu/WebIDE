@@ -55,8 +55,10 @@ export class Controller {
     this.processIssue(pid);
   }
   async processIssue(pid: string) {
-    let { loginType, model, dirName } = this.ut.getPidInfos(pid);
-    let devType = this.bat.getCompileType(model);
+    let { loginType, model, dirName,boardType,compilerType } = this.ut.getPidInfos(pid);
+
+    // let devType = this.bat.getCompileType(model);
+    let devType=compilerType;
     try {
       let _this = this;
       Logger.info("compiling");

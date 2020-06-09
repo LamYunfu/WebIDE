@@ -22,8 +22,8 @@ export class DistributedCompiler {
     @inject(UdcTerminal) readonly udc: UdcTerminal,
     @inject(CallInfoStorer) readonly cis: CallInfoStorer
   ) {}
-  outputResult(mes: string,type:string="sys") {
-    this.udc.outputResult(mes,type);
+  outputResult(mes: string, type: string = "sys") {
+    this.udc.outputResult(mes, type);
   }
   async upload(
     path: string,
@@ -93,15 +93,24 @@ export class DistributedCompiler {
             }
             let p;
             this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
+            // resolve(
+            //   (p = `/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+            // );
+            // fha="98bca5e26f43055315c81dc79cda22d29950f3d2"
+            // boardType="developerkit"
+            // compileType="alios"
             resolve(
-              (p = `/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+              (p = `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
             );
             console.log(p);
           });
         }
       );
       uf.on("error", () => {
-        this.outputResult("Network error!\nYou can check your network connection and retry.","err");
+        this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.CCCE, 1);
         resolve("error");
       });
@@ -123,10 +132,9 @@ export class DistributedCompiler {
         },
         (response) => {
           let x: Buffer[] = [];
-          
+
           response.on("data", (buffer: Buffer) => {
-            if(x.length%10000)
-              console.log("downloading")
+            if (x.length % 10000) console.log("downloading");
             x.push(buffer);
           });
           response.on("close", () => {
@@ -141,20 +149,24 @@ export class DistributedCompiler {
             } else {
               console.log(bf.toString());
               let ob = JSON.parse(bf.toString());
-              if (ob["msg"] == "error")
+              if (ob["msg"] == "error") {
                 this.outputResult(ob["data"]["message"]);
-              this.cis.storeCallInfoInstantly(
-                ob["data"]["message"],
-                CallSymbol.DNHX,
-                1
-              );
+                this.cis.storeCallInfoInstantly(
+                  ob["data"]["message"],
+                  CallSymbol.DNHX,
+                  1
+                );
+              }
               resolve("error");
             }
           });
         }
       );
       gf.on("error", () => {
-        this.outputResult("Network error!\nYou can check your network connection and retry.","err");
+        this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
         this.cis.storeCallInfoInstantly("broken network", CallSymbol.DNHX, 1);
         resolve("error");
       });

@@ -45,6 +45,9 @@ export class Experiment extends React.Component<
 > {
   timeout: { [pid: string]: string } = {};
   model: { [key: string]: string } = {};
+  boardType: { [key: string]: string } = {};
+  compileMethod: { [key: string]: string } = {};
+  deviceType: { [key: string]: string } = {};
   ppids: { [key: string]: string } = {};
   loginType: { [key: string]: string } = {};
   role: { [key: string]: string[] } = {};
@@ -106,7 +109,7 @@ export class Experiment extends React.Component<
         dataType: "json",
         contentType: "text/plain",
         data: JSON.stringify({ ppid: _this.props.section.ppid }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
-        success:  (data) => {
+        success: (data) => {
           // alert(JSON.stringify(data))
           console.log(JSON.stringify(data));
           let x = data.data; // show response from the php script.
@@ -114,13 +117,15 @@ export class Experiment extends React.Component<
           for (let item of x) {
             _this.role[`${item.pid}`] = item.deviceRole;
             _this.model[`${item.pid}`] = item.deviceType;
+            _this.compileMethod[`${item.pid}`] = item.compileType;
+            _this.boardType[`${item.pid}`] = item.boardType;
             _this.pidQueueInfo[item.pid] = {};
             _this.ppids[`${item.pid}`] = item.ppid;
             let tmp = {};
-            fns=item.deviceRole;
+            fns = item.deviceRole;
             if (item.deviceAmount == "1") {
               // _this.loginType[`${item.pid}`] = 'fixed'
-           
+
               _this.loginType[`${item.pid}`] = "adhoc";
               _this.model[`${item.pid}`] = item.deviceType;
               tmp = { ...tmp, loginType: "adhoc", model: item.deviceType };
@@ -135,17 +140,17 @@ export class Experiment extends React.Component<
             _this.codingIssues[item.pid] = item.title;
             tmp = {
               ...tmp,
-              fns:JSON.stringify(fns),
+              fns: JSON.stringify(fns),
               timeout: item.timeout,
               dirName: item.title,
               projectName: "helloworld",
               deviceRole: _this.role[`${item.pid}`],
+              boardType:_this.boardType[`${item.pid}`],
+              compilerType:_this.compileMethod[`${item.pid}`],
               ppid: _this.ppids[`${item.pid}`],
             };
             _this.pidQueueInfo[item.pid] = tmp;
-            _this.props.initPidQueueInfo(
-              JSON.stringify(_this.pidQueueInfo)
-            );
+            _this.props.initPidQueueInfo(JSON.stringify(_this.pidQueueInfo));
             _this.codingInfos[item.pid] = item.content;
             _this.pids.push(item.pid);
           }

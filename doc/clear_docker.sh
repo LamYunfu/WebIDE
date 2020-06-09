@@ -1,15 +1,12 @@
 #!/bin/bash
 sayHighlight(){
 if [ "$2" = "green" ]
-then
- echo "\33[32m$1\33[0m"
 else
 echo "\33[31m$1 \33[0m"
 fi
 }
 duration="70"
 cleanlog="/root/LinkLab/webide/logs/docker_clean.csv"
-containertab=`docker container ls  --format="{{.ID}}  {{.Ports}}  {{.Names}}  {{.Image}}" |grep emmyar/webide:latest|awk '{split($2,a,":|-"); printf("%s %s %s %s\n",$1, a[2],$3,$4)}'`
 res=`echo "$containertab"|gawk -F " " '{print $2}'`
 echo res:$res
 option=''
@@ -23,7 +20,7 @@ do
         fi
 done
 echo option:$option
-timeout $duration tcpdump -Ul  -i  any  "($option) && tcp[((tcp[12:1] & 0xf0)>>2):1]=0x8a" |tee dump  
+timeout $duration tcpdump -Ul  -i  any  "($option) && tcp[((tcp[12:1] & 0xf0)>>2):1]=0x8a" |tee dump
 active=`awk -F " " '{print $5}' ./dump  | sed -n  "s/.*\.\|://gp"|uniq`
 echo "$containertab">res
 echo "$active">active

@@ -77,13 +77,14 @@ export class Compiler {
   // }
   async compile(pid: string) {
     this.udcTerminal.logEnable = false;
-    let { model, dirName } = this.udcTerminal.getPidInfos(pid);
+    let { model, dirName,compilerType } = this.udcTerminal.getPidInfos(pid);
     let hexFilePath = path.join(this.rootDir.val, dirName, "hexFiles");
     fs.existsSync(hexFilePath) ? "" : fs.mkdirSync(hexFilePath);
     Logger.info("start compiling");
     Logger.info("MODEL is:" + model);
     this.udcTerminal.outputResult("Compiling...");
-    let cmType = this.bat.getCompileType(model);
+    // let cmType = this.bat.getCompileType(model);
+    let cmType=compilerType;
     if (cmType == "err") {
       this.udc.outputResult(
         `There is no this kind of compiler! board type:${model}`,
@@ -107,7 +108,7 @@ export class Compiler {
   }
 
   async compileNotTinyLink(pid: string) {
-    let { dirName, model, deviceRole } = await this.udc.getPidInfos(pid);
+    let { dirName, model, deviceRole,compilerType,boardType } = await this.udc.getPidInfos(pid);
     for (let item of deviceRole!) {
       this.udc.outputResult(`Compile:${item}`);
       // let res = await this.postSingleSrcFile(dirName, item, pid);
@@ -119,8 +120,10 @@ export class Compiler {
           "hexFiles",
           `${new Buffer(`${item}`).toString("hex")}.hex`
         ),
-        this.bat.getRealBoardType(model),
-        this.bat.getCompileType(model)!
+        // this.bat.getRealBoardType(model),
+        // this.bat.getCompileType(model)!
+        boardType,
+        compilerType!
       );
       if (p == "scc") {
         let tmp: any = {};

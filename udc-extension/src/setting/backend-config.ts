@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 import * as path from "path";
-export const DEPLOY_SERVER_IP = "10.200.20.5";
+// export const DEPLOY_SERVER_IP = "10.200.20.5";
 export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn";
-// export const DEPLOY_SERVER_IP = "120.55.102.225";
+export const DEPLOY_SERVER_IP = "120.55.102.225";
 // export const DEPLOY_SERVER_DOMAIN = "tinylink.cn";
 export const CONTIKI_IP = `${DEPLOY_SERVER_IP}`;
 export const CONTIKI_PORT = "12382";
@@ -23,29 +23,14 @@ export const TINY_MOBILE_PORT = `12355`;
 export const TINYLINEDGECOMPILE_IP = `47.96.155.111`;
 // export const RASPBERRY_GCC_IP="121.199.78.80"
 // export const RASPBERRY_GCC_PORT="10086"
-// export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
-// export const RASPBERRY_GCC_PORT = "12400";
-// export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
-// export const CONFIGPATH = "D:/config";
-// export const Call_Log_Path = "D:/call_info.log";
-// @injectable()
-// export class RootDirPath {
-//   private rootDir: string = `D:/all`;
-//   get val(): string {
-//     return this.rootDir;
-//   }
-//   set val(val: string) {
-//     this.rootDir = path.join(this.rootDir, val);
-//   }
-//   reset() {
-//     this.rootDir = `D:/all`;
-//   }
-// }
-export const Call_Log_Path="/home/project/call_info.log"
-export const CONFIGPATH="/home/config"
+export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
+export const RASPBERRY_GCC_PORT = "12400";
+export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
+export const CONFIGPATH = "D:/config";
+export const Call_Log_Path = "D:/call_info.log";
 @injectable()
 export class RootDirPath {
-  private rootDir: string = `/home/project`;
+  private rootDir: string = `D:/all`;
   get val(): string {
     return this.rootDir;
   }
@@ -53,6 +38,21 @@ export class RootDirPath {
     this.rootDir = path.join(this.rootDir, val);
   }
   reset() {
-    this.rootDir = `/home/project`;
+    this.rootDir = `D:/all`;
   }
 }
+// export const Call_Log_Path="/home/project/call_info.log"
+// export const CONFIGPATH="/home/config"
+// @injectable()
+// export class RootDirPath {
+//   private rootDir: string = `/home/project`;
+//   get val(): string {
+//     return this.rootDir;
+//   }
+//   set val(val: string) {
+//     this.rootDir = path.join(this.rootDir, val);
+//   }
+//   reset() {
+//     this.rootDir = `/home/project`;
+//   }
+// }

@@ -161,6 +161,8 @@ export class UdcServiceImpl implements UdcService {
       fns: string;
       dirName: string;
       projectName: string | undefined;
+      deviceType:string,
+      boardType:string,
       compilerType: string | undefined;
       deviceRole?: string[] | undefined;
     }
