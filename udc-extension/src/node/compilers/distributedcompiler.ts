@@ -118,6 +118,50 @@ export class DistributedCompiler {
     });
     return await p;
   }
+  async waitCompileFinish(path: string, output: string) {
+    let p = new Promise<string>((resolve) => {
+      console.log(p);
+      this.cis.storeCallInfoInstantly("start", CallSymbol.WTCP);
+      let gf = Hs.request(
+        {
+          // protocol: "https:",
+          method: "GET",
+          host: DISTRIBUTEDCOMPILER_IP,
+          path: path,
+          // auth: "api_gateway:api_gateway",
+        },
+        (response) => {
+          let x: Buffer[] = [];
+          response.on("data", (buffer: Buffer) => {
+            if (x.length % 10000) console.log("downloading");
+            x.push(buffer);
+          });
+          response.on("close", () => {
+            let bf = Buffer.concat(x);
+            let ob = JSON.parse(bf.toString());
+            if (ob["msg"] == "completed") {
+              this.cis.storeCallInfoInstantly("end", CallSymbol.WTCP);
+              resolve("scc");           
+            } else {
+              this.cis.storeCallInfoInstantly("compiler error", CallSymbol.WTCP,1);
+              resolve("error");
+             
+            }
+          });
+        }
+      );
+      gf.on("error", () => {
+        this.outputResult(
+          "Network error!\nYou can check your network connection and retry.",
+          "err"
+        );
+        this.cis.storeCallInfoInstantly("broken network", CallSymbol.WTCP, 1);
+        resolve("error");
+      });
+      gf.end();
+    });
+    return await p;
+  }
   async getHexFile(path: string, output: string) {
     let p = new Promise<string>((resolve) => {
       console.log(p);
@@ -149,14 +193,13 @@ export class DistributedCompiler {
             } else {
               console.log(bf.toString());
               let ob = JSON.parse(bf.toString());
-              if (ob["msg"] == "error") {
+              if (ob["msg"] == "error")
                 this.outputResult(ob["data"]["message"]);
-                this.cis.storeCallInfoInstantly(
-                  ob["data"]["message"],
-                  CallSymbol.DNHX,
-                  1
-                );
-              }
+              this.cis.storeCallInfoInstantly(
+                ob["data"]["message"],
+                CallSymbol.DNHX,
+                1
+              );
               resolve("error");
             }
           });

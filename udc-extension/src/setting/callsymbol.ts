@@ -3,6 +3,7 @@ export namespace CallSymbol {
   export const CCCE = "于分布式编译器编译代码";
   //下载hex
   export const DNHX = "于分布式编译器下载hex";
+  export const WTCP = "等待编译完成";
   //   tinylink编译;
   export const CDAT = "于tinyLink编译代码";
   //下载hex
