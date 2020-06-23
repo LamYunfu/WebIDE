@@ -1,3 +1,6 @@
+import { LdcClientControllerInterface } from './services/ldc/interfaces/ldc_client_controller_interface';
+import { LdcShell } from './services/ldc_shell/ldc_shell';
+import { ProblemController } from './problem_controller/problem_controller';
 import { Logger } from "./util/logger";
 import { Compiler } from "./compilers/compiler";
 import { Controller } from "./util/controller";
@@ -11,6 +14,7 @@ import { RawProcessFactory } from "@theia/process/lib/node";
 import { LinkEdgeManager } from "./util/linkedgemanger";
 import { OnelinkService } from "./util/onelink";
 import { CallInfoStorer } from "./util/callinfostorer";
+import { LdcShellInterface } from './services/ldc_shell/interfaces/ldc_shell_interface';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -22,9 +26,12 @@ export class UdcServiceImpl implements UdcService {
     @inject(Compiler) protected readonly compiler: Compiler,
     @inject(LinkEdgeManager)
     protected readonly linkEdgeManager: LinkEdgeManager,
+    @inject(LdcClientControllerInterface) protected ldcClient: LdcClientControllerInterface,
     @inject(OnelinkService) protected readonly ols: OnelinkService,
-    @inject(CallInfoStorer) readonly cis: CallInfoStorer
-  ) {}
+    @inject(CallInfoStorer) readonly cis: CallInfoStorer,
+    @inject(ProblemController) protected pc: ProblemController,
+    @inject(LdcShellInterface) protected readonly ldcShell: LdcShellInterface
+  ) { }
 
   is_connected(): Promise<Boolean> {
     return new Promise<Boolean>((resolve, rejects) => {
@@ -41,21 +48,23 @@ export class UdcServiceImpl implements UdcService {
     pid: string,
     timeout: string
   ): Promise<boolean> {
-    try {
-      let result = await this.udcTerminal.connect(
-        login_type,
-        model,
-        pid,
-        timeout
-      );
-      return result;
-    } catch (e) {
-      return false;
-    }
+    // try {
+    //   let result = await this.udcTerminal.connect(
+    //     login_type,
+    //     model,
+    //     pid,
+    //     timeout
+    //   );
+    //   return result;
+    // } catch (e) {
+    //   return false;
+    // }
+    // this.pc.submit(pid)
+    return true;
   }
 
   async disconnect(): Promise<string> {
-    let result = await this.udcTerminal.disconnect();
+    let result = await this.ldcClient.disconnect()
     return result === true ? "Disconnect succeed" : "Disconnect failed";
   }
 
@@ -101,7 +110,10 @@ export class UdcServiceImpl implements UdcService {
   }
 
   setClient(client: UdcClient) {
-    this.udcTerminal.setClient(client);
+    // this.udcTerminal.setClient(client);
+
+    this.ldcShell.setUdcClient(client)
+
   }
   // get_issues(): Promise<{ [key: string]: {} }> {
 
@@ -127,7 +139,7 @@ export class UdcServiceImpl implements UdcService {
     this.controller.processFreeCoding(pid);
   }
   postSrcFile(pid: string): void {
-    this.controller.processIssue(pid);
+    this.pc.submit(pid)
   }
   openPidFile(pid: string): void {
     this.udcTerminal.openPidFile(pid);
@@ -161,16 +173,18 @@ export class UdcServiceImpl implements UdcService {
       fns: string;
       dirName: string;
       projectName: string | undefined;
-      deviceType:string,
-      boardType:string,
+      deviceType: string,
+      boardType: string,
       compilerType: string | undefined;
       deviceRole?: string[] | undefined;
     }
   ) {
     this.udcTerminal.setPidInfos(pid, content);
   }
-  initPidQueueInfo(infos: string): Promise<string> {
-    return this.udcTerminal.initPidQueueInfo(infos);
+  async initPidQueueInfo(infos: string): Promise<string> {
+    this.pc.init(infos)
+    // return this.udcTerminal.initPidQueueInfo(infos);
+    return "scc"
   }
   setTinyLink(name: string, passwd: string, uid: string): void {
     this.udcTerminal.setTinyLink(name, passwd, uid);

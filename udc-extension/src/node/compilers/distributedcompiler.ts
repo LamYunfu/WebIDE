@@ -141,11 +141,14 @@ export class DistributedCompiler {
             let ob = JSON.parse(bf.toString());
             if (ob["msg"] == "completed") {
               this.cis.storeCallInfoInstantly("end", CallSymbol.WTCP);
-              resolve("scc");           
+              resolve("scc");
             } else {
-              this.cis.storeCallInfoInstantly("compiler error", CallSymbol.WTCP,1);
+              this.cis.storeCallInfoInstantly(
+                "compiler error",
+                CallSymbol.WTCP,
+                1
+              );
               resolve("error");
-             
             }
           });
         }
@@ -222,11 +225,13 @@ export class DistributedCompiler {
     hexPath: string,
     boardType: string,
     compileType: string
-  ) {
+  ): Promise<boolean> {
     let x = await this.upload(path, boardType, compileType);
     if (x == "error") {
-      return x;
+      return false;
     }
-    return await this.getHexFile(x, hexPath);
+    let re = await this.getHexFile(x, hexPath);
+    if (re == "scc") return true;
+    return false;
   }
 }

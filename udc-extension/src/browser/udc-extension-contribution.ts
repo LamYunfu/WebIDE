@@ -248,6 +248,7 @@ export class UdcExtensionCommandContribution
         if (data.name == "openSrcFile") {
           console.log(data.passwd);
           // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
+          console.log("open file :" + data.passwd)
           await this.em.open(new URI("file://" + data.passwd));
           // this.os.getOpener(new URI(data.passwd)).then(async (res) => {
 

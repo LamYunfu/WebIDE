@@ -28,6 +28,9 @@ import { RootDirPath } from "../setting/backend-config";
 import { DistributedCompiler } from "./compilers/distributedcompiler";
 import { CallInfoStorer } from "./util/callinfostorer";
 import { BoardAndCompileType } from "./compilers/boardtocompilemethod";
+import { bindServices } from "./services/bind_service";
+import { bindDataCenter } from "./data_center/bind_data_center";
+import { bindProblemControllers } from "./problem_controller/bind_problem_controller";
 
 export default new ContainerModule((bind) => {
   bind(UdcService).to(UdcServiceImpl).inSingletonScope();
@@ -42,7 +45,7 @@ export default new ContainerModule((bind) => {
     )
     .inSingletonScope();
   createCommonBindings(bind);
-  bind(Packet).toSelf().inSingletonScope();
+  // bind(Packet).toSelf().inSingletonScope();
   bind(UdcTerminal).toSelf().inSingletonScope();
   bind(UdcCompiler).toSelf().inSingletonScope();
   bind(AliosCompiler).toSelf().inSingletonScope();
@@ -63,4 +66,8 @@ export default new ContainerModule((bind) => {
   // bind(Controller).toSelf().inSingletonScope();
   bind(CallInfoStorer).toSelf().inSingletonScope()
   bind(BoardAndCompileType).toSelf().inSingletonScope()
+  bindServices(bind)
+  bindDataCenter(bind)
+  bindProblemControllers(bind)
+
 });

@@ -1111,51 +1111,6 @@
   dependencies:
     prop-types "^15.6.1"
 
-"@projectstorm/geometry@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.npm.taobao.org/@projectstorm/geometry/download/@projectstorm/geometry-6.0.2.tgz#7653d1156457aa7e5f4bea22b97a1d7d9bce1576"
-  integrity sha1-dlPRFWRXqn5fS+oiuXodfZvOFXY=
-
-"@projectstorm/react-canvas-core@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.npm.taobao.org/@projectstorm/react-canvas-core/download/@projectstorm/react-canvas-core-6.0.2.tgz#f60ab452a5e0b6faf41e123250af785c93e5a34a"
-  integrity sha1-9gq0UqXgtvr0HhIyUK94XJPlo0o=
-  dependencies:
-    "@projectstorm/geometry" "^6.0.2"
-
-"@projectstorm/react-diagrams-core@^6.0.1-beta.7", "@projectstorm/react-diagrams-core@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.npm.taobao.org/@projectstorm/react-diagrams-core/download/@projectstorm/react-diagrams-core-6.0.2.tgz#d18816e593791b7cc12f7dc142716faeb6bd0f89"
-  integrity sha1-0YgW5ZN5G3zBL33BQnFvrra9D4k=
-  dependencies:
-    "@projectstorm/geometry" "^6.0.2"
-    "@projectstorm/react-canvas-core" "^6.0.2"
-
-"@projectstorm/react-diagrams-defaults@^6.0.1-beta.7", "@projectstorm/react-diagrams-defaults@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.npm.taobao.org/@projectstorm/react-diagrams-defaults/download/@projectstorm/react-diagrams-defaults-6.0.2.tgz#7fbd599bc437153b64844b56feb3a02aeea389ad"
-  integrity sha1-f71Zm8Q3FTtkhEtW/rOgKu6jia0=
-  dependencies:
-    "@projectstorm/react-diagrams-core" "^6.0.2"
-
-"@projectstorm/react-diagrams-routing@^6.0.1-beta.7":
-  version "6.0.2"
-  resolved "https://registry.npm.taobao.org/@projectstorm/react-diagrams-routing/download/@projectstorm/react-diagrams-routing-6.0.2.tgz#b6469c3d849904395bde84fe602487405403035e"
-  integrity sha1-tkacPYSZBDlb3oT+YCSHQFQDA14=
-  dependencies:
-    "@projectstorm/geometry" "^6.0.2"
-    "@projectstorm/react-diagrams-core" "^6.0.2"
-    "@projectstorm/react-diagrams-defaults" "^6.0.2"
-
-"@projectstorm/react-diagrams@^6.0.1-beta.7":
-  version "6.0.1-beta.7"
-  resolved "https://registry.npm.taobao.org/@projectstorm/react-diagrams/download/@projectstorm/react-diagrams-6.0.1-beta.7.tgz#b6907415b1a0467dd25d58da6bf12a0f2ccc915d"
-  integrity sha1-tpB0FbGgRn3SXVjaa/EqDyzMkV0=
-  dependencies:
-    "@projectstorm/react-diagrams-core" "^6.0.1-beta.7"
-    "@projectstorm/react-diagrams-defaults" "^6.0.1-beta.7"
-    "@projectstorm/react-diagrams-routing" "^6.0.1-beta.7"
-
 "@sindresorhus/df@^1.0.1":
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/@sindresorhus/df/download/@sindresorhus/df-1.0.1.tgz#c69b66f52f6fcdd287c807df210305dbaf78500d"
@@ -1633,6 +1588,13 @@
   resolved "https://registry.npm.taobao.org/@typefox/monaco-editor-core/download/@typefox/monaco-editor-core-0.14.6.tgz#32e378f3430913504ea9c7063944444a04429892"
   integrity sha1-MuN480MJE1BOqccGOURESgRCmJI=
 
+"@types/adm-zip@^0.4.33":
+  version "0.4.33"
+  resolved "https://registry.npm.taobao.org/@types/adm-zip/download/@types/adm-zip-0.4.33.tgz#ea5b94f771443f655613b64f920c0555867200dd"
+  integrity sha1-6luU93FEP2VWE7ZPkgwFVYZyAN0=
+  dependencies:
+    "@types/node" "*"
+
 "@types/archiver@^3.0.0":
   version "3.0.0"
   resolved "https://registry.npm.taobao.org/@types/archiver/download/@types/archiver-3.0.0.tgz#c0a53e0ed3b7aef626ce683d081d7821d8c638b4"
@@ -1750,6 +1712,13 @@
   version "4.0.9"
   resolved "https://registry.npm.taobao.org/@types/fs-extra/download/@types/fs-extra-4.0.9.tgz#401bea3a7cdfb671c06d0a1083a8e534e92eb97d"
   integrity sha1-QBvqOnzftnHAbQoQg6jlNOkuuX0=
+  dependencies:
+    "@types/node" "*"
+
+"@types/fs-extra@^9.0.1":
+  version "9.0.1"
+  resolved "https://registry.npm.taobao.org/@types/fs-extra/download/@types/fs-extra-9.0.1.tgz?cache=0&sync_timestamp=1589913391537&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Ffs-extra%2Fdownload%2F%40types%2Ffs-extra-9.0.1.tgz#91c8fc4c51f6d5dbe44c2ca9ab09310bd00c7918"
+  integrity sha1-kcj8TFH21dvkTCypqwkxC9AMeRg=
   dependencies:
     "@types/node" "*"
 
@@ -2247,12 +2216,22 @@ add-stream@^1.0.0:
   resolved "https://registry.npm.taobao.org/add-stream/download/add-stream-1.0.0.tgz#6a7990437ca736d5e1288db92bd3266d5f5cb2aa"
   integrity sha1-anmQQ3ynNtXhKI25K9MmbV9csqo=
 
+adm-zip@^0.4.14:
+  version "0.4.14"
+  resolved "https://registry.npm.taobao.org/adm-zip/download/adm-zip-0.4.14.tgz#2cf312bcc9f8875df835b0f6040bd89be0a727a9"
+  integrity sha1-LPMSvMn4h134NbD2BAvYm+CnJ6k=
+
 agent-base@4, agent-base@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npm.taobao.org/agent-base/download/agent-base-4.3.0.tgz#8165f01c436009bccad0b1d122f05ed770efc6ee"
   integrity sha1-gWXwHENgCbzK0LHRIvBe13Dvxu4=
   dependencies:
     es6-promisify "^5.0.0"
+
+agent-base@5:
+  version "5.1.1"
+  resolved "https://registry.npm.taobao.org/agent-base/download/agent-base-5.1.1.tgz#e8fb3f242959db44d63be665db7a8e739537a32c"
+  integrity sha1-6Ps/JClZ20TWO+Zl23qOc5U3oyw=
 
 ajv-errors@^1.0.0:
   version "1.0.1"
@@ -2450,6 +2429,11 @@ are-we-there-yet@~1.1.2:
   dependencies:
     delegates "^1.0.0"
     readable-stream "^2.0.6"
+
+arg@^4.1.0:
+  version "4.1.3"
+  resolved "https://registry.npm.taobao.org/arg/download/arg-4.1.3.tgz#269fc7ad5b8e42cb63c896d5666017261c144089"
+  integrity sha1-Jp/HrVuOQstjyJbVZmAXJhwUQIk=
 
 argparse@^1.0.7:
   version "1.0.10"
@@ -5033,7 +5017,7 @@ debug@3.1.0, debug@=3.1.0:
   dependencies:
     ms "2.0.0"
 
-debug@^4.1.0, debug@^4.1.1:
+debug@4, debug@^4.1.0, debug@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npm.taobao.org/debug/download/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
   integrity sha1-O3ImAlUQnGtYnO4FDx1RYTlmR5E=
@@ -5262,6 +5246,11 @@ diff@^3.4.0, diff@^3.5.0:
   version "3.5.0"
   resolved "https://registry.npm.taobao.org/diff/download/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha1-gAwN0eCov7yVg1wgKtIg/jF+WhI=
+
+diff@^4.0.1:
+  version "4.0.2"
+  resolved "https://registry.npm.taobao.org/diff/download/diff-4.0.2.tgz?cache=0&sync_timestamp=1578890967183&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fdiff%2Fdownload%2Fdiff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
+  integrity sha1-YPOuy4nV+uUgwRqhnvwruYKq3n0=
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
@@ -7131,6 +7120,14 @@ https-proxy-agent@^2.2.1:
     agent-base "^4.3.0"
     debug "^3.1.0"
 
+https-proxy-agent@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npm.taobao.org/https-proxy-agent/download/https-proxy-agent-4.0.0.tgz?cache=0&sync_timestamp=1581106803611&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fhttps-proxy-agent%2Fdownload%2Fhttps-proxy-agent-4.0.0.tgz#702b71fb5520a132a66de1f67541d9e62154d82b"
+  integrity sha1-cCtx+1UgoTKmbeH2dUHZ5iFU2Cs=
+  dependencies:
+    agent-base "5"
+    debug "4"
+
 iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   version "0.4.24"
   resolved "https://registry.npm.taobao.org/iconv-lite/download/iconv-lite-0.4.24.tgz?cache=0&sync_timestamp=1561588160612&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Ficonv-lite%2Fdownload%2Ficonv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -7332,6 +7329,11 @@ inversify@^4.14.0:
   version "4.14.0"
   resolved "https://registry.npm.taobao.org/inversify/download/inversify-4.14.0.tgz#393c1f86ee92aef0592eb0e493623b9d88dfb376"
   integrity sha1-OTwfhu6SrvBZLrDkk2I7nYjfs3Y=
+
+inversify@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npm.taobao.org/inversify/download/inversify-5.0.1.tgz#500d709b1434896ce5a0d58915c4a4210e34fb6e"
+  integrity sha1-UA1wmxQ0iWzloNWJFcSkIQ40+24=
 
 invert-kv@^1.0.0:
   version "1.0.0"
@@ -8343,6 +8345,11 @@ json2mq@^0.2.0:
   dependencies:
     string-convert "^0.2.0"
 
+json2typescript@latest:
+  version "1.4.1"
+  resolved "https://registry.npm.taobao.org/json2typescript/download/json2typescript-1.4.1.tgz#de4b8ef5044bce7a580ebd4fafbe75d807001016"
+  integrity sha1-3kuO9QRLznpYDr1Pr7512AcAEBY=
+
 json5@2.x, json5@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npm.taobao.org/json5/download/json5-2.1.0.tgz#e7a0c62c48285c628d20a10b85c89bb807c32850"
@@ -8909,6 +8916,11 @@ make-error@1.x:
   version "1.3.5"
   resolved "https://registry.npm.taobao.org/make-error/download/make-error-1.3.5.tgz#efe4e81f6db28cadd605c70f29c831b58ef776c8"
   integrity sha1-7+ToH22yjK3WBccPKcgxtY73dsg=
+
+make-error@^1.1.1:
+  version "1.3.6"
+  resolved "https://registry.npm.taobao.org/make-error/download/make-error-1.3.6.tgz?cache=0&sync_timestamp=1582105487630&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmake-error%2Fdownload%2Fmake-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"
+  integrity sha1-LrLjfqm2fEiR9oShOUeZr0hM96I=
 
 makeerror@1.0.x:
   version "1.0.11"
@@ -9502,6 +9514,11 @@ node-abi@^2.2.0, node-abi@^2.8.0:
   dependencies:
     semver "^5.4.1"
 
+node-addon-api@*:
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/node-addon-api/download/node-addon-api-3.0.0.tgz#812446a1001a54f71663bed188314bba07e09247"
+  integrity sha1-gSRGoQAaVPcWY77RiDFLugfgkkc=
+
 node-dir@0.1.8:
   version "0.1.8"
   resolved "https://registry.npm.taobao.org/node-dir/download/node-dir-0.1.8.tgz#55fb8deb699070707fb67f91a460f0448294c77d"
@@ -9781,6 +9798,13 @@ nsfw@^1.2.2:
     lodash.isinteger "^4.0.4"
     lodash.isundefined "^3.0.1"
     nan "^2.0.0"
+
+nsfw@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npm.taobao.org/nsfw/download/nsfw-2.0.0.tgz#b0e431dbccf7ea01fc31d9285325ad31f0aaf5a8"
+  integrity sha1-sOQx28z36gH8MdkoUyWtMfCq9ag=
+  dependencies:
+    node-addon-api "*"
 
 num2fraction@^1.2.2:
   version "1.2.2"
@@ -10762,6 +10786,11 @@ proxy-addr@~2.0.5:
   dependencies:
     forwarded "~0.1.2"
     ipaddr.js "1.9.0"
+
+proxy-from-env@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npm.taobao.org/proxy-from-env/download/proxy-from-env-1.1.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fproxy-from-env%2Fdownload%2Fproxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
+  integrity sha1-4QLxbKNVQkhldV0sno6k8k1Yw+I=
 
 prr@~1.0.1:
   version "1.0.1"
@@ -12475,6 +12504,14 @@ source-map-support@^0.4.15, source-map-support@^0.4.18:
   dependencies:
     source-map "^0.5.6"
 
+source-map-support@^0.5.17:
+  version "0.5.19"
+  resolved "https://registry.npm.taobao.org/source-map-support/download/source-map-support-0.5.19.tgz?cache=0&sync_timestamp=1587719289626&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fsource-map-support%2Fdownload%2Fsource-map-support-0.5.19.tgz#a98b62f86dcaf4f67399648c085291ab9e8fed61"
+  integrity sha1-qYti+G3K9PZzmWSMCFKRq56P7WE=
+  dependencies:
+    buffer-from "^1.0.0"
+    source-map "^0.6.0"
+
 source-map-support@^0.5.6:
   version "0.5.13"
   resolved "https://registry.npm.taobao.org/source-map-support/download/source-map-support-0.5.13.tgz#31b24a9c2e73c2de85066c0feb7d44767ed52932"
@@ -13309,6 +13346,17 @@ ts-md5@^1.2.2:
   resolved "https://registry.npm.taobao.org/ts-md5/download/ts-md5-1.2.4.tgz#7030d7ba9134449deedf6f609d4b4509b94a5712"
   integrity sha1-cDDXupE0RJ3u329gnUtFCblKVxI=
 
+ts-node@^8.10.2:
+  version "8.10.2"
+  resolved "https://registry.npm.taobao.org/ts-node/download/ts-node-8.10.2.tgz#eee03764633b1234ddd37f8db9ec10b75ec7fb8d"
+  integrity sha1-7uA3ZGM7EjTd03+NuewQt17H+40=
+  dependencies:
+    arg "^4.1.0"
+    diff "^4.0.1"
+    make-error "^1.1.1"
+    source-map-support "^0.5.17"
+    yn "3.1.1"
+
 tsc@^1.20150623.0:
   version "1.20150623.0"
   resolved "https://registry.npm.taobao.org/tsc/download/tsc-1.20150623.0.tgz#4ebc3c774e169148cbc768a7342533f082c7a6e5"
@@ -13832,6 +13880,14 @@ vscode-ripgrep@^1.2.4:
   version "1.3.1"
   resolved "https://registry.npm.taobao.org/vscode-ripgrep/download/vscode-ripgrep-1.3.1.tgz#51fb93debcd0c18a8b90dbc37f84f94333d0c486"
   integrity sha1-UfuT3rzQwYqLkNvDf4T5QzPQxIY=
+
+vscode-ripgrep@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.npm.taobao.org/vscode-ripgrep/download/vscode-ripgrep-1.6.2.tgz#fb912c7465699f10ce0218a6676cc632c77369b4"
+  integrity sha1-+5EsdGVpnxDOAhimZ2zGMsdzabQ=
+  dependencies:
+    https-proxy-agent "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 vscode-textmate@^4.0.1:
   version "4.1.1"
@@ -14413,6 +14469,11 @@ yeoman-generator@^2.0.3:
     text-table "^0.2.0"
     through2 "^2.0.0"
     yeoman-environment "^2.0.5"
+
+yn@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.npm.taobao.org/yn/download/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
+  integrity sha1-HodAGgnXZ8HV6rJqbkwYUYLS61A=
 
 zip-dir@^1.0.2:
   version "1.0.2"

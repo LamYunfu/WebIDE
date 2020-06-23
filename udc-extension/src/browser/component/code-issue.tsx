@@ -69,7 +69,7 @@ export namespace CodingInfo {
 export class CodingInfo extends React.Component<
   CodingInfo.Props,
   CodingInfo.States
-> {
+  > {
   focusFile: string = "";
   constructor(props: Readonly<CodingInfo.Props>) {
     super(props);
@@ -93,6 +93,8 @@ export class CodingInfo extends React.Component<
         "click",
         "#submitSrcButton" + _this.props.sid,
         async (e) => {
+          if ($("[id*=submitSrcButton]")[0].hasAttribute("disabled"))
+            return
           $("[id*=submitSrcButton]").attr("disabled", "true");
           if (!confirm("即将提交到判题系统，是否继续？")) {
             $("[id*=submitSrcButton]").removeAttr("disabled")
@@ -219,7 +221,7 @@ export class CodingInfo extends React.Component<
           dataType: "json",
           contentType: "text/plain",
           data: "",
-          success: function(data) {
+          success: function (data) {
             window.close();
             console.log(data);
           },
@@ -319,8 +321,8 @@ export class CodingInfo extends React.Component<
               </button>
             </span>
           ) : (
-            ""
-          )}
+              ""
+            )}
           <span>
             <button
               className="btn btn-primary"
@@ -361,66 +363,66 @@ export class CodingInfo extends React.Component<
         </div>
       </div>
     ) : (
-      <div
-        className={`codingInfos ${this.props.sid} card text-white bg-secondary`}
-      >
-        <span
-          className={`codingRole${this.props.sid}`}
-          style={{ display: "none" }}
-        ></span>
-        <div className={` Container card-body`}>
-          <h5 id="titleAndStatus" className="card-title">
-            <span id={"coding_title" + this.props.sid}>
-              关于场景编程的一道题
+        <div
+          className={`codingInfos ${this.props.sid} card text-white bg-secondary`}
+        >
+          <span
+            className={`codingRole${this.props.sid}`}
+            style={{ display: "none" }}
+          ></span>
+          <div className={` Container card-body`}>
+            <h5 id="titleAndStatus" className="card-title">
+              <span id={"coding_title" + this.props.sid}>
+                关于场景编程的一道题
             </span>
-          </h5>
-          <div id="codingInfoAreaContainer">
-            {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
-            <pre
-              className="card-text"
-              id={"codingInfoArea" + this.props.sid}
-              title="1"
-            >
-              你需要使用mqtt来实现这一道题目
+            </h5>
+            <div id="codingInfoAreaContainer">
+              {/* <textarea title="1" id="codingInfoArea" disabled={true} defaultValue="你需要使用mqtt来实现这一道题目"></textarea> */}
+              <pre
+                className="card-text"
+                id={"codingInfoArea" + this.props.sid}
+                title="1"
+              >
+                你需要使用mqtt来实现这一道题目
             </pre>
-          </div>
-          <div className="controlButtons col-12">
-            {this.state.singleFileButtons.length == 0
-              ? []
-              : this.state.singleFileButtons}
-            {/* {this.state.singleFileButtons} */}
-            <br />
-            <div>
-              <span>
-                <button
-                  className="btn btn-primary col-auto"
-                  id={"connectButtonSingleFile" + this.props.sid}
-                >
-                  {this.state.connectionStatus}
+            </div>
+            <div className="controlButtons col-12">
+              {this.state.singleFileButtons.length == 0
+                ? []
+                : this.state.singleFileButtons}
+              {/* {this.state.singleFileButtons} */}
+              <br />
+              <div>
+                <span>
+                  <button
+                    className="btn btn-primary col-auto"
+                    id={"connectButtonSingleFile" + this.props.sid}
+                  >
+                    {this.state.connectionStatus}
+                  </button>
+                </span>
+                <span>
+                  <button
+                    className="btn btn-primary col-auto"
+                    id={"configButton" + this.props.sid}
+                    onClick={this.props.config}
+                  >
+                    配置
                 </button>
-              </span>
-              <span>
-                <button
-                  className="btn btn-primary col-auto"
-                  id={"configButton" + this.props.sid}
-                  onClick={this.props.config}
-                >
-                  配置
+                </span>
+                <span>
+                  <button
+                    className="btn btn-primary col-auto"
+                    id={"singleFileSubmitButton" + this.props.sid}
+                  >
+                    烧入
                 </button>
-              </span>
-              <span>
-                <button
-                  className="btn btn-primary col-auto"
-                  id={"singleFileSubmitButton" + this.props.sid}
-                >
-                  烧入
-                </button>
-              </span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      );
   }
 }
 CodingInfo.contextType = MyContext;
