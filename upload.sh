@@ -1,5 +1,5 @@
 #!/bin/bash
-git archive test5 --format zip -o ./src.zip
+git archive reconstruct --format zip -o ./src.zip
 if [ "$1" == "formal" ]; then
     scp ./src.zip root@120.55.102.225:~
 else
