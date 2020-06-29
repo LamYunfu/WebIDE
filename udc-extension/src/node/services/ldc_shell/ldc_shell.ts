@@ -33,7 +33,7 @@ export class LdcShell {
     this._udcClient = x
   }
   outputResult(res: string, types: string = "systemInfo") {
-    console.log("----- output:" + !!this.udcClient)
+    console.log("----- shell:" + res)
     res = res.replace(
       /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
       ""

@@ -1,3 +1,4 @@
+import { FreeCodingDataService } from './../services/data_service/freecoding_data_service';
 import { LdcClientControllerInterface } from './../services/ldc/interfaces/ldc_client_controller_interface';
 import { EventCenter } from './../services/tools/event_center';
 import { FileTemplate } from './../services/file_template/file_template';
@@ -25,24 +26,16 @@ export class ProblemController {
         @inject(FileTemplate) protected fileTemplate: FileTemplate,
         @inject(LdcClientControllerInterface) protected lcc: LdcClientControllerInterface,
         @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
+        @inject(FreeCodingDataService) protected freeCodingDataService: FreeCodingDataService,
         @inject(EventCenter) protected eventCenter: EventCenter) {
     }
     async init(info: string) {
+        console.log("---init problem---")
         await this.dataService.initDataMapFromFrontEnd(info)
         await this.fileTemplate.buildAllProjects()
-        let cpath = path.join(this.mpData.rootDir, this.pData.projectRootDir);
-        for (let item of this.pData.subProjectArray) {
-            let fileArr = fs.readdirSync(
-                path.join(cpath, item)
-            );
-            for (let file of fileArr) {
-                console.log("-----file:" + file)
-                setTimeout(() => {
-                    this.fileOpener.openFile(path.join(cpath, item, file))
-                }, 3000);
-
-            }
-        }
+        await this.freeCodingDataService.parseAllData()
+        await this.fileOpener.openCurrentWorkSpace()
+        await this.fileOpener.openFiles()
     }
     acquireLock(): boolean {
         if (!this._lock) {
@@ -59,6 +52,9 @@ export class ProblemController {
     async submit(pid: string) {
         if (!this.acquireLock()) {
             this.outputResult("please wait until last submit is complete")
+        }
+        if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
+            await this.freeCodingDataService.parseProjectDataFromFile(this.pData)
         }
         this.dService.copyDataFromDataMap(pid)
         await this.checkConnection()

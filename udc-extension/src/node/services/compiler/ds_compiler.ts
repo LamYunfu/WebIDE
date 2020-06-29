@@ -1,3 +1,4 @@
+import { FileCompressor } from './../tools/file_compressor';
 import * as Hs from "http";
 
 import * as FormData from "form-data";
@@ -22,7 +23,8 @@ export class DistributedCompiler {
   constructor(
     @inject(LdcShellInterface) readonly ldcShell: LdcShellInterface,
     @inject(CallInfoStorer) readonly cis: CallInfoStorer,
-    @inject(ProjectData) readonly projectData: ProjectData
+    @inject(ProjectData) readonly projectData: ProjectData,
+    @inject(FileCompressor) readonly fileCompressor: FileCompressor
   ) { }
   outputResult(mes: string, type: string = "sys") {
     this.ldcShell.outputResult(mes, type);
@@ -35,7 +37,7 @@ export class DistributedCompiler {
   ): Promise<string> {
     console.log("---compile:" + path)
     let ha = Ha.createHash("sha1");
-    let tp = Path.join(__dirname, "src.zip");
+    let tp = Path.join(this.fileCompressor.generateTempFilePath());
     console.log("------tp:" + tp)
     console.log("arcfile:" + tp);
     let ws = Fs.createWriteStream(tp, { encoding: "binary" });

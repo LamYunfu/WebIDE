@@ -18,6 +18,7 @@ export class ProjectData {
   protected _subWaitingIds: string[] = [];
   protected _subHexFileDirs: string[] = ["hexFiles"];
   protected _ppid: string = "";
+  protected _experimentType: string | undefined = undefined
 
   get loginType() {
     return this._loginType;
@@ -32,6 +33,13 @@ export class ProjectData {
 
   set pid(pid: string) {
     this._pid = pid;
+  }
+  get experimentType() {
+    return this._experimentType;
+  }
+
+  set experimentType(experimentType: string | undefined) {
+    this._experimentType = experimentType;
   }
   get ppid() {
     return this._ppid;

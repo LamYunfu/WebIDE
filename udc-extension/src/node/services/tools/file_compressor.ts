@@ -36,7 +36,7 @@ export class FileCompressor {
   }
   async getHash(rb: string | Buffer, type: string = "sha1"): Promise<string> {
     let hash = crypto.createHash(type);
-    return hash.update(rb).digest("hex");
+    return await hash.update(rb).digest("hex");
   }
   generateTempFilePath(): string {
     if (OS.Type.Windows == OS.type()) {

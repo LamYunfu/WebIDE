@@ -1,5 +1,4 @@
 import { LdcClientControllerInterface } from './services/ldc/interfaces/ldc_client_controller_interface';
-import { LdcShell } from './services/ldc_shell/ldc_shell';
 import { ProblemController } from './problem_controller/problem_controller';
 import { Logger } from "./util/logger";
 import { Compiler } from "./compilers/compiler";
@@ -15,6 +14,7 @@ import { LinkEdgeManager } from "./util/linkedgemanger";
 import { OnelinkService } from "./util/onelink";
 import { CallInfoStorer } from "./util/callinfostorer";
 import { LdcShellInterface } from './services/ldc_shell/interfaces/ldc_shell_interface';
+import { TrainExperimentController } from './problem_controller/train_experiment_controller/train_experiment_controller';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -30,11 +30,12 @@ export class UdcServiceImpl implements UdcService {
     @inject(OnelinkService) protected readonly ols: OnelinkService,
     @inject(CallInfoStorer) readonly cis: CallInfoStorer,
     @inject(ProblemController) protected pc: ProblemController,
-    @inject(LdcShellInterface) protected readonly ldcShell: LdcShellInterface
+    @inject(LdcShellInterface) protected readonly ldcShell: LdcShellInterface,
+    @inject(TrainExperimentController) protected  trainExperimentController: TrainExperimentController
   ) { }
 
   is_connected(): Promise<Boolean> {
-    return new Promise<Boolean>((resolve, rejects) => {
+    return new Promise<Boolean>((resolve) => {
       resolve(this.udcTerminal.is_connected);
     });
   }
@@ -69,7 +70,7 @@ export class UdcServiceImpl implements UdcService {
   }
 
   async list_models(): Promise<Array<string>> {
-    return new Promise<Array<string>>((resolve, rejects) => {
+    return new Promise<Array<string>>((resolve) => {
       let result = this.udcTerminal.list_models();
       resolve(result);
     });
@@ -77,7 +78,7 @@ export class UdcServiceImpl implements UdcService {
 
   get_devices(): Promise<{ [key: string]: number } | undefined> {
     let re = this.udcTerminal.get_devlist();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       resolve(re);
     });
   }
@@ -88,7 +89,7 @@ export class UdcServiceImpl implements UdcService {
     devstr: string,
     pid: string
   ): Promise<Boolean> {
-    return new Promise<Boolean>((resolve, rejects) => {
+    return new Promise<Boolean>(() => {
       // console.log(filepath, " ", devstr);
       // let result = this.udcTerminal.program_device(filepath, address, devstr, pid);
       // resolve(result);
@@ -96,14 +97,14 @@ export class UdcServiceImpl implements UdcService {
   }
 
   rumcmd(devstr: string, cmdstr: string): Promise<Boolean> {
-    return new Promise<Boolean>((resolve, rejects) => {
+    return new Promise<Boolean>((resolve) => {
       let result = this.udcTerminal.run_command(devstr, cmdstr);
       resolve(result);
     });
   }
 
   control(devstr: string, operation: string): Promise<Boolean> {
-    return new Promise<Boolean>((resolve, rejects) => {
+    return new Promise<Boolean>((resolve) => {
       let result = this.udcTerminal.control_device(devstr, operation);
       resolve(result);
     });
@@ -117,7 +118,7 @@ export class UdcServiceImpl implements UdcService {
   }
   // get_issues(): Promise<{ [key: string]: {} }> {
 
-  async quizJudge(host: string, port: string, pid: string): Promise<string> {
+  async quizJudge(): Promise<string> {
     return "success";
   }
 
@@ -129,14 +130,16 @@ export class UdcServiceImpl implements UdcService {
 
   // }
   train(pid: string) {
-    this.udcTerminal.train(pid);
+    // this.udcTerminal.train(pid);
+    this.trainExperimentController.submit(pid)
   }
   virtualSubmit(pid: string) {
     this.udcTerminal.virtualSubmit(pid);
   }
 
   postFreeCodingFile(pid: string): void {
-    this.controller.processFreeCoding(pid);
+    this.pc.submit(pid)
+    // this.controller.processFreeCoding(pid);
   }
   postSrcFile(pid: string): void {
     this.pc.submit(pid)
@@ -214,13 +217,13 @@ export class UdcServiceImpl implements UdcService {
     this.linkEdgeManager.processLinkEdgeConnect(pid, threeTuple);
     return true;
   }
-  async linkEdgeDisconnect(pid: string) {
+  async linkEdgeDisconnect() {
     return true;
   }
-  async linkEdgeStart(pid: string) {
+  async linkEdgeStart() {
     return true;
   }
-  async linkEdgeStop(pid: string) {
+  async linkEdgeStop() {
     return true;
   }
   async getLinkEdgeDevicesInfo(pid: string) {
@@ -232,13 +235,13 @@ export class UdcServiceImpl implements UdcService {
   async developLinkEdgeProject(pid: string, indexStr: string) {
     return !!(await this.linkEdgeManager.developLinkEdgeProject(pid, indexStr));
   }
-  async openLinkEdgeProject(pid: string, index: string) {
+  async openLinkEdgeProject() {
     return true;
   }
-  async removeLinkEdgeProject(pid: string, index: string) {
+  async removeLinkEdgeProject() {
     return true;
   }
-  async shutDownLog(pid: string, index: string) {
+  async shutDownLog() {
     return true;
   }
   async remove(pid: string, index: string) {

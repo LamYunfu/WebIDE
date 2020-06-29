@@ -25,6 +25,7 @@ export class FileTemplate implements FileTemplateInterface {
     @inject(MultiProjectData) protected mData: MultiProjectData,
   ) { }
   async buildAllProjects() {
+    console.log("---build project---")
     for (let key in this.mData.dataMap) {
       let p = path.join(this.mData.rootDir, this.mData.dataMap[key].projectRootDir)
       !fs.existsSync(p) ? fs.mkdirSync(p) : ""

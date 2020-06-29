@@ -1,3 +1,4 @@
+import { TrainDataService } from './../data_service/train_data_service';
 import * as fs from "fs-extra";
 import * as WebSocket from "ws";
 import { inject, injectable } from "inversify";
@@ -7,43 +8,52 @@ import { FileCompressor } from "../tools/file_compressor";
 import { Packet } from "../ldc/packet";
 @injectable()
 export class ModelTrainer {
-  ws: WebSocket | undefined;
+  ws: WebSocket | null = null;
   constructor(
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
     @inject(FileCompressor) protected fileCompressor: FileCompressor,
-    @inject(Packet) protected pkt: Packet
-  ) {}
-  async connect(trainServer: string) {
-    if (!this.ws) return;
+    @inject(Packet) protected pkt: Packet,
+    @inject(TrainDataService) protected trainDataService: TrainDataService,
+  ) { }
+  parseAIConfig() {
+    return this.trainDataService.parseTrainData()
+  }
+  async connect(trainServer: string): Promise<boolean> {
+    this.outputResult("Connect to train server" + trainServer)
+    if (!!this.ws) return true;
     this.ws = new WebSocket(trainServer);
     this.ws.on("message", (res) => {
       this.outputResult(res.toString("utf8"));
     });
     this.ws.on("close", () => {
-      this.ws = undefined;
+      this.ws = null;
     });
     return new Promise<boolean>((res, rej) => {
       this.ws!.on("open", () => {
-        res(true);
+        this.outputResult("Connect to train server successfully")
+        setTimeout(() => {
+          res(true);
+        }, 500);
       });
       this.ws!.on("error", () => {
-        rej(false);
+
         Logger.info("error happened in train function");
         this.outputResult(
           "Network error!\nYou can check your network connection and retry.",
           "err"
         );
+        res(false);
       });
     });
   }
-  async train(srcPath: string, trainServer: string) {
+  async train(srcPath: string, trainServer: string): Promise<boolean> {
     try {
       let fn = this.fileCompressor.generateTempFilePath();
-      this.fileCompressor.compress(srcPath, fn);
+      await this.fileCompressor.compress(srcPath, fn);
       let rb = fs.readFileSync(fn, {
         encoding: "base64",
       }); //base64转码文件
-      let hashVal = this.fileCompressor.getHash(fn, "base64");
+      let hashVal = await this.fileCompressor.getHash(fn);
       let data = {
         hash: hashVal,
         data: rb,
@@ -52,11 +62,11 @@ export class ModelTrainer {
       if (!this.ws) {
         let p = await this.connect(trainServer);
         if (!p) {
-          this.ws = undefined;
+          this.ws = null;
           return false;
         }
       }
-      this.ws!.send(rb);
+      this.ws!.send(this.pkt.construct("file", rb.toString()));
       return true;
     } catch (error) {
       Logger.info(error);

@@ -1,0 +1,17 @@
+ {
+     "version": "1.0.0",
+     "usage": "queue",
+     "hexFileDir": "hexFileDir",
+     "serverType": "tinylink_platform_1",
+     "projects": [{
+         "projectName": "device",
+         "compileType": "tinylink",
+         "boardType": "tinylink_platform_1",
+         "burnType": "queue",
+         "program": {
+             "model": "tinylink_platform_1",
+             "runtime": 60,
+             "address": "0x1000"
+         }
+     }]
+ }

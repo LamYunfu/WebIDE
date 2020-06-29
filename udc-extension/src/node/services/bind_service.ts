@@ -10,6 +10,7 @@ import { bindTools } from "./tools/bind_tools";
 import { bindDataService } from "./data_service/bind_data_service";
 import { bindProblemControllers } from "../problem_controller/bind_problem_controller";
 import { bindOpener } from "./opener/bind_opener";
+import { bindModelTrainer } from "./model_trainer.ts/bind_moder_trainer_service";
 
 export function bindServices(bind: interfaces.Bind) {
   bindLdcShell(bind);
@@ -22,4 +23,5 @@ export function bindServices(bind: interfaces.Bind) {
   bindLdcClientController(bind);
   bindDataService(bind)
   bindOpener(bind)
+  bindModelTrainer(bind)
 }

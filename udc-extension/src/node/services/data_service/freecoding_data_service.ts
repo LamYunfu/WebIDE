@@ -12,50 +12,69 @@ export class FreeCodingDataService {
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface
   ) { }
-  parseProjectDataFromFile(pd: ProjectData) {
-    // console.log(JSON.stringify({
-    //   version: "1.0.0",
-    //   usage: "queue",
-    //   hexFileDir: "hexFiles",
-    //   serverType: "tinylink_platform_1",
-    //   projects: [
-    //     {
-    //       projectName: "tinylink",
-    //       compileType: "tinylink",
-    //       boardType: "tinylink",
-    //       burnType: "queue",
-    //       program: {
-    //         model: "tinylink_platform_1",
-    //         runtime: 60,
-    //         address: "0x10000",
-    //       },
-    //     }
-    //   ],
-    // },))
+  async parseAllData() {
+    console.log("---parse all data---")
+    let ob = this.multiProjectData.dataMap
+    for (let item of Object.keys(this.multiProjectData.dataMap)) {
+      if (!!ob[item].experimentType && ob[item].experimentType!.trim() == "freecoding")
+        await this.parseProjectDataFromFile(ob[item])
+    }
+    console.log("---after parse All" + JSON.stringify(this.multiProjectData))
+  }
+  parseProjectDataFromFile(pd: ProjectData): boolean {
+    console.log("------parseProjectDataFromFile")
     let cpath = path.join(
       this.multiProjectData.rootDir,
       pd.projectRootDir,
       "config.json"
     );
+    let ob_: AdhocSetting | undefined
+    let ob: QueueSetting | undefined
     try {
       let rawConfig = fs.readFileSync(cpath);
       let jc = new JsonConvert();
       jc.operationMode = OperationMode.ENABLE; // print some debug data
       jc.ignorePrimitiveChecks = false; // don't allow assigning number to string etc.
       jc.valueCheckingMode = ValueCheckingMode.DISALLOW_NULL;
-      let ob = jc.deserializeObject(
-        JSON.parse(rawConfig.toString()),
-        QueueSetting
-      );
+
+      let err, err_
+      try {
+        ob = jc.deserializeObject(
+          JSON.parse(rawConfig.toString()),
+          QueueSetting
+        );
+      } catch (error) {
+        err = error
+        ob = undefined
+      }
       console.log(JSON.stringify(ob));
-      let ob_ = jc.deserializeObject(
-        JSON.parse(rawConfig.toString()),
-        AdhocSetting
-      );
-      console.log(JSON.stringify(ob_));
+      if (!ob) {
+        try {
+          ob_ = jc.deserializeObject(
+            JSON.parse(rawConfig.toString()),
+            AdhocSetting
+          );
+        } catch (error) {
+          err_ = error
+          ob_ = undefined
+        }
+      }
+      if (!ob_ && !ob) {
+        this.outputResult(err)
+        this.outputResult(err_)
+        return false
+      }
     } catch (error) {
       console.log(error);
+      return false
     }
+    if (!!ob_) {
+      this.convertSettingToProjectData(ob_, pd)
+    }
+    if (!!ob) {
+      this.convertSettingToProjectData(ob, pd)
+    }
+    return true
   }
   convertSettingToProjectData(
     st: AdhocSetting | QueueSetting,

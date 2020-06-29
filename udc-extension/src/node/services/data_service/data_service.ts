@@ -1,11 +1,10 @@
+import { FreeCodingDataService } from './freecoding_data_service';
 import { LdcData } from './../../data_center/ldc_data';
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
 import { inject, injectable } from "inversify";
 import { CallInfoStorerInterface } from "../log/interfaces/call_storer_interface";
 import { ProjectData } from "../../data_center/project_data";
 import { MultiProjectData } from "../../data_center/multi_project_data";
-import * as path from "path"
-import * as fs from "fs-extra"
 @injectable()
 export class DataService {
   constructor(
@@ -13,7 +12,8 @@ export class DataService {
     @inject(LdcShellInterface) readonly ldcShell: LdcShellInterface,
     @inject(CallInfoStorerInterface) readonly cis: CallInfoStorerInterface,
     @inject(ProjectData) protected projectData: ProjectData,
-    @inject(MultiProjectData) protected multiProjectData: MultiProjectData
+    @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
+    @inject(FreeCodingDataService) protected freeCodingDataService: FreeCodingDataService
   ) { }
   outputResult(res: string, type: string = "systemInfo") {
     this.ldcShell.outputResult(res, type);
@@ -61,6 +61,7 @@ export class DataService {
           type?: string;
         };
       } = JSON.parse(info);
+      console.log("not ok")
       let pa: { [pid: string]: ProjectData } = {};
       for (let key of Object.keys(ob)) {
         console.log("key:" + key)
@@ -70,7 +71,7 @@ export class DataService {
         // pd.loginType = ob[key].loginType.toLowerCase();
         pd.loginType = "queue"
         pd.projectRootDir = ob[key].dirName
-        pd.serverType = ob[key].model
+        !!ob[key].model ? pd.serverType = ob[key].model : ""
         pd.subBoardTypes = [];
         pd.subCompileTypes = [];
         pd.subHexFileDirs = [];
@@ -84,14 +85,16 @@ export class DataService {
         let hexFileDirs: string[] = [];
         let subProjects: string[] = [];
         let timeouts: number[] = [];
-        for (let v of ob[key].deviceRole!) {
-          boardTypes.push(ob[key].boardType);
-          compileTypes.push(ob[key].compilerType!);
-          modelTypes.push(ob[key].model);
-          hexFileDirs.push("hexFiles");
-          addresses.push("0x1000")
-          subProjects.push(v);
-          timeouts.push(parseInt(ob[key].timeout));
+        if (!!ob[key].deviceRole!) {
+          for (let v of ob[key].deviceRole!) {
+            boardTypes.push(ob[key].boardType);
+            compileTypes.push(ob[key].compilerType!);
+            modelTypes.push(ob[key].model);
+            hexFileDirs.push("hexFiles");
+            addresses.push("0x1000")
+            subProjects.push(v);
+            timeouts.push(parseInt(ob[key].timeout));
+          }
         }
         pd.address = addresses
         pd.subBoardTypes = boardTypes;
@@ -100,9 +103,17 @@ export class DataService {
         pd.subProjectArray = subProjects;
         pd.subModelTypes = modelTypes;
         pd.subTimeouts = timeouts;
+        pd.experimentType = ob[key].type
+        // if (!!ob[key].type && ob[key].type!.trim() == "freecoding") {
+        //   this.freeCodingDataService.parseProjectDataFromFile(pd)
+        // }
+        // else{
+        //   console.log("normal project")
+        // }
         pa[key] = pd;
-        if (!ob[key].type) continue;
-        this.multiProjectData.projectType = ob[key].type!;
+
+        // if (!ob[key].type) continue;
+        // this.multiProjectData.projectType = ob[key].type!;
       }
       this.multiProjectData.dataMap = pa;
       console.log("----------AAA---------------------" + JSON.stringify(pa))
