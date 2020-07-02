@@ -66,9 +66,9 @@ export class LdcFileServer {
           let bf = "";
           mesg.on("error", (err) => {
             this.outputResult(
-              "something error happened when configuring burning."
-            );
-            Logger.info(err, "config");
+              `Configuring burning failed${err}`
+              , "error");
+
             resolve("err");
           });
           mesg.on("data", (b: Buffer) => {
@@ -123,15 +123,6 @@ export class LdcFileServer {
             headers: fm.getHeaders(),
           },
           (mesg) => {
-            if (mesg == undefined) {
-              this.outputResult(
-                "Network error!\nYou can check your network connection and retry.",
-                "err"
-              );
-              Logger.info("error happened while upload");
-              resolve("err");
-              return;
-            }
             let bf = "";
             Logger.info("upload statuscode:" + mesg.statusCode);
             mesg.on("data", (b: Buffer) => {
@@ -139,7 +130,7 @@ export class LdcFileServer {
             });
             mesg.on("error", (err) => {
               this.outputResult(
-                "something error happened when uploading binary file."
+                `Upload failed:${err}`, "error"
               );
 
               Logger.info(err, "upload");
@@ -155,7 +146,7 @@ export class LdcFileServer {
                 );
                 resolve("scc");
               } else {
-                this.outputResult(res.msg);
+                this.outputResult(`Upload failed:${res.msg}`, "error");
                 this.cis.storeCallInfoInstantly(res.msg, CallSymbol.FLUP, 1);
                 resolve(res.msg);
               }

@@ -44,19 +44,24 @@ export class TinyLinkCompiler {
     this.ldcShell.outputResult(mes, type);
   }
   async processZipFile(zipPath: string, inst: string, tinyapp: string, index: string): Promise<boolean> {
-    let uPath = this.fileCompressor.generateTempFilePath()
-    await this.fileCompressor.unfoldAll(zipPath, uPath)
-    let hexFilePath = path.join(uPath, "dev_bin", inst, "sketch.ino.hex")
-    let info = fs.readFileSync(path.join(uPath, "dev_info", inst, "info.txt")).toString()
-    console.log("info:" + info)
-    console.log("info split:" + info.split("\n")[0].trim())
-    if (info.split("\n")[0].trim() == "1") {
-      return await this.ldcFileServer.fileUpload(hexFilePath, index)
-    }
-    else {
-      let verbose = path.join(uPath, "dev_log", tinyapp, "verbose.txt")
-      this.outputResult(fs.readFileSync(verbose).toString())
-      return false
+    try {
+      let uPath = this.fileCompressor.generateTempFilePath()
+      await this.fileCompressor.unfoldAll(zipPath, uPath)
+      let hexFilePath = path.join(uPath, "dev_bin", inst, "sketch.ino.hex")
+      let info = fs.readFileSync(path.join(uPath, "dev_info", inst, "info.txt")).toString()
+      console.log("info:" + info)
+      console.log("info split:" + info.split("\n")[0].trim())
+      if (info.split("\n")[0].trim() == "1") {
+        return await this.ldcFileServer.fileUpload(hexFilePath, index)
+      }
+      else {
+        let verbose = path.join(uPath, "dev_log", tinyapp, "verbose.txt")
+        this.outputResult(`Compilation failed:${fs.readFileSync(verbose).toString()}`, "err")
+        return false
+      }
+    } catch (error) {
+      this.outputResult(`Compilation failed:${error}`, "err")
+      return false;
     }
   }
   async compile(srcPath: string, index: string): Promise<boolean> {

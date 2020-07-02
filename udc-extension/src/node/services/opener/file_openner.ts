@@ -1,3 +1,4 @@
+import { DataService } from './../data_service/data_service';
 import { ProjectData } from './../../data_center/project_data';
 import { MultiProjectData } from './../../data_center/multi_project_data';
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
@@ -10,7 +11,8 @@ export class FileOpener {
   constructor(
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
-    @inject(ProjectData) protected projectData: ProjectData
+    @inject(ProjectData) protected projectData: ProjectData,
+    @inject(DataService) protected dataService: DataService
   ) { }
   openFile(path: string) {
     console.log("open file from backend:" + path)
@@ -41,7 +43,8 @@ export class FileOpener {
   openCurrentWorkSpace() {
     console.log("---open workspace:-----")
     let pwd = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir)
-    if (!!this.projectData.experimentType && (this.projectData.experimentType!.trim() == "freecoding" || this.projectData.experimentType!.trim() == "ai")) {
+    let experimentType = this.projectData.experimentType
+    if (!!experimentType && (experimentType!.trim() == "freecoding" || experimentType!.trim() == "ai" || experimentType!.trim() == "LinkEdge" || experimentType!.trim() == "OneLinkView")) {
       this.openWorkspace(pwd)
     } else {
       this.openWorkspace(this.multiProjectData.rootDir)
@@ -51,11 +54,13 @@ export class FileOpener {
     console.log("---open files:-----")
     let cpath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir);
     for (let item of this.projectData.subProjectArray) {
+      let dir = path.join(cpath, item)
       let fileArr = fs.readdirSync(
-        path.join(cpath, item)
+        dir
       );
+      console.log("-----dir:" + dir)
       for (let file of fileArr) {
-        let tmp=path.join(cpath, item, file)
+        let tmp = path.join(cpath, item, file)
         console.log("-----file:" + tmp)
         setTimeout(() => {
           this.openFile(tmp)

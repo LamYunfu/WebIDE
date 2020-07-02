@@ -88,12 +88,12 @@ export class DistributedCompiler {
             let ob = JSON.parse(data.toString());
             console.log(data.toString());
             if (ob["code"] == "-1") {
-              this.outputResult(ob["msg"]);
+              this.outputResult(ob["msg"],"error");
               this.cis.storeCallInfoInstantly(ob["msg"], CallSymbol.CCCE, 1);
               resolve("error");
             }
             if (ob["msg"] == "error") {
-              this.outputResult(ob["data"]["message"]);
+              this.outputResult(ob["data"]["message"],"error");
               this.cis.storeCallInfoInstantly(
                 ob["data"]["message"],
                 CallSymbol.CCCE,
@@ -154,7 +154,7 @@ export class DistributedCompiler {
               this.cis.storeCallInfoInstantly("end", CallSymbol.WTCP);
               resolve("scc");
             } else {
-              this.outputResult(ob["data"]["message"]);
+              this.outputResult(ob["data"]["message"], "err");
               this.cis.storeCallInfoInstantly(
                 "compiler error",
                 CallSymbol.WTCP,
@@ -205,7 +205,7 @@ export class DistributedCompiler {
               this.cis.storeCallInfoInstantly("end", CallSymbol.DNHX);
               resolve("scc");
             } else {
-              this.outputResult(ob["data"]["message"]);
+              this.outputResult(ob["data"]["message"], "err");
               this.cis.storeCallInfoInstantly(ob["msg"], CallSymbol.DNHX, 1);
               resolve("error");
             }

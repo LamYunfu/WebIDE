@@ -1,5 +1,6 @@
+import { OneLinkController } from './problem_controller/one_link_controller/one_link_controller';
+import { LinkedgeDataService } from './services/data_service/linkedge_data_service';
 import { LdcClientControllerInterface } from './services/ldc/interfaces/ldc_client_controller_interface';
-import { ProblemController } from './problem_controller/problem_controller';
 import { Logger } from "./util/logger";
 import { Compiler } from "./compilers/compiler";
 import { Controller } from "./util/controller";
@@ -11,10 +12,11 @@ import { injectable, inject } from "inversify";
 import { ILogger } from "@theia/core";
 import { RawProcessFactory } from "@theia/process/lib/node";
 import { LinkEdgeManager } from "./util/linkedgemanger";
-import { OnelinkService } from "./util/onelink";
 import { CallInfoStorer } from "./util/callinfostorer";
 import { LdcShellInterface } from './services/ldc_shell/interfaces/ldc_shell_interface';
+import { ProblemController } from './problem_controller/problem_controller';
 import { TrainExperimentController } from './problem_controller/train_experiment_controller/train_experiment_controller';
+import { OneLinkService } from './services/one_link_service/onelink';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -27,11 +29,13 @@ export class UdcServiceImpl implements UdcService {
     @inject(LinkEdgeManager)
     protected readonly linkEdgeManager: LinkEdgeManager,
     @inject(LdcClientControllerInterface) protected ldcClient: LdcClientControllerInterface,
-    @inject(OnelinkService) protected readonly ols: OnelinkService,
+    @inject(OneLinkService) protected readonly ols: OneLinkService,
     @inject(CallInfoStorer) readonly cis: CallInfoStorer,
     @inject(ProblemController) protected pc: ProblemController,
     @inject(LdcShellInterface) protected readonly ldcShell: LdcShellInterface,
-    @inject(TrainExperimentController) protected  trainExperimentController: TrainExperimentController
+    @inject(TrainExperimentController) protected trainExperimentController: TrainExperimentController,
+    @inject(LinkedgeDataService) protected linkedgeDataService: LinkedgeDataService,
+    @inject(OneLinkController) protected oneLinkController: OneLinkController
   ) { }
 
   is_connected(): Promise<Boolean> {
@@ -40,8 +44,9 @@ export class UdcServiceImpl implements UdcService {
     });
   }
 
-  initLinkedgeConfig(pid: string): Promise<boolean> {
-    return this.linkEdgeManager.initConfigDir(pid);
+  async initLinkedgeConfig(pid: string): Promise<boolean> {
+    // return this.linkEdgeManager.initConfigDir(pid);
+    return true
   }
   async connect(
     login_type: LOGINTYPE,
@@ -134,7 +139,9 @@ export class UdcServiceImpl implements UdcService {
     this.trainExperimentController.submit(pid)
   }
   virtualSubmit(pid: string) {
-    this.udcTerminal.virtualSubmit(pid);
+    // this.udcTerminal.virtualSubmit(pid);
+    this.oneLinkController.submit(pid)
+
   }
 
   postFreeCodingFile(pid: string): void {
@@ -214,7 +221,7 @@ export class UdcServiceImpl implements UdcService {
     this.udcTerminal.literalAnalysis(pid);
   }
   async linkEdgeConnect(pid: string, threeTuple: any) {
-    this.linkEdgeManager.processLinkEdgeConnect(pid, threeTuple);
+    // this.linkEdgeManager.processLinkEdgeConnect(pid, threeTuple);
     return true;
   }
   async linkEdgeDisconnect() {
@@ -227,13 +234,16 @@ export class UdcServiceImpl implements UdcService {
     return true;
   }
   async getLinkEdgeDevicesInfo(pid: string) {
-    return this.udcTerminal.getLinkEdgeDevicesInfo(pid);
+    // return this.udcTerminal.getLinkEdgeDevicesInfo(pid);
+    return ""
   }
   async addLinkEdgeProject(pid: string, deviceInfo: any) {
-    return !!(await this.linkEdgeManager.addProjectToLinkEdge(pid, deviceInfo));
+    // return !!(await this.linkEdgeManager.addProjectToLinkEdge(pid, deviceInfo));
+    return true
   }
   async developLinkEdgeProject(pid: string, indexStr: string) {
-    return !!(await this.linkEdgeManager.developLinkEdgeProject(pid, indexStr));
+    return true
+    // return !!(await this.linkEdgeManager.developLinkEdgeProject(pid, indexStr));
   }
   async openLinkEdgeProject() {
     return true;
@@ -269,10 +279,11 @@ export class UdcServiceImpl implements UdcService {
     this.linkEdgeManager.openConfigFile(pid);
   }
   getIotId() {
-    return this.linkEdgeManager.getIotId();
+    return this.linkedgeDataService.getIotId();
   }
-  delProject(pid: string): Promise<boolean> {
-    return this.udcTerminal.delProject(pid);
+  async delProject(pid: string): Promise<boolean> {
+    return true;
+    // return this.udcTerminal.delProject(pid);
   }
   tinyEdgeCompile(pid: string): Promise<string> {
     return this.udcTerminal.tinyEdgeUpload(pid);

@@ -1,13 +1,16 @@
 import * as fs from "fs-extra";
 import * as WebSocket from "ws";
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
-import { inject, injectable } from "inversify";
+import { inject, injectable, interfaces } from "inversify";
 import { CallInfoStorerInterface } from "../log/interfaces/call_storer_interface";
 import { CallSymbol } from "../../../setting/callsymbol";
 import { SENCE_SERVER_URL } from "../../../setting/backend-config";
 import { EventCenter } from "../tools/event_center";
 import { FileCompressor } from "../tools/file_compressor";
 import { Packet } from "../ldc/packet";
+export function bindTinySim(bind: interfaces.Bind) {
+  bind(TinySim).toSelf().inSingletonScope()
+}
 @injectable()
 export class TinySim {
   constructor(
@@ -16,7 +19,7 @@ export class TinySim {
     @inject(EventCenter) protected events: EventCenter,
     @inject(FileCompressor) protected fileCompressor: FileCompressor,
     @inject(Packet) protected pkt: Packet
-  ) {}
+  ) { }
   tinySimClient: WebSocket | undefined;
   async postSimFile(pid: string, simFilePath: string) {
     let b = fs.readFileSync(simFilePath);

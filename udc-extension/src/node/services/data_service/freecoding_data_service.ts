@@ -9,6 +9,7 @@ import * as path from "path";
 @injectable()
 export class FreeCodingDataService {
   constructor(
+    @inject(ProjectData) protected projectData: ProjectData,
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface
   ) { }
@@ -19,7 +20,11 @@ export class FreeCodingDataService {
       if (!!ob[item].experimentType && ob[item].experimentType!.trim() == "freecoding")
         await this.parseProjectDataFromFile(ob[item])
     }
+
+    Object.assign(this.projectData, this.multiProjectData.dataMap[this.projectData.pid])
     console.log("---after parse All" + JSON.stringify(this.multiProjectData))
+    console.log("---after parse All" + JSON.stringify(this.projectData))
+
   }
   parseProjectDataFromFile(pd: ProjectData): boolean {
     console.log("------parseProjectDataFromFile")
@@ -60,8 +65,8 @@ export class FreeCodingDataService {
         }
       }
       if (!ob_ && !ob) {
-        this.outputResult(err)
-        this.outputResult(err_)
+        this.outputResult(err.toString())
+        this.outputResult(err_.toString())
         return false
       }
     } catch (error) {
@@ -80,6 +85,9 @@ export class FreeCodingDataService {
     st: AdhocSetting | QueueSetting,
     pd: ProjectData
   ): boolean {
+    if (!st.version || st.version.trim() != "1.0.0") {
+      this.outputResult("The version of config.json is not consistent with current system,this may cause failure,try delete the project and refresh this page!")
+    }
     try {
       pd.loginType = "adhoc";
       pd.serverType = st.serverType!;

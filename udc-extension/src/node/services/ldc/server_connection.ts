@@ -1,3 +1,4 @@
+import { EventDefinition } from './../tools/event_definition';
 import { Logger } from "../tools/logger";
 import * as net from "net";
 import { inject } from "inversify";
@@ -35,7 +36,8 @@ export class ServerConnection implements ServerConnectionInterface {
     @inject(CallInfoStorer) protected cis: CallInfoStorer,
     @inject(EventCenter) protected events: EventCenter,
     @inject(LdcData) protected ldd: LdcData,
-    @inject(LdcShellInterface) protected ldcShell: LdcShellInterface
+    @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
+    @inject(EventDefinition) protected eventDefinition: EventDefinition
   ) { }
   isConnected(): boolean {
     return !!this.udcServerClient
@@ -44,7 +46,7 @@ export class ServerConnection implements ServerConnectionInterface {
     try {
       this.hpp.removeAllListeners("data")
       this.udcServerClient!.removeAllListeners("data")
-      this.udcServerClient!.destroy()
+      this.udcServerClient!.end();
       this.udcServerClient = undefined
       return true;
     } catch (error) {
@@ -168,6 +170,7 @@ export class ServerConnection implements ServerConnectionInterface {
         "Burning option is not set correctly!\nPlease check your config.json",
         "err"
       );
+      this.events.emit(this.eventDefinition.programState, false)
     } else if (type == Packet.DEVICE_LOG) {
       let tmp: string = value
         .toString()
@@ -201,7 +204,9 @@ export class ServerConnection implements ServerConnectionInterface {
         this.cmd_excute_state = "done";
         this.cis.storeCallInfoInstantly("end", CallSymbol.LDDP);
         this.events.emit("cmd-response");
+        this.events.emit(this.eventDefinition.programState, true)
       } else {
+        this.events.emit(this.eventDefinition.programState, false)
         this.cis.storeCallInfoInstantly("unfinish", CallSymbol.LDDP, 1);
         this.cmd_excute_state = "unfinish";
       }

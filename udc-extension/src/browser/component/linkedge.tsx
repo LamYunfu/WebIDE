@@ -71,8 +71,8 @@ export class LinkEdgeView extends React.Component<
     };
     if (this.pid == "32") {
       await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
-      let ra = await this.props.getDevicesInfo(this.pid);
-      this.setState({ ra: ra });
+      // let ra = await this.props.getDevicesInfo(this.pid);
+      // this.setState({ ra: ra });
     } else {
       pidQueueInfo[this.pid] = {
         dirName: "TinyEdge",
@@ -255,7 +255,7 @@ export class LinkEdgeView extends React.Component<
               >
                 配置文件
               </div>
-              <div className="col-6">
+              {/* <div className="col-6">
                 <ButtonGroup
                   connectionLoading={this.state.connectionLoading}
                   executeLoading={this.state.executeLoading}
@@ -264,10 +264,10 @@ export class LinkEdgeView extends React.Component<
                   connectionStatus={this.state.connectionStatus}
                   executeStatus={this.state.executeStatus}
                 ></ButtonGroup>
-              </div>
+              </div> */}
             </div>
           </div>
-          <div className="row" style={{ height: "5%" }}>
+          {/* <div className="row" style={{ height: "5%" }}>
             <div className="col-4" style={{ fontSize: "2em" }}>
               子设备列表
             </div>
@@ -278,8 +278,8 @@ export class LinkEdgeView extends React.Component<
             >
               创建
             </button>
-          </div>
-          <div className="row" style={{ height: "45%" }}>
+          </div> */}
+          {/* <div className="row" style={{ height: "45%" }}>
             <div className="col-12">
               <div
                 style={{
@@ -299,7 +299,7 @@ export class LinkEdgeView extends React.Component<
                 ></Form>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       );
     else {

@@ -40,10 +40,11 @@ export class LdcShell {
     );
     let d = new Date().toLocaleTimeString();
     Color.enable();
+    types=types.toLowerCase().trim().substring(0,3)
     switch (types) {
       case undefined:
       default:
-      case "systemInfo": {
+      case "sys": {
         this.udcClient &&
           this.udcClient.OnDeviceLog(
             "::" + `[INFO][${d}][WebIDE] ${res}`.green

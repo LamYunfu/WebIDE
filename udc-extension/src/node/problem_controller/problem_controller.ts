@@ -1,3 +1,6 @@
+import { EventDefinition } from './../services/tools/event_definition';
+import { LdcData } from './../data_center/ldc_data';
+import { QueryService } from './../services/query_service/query_service';
 import { FreeCodingDataService } from './../services/data_service/freecoding_data_service';
 import { LdcClientControllerInterface } from './../services/ldc/interfaces/ldc_client_controller_interface';
 import { EventCenter } from './../services/tools/event_center';
@@ -10,8 +13,6 @@ import { DataService } from './../services/data_service/data_service';
 import { injectable, inject } from "inversify";
 import { ExperimentController } from './experiment_controller/experiment_controller';
 import { MultiProjectData } from '../data_center/multi_project_data';
-import * as path from "path"
-import * as fs from "fs-extra"
 
 @injectable()
 export class ProblemController {
@@ -27,7 +28,10 @@ export class ProblemController {
         @inject(LdcClientControllerInterface) protected lcc: LdcClientControllerInterface,
         @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
         @inject(FreeCodingDataService) protected freeCodingDataService: FreeCodingDataService,
-        @inject(EventCenter) protected eventCenter: EventCenter) {
+        @inject(EventCenter) protected eventCenter: EventCenter,
+        @inject(QueryService) protected queryService: QueryService,
+        @inject(EventDefinition) protected eventDefinition: EventDefinition,
+        @inject(LdcData) protected ldd: LdcData) {
     }
     async init(info: string) {
         console.log("---init problem---")
@@ -53,12 +57,25 @@ export class ProblemController {
         if (!this.acquireLock()) {
             this.outputResult("please wait until last submit is complete")
         }
-        if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
-            await this.freeCodingDataService.parseProjectDataFromFile(this.pData)
+        try {
+            if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
+                await this.freeCodingDataService.parseProjectDataFromFile(this.pData)
+            }
+            this.dService.copyDataFromDataMap(pid)
+            await this.checkConnection() && await this.experimentController.submitQueue() && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 10000)
+            if (this.pData.ppid == "31") {
+                setTimeout(() => {
+                    this.queryService.getLastWebUrl(this.ldd.lastCommitDevice!)
+                }, 3000)
+            }
+            if (this.pData.ppid == "33") {
+                setTimeout(() => {
+                    this.queryService.getSocket(this.ldd.lastCommitDevice!)
+                }, 3000)
+            }
+        } catch (error) {
+            this.outputResult(error, "error")
         }
-        this.dService.copyDataFromDataMap(pid)
-        await this.checkConnection()
-        await this.experimentController.submitQueue()
         this.unLock()
         this.ldcShell.executeFrontCmd({
             name: "submitEnable",

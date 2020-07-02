@@ -1,5 +1,5 @@
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
-import { inject, injectable } from "inversify";
+import { inject, injectable, interfaces } from "inversify";
 import { Packet } from "../ldc/packet";
 import { ServerConnectionInterface } from "../ldc/interfaces/server_connection_interface";
 import { EventCenter } from "../tools/event_center";
@@ -12,6 +12,10 @@ import {
 } from "../../../setting/backend-config";
 import * as http from "http";
 import { CallSymbol } from "../../../setting/callsymbol";
+export function bindQueryService(bind: interfaces.Bind) {
+  bind(QueryService).toSelf().inSingletonScope()
+
+}
 @injectable()
 export class QueryService {
   constructor(
@@ -20,7 +24,7 @@ export class QueryService {
     protected readonly sc: ServerConnectionInterface,
     @inject(EventCenter) protected cevents: EventCenter,
     @inject(CallInfoStorerInterface) protected cis: CallInfoStorerInterface
-  ) {}
+  ) { }
 
   outputResult(res: string, type: string = "systemInfo") {
     this.ldcShell.outputResult(res, type);
@@ -133,8 +137,8 @@ export class QueryService {
             if (res["code"] != 0) {
               this.outputResult(
                 "Get deployed server url failed:" +
-                  res["msg"] +
-                  `\n deviceName:${lastCommitDevice.device}\nPlease try again later.`,
+                res["msg"] +
+                `\n deviceName:${lastCommitDevice.device}\nPlease try again later.`,
                 "err"
               );
               this.cis.storeCallInfoInstantly(
@@ -222,7 +226,7 @@ export class QueryService {
               this.outputResult(
                 `${str}------was deployed ${(new Date().getTime() -
                   lastCommitDevice.timeMs) /
-                  1000} seconds before`
+                1000} seconds before`
               );
 
               this.cis.storeCallInfoInstantly("start", CallSymbol.GTSD);

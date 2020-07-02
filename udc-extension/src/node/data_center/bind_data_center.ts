@@ -1,3 +1,4 @@
+import { OneLinkData } from './one_link_data';
 import { MultiProjectData } from './multi_project_data';
 import { interfaces } from "inversify";
 import { LdcData } from "./ldc_data";
@@ -18,4 +19,5 @@ export function bindDataCenter(bind: interfaces.Bind) {
     .toSelf()
     .inSingletonScope();
   bind(MultiProjectData).toSelf().inSingletonScope()
+  bind(OneLinkData).toSelf().inSingletonScope()
 }

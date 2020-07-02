@@ -42,7 +42,7 @@ export class LinkEdgeManager {
       let ob = JSON.parse(raw);
       return ob["IoTId"];
     } catch (error) {
-      this.ut.outputResult("config.json is incorrect!\nPlease check it or restore it to default!","err");
+      this.ut.outputResult("The config.json is incorrect!\nPlease check it or restore it to default!","err");
       return "";
     }
   }
