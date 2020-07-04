@@ -17,6 +17,8 @@ import { LdcShellInterface } from './services/ldc_shell/interfaces/ldc_shell_int
 import { ProblemController } from './problem_controller/problem_controller';
 import { TrainExperimentController } from './problem_controller/train_experiment_controller/train_experiment_controller';
 import { OneLinkService } from './services/one_link_service/onelink';
+import { FileOpener } from './services/opener/file_openner';
+import { ConsoleLogger } from '@theia/core/lib/common/logger-protocol';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -35,7 +37,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(LdcShellInterface) protected readonly ldcShell: LdcShellInterface,
     @inject(TrainExperimentController) protected trainExperimentController: TrainExperimentController,
     @inject(LinkedgeDataService) protected linkedgeDataService: LinkedgeDataService,
-    @inject(OneLinkController) protected oneLinkController: OneLinkController
+    @inject(OneLinkController) protected oneLinkController: OneLinkController,
+    @inject(FileOpener) protected fileOpener:FileOpener
   ) { }
 
   is_connected(): Promise<Boolean> {
@@ -155,7 +158,8 @@ export class UdcServiceImpl implements UdcService {
     this.udcTerminal.openPidFile(pid);
   }
   openFile(pid: string, filename: string) {
-    this.udcTerminal.openFile(pid, filename);
+    console.log("文件路径" + filename);
+    //this.fileOpener.openFile(filename);
   }
   setCookie(cookie: string): boolean {
     return this.udcTerminal.setCookie(cookie);
@@ -301,5 +305,12 @@ export class UdcServiceImpl implements UdcService {
     serverity: number = 0
   ) {
     this.cis.storeCallInfoLatter(time, info, api, serverity);
+  }
+  submitCode(pid: string){
+    //this.udcTerminal.submitCode(pid);
+  }
+
+  submitAlgorithm(pid: string, currentId:string){
+    //this.udcTerminal.submitAlgorithm(pid, currentId);
   }
 }

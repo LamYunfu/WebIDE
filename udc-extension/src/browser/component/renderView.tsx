@@ -19,6 +19,7 @@ import { ProjectCreator } from "../projectCreator";
 import { FreeCodingDisplay } from "./freecoding-view-display";
 import { DisplayBoard } from "./display-board";
 import { CallSymbol } from "../../setting/callsymbol";
+import { TaoFactoryView } from "./taoFactory-view";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
@@ -93,6 +94,10 @@ export namespace View {
     train: (pid: string) => void;
     processDisplaySubmit: (pid: string, info: string) => Promise<void>;
     attach: () => void;
+    gotoFactoryScene: () => void;
+    submitCode: (pid: string) => void;
+    submitAlgorithm: (pid: string) => void;
+    gotoTaoUnity: () => void;
   }
   export interface State {
     ajaxNotFinish: boolean;
@@ -1814,6 +1819,47 @@ export class View extends React.Component<View.Props, View.State> {
         />
       </MyContext.Provider>
     ) : this.state.viewType == "9" ? (
+      _this.ppid == "54" ? (
+        <MyContext.Provider
+          value={{
+            showTheDefaultFreeCodingView: () => {},
+            setClickTime: () => {
+              _this.clickTime = new Date().getTime();
+            },
+            setOptionDescription: (a: string) => {
+              _this.setOptionDescription(a);
+            },
+            setOptionChoicesDescription: (a: JSX.Element[]) => {
+              _this.setOptionChoicesDescription(a);
+            },
+            setState: (tmp: object) => {
+              _this.setState({
+                ...tmp,
+              });
+            },
+            getState: (key: string) => {
+              let tmp: any = this.state;
+              return tmp[key];
+            },
+            props: _this.props,
+          }}
+        >
+          <TaoFactoryView
+            initPid={this.props.initPid}
+            gotoFactoryScene={this.props.gotoFactoryScene}
+            submitCode={this.props.submitCode}
+            submitAlgorithm={this.props.submitAlgorithm} 
+            gotoTaoUnity={this.props.gotoTaoUnity}
+            initPidQueueInfo={_this.props.initPidQueueInfo}
+            section={{ ppid: [_this.ppid], sid: "experiment" }}
+            title={this.title}
+            config={_this.props.config}
+            say={_this.props.say}
+            outputResult={_this.props.outputResult}
+            openShell = {this.props.openShell}
+          />
+        </MyContext.Provider>
+      ):(
       <MyContext.Provider
         value={{
           showTheDefaultFreeCodingView: () => {},
@@ -1858,41 +1904,8 @@ export class View extends React.Component<View.Props, View.State> {
           say={_this.props.say}
         />
       </MyContext.Provider>
-    ) : this.state.viewType == "9" ? (
-      <MyContext.Provider
-        value={{
-          showTheDefaultFreeCodingView: () => {},
-          setClickTime: () => {
-            _this.clickTime = new Date().getTime();
-          },
-          setOptionDescription: (a: string) => {
-            _this.setOptionDescription(a);
-          },
-          setOptionChoicesDescription: (a: JSX.Element[]) => {
-            _this.setOptionChoicesDescription(a);
-          },
-          setState: (tmp: object) => {
-            _this.setState({
-              ...tmp,
-            });
-          },
-          getState: (key: string) => {
-            let tmp: any = this.state;
-            return tmp[key];
-          },
-          props: _this.props,
-        }}
-      >
-        <VirtualSceneView
-          title={this.title}
-          config={_this.props.config}
-          initPidQueueInfo={_this.props.initPidQueueInfo}
-          section={{ ppid: [_this.ppid], sid: "experiment" }}
-          outputResult={_this.props.outputResult}
-          say={_this.props.say}
-        />
-      </MyContext.Provider>
-    ) : (
+    )): 
+     (
       <div></div>
     );
   }
