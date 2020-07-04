@@ -40,6 +40,7 @@ export class ProblemController {
         await this.freeCodingDataService.parseAllData()
         await this.fileOpener.openCurrentWorkSpace()
         await this.fileOpener.openFiles()
+        await this.ldcShell.executeFrontCmd({ name: "openShell", passwd: "" })
     }
     acquireLock(): boolean {
         if (!this._lock) {
