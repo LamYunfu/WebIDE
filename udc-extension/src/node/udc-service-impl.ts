@@ -1,3 +1,4 @@
+import { FileOpener } from './services/opener/file_openner';
 import { OneLinkController } from './problem_controller/one_link_controller/one_link_controller';
 import { LinkedgeDataService } from './services/data_service/linkedge_data_service';
 import { LdcClientControllerInterface } from './services/ldc/interfaces/ldc_client_controller_interface';
@@ -35,7 +36,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(LdcShellInterface) protected readonly ldcShell: LdcShellInterface,
     @inject(TrainExperimentController) protected trainExperimentController: TrainExperimentController,
     @inject(LinkedgeDataService) protected linkedgeDataService: LinkedgeDataService,
-    @inject(OneLinkController) protected oneLinkController: OneLinkController
+    @inject(OneLinkController) protected oneLinkController: OneLinkController,
+    @inject(FileOpener) protected fileOpener: FileOpener
   ) { }
 
   is_connected(): Promise<Boolean> {
@@ -155,7 +157,7 @@ export class UdcServiceImpl implements UdcService {
     this.udcTerminal.openPidFile(pid);
   }
   openFile(pid: string, filename: string) {
-    this.udcTerminal.openFile(pid, filename);
+    this.fileOpener.openFile(filename)
   }
   setCookie(cookie: string): boolean {
     return this.udcTerminal.setCookie(cookie);

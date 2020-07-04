@@ -1,3 +1,5 @@
+import { OneLinkDataService } from './../data_service/onelink_data_service';
+import { OneLinkData } from './../../data_center/one_link_data';
 import { DataService } from './../data_service/data_service';
 import { ProjectData } from './../../data_center/project_data';
 import { MultiProjectData } from './../../data_center/multi_project_data';
@@ -12,32 +14,39 @@ export class FileOpener {
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
     @inject(ProjectData) protected projectData: ProjectData,
-    @inject(DataService) protected dataService: DataService
+    @inject(DataService) protected dataService: DataService,
+    @inject(OneLinkData) protected oneLinkData: OneLinkData,
+    @inject(OneLinkDataService) protected oneLinkDataService: OneLinkDataService
   ) { }
-  openFile(path: string) {
-    console.log("open file from backend:" + path)
+  async openFile(pt: string) {
+    if (this.projectData.experimentType == "OneLinkView") {
+      await this.oneLinkDataService.parseVirtualConfig(this.projectData.pid)
+      pt = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString(), `${pt}.cpp`)
+      console.log("open file from backend:" + pt)
+    }
+
     if (OS.type() == OS.Type.Linux)
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
-        passwd: path,
+        passwd: pt,
       });
     else {
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
-        passwd: `/` + path,
+        passwd: `/` + pt,
       });
     }
   }
-  openWorkspace(path: string) {
+  openWorkspace(pt: string) {
     if (OS.type() == OS.Type.Linux)
       this.ldcShell.executeFrontCmd({
         name: "openWorkspace",
-        passwd: path,
+        passwd: pt,
       });
     else
       this.ldcShell.executeFrontCmd({
         name: "openWorkspace",
-        passwd: `/` + path,
+        passwd: `/` + pt,
       });
   }
   openCurrentWorkSpace() {
