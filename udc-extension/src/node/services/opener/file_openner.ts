@@ -1,3 +1,5 @@
+import { OneLinkDataService } from './../data_service/onelink_data_service';
+import { OneLinkData } from './../../data_center/one_link_data';
 import { DataService } from './../data_service/data_service';
 import { ProjectData } from './../../data_center/project_data';
 import { MultiProjectData } from './../../data_center/multi_project_data';
@@ -6,7 +8,6 @@ import { inject, injectable } from "inversify";
 import { OS } from "@theia/core";
 import * as path from "path"
 import * as fs from "fs-extra"
-import { OneLinkData } from '../../data_center/one_link_data';
 @injectable()
 export class FileOpener {
   constructor(
@@ -14,17 +15,16 @@ export class FileOpener {
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
     @inject(ProjectData) protected projectData: ProjectData,
     @inject(DataService) protected dataService: DataService,
-    @inject(OneLinkData) protected oneLinkData: OneLinkData
+    @inject(OneLinkData) protected oneLinkData: OneLinkData,
+    @inject(OneLinkDataService) protected oneLinkDataService: OneLinkDataService
   ) { }
- 
-  openFile(pt: string) {
-    //组装路径
-    let  rootPath:string  = "";
-    rootPath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString())
-    //根据文件路径读取文件，返回文件列表
-    pt = this.getFilePath(rootPath, pt);
-    console.log(pt);
-    console.log("open file from backend:" + pt)
+  async openFile(pt: string) {
+    if (this.projectData.experimentType == "OneLinkView") {
+      await this.oneLinkDataService.parseVirtualConfig(this.projectData.pid)
+      pt = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString(), `${pt}.cpp`)
+      console.log("open file from backend:" + pt)
+    }
+
     if (OS.type() == OS.Type.Linux)
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
@@ -37,16 +37,16 @@ export class FileOpener {
       });
     }
   }
-  openWorkspace(path: string) {
+  openWorkspace(pt: string) {
     if (OS.type() == OS.Type.Linux)
       this.ldcShell.executeFrontCmd({
         name: "openWorkspace",
-        passwd: path,
+        passwd: pt,
       });
     else
       this.ldcShell.executeFrontCmd({
         name: "openWorkspace",
-        passwd: `/` + path,
+        passwd: `/` + pt,
       });
   }
   openCurrentWorkSpace() {

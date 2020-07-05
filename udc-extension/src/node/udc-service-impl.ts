@@ -1,3 +1,4 @@
+import { FileOpener } from './services/opener/file_openner';
 import { OneLinkController } from './problem_controller/one_link_controller/one_link_controller';
 import { LinkedgeDataService } from './services/data_service/linkedge_data_service';
 import { LdcClientControllerInterface } from './services/ldc/interfaces/ldc_client_controller_interface';
@@ -38,7 +39,11 @@ export class UdcServiceImpl implements UdcService {
     @inject(TrainExperimentController) protected trainExperimentController: TrainExperimentController,
     @inject(LinkedgeDataService) protected linkedgeDataService: LinkedgeDataService,
     @inject(OneLinkController) protected oneLinkController: OneLinkController,
+<<<<<<< HEAD
     @inject(FileOpener) protected fileOpener:FileOpener
+=======
+    @inject(FileOpener) protected fileOpener: FileOpener
+>>>>>>> d7b3c5cea6dc6b765f3f475298492cd0c05c9706
   ) { }
 
   is_connected(): Promise<Boolean> {
@@ -158,8 +163,12 @@ export class UdcServiceImpl implements UdcService {
     this.udcTerminal.openPidFile(pid);
   }
   openFile(pid: string, filename: string) {
+<<<<<<< HEAD
     console.log("文件路径" + filename);
     //this.fileOpener.openFile(filename);
+=======
+    this.fileOpener.openFile(filename)
+>>>>>>> d7b3c5cea6dc6b765f3f475298492cd0c05c9706
   }
   setCookie(cookie: string): boolean {
     return this.udcTerminal.setCookie(cookie);
