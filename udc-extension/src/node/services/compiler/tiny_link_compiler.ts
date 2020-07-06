@@ -100,6 +100,7 @@ export class TinyLinkCompiler {
           });
           res.on("end", () => {
             fs.writeFileSync(zip, content);
+            this.cis.storeCallInfoInstantly("end", CallSymbol.CDAT);
             resolve(true);
           });
           res.on("error", (err) => {

@@ -18,6 +18,11 @@ export class ModelTrainer {
   parseAIConfig() {
     return this.trainDataService.parseTrainData()
   }
+  disconnect() {
+    if (!!this.ws) {
+      this.ws.close()
+    }
+  }
   async connect(trainServer: string): Promise<boolean> {
     this.outputResult("Connect to train server" + trainServer)
     if (!!this.ws) return true;
@@ -58,7 +63,7 @@ export class ModelTrainer {
         hash: hashVal,
         data: rb,
       };
-      console.log("train server" + trainServer + JSON.stringify(data));
+      // console.log("train server" + trainServer + JSON.stringify(data));
       if (!this.ws) {
         let p = await this.connect(trainServer);
         if (!p) {

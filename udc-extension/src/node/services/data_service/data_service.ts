@@ -137,6 +137,10 @@ export class DataService {
       return false;
     }
   }
+  async resetProgramData() {
+    this.projectData.subWaitingIds = []
+    this.projectData.fileHash = []
+  }
   copyLdcDataFromData() {
     this.ldcData.serverType = this.projectData.serverType
     this.ldcData.waitingIds = this.projectData.subWaitingIds
@@ -146,9 +150,11 @@ export class DataService {
     this.ldcData.pid = this.projectData.pid
     this.ldcData.serverTimeout = Math.max(...this.projectData.subTimeouts).toString()
   }
+
   refreshMultiData() {
     let pid = this.projectData.pid
     this.copyLdcDataFromData();
+    console.log("--refresh multiData"+JSON.stringify(this.projectData))
     this.multiProjectData.dataMap[pid] = this.projectData
   }
   private generate16ByteNumber(): string {

@@ -76,7 +76,7 @@ export class LdcClientController implements LdcClientControllerInterface {
       return r;
     } catch (err) {
       Logger.info(err);
-      this.outputResult("connection failed");
+      this.outputResult("connection failed","err");
       return false;
     }
   }

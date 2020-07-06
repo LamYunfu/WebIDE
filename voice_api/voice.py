@@ -6,7 +6,7 @@ from ali_speech.callbacks import SpeechRecognizerCallback
 from ali_speech.constant import ASRFormat
 from ali_speech.constant import ASRSampleRate
 
-
+currentPlayer=threading.Thread(target=play,args=[""])
 class MyCallback(SpeechRecognizerCallback):
     """
     构造函数的参数没有要求，可根据需要设置添加
@@ -63,7 +63,10 @@ def process(client, appkey, token):
         print(e)
     finally:
         recognizer.close()
-
+def play(msc=""):
+    while True:
+        threading.currentThread.wait();
+        print("play:")    
 
 def process_multithread(client, appkey, token, number):
     thread_list = []

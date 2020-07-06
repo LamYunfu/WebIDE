@@ -61,18 +61,22 @@ export class ProblemController {
         try {
             if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
                 await this.freeCodingDataService.parseProjectDataFromFile(this.pData)
+                this.dataService.refreshMultiData()
             }
             this.dService.copyDataFromDataMap(pid)
-            await this.checkConnection() && await this.experimentController.submitQueue() && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 10000)
-            if (this.pData.ppid == "31") {
-                setTimeout(() => {
-                    this.queryService.getLastWebUrl(this.ldd.lastCommitDevice!)
-                }, 3000)
-            }
-            if (this.pData.ppid == "33") {
-                setTimeout(() => {
-                    this.queryService.getSocket(this.ldd.lastCommitDevice!)
-                }, 3000)
+            this.dService.resetProgramData()
+            let res = await this.checkConnection() && await this.experimentController.submitQueue() && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
+            if (res) {
+                if (this.pData.ppid == "31") {
+                    setTimeout(() => {
+                        this.queryService.getLastWebUrl(this.ldd.lastCommitDevice!)
+                    }, 3000)
+                }
+                if (this.pData.ppid == "33") {
+                    setTimeout(() => {
+                        this.queryService.getSocket(this.ldd.lastCommitDevice!)
+                    }, 3000)
+                }
             }
         } catch (error) {
             this.outputResult(error, "error")

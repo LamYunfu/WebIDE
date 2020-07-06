@@ -128,7 +128,7 @@ export class FreeCodingDataService {
       pd.subProjectArray = names;
       pd.subCompileTypes = compileTypes;
       pd.subTimeouts = timeouts;
-      pd.subModelTypes = models
+      pd.subModelTypes = models;
       return true;
     } catch (error) {
       console.log(error);

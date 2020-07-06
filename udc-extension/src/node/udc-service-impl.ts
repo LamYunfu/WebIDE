@@ -1,3 +1,5 @@
+import { TinySim } from './services/tinysim/tinysim';
+import { ModelTrainer } from './services/model_trainer.ts/model_trainer';
 import { FileOpener } from './services/opener/file_openner';
 import { OneLinkController } from './problem_controller/one_link_controller/one_link_controller';
 import { LinkedgeDataService } from './services/data_service/linkedge_data_service';
@@ -37,7 +39,9 @@ export class UdcServiceImpl implements UdcService {
     @inject(TrainExperimentController) protected trainExperimentController: TrainExperimentController,
     @inject(LinkedgeDataService) protected linkedgeDataService: LinkedgeDataService,
     @inject(OneLinkController) protected oneLinkController: OneLinkController,
-    @inject(FileOpener) protected fileOpener: FileOpener
+    @inject(FileOpener) protected fileOpener: FileOpener,
+    @inject(ModelTrainer) protected modelTrainer: ModelTrainer,
+    @inject(TinySim) protected tinySim: TinySim
   ) { }
 
   is_connected(): Promise<Boolean> {
@@ -73,6 +77,8 @@ export class UdcServiceImpl implements UdcService {
 
   async disconnect(): Promise<string> {
     let result = await this.ldcClient.disconnect()
+    this.tinySim.disconnect()
+    this.modelTrainer.disconnect()
     return result === true ? "Disconnect succeed" : "Disconnect failed";
   }
 

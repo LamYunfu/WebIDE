@@ -21,6 +21,11 @@ export class TinySim {
     @inject(Packet) protected pkt: Packet
   ) { }
   tinySimClient: WebSocket | undefined;
+  disconnect() {
+    if (!!this.tinySimClient) {
+      this.tinySimClient!.close()
+    }
+  }
   async postSimFile(pid: string, simFilePath: string) {
     let b = fs.readFileSync(simFilePath);
     this.outputResult("Connecting to device simulator...");
@@ -82,7 +87,7 @@ export class TinySim {
       hash: hashVal,
       data: rb,
     };
-    console.log("sim server" + serverPath + JSON.stringify(data));
+    // console.log("sim server" + serverPath + JSON.stringify(data));
     this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
     if (!this.tinySimClient) await this.connectSimServer(serverPath);
     let content = this.pkt.construct("file", rb.toString());

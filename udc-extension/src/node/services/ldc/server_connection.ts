@@ -1,3 +1,4 @@
+import { ProjectData } from './../../data_center/project_data';
 import { EventDefinition } from './../tools/event_definition';
 import { Logger } from "../tools/logger";
 import * as net from "net";
@@ -37,7 +38,8 @@ export class ServerConnection implements ServerConnectionInterface {
     @inject(EventCenter) protected events: EventCenter,
     @inject(LdcData) protected ldd: LdcData,
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
-    @inject(EventDefinition) protected eventDefinition: EventDefinition
+    @inject(EventDefinition) protected eventDefinition: EventDefinition,
+    @inject(ProjectData) protected projectData: ProjectData
   ) { }
   isConnected(): boolean {
     return !!this.udcServerClient
@@ -227,6 +229,9 @@ export class ServerConnection implements ServerConnectionInterface {
       // this.setTinyLink("executeSelectPanel", "")
     } else if (type == Packet.LOG_JSON) {
       let logObj = JSON.parse(value);
+      if (!this.projectData.subWaitingIds.find((res) => res == logObj["waitingId"])) {
+        return
+      }
       // console.log(this.ldd.waitingId);
       // if (logObj["waitingId"] != this.ldd.waitingId) return;
       if (this.ldd.waitingIds.indexOf(logObj["waitingId"].trim()) == -1) {
