@@ -36,6 +36,7 @@ export class ProblemController {
     async init(info: string) {
         console.log("---init problem---")
         await this.dataService.initDataMapFromFrontEnd(info)
+        await this.dataService.copyLdcDataFromData()
         await this.fileTemplate.buildAllProjects()
         await this.freeCodingDataService.parseAllData()
         await this.fileOpener.openCurrentWorkSpace()
