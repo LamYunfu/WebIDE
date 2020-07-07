@@ -36,7 +36,14 @@ export class FreeCodingDataService {
     let ob_: AdhocSetting | undefined
     let ob: QueueSetting | undefined
     try {
-      let rawConfig = fs.readFileSync(cpath);
+      let rawConfig: Buffer
+      try {
+        rawConfig = fs.readFileSync(cpath);
+      } catch (error) {
+        this.outputResult("Error reading config.json,try to delete the project directory and retry", "err")
+        return false
+      }
+
       let jc = new JsonConvert();
       jc.operationMode = OperationMode.ENABLE; // print some debug data
       jc.ignorePrimitiveChecks = false; // don't allow assigning number to string etc.

@@ -61,7 +61,8 @@ export class ProblemController {
         }
         try {
             if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
-                await this.freeCodingDataService.parseProjectDataFromFile(this.pData)
+                if (!await this.freeCodingDataService.parseProjectDataFromFile(this.pData))
+                    return false;
                 this.dataService.refreshMultiData()
             }
             this.dService.copyDataFromDataMap(pid)
@@ -82,11 +83,14 @@ export class ProblemController {
         } catch (error) {
             this.outputResult(error, "error")
         }
-        this.unLock()
-        this.ldcShell.executeFrontCmd({
-            name: "submitEnable",
-            passwd: ""
-        })
+        finally {
+            this.unLock()
+            this.ldcShell.executeFrontCmd({
+                name: "submitEnable",
+                passwd: ""
+            })
+        }
+
     }
     async checkConnection() {
         this.outputResult("Checking the connection to ldc...")

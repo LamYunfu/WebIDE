@@ -41,7 +41,7 @@ export class TinySim {
     });
   }
   async connectSimServer(server: string): Promise<boolean> {
-    this.tinySimClient = new WebSocket(SENCE_SERVER_URL);
+    this.tinySimClient = new WebSocket(server);
     if (!this.tinySimClient) {
       return false;
     }
