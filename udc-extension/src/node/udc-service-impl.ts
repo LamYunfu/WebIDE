@@ -20,6 +20,8 @@ import { LdcShellInterface } from './services/ldc_shell/interfaces/ldc_shell_int
 import { ProblemController } from './problem_controller/problem_controller';
 import { TrainExperimentController } from './problem_controller/train_experiment_controller/train_experiment_controller';
 import { OneLinkService } from './services/one_link_service/onelink';
+import { ConsoleLogger } from '@theia/core/lib/common/logger-protocol';
+import { TaoFactoryController } from './problem_controller/taoFactoryController/tao_factory_controller';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -39,6 +41,7 @@ export class UdcServiceImpl implements UdcService {
     @inject(TrainExperimentController) protected trainExperimentController: TrainExperimentController,
     @inject(LinkedgeDataService) protected linkedgeDataService: LinkedgeDataService,
     @inject(OneLinkController) protected oneLinkController: OneLinkController,
+    @inject(TaoFactoryController) protected taoFactoryController: TaoFactoryController,
     @inject(FileOpener) protected fileOpener: FileOpener,
     @inject(ModelTrainer) protected modelTrainer: ModelTrainer,
     @inject(TinySim) protected tinySim: TinySim
@@ -309,5 +312,16 @@ export class UdcServiceImpl implements UdcService {
     serverity: number = 0
   ) {
     this.cis.storeCallInfoLatter(time, info, api, serverity);
+  }
+  submitCode(pid: string, isOpened: boolean){
+    //this.udcTerminal.submitCode(pid);
+    console.log("submit code!");
+    this.taoFactoryController.submitCode(pid, isOpened);
+  }
+
+  submitAlgorithm(pid: string, currentId:string){
+    //this.udcTerminal.submitAlgorithm(pid, currentId);
+    console.log("submit algorithm!");
+    this.taoFactoryController.submitAlgorithm(pid, currentId);
   }
 }

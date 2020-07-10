@@ -74,6 +74,8 @@ export interface UdcService {
   tinyEdgeCompile: (pid: string) => Promise<string>;
   processDisplaySubmit: (pid: string, info: string) => Promise<void>;
   initDisplayBoard: (info: string) => Promise<void>;
+  submitCode: (pid: string, isOpened: boolean) => void;
+  submitAlgorithm: (pid: string, currenId:string) => void;
   storeCallInfo: (
     time: string,
     info: string,

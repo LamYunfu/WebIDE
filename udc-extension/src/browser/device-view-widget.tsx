@@ -169,6 +169,10 @@ export class DeviceViewWidget extends TreeWidget {
           setSubmitEnableWithJudgeTag={this.setSubmitEnableWithJudgeTag}
           processDisplaySubmit={this.processDisplaySubmit}
           attach={this.attach}
+          gotoFactoryScene={this.gotoFactoryScene}
+          submitCode={this.submitCode}
+          submitAlgorithm={this.submitAlgorithm}
+          gotoTaoUnity={this.gotoTaoUnity}
         />
         {/* <Lamp imgDisplay={this.imgDisplay} lampStatus={this.lampStatus}></Lamp> */}
 
@@ -496,7 +500,7 @@ export class DeviceViewWidget extends TreeWidget {
   };
   gotoCode(file: string) {
     if (this.ppid == undefined) {
-      this.outputResult("err happened,try to refresh the page");
+      //this.outputResult("err happened,try to refresh the page");
       return;
     }
     this.openFile(this.ppid, file);
@@ -615,4 +619,101 @@ export class DeviceViewWidget extends TreeWidget {
   openConfigFile = (pid: string) => {
     this.udcService.openConfigFile(pid);
   };
+  submitCode = (pid: string) => {
+    //判断有没有打开scanner.cpp
+    let isOpened = false;
+    this.currentTabs = this.applicationShell.getWidgets('main');
+    if(this.currentTabs){
+      for(let i = 0;i < this.currentTabs.length;i++){
+        this.thisId = this.currentTabs[i].id;
+        if(this.thisId.includes("scanner.cpp")){
+          isOpened = true;
+        }
+      }
+    }
+    this.udcService.submitCode(pid, isOpened);
+  }
+
+  unityOpened: boolean = false;
+  currentTabs: any[] = [];
+  //当前主面板打开的页面的ID
+  cunrrentId: string = "";
+  thisId:string = "";
+  //打开的虚拟仿真页面的ID
+  webViewId:string = "";
+  submitAlgorithm = (pid: string) =>{
+    this.currentTabs = this.applicationShell.getWidgets('main');
+    if(this.currentTabs){
+      for(let i = 0;i < this.currentTabs.length;i++){
+        this.thisId = this.currentTabs[i].id;
+        //this.outputResult(this.currentTabs[i].id + this.currentTabs[i].isHidden);
+        //获得当前主页面显示的界面的id
+        if(! this.currentTabs[i].isHidden){
+          this.cunrrentId = this.thisId.substr(this.thisId.length-7,this.thisId.length);
+          //this.outputResult(this.cunrrentId);
+          continue;
+        }
+        //判断是否有虚拟仿真场景已经打开，如果有的话，那就关闭它
+        if(this.thisId.includes("webview-widget") && "webview-widget-1" != this.thisId){
+          this.webViewId = this.thisId;
+          this.currentTabs[i].close();
+        }
+      }
+    }
+    this.udcService.submitAlgorithm(pid, this.cunrrentId);
+    if(this.cunrrentId.includes("cam")){
+      console.log("打开虚拟仿真页面。。。");
+      this.gotoTaoUnity();
+
+    }  
+  }
+  
+  gotoTaoUnity = () => {
+    //填入淘工厂虚拟仿真地址
+  //  this.unity = window.open("http://120.55.102.225:12359/taopublish/1/index.html");
+  //  window.blur();
+  //  this.unity!.focus();
+  if (
+    //看有没有打开
+      this.applicationShell.getTabBarFor("main") != null &&
+      this.applicationShell.getTabBarFor("main")!.titles.some((w, i) => {
+        if (w.label == "taoUnity") {
+          this.applicationShell.revealWidget(w.owner.id);
+          return true;
+        } else {
+          return false;
+        }
+      })
+    ) {
+      // this.applicationShell.getTabBarFor("main")!.
+    } else {
+      // 如果没有打开就调用tao-factory-back-end插件，显示页面内容
+      this.commandRegistry.executeCommand("iot.plugin.tinylink.taoUnity");
+    }
+ }
+
+  /**
+   * 加载淘工厂页面
+   */
+  gotoFactoryScene = () => {
+    if (
+      //看有没有打开
+        this.applicationShell.getTabBarFor("main") != null &&
+        this.applicationShell.getTabBarFor("main")!.titles.some((w, i) => {
+          if (w.label == "taoFactory") {
+            this.applicationShell.revealWidget(w.owner.id);
+            return true;
+          } else {
+            return false;
+          }
+        })
+      ) {
+        // this.applicationShell.getTabBarFor("main")!.
+      } else {
+        // 如果没有打开就调用tao-factory-back-end插件，显示页面内容
+        this.commandRegistry.executeCommand("iot.plugin.tinylink.taoFactory");
+      }
+  }
 }
+
+
