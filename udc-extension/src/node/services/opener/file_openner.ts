@@ -21,11 +21,11 @@ export class FileOpener {
   async openFile(pt: string) {
     if (this.projectData.experimentType == "OneLinkView") {
       await this.oneLinkDataService.parseVirtualConfig(this.projectData.pid)
-      pt = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString(), `${pt}.cpp`)
-      console.log("open file from backend:" + pt)
+      let rootPath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString()) ;
+      pt = this.getFilePath(rootPath, pt);
     }
 
-    if (OS.type() == OS.Type.Linux)
+    if (OS.type() == OS.Type.Linux)+
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
         passwd: pt,
@@ -79,37 +79,28 @@ export class FileOpener {
     }
   }
 
-  getFilePath(rootPath:string, pt: string):string{
+  getFilePath(rootPath:string, pt: string): string{
     let _this = this;
-    fs.readdir(rootPath,function(err,files){
-      if(err){
-          console.warn(err)
-      }else{
-          //遍历读取到的文件列表
-          files.forEach(function(filename){
-              //获取当前文件的绝对路径
-              var filedir = path.join(rootPath,filename);
-              //根据文件路径获取文件信息，返回一个fs.Stats对象
-              fs.stat(filedir,function(eror,stats){
-                  if(eror){
-                      console.warn('获取文件stats失败');
-                  }else{
-                      var isFile = stats.isFile();//是文件
-                      var isDir = stats.isDirectory();//是文件夹
-                      if(isFile){
-                          if(filename.includes(pt)){
-                            return filedir;
-                          }
-                      }
-                      if(isDir){
-                         _this.getFilePath(filedir, pt);//递归，如果是文件夹，就继续遍历该文件夹下面的文件
-                      }
-                  }
-              })
-          });
+    let _dirReturn = "";
+    let files:string[] = fs.readdirSync(rootPath);
+    for(let i = 0;i < files.length;i++){
+      var filedir = path.join(rootPath, files[i]);
+      let status = fs.statSync(filedir);
+      let isFile = status.isFile();
+      let isDir = status.isDirectory();
+      if(isFile){
+        if(files[i].includes(pt)){
+          _dirReturn = filedir;
+          return _dirReturn;
+        }
       }
-  });
-  return "";
+      if(isDir){
+        var dir = this.getFilePath(filedir, pt);
+        if(dir != "")
+          _dirReturn = dir;
+      }
+    }
+    return _dirReturn;
   }
 
 }

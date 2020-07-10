@@ -29,7 +29,7 @@
 17 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 17 error
 17 error npm ERR! A complete log of this run can be found in:
-17 error npm ERR!     C:\Users\Lucas\AppData\Roaming\npm-cache\_logs\2020-07-03T07_30_03_097Z-debug.log
+17 error npm ERR!     C:\Users\Lucas\AppData\Roaming\npm-cache\_logs\2020-07-07T12_17_37_942Z-debug.log
 17 error
 17 error
 17 error > demo@0.0.0 prepare C:\Users\Lucas\Desktop\webide\webide\demo
@@ -37,7 +37,7 @@
 17 error
 17 error yarn run v1.22.0
 17 error $ rimraf lib
-17 error Done in 1.31s.
+17 error Done in 0.99s.
 17 error yarn run v1.22.0
 17 error $ tsc  --jsx react
 17 error src/browser/demo-widget.tsx(22,28): error TS2307: Cannot find module 'udc-extension/lib/common/udc-service'.

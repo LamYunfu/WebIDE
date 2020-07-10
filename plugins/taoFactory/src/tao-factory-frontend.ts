@@ -1,20 +1,21 @@
 
 /**
  * Generated using theia-plugin-generator
- * 显示场景那张图,插件的默认位置是在右上角
  */
-import * as theia from "@theia/plugin";
+
+import * as theia from '@theia/plugin';
 
 namespace IoTCommands {
     const IOT_CATEGORY = "IoT Plugin";
 
-    export const TINYLINK_COMPILE = {
-        id: "iot.plugin.tinylink.unity",
+    export const TINYLINK_COMPILE_TAO = {
+        id: "iot.plugin.tinylink.taoFactory",
         category: IOT_CATEGORY,
-        label: "TinyLink unity"
+        label: "TinyLink taoFactory"
     };
 }
-namespace IoTWebview {
+
+namespace IoTWebviewTao {
     //用于界面按钮和Theia通信
     export function generateHTML(url: string = "") {
         //p相当于window
@@ -50,10 +51,18 @@ namespace IoTWebview {
             })
          }
           
+         function changeFrameHeight(){
+             var ifm = document.getElementById("iframe");
+             ifm.height = document.documentElement.clientHeight;
+         }
+
+         window.onresize = function(){
+             changeFrameHeight();
+         }
           </script>        
-        <body style="margin:0">
+        <body style="margin:0;padding:0;">
           <iframe id="iframe"
-           src="http://120.55.102.225:12360/clickjump/index.html"        
+           src="http://120.55.102.225:12359/scene/clickjumptao/index.html"        
             frameborder="0" 
             scrolling="no"
             style="display: block;
@@ -66,28 +75,25 @@ namespace IoTWebview {
 
 }
 
-/**
- * 插件被加载时调用
- * @param context 
- */
 export function start(context: theia.PluginContext) {
+
     // src="http://47.97.253.23:12359/publish/index.html"
     context.subscriptions.push(
         theia.commands.registerCommand(
-            IoTCommands.TINYLINK_COMPILE,
+            IoTCommands.TINYLINK_COMPILE_TAO,
             async (...args: any[]) => {
                 console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!args is :`)
                 console.log(...args)
                 //
                 const panel = theia.window.createWebviewPanel(
                     "div",
-                    "unity",
+                    "taoFactory",
                     theia.ViewColumn.Active,
                     {
                         enableFindWidget: true,
                         retainContextWhenHidden: true,
                         enableScripts: true,
-                        enableCommandUris:true
+                        enableCommandUris: true
                     }
                 );
                 //theia收到前端的message去执行gotoCode，打开文件,请求的文件信息都在e里面，打开文件以后theia会自动把文件渲染到页面中
@@ -95,19 +101,23 @@ export function start(context: theia.PluginContext) {
                     console.log(JSON.stringify(e))
                     console.log("mesg:" + e.command)
                     if (e.command == "openUri") {
-                        //e.text是需要打开的文件名 cam1/cam2/cam3/cam4/scanner
+                        //e.text是需要打开的文件名
+                        console.log(e.text);
                         theia.commands.executeCommand("gotoCode", e.text)
                     }
                 })
                 //返回字符串，把仿真页面嵌入到webView里面
-                panel.webview.html = IoTWebview.generateHTML(
-                    args[0]
+                panel.webview.html = IoTWebviewTao.generateHTML(
+                args[0]
                 );
                 panel.webview.postMessage("ok u right")
 
             }
         )
     );
+
 }
 
-export function stop() { }
+export function stop() {
+
+}

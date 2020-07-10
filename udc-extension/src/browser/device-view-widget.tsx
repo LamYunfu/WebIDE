@@ -500,7 +500,7 @@ export class DeviceViewWidget extends TreeWidget {
   };
   gotoCode(file: string) {
     if (this.ppid == undefined) {
-      this.outputResult("err happened,try to refresh the page");
+      //this.outputResult("err happened,try to refresh the page");
       return;
     }
     this.openFile(this.ppid, file);
@@ -620,7 +620,18 @@ export class DeviceViewWidget extends TreeWidget {
     this.udcService.openConfigFile(pid);
   };
   submitCode = (pid: string) => {
-    this.udcService.submitCode(pid);
+    //判断有没有打开scanner.cpp
+    let isOpened = false;
+    this.currentTabs = this.applicationShell.getWidgets('main');
+    if(this.currentTabs){
+      for(let i = 0;i < this.currentTabs.length;i++){
+        this.thisId = this.currentTabs[i].id;
+        if(this.thisId.includes("scanner.cpp")){
+          isOpened = true;
+        }
+      }
+    }
+    this.udcService.submitCode(pid, isOpened);
   }
 
   unityOpened: boolean = false;
@@ -651,9 +662,9 @@ export class DeviceViewWidget extends TreeWidget {
     }
     this.udcService.submitAlgorithm(pid, this.cunrrentId);
     if(this.cunrrentId.includes("cam")){
-      let time = self.setTimeout(() => {
-        this.gotoTaoUnity();
-      } ,1000)
+      console.log("打开虚拟仿真页面。。。");
+      this.gotoTaoUnity();
+
     }  
   }
   
@@ -666,7 +677,7 @@ export class DeviceViewWidget extends TreeWidget {
     //看有没有打开
       this.applicationShell.getTabBarFor("main") != null &&
       this.applicationShell.getTabBarFor("main")!.titles.some((w, i) => {
-        if (w.label == "unity") {
+        if (w.label == "taoUnity") {
           this.applicationShell.revealWidget(w.owner.id);
           return true;
         } else {

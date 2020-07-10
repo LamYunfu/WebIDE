@@ -67,11 +67,11 @@ export class TaoFactoryView extends React.Component<taoFactoryView.Props, taoFac
     }
     render(): JSX.Element {
         return (
-            <div style={{height: "100%"}}>
+            <div style={{height: "100%", overflow:"-Scroll", overflowY:"hidden"}}>
                 <h5 id="titleAndStatus" className="card-title">
                     <span id={"coding_title"}>{"智能制造"}</span>
                 </h5>
-                <div id="codingInfoAreaContainer" style={{ height: "70%", width: "100%", position:"relative", overflow:"hidden"}}>
+                <div id="codingInfoAreaContainer" style={{ height: "80%", width: "100%", position:"relative", overflow:"hidden"}}>
                 <iframe id="iframe1"
                     src="http://120.55.102.225:12359/scene/steps.html"  
                     frameBorder="0"       
@@ -80,7 +80,7 @@ export class TaoFactoryView extends React.Component<taoFactoryView.Props, taoFac
                     sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
                 </div>
         
-                <div style = {{ position: "absolute", width: "100%", fontSize: "15px", top: "75%" }} >
+                <div style = {{ position: "absolute", width: "100%", fontSize: "15px", top: "87%" }} >
                     <div className="row" >
                         <div className="col-12" style={{color: "white", cursor: "pointer", textAlign: "center", backgroundColor: "#3399FF",  margin:"5px", padding:"3px"}} id={"submitCode"} onClick={this.codeSubmit}>提交扫码枪代码</div>
                     </div>

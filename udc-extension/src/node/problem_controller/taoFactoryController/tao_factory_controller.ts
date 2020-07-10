@@ -2,6 +2,9 @@ import { TinySim } from './../../services/tinysim/tinysim';
 import { OneLinkData } from './../../data_center/one_link_data';
 import { injectable, inject, interfaces } from "inversify";
 import { OneLinkDataService } from "../../services/data_service/onelink_data_service";
+import { MultiProjectData } from '../../data_center/multi_project_data';
+import { ProjectData } from '../../data_center/project_data';
+import * as path from "path"
 export function bindTaoFactoryController(bind: interfaces.Bind) {
     bind(TaoFactoryController).toSelf().inSingletonScope()
 }
@@ -14,13 +17,19 @@ export class TaoFactoryController {
         @inject(OneLinkDataService) protected oneLinkDataService: OneLinkDataService,
         //题目信息数据
         @inject(OneLinkData) protected oneLinkData: OneLinkData,
-        @inject(TinySim) protected tinySim: TinySim
+        @inject(TinySim) protected tinySim: TinySim,
+        @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
+        @inject(ProjectData) protected projectData: ProjectData,
     ) {
 
     }
-    async submitCode(pid: string){
-        this.oneLinkDataService.outputResult("scanner.cpp submitted successfully");
-        this.codeTag = true;
+    async submitCode(pid: string, isOpened: boolean){
+        if(isOpened){
+            this.oneLinkDataService.outputResult("scanner.cpp submitted successfully");
+            this.codeTag = true;
+        }else{
+            this.oneLinkDataService.outputResult("open the scanner.cpp and write the code first!");
+        }       
     }
     
     async submitAlgorithm(pid: string, currentId:string){
@@ -30,8 +39,9 @@ export class TaoFactoryController {
             if(this.codeTag == true){
                 this.oneLinkDataService.parseVirtualConfig(pid)
                 let simServer = this.oneLinkData.projects![0].simServer!
-                this.oneLinkDataService.outputResult(this.oneLinkDataService.getCurrentDir());
-                //return await this.tinySim.virtualSubmit(simServer, this.oneLinkDataService.getCurrentDir())
+                //this.oneLinkDataService.outputResult(this.oneLinkDataService.getCurrentDir());
+                let srcDir = path.join(this.oneLinkDataService.getCurrentDir(), this.oneLinkData.projects![0].projectName!.toString());
+                await this.tinySim.virtualSubmit(simServer, srcDir)
             }
             this.oneLinkDataService.outputResult("entering the virtual simulation scene...");
           }else{
