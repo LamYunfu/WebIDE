@@ -1,3 +1,4 @@
+import { UserInfo } from './data_center/user_info';
 import { TinySim } from './services/tinysim/tinysim';
 import { ModelTrainer } from './services/model_trainer.ts/model_trainer';
 import { FileOpener } from './services/opener/file_openner';
@@ -15,13 +16,13 @@ import { injectable, inject } from "inversify";
 import { ILogger } from "@theia/core";
 import { RawProcessFactory } from "@theia/process/lib/node";
 import { LinkEdgeManager } from "./util/linkedgemanger";
-import { CallInfoStorer } from "./util/callinfostorer";
 import { LdcShellInterface } from './services/ldc_shell/interfaces/ldc_shell_interface';
 import { ProblemController } from './problem_controller/problem_controller';
 import { TrainExperimentController } from './problem_controller/train_experiment_controller/train_experiment_controller';
 import { OneLinkService } from './services/one_link_service/onelink';
 import { ConsoleLogger } from '@theia/core/lib/common/logger-protocol';
 import { TaoFactoryController } from './problem_controller/taoFactoryController/tao_factory_controller';
+import { CallInfoStorer } from './services/log/call_info_storer';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -44,7 +45,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(TaoFactoryController) protected taoFactoryController: TaoFactoryController,
     @inject(FileOpener) protected fileOpener: FileOpener,
     @inject(ModelTrainer) protected modelTrainer: ModelTrainer,
-    @inject(TinySim) protected tinySim: TinySim
+    @inject(TinySim) protected tinySim: TinySim,
+    @inject(UserInfo) protected userInfo:UserInfo
   ) { }
 
   is_connected(): Promise<Boolean> {
@@ -209,7 +211,10 @@ export class UdcServiceImpl implements UdcService {
   }
   setTinyLink(name: string, passwd: string, uid: string): void {
     this.udcTerminal.setTinyLink(name, passwd, uid);
-    this.cis.setUser(uid);
+    this.userInfo.username=uid;
+    this.userInfo.passwd=passwd;
+    // this.userInfo.tinyname=name;
+    // this.cis.setUser(uid);
   }
   config(): any {
     this.udcTerminal.config();

@@ -1,20 +1,21 @@
 import { injectable } from "inversify";
 import * as fs from "fs-extra";
 import { Call_Log_Path } from "../../setting/backend-config";
+import * as mt from "moment-timezone"
 @injectable()
 export class CallInfoStorer {
   user = "null";
+
   storeCallInfoInstantly(info: string, api: string, severity: number = 0) {
+    mt(new Date()).tz("Asia/Shanghai")
     switch (severity) {
       case 0:
-        info = `${new Date()
-          .toISOString()
-          .replace("T", " ")
-          .replace("Z", " ")} ${this.user} ${api} ${info}\n`;
+        info = `${mt(new Date() ).tz("Asia/Shanghai").toString()
+            .replace("T", " ")
+            .replace("Z", " ")} ${this.user} ${api} ${info}\n`;
         break;
       case 1:
-        info = `${new Date()
-          .toISOString()
+        info = `${mt(new Date() ).tz("Asia/Shanghai").toString()
           .replace("T", " ")
           .replace("Z", " ")} ${this.user} ${api} error(${info})\n`;
         break;

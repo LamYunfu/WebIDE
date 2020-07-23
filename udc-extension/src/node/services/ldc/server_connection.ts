@@ -115,7 +115,11 @@ export class ServerConnection implements ServerConnectionInterface {
   }
 
   sendPacket(type: string, content: string) {
-    this.udcServerClient!.write(this.pkt.construct(type, content));
+    if(!!this.udcServerClient)
+    this.udcServerClient.write(this.pkt.construct(type, content));
+    else{
+      throw "Connection to LDC is inactive,please retry"
+    }
   }
 
   onUdcServerData = (data: Buffer) => {
@@ -239,6 +243,13 @@ export class ServerConnection implements ServerConnectionInterface {
         return
       }
       for (let item of logObj["logs"]) {
+        item= item.replace(
+          /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+          ""
+        );
+        if(item.trim()==""){
+          continue;
+        }
         if (item.startsWith("0E")) {
           if (
             item
@@ -269,7 +280,7 @@ export class ServerConnection implements ServerConnectionInterface {
       this.sendPacket(Packet.MULTI_DEVICE_PROGRAM, JSON.stringify(ske));
       return true;
     } catch (error) {
-      console.log(error);
+      this.outputResult(error,"err")
       return false;
     }
   }

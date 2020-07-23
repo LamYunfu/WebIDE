@@ -12,6 +12,7 @@ import { ProgramerInterface } from "../../services/programers/interfaces/program
 import { DistributedCompiler } from "../../services/compiler/ds_compiler";
 import { MultiProjectData } from "../../data_center/multi_project_data";
 import * as fs from "fs-extra"
+import { Indicator } from '../../services/indicator/indicator';
 @injectable()
 export class ExperimentController {
   constructor(
@@ -33,7 +34,8 @@ export class ExperimentController {
     @inject(DataService) protected dService: DataService,
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
-    @inject(TinyLinkCompiler) protected tinyLinkCompiler: TinyLinkCompiler
+    @inject(TinyLinkCompiler) protected tinyLinkCompiler: TinyLinkCompiler,
+    @inject(Indicator) protected waitingIndicator:Indicator
   ) { }
   async submitQueue(): Promise<boolean> {
 
@@ -54,6 +56,7 @@ export class ExperimentController {
         "sketch.hex"
       );
       this.outputResult(`Compiling ${this.projectData.subProjectArray[i]}...`)
+      this.waitingIndicator.register()
       if (projectData.subCompileTypes[i].trim() == "tinylink") {
         let fa = fs.readdirSync(srcPath)
         pa.push(this.tinyLinkCompiler.compile(path.join(srcPath, fa[0]), i))
@@ -71,18 +74,21 @@ export class ExperimentController {
 
     }
     let ra = await Promise.all(pa);
+    this.waitingIndicator.unRegister();
     for (let r of ra) {
       if (!r) return false;
     }
     this.outputResult("Command burning")
-    return await this.queueProgramer.burn();
+    this.waitingIndicator.register()
+    let result =await this.queueProgramer.burn();
+    this.waitingIndicator.unRegister()
+    return result
   }
   async submitAdhoc() {
     let cr = await this.lcc.connect();
     if (!cr) return false;
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
-
     for (let i in projectData.subProjectArray) {
       let srcPath = path.join(
         this.multiProjectData.rootDir,

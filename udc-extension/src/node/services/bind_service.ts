@@ -13,6 +13,7 @@ import { bindModelTrainer } from "./model_trainer.ts/bind_moder_trainer_service"
 import { bindOneLinkService } from "./one_link_service/onelink";
 import { bindTinySim } from "./tinysim/tinysim";
 import { bindQueryService } from "./query_service/query_service";
+import { bindIndicator } from "./indicator/indicator";
 
 export function bindServices(bind: interfaces.Bind) {
   bindLdcShell(bind);
@@ -29,4 +30,5 @@ export function bindServices(bind: interfaces.Bind) {
   bindOneLinkService(bind)
   bindTinySim(bind)
   bindQueryService(bind)
+  bindIndicator(bind)
 }

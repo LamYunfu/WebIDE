@@ -21,11 +21,11 @@ export class FileOpener {
   async openFile(pt: string) {
     if (this.projectData.experimentType == "OneLinkView") {
       await this.oneLinkDataService.parseVirtualConfig(this.projectData.pid)
-      let rootPath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString()) ;
+      let rootPath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString());
       pt = this.getFilePath(rootPath, pt);
     }
 
-    if (OS.type() == OS.Type.Linux)+
+    if (OS.type() == OS.Type.Linux) +
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
         passwd: pt,
@@ -68,35 +68,48 @@ export class FileOpener {
         dir
       );
       console.log("-----dir:" + dir)
-      for (let file of fileArr) {
-        let tmp = path.join(cpath, item, file)
-        console.log("-----file:" + tmp)
-        setTimeout(() => {
-          this.openFile(tmp)
-        }, 3000);
-
+      for (let i = 0; i < 2; i++) {
+        for (let file of fileArr) {
+          let tmp = path.join(cpath, item, file)
+          if (i % 2 == 0) {
+            if (!file.endsWith("py"))
+              continue;            
+              console.log("-----file:" + tmp)
+              setTimeout(() => {
+                this.openFile(tmp)
+              }, 1500);
+          } else {
+            if (!file.endsWith("c") &&!file.endsWith("cpp"))
+              continue;
+              console.log("-----file:" + tmp)
+              setTimeout(() => {
+                this.openFile(tmp)
+              }, 2000);
+          }
+    
+        }
       }
     }
   }
 
-  getFilePath(rootPath:string, pt: string): string{
+  getFilePath(rootPath: string, pt: string): string {
     let _this = this;
     let _dirReturn = "";
-    let files:string[] = fs.readdirSync(rootPath);
-    for(let i = 0;i < files.length;i++){
+    let files: string[] = fs.readdirSync(rootPath);
+    for (let i = 0; i < files.length; i++) {
       var filedir = path.join(rootPath, files[i]);
       let status = fs.statSync(filedir);
       let isFile = status.isFile();
       let isDir = status.isDirectory();
-      if(isFile){
-        if(files[i].includes(pt)){
+      if (isFile) {
+        if (files[i].includes(pt)) {
           _dirReturn = filedir;
           return _dirReturn;
         }
       }
-      if(isDir){
+      if (isDir) {
         var dir = this.getFilePath(filedir, pt);
-        if(dir != "")
+        if (dir != "")
           _dirReturn = dir;
       }
     }

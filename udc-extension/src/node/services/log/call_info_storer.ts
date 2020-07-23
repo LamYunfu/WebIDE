@@ -4,6 +4,7 @@ import { Call_Log_Path } from "../../../setting/backend-config";
 import { UserInfo } from "../../data_center/user_info";
 import { inject, interfaces } from "inversify";
 import { CallInfoStorerInterface } from "./interfaces/call_storer_interface";
+import * as mt from 'moment-timezone'
 export function bindCallInfoStorer(bind: interfaces.Bind) {
   bind(CallInfoStorer).toSelf().inSingletonScope();;
   bind(CallInfoStorerInterface).to(CallInfoStorer).inSingletonScope();;
@@ -14,14 +15,12 @@ export class CallInfoStorer {
   storeCallInfoInstantly(info: string, api: string, severity: number = 0) {
     switch (severity) {
       case 0:
-        info = `${new Date()
-          .toISOString()
+        info = `${mt(new Date() ).tz("Asia/Shanghai").toString()
           .replace("T", " ")
           .replace("Z", " ")} ${this.user.username} ${api} ${info}\n`;
         break;
       case 1:
-        info = `${new Date()
-          .toISOString()
+        info = `${mt(new Date() ).tz("Asia/Shanghai").toString()
           .replace("T", " ")
           .replace("Z", " ")} ${this.user.username} ${api} error(${info})\n`;
         break;
@@ -38,10 +37,10 @@ export class CallInfoStorer {
   ) {
     switch (severity) {
       case 0:
-        info = `${time} ${this.user} ${api} ${info}\n`;
+        info = `${time} ${this.user.username} ${api} ${info}\n`;
         break;
       case 1:
-        info = `${time} ${this.user} ${api} error(${info})\n`;
+        info = `${time} ${this.user.username} ${api} error(${info})\n`;
         break;
     }
     !fs.existsSync(Call_Log_Path)

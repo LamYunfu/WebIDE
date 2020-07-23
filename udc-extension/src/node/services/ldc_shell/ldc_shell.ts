@@ -33,6 +33,9 @@ export class LdcShell {
     this._udcClient = x
   }
   outputResult(res: string, types: string = "systemInfo") {
+    if(res.trim()==""){
+      return;
+    }
     console.log("----- shell:" + res)
     res = res.replace(
       /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
@@ -47,20 +50,20 @@ export class LdcShell {
       case "sys": {
         this.udcClient &&
           this.udcClient.OnDeviceLog(
-            "::" + `[INFO][${d}][WebIDE] ${res}`.green
+            "::" + `[INFO][${d}][WebIDE] ${res.trim()}`.green
           );
         break;
       }
       case "log": {
         this.udcClient &&
           this.udcClient.OnDeviceLog(
-            "::" + `[LOG][${d}][WebIDE] ${res.gray}`.white
+            "::" + `[LOG][${d}][WebIDE] ${res.trim().gray}`.white
           );
         break;
       }
       case "err": {
         this.udcClient &&
-          this.udcClient.OnDeviceLog("::" + `[ERROR][${d}][WebIDE] ${res}`.red);
+          this.udcClient.OnDeviceLog("::" + `[ERROR][${d}][WebIDE] ${res.trim()}`.red);
         break;
       }
     }

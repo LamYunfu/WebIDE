@@ -39,6 +39,7 @@
     "colors": "^1.4.0",
     "inversify": "^5.0.1",
     "jquery": "^3.4.1",
+    "moment-timezone": "^0.5.31",
     "node-filesystem": "^0.0.20",
     "node-gyp": "^6.0.1",
     "nsfw": "^2.0.0",
