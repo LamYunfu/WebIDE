@@ -30,6 +30,7 @@ export const RASPBERRY_GCC_PORT = "12400";
 export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
 // export const CONFIGPATH = "D:/config";
 // export const Call_Log_Path = "D:/call_info.log";
+// export const ROOTPATH="D:/all"
 // @injectable()
 // export class RootDirPath {
 //   private rootDir: string = `D:/all`;
@@ -43,6 +44,7 @@ export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
 //     this.rootDir = `D:/all`;
 //   }
 // }
+export const ROOTPATH="/home/project"
 export const Call_Log_Path="/home/project/call_info.log"
 export const CONFIGPATH="/home/config"
 @injectable()

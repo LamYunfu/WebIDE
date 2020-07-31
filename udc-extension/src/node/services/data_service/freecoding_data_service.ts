@@ -22,8 +22,8 @@ export class FreeCodingDataService {
     }
 
     Object.assign(this.projectData, this.multiProjectData.dataMap[this.projectData.pid])
-    console.log("---after parse All" + JSON.stringify(this.multiProjectData))
-    console.log("---after parse All" + JSON.stringify(this.projectData))
+    console.log("---after parse All multiProjectData" + JSON.stringify(this.multiProjectData))
+    console.log("---after parse All projectData:" + JSON.stringify(this.projectData))
 
   }
   parseProjectDataFromFile(pd: ProjectData): boolean {

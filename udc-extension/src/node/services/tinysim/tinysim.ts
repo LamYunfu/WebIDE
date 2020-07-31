@@ -41,7 +41,12 @@ export class TinySim {
     });
   }
   async connectSimServer(server: string): Promise<boolean> {
-    this.tinySimClient = new WebSocket(server);
+    try {
+      this.tinySimClient = new WebSocket(server);
+    } catch (error) {
+      this.outputResult("Tinysim Network Error","err")
+    }
+  
     if (!this.tinySimClient) {
       return false;
     }
@@ -81,7 +86,7 @@ export class TinySim {
     let rb = fs.readFileSync(zip, {
       encoding: "base64",
     }); //base64转码文件
-    fs.unlinkSync(zip);
+    // fs.unlinkSync(zip);
     let hashVal = this.fileCompressor.getHash(rb);
     let data = {
       hash: hashVal,

@@ -2,7 +2,7 @@ import React = require("react");
 import * as $ from "jquery"
 // import URI from "@theia/core/lib/common/uri";
 import { MyContext } from "./context";
-import { AI1DOC, AI2DOC, AI3DOC, MODEL_DOWNLOAD_URL } from '../../setting/front-end-config'
+import { AI1DOC, AI2DOC, AI3DOC, MODEL_DOWNLOAD_URL, AI4DOC, AI5DOC } from '../../setting/front-end-config'
 export namespace AI {
     export interface Props {
         section: { [key: string]: any }
@@ -34,7 +34,13 @@ export class AIView extends React.Component<AI.Props, AI.State> {
 
     async componentDidMount() {
         let _this = this
-        if (this.props.title == "画板数字识别")
+        if(this.props.title == "韩信点兵"){
+            $("#aiDSP").attr("src", AI4DOC)
+        }
+        else if(this.props.title=="体重指数计算器"){
+            $("#aiDSP").attr("src", AI5DOC)
+        }
+        else if (this.props.title == "画板数字识别")
             $("#aiDSP").attr("src", AI1DOC)
         else if (this.props.title == "图像人脸识别")
             $("#aiDSP").attr("src", AI2DOC)
@@ -81,7 +87,7 @@ export class AIView extends React.Component<AI.Props, AI.State> {
                 <div style={{
                     width: '100%',
                     height: '100%',
-                    background: 'darkgray'
+                    background: 'darkgray',
                 }}>
                     <iframe id="aiDSP" src="" style={{
                         width: " 100%",
@@ -93,7 +99,9 @@ export class AIView extends React.Component<AI.Props, AI.State> {
                 </div>
 
                 <a id="downloadlink" style={{ "display": "none" }}></a>
-                {this.props.title != "相机人脸识别" ? <div>
+                {this.props.title == "韩信点兵"||this.props.title == "体重指数计算器"?<div>
+                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>提交</button></span>
+                </div> :this.props.title != "相机人脸识别"? <div>
                     <span style={{ position: "absolute", left: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"openDrawBoard"}>开关画板</button></span>
                     <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>提交</button></span>
                 </div> :

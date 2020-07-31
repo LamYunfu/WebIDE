@@ -72,6 +72,7 @@ export class ModelTrainer {
         }
       }
       this.ws!.send(this.pkt.construct("file", rb.toString()));
+      this.outputResult("Send source file scc")
       return true;
     } catch (error) {
       Logger.info(error);
