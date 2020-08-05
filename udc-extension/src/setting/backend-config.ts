@@ -44,6 +44,8 @@ export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
 //     this.rootDir = `D:/all`;
 //   }
 // }
+
+
 export const ROOTPATH="/home/project"
 export const Call_Log_Path="/home/project/call_info.log"
 export const CONFIGPATH="/home/config"

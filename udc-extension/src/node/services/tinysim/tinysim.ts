@@ -82,12 +82,12 @@ export class TinySim {
 
   async virtualSubmit(serverPath: string, srcDir: string): Promise<boolean> {
     let zip = this.fileCompressor.generateTempFilePath();
-    this.fileCompressor.compress(srcDir, zip);
+    await this.fileCompressor.compress(srcDir, zip);
     let rb = fs.readFileSync(zip, {
       encoding: "base64",
     }); //base64转码文件
-    // fs.unlinkSync(zip);
-    let hashVal = this.fileCompressor.getHash(rb);
+    fs.unlinkSync(zip);
+    let hashVal = await this.fileCompressor.getHash(rb);
     let data = {
       hash: hashVal,
       data: rb,
