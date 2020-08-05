@@ -28,26 +28,11 @@ export const TINYLINEDGECOMPILE_IP = `47.96.155.111`;
 export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_GCC_PORT = "12400";
 export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
-// export const CONFIGPATH = "D:/config";
-// export const Call_Log_Path = "D:/call_info.log";
-// @injectable()
-// export class RootDirPath {
-//   private rootDir: string = `D:/all`;
-//   get val(): string {
-//     return this.rootDir;
-//   }
-//   set val(val: string) {
-//     this.rootDir = path.join(this.rootDir, val);
-//   }
-//   reset() {
-//     this.rootDir = `D:/all`;
-//   }
-// }
-export const Call_Log_Path="/home/project/call_info.log"
-export const CONFIGPATH="/home/config"
+export const CONFIGPATH = "D:/config";
+export const Call_Log_Path = "D:/call_info.log";
 @injectable()
 export class RootDirPath {
-  private rootDir: string = `/home/project`;
+  private rootDir: string = `D:/all`;
   get val(): string {
     return this.rootDir;
   }
@@ -55,6 +40,22 @@ export class RootDirPath {
     this.rootDir = path.join(this.rootDir, val);
   }
   reset() {
-    this.rootDir = `/home/project`;
+    this.rootDir = `D:/all`;
   }
 }
+
+// export const Call_Log_Path="/home/project/call_info.log"
+// export const CONFIGPATH="/home/config"
+// @injectable()
+// export class RootDirPath {
+//   private rootDir: string = `/home/project`;
+//   get val(): string {
+//     return this.rootDir;
+//   }
+//   set val(val: string) {
+//     this.rootDir = path.join(this.rootDir, val);
+//   }
+//   reset() {
+//     this.rootDir = `/home/project`;
+//   }
+// }

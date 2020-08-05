@@ -77,12 +77,12 @@ export class TinySim {
 
   async virtualSubmit(serverPath: string, srcDir: string): Promise<boolean> {
     let zip = this.fileCompressor.generateTempFilePath();
-    this.fileCompressor.compress(srcDir, zip);
+    await this.fileCompressor.compress(srcDir, zip);
     let rb = fs.readFileSync(zip, {
       encoding: "base64",
     }); //base64转码文件
     fs.unlinkSync(zip);
-    let hashVal = this.fileCompressor.getHash(rb);
+    let hashVal = await this.fileCompressor.getHash(rb);
     let data = {
       hash: hashVal,
       data: rb,
@@ -91,6 +91,40 @@ export class TinySim {
     this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
     if (!this.tinySimClient) await this.connectSimServer(serverPath);
     let content = this.pkt.construct("file", rb.toString());
+    if (!this.tinySimClient) {
+      return false;
+    }
+    this.tinySimClient.send(content);
+    this.cis.storeCallInfoInstantly("end", CallSymbol.TISM);
+    return true;
+  }
+
+  async virtualSubmitTao(serverPath: string, srcDir: string, algorithmID:string){
+ 
+    let zip = this.fileCompressor.generateTempFilePath();
+    await this.fileCompressor.compress(srcDir, zip);
+    let rb = fs.readFileSync(zip, {
+      encoding: "base64",
+    }); //base64转码文件
+    // fs.unlinkSync(zip);
+    let hashVal = await this.fileCompressor.getHash(rb);
+    let data = {
+      hash: hashVal,
+      data: rb,
+    };
+    // console.log("sim server" + serverPath + JSON.stringify(data));
+    this.cis.storeCallInfoInstantly("start", CallSymbol.TISM);
+    if (!this.tinySimClient) await this.connectSimServer(serverPath);
+    let JSONData = {
+      type: "file",
+      id: algorithmID,
+      data: rb.toString()
+    }
+    // console.log("压缩包路径是：" + zip);
+    // console.log("数据是：" + rb);
+    // console.log(JSON.stringify(JSONData));
+    //console.log("报告首长，已经进入到调试页面，等待上级指示。");
+    let content = this.pkt.construct("file", JSON.stringify(JSONData));
     if (!this.tinySimClient) {
       return false;
     }

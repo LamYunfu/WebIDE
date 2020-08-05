@@ -41,7 +41,8 @@ export class TaoFactoryController {
                 let simServer = this.oneLinkData.projects![0].simServer!
                 //this.oneLinkDataService.outputResult(this.oneLinkDataService.getCurrentDir());
                 let srcDir = path.join(this.oneLinkDataService.getCurrentDir(), this.oneLinkData.projects![0].projectName!.toString());
-                await this.tinySim.virtualSubmit(simServer, srcDir)
+                // console.log("进入了提交界面！");
+                await this.tinySim.virtualSubmitTao(simServer, srcDir, currentId);
             }
             this.oneLinkDataService.outputResult("entering the virtual simulation scene...");
           }else{
