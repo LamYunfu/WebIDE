@@ -79,7 +79,7 @@ export class FileOpener {
                 this.openFile(tmp)
               }, 1500);
           } else {
-            if (!file.endsWith("c") &&!file.endsWith("cpp"))
+            if (!file.endsWith("c") &&!file.endsWith("cpp") &&!file.endsWith("ino"))
               continue;
               console.log("-----file:" + tmp)
               setTimeout(() => {

@@ -1,3 +1,4 @@
+import { TrainDataService } from './../services/data_service/train_data_service';
 import { EventDefinition } from './../services/tools/event_definition';
 import { LdcData } from './../data_center/ldc_data';
 import { QueryService } from './../services/query_service/query_service';
@@ -31,6 +32,7 @@ export class ProblemController {
         @inject(EventCenter) protected eventCenter: EventCenter,
         @inject(QueryService) protected queryService: QueryService,
         @inject(EventDefinition) protected eventDefinition: EventDefinition,
+        @inject(TrainDataService) protected trainDataService:TrainDataService,
         @inject(LdcData) protected ldd: LdcData) {
     }
     async init(info: string) {
@@ -39,6 +41,7 @@ export class ProblemController {
         await this.dataService.copyLdcDataFromData()
         await this.fileTemplate.buildAllProjects()
         await this.freeCodingDataService.parseAllData()
+        await this.trainDataService.parseAllData()
         await this.fileOpener.openCurrentWorkSpace()
         await this.fileOpener.openFiles()
         await this.ldcShell.executeFrontCmd({ name: "openShell", passwd: "" })

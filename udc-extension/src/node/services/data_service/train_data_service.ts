@@ -46,4 +46,14 @@ export class TrainDataService {
             return ob
         }
     }
+  parseAllData(){
+        let ob=this.parseTrainData()
+        for( let key of  Object.keys(this.multiProjectData.dataMap)){
+            if(this.multiProjectData.dataMap[key].experimentType=="ai"){
+                for(let x of ob!.projects!){
+                   this.multiProjectData.dataMap[key].subProjectArray.push("code");
+                }
+            }
+        }
+ }
 }

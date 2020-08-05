@@ -41,7 +41,12 @@ export class TinySim {
     });
   }
   async connectSimServer(server: string): Promise<boolean> {
-    this.tinySimClient = new WebSocket(server);
+    try {
+      this.tinySimClient = new WebSocket(server);
+    } catch (error) {
+      this.outputResult("Tinysim Network Error","err")
+    }
+  
     if (!this.tinySimClient) {
       return false;
     }
