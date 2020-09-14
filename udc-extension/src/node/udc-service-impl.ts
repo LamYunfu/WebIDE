@@ -48,6 +48,9 @@ export class UdcServiceImpl implements UdcService {
     @inject(TinySim) protected tinySim: TinySim,
     @inject(UserInfo) protected userInfo:UserInfo
   ) { }
+  localBurn(pid: string){
+    this.pc.localSubmit(pid);
+  } 
 
   is_connected(): Promise<Boolean> {
     return new Promise<Boolean>((resolve) => {
@@ -328,5 +331,8 @@ export class UdcServiceImpl implements UdcService {
     //this.udcTerminal.submitAlgorithm(pid, currentId);
     console.log("submit algorithm!");
     this.taoFactoryController.submitAlgorithm(pid, currentId);
+  }
+  localSubmit(pid:string){
+    this.pc.localSubmit(pid)
   }
 }

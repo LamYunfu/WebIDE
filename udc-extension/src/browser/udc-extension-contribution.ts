@@ -97,6 +97,12 @@ export namespace UdcCommands {
     category: UDC_MENU_CATEGORY,
     label: "program",
   };
+  
+  export const LocalBurn: Command = {
+    id: "udc.menu.local_burn",
+    category: UDC_MENU_CATEGORY,
+    label: "local_burn",
+  };
 
   export const Reset: Command = {
     id: "udc.menu.reset",
@@ -258,7 +264,7 @@ export class UdcExtensionCommandContribution
         } else if (data.name == "openWorkspace") {
           await this.ds.openWorkspace(data.passwd);
           return;
-        } else if (data.name == "openShell") {
+        } else if (data.name == "openShell") { 
           this.deviceViewService.openShell();
           return;
         } else if (data.name == "submitEnable") {
@@ -270,7 +276,11 @@ export class UdcExtensionCommandContribution
         } else if (data.name == "executeSelectPanel") {
           this.deviceViewService.openExecutePanel();
           return;
-        } else if (data.name == "redirect") {
+        }  else if (data.name == "local_burn") {
+          fetch(data.passwd)
+          return;
+        } 
+        else if (data.name == "redirect") {
           // // this.url=data.passwd
           this.ds.openTinyMobile(data.passwd);
           // this.x= window.open("http://120.55.102.225:12359/phone/index.html")
@@ -489,6 +499,13 @@ export class UdcExtensionCommandContribution
         this.ds.submitOnMenu();
       },
     });
+    registry.registerCommand(UdcCommands.LocalBurn, {
+      execute: () => {
+        // this.applicationShell.activateWidget("files")
+        this.applicationShell.saveAll();
+        this.ds.localBurnOnMenu();
+      },
+    });
     registry.registerCommand(UdcCommands.Reset, {
       execute: async () => {
         let dev_list = await this.udcService.get_devices();
@@ -511,6 +528,10 @@ export class UdcExtensionCommandContribution
     this.kr.registerKeybinding({
       command: "submitonmenu",
       keybinding: "ctrl+m",
+    });
+    this.kr.registerKeybinding({
+      command: "local_burn",
+      keybinding: "",
     });
   }
 }
@@ -583,6 +604,12 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       label: "LiteralAnalysis",
       icon: "x",
       order: "a_2",
+    });
+    menus.registerMenuAction([...UdcMenus.UDC], {
+      commandId: UdcCommands.LocalBurn.id,
+      label: "LocalBurn",
+      icon: "x",
+      order: "a_3",
     });
     // menus.registerSubmenu(UdcMenus.linkedge, "linkedge");
     // // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
