@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 import * as path from "path";
 // export const DEPLOY_SERVER_IP = "10.200.20.5";
-// export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn";
+export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn";
 export const DEPLOY_SERVER_IP = "120.55.102.225";
-export const DEPLOY_SERVER_DOMAIN = "tinylink.cn";
+// export const DEPLOY_SERVER_DOMAIN = "tinylink.cn";
 export const FILE_SERVER_HOST = `fileserver.${DEPLOY_SERVER_DOMAIN}`
 export const CONTIKI_IP = `${DEPLOY_SERVER_IP}`;
 export const CONTIKI_PORT = "12382";
