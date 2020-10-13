@@ -1,3 +1,4 @@
+import { LocalBurnerNotifier } from './../local_burner_notifier/local_burner_notifier';
 import { FileCompressor } from './../tools/file_compressor';
 import * as Hs from "http";
 
@@ -24,7 +25,8 @@ export class DistributedCompiler {
     @inject(LdcShellInterface) readonly ldcShell: LdcShellInterface,
     @inject(CallInfoStorer) readonly cis: CallInfoStorer,
     @inject(ProjectData) readonly projectData: ProjectData,
-    @inject(FileCompressor) readonly fileCompressor: FileCompressor
+    @inject(FileCompressor) readonly fileCompressor: FileCompressor,
+    @inject(LocalBurnerNotifier) readonly lbn:LocalBurnerNotifier
   ) { }
   outputResult(mes: string, type: string = "sys") {
     this.ldcShell.outputResult(mes, type);
@@ -103,6 +105,9 @@ export class DistributedCompiler {
             }
             else if (ob["msg"] == "completed") {
               this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
+              // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
+              this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}`)
+              // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               resolve("not_query")
               return
             }
@@ -112,6 +117,8 @@ export class DistributedCompiler {
               (p = `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               // b04f3ee8f5e43fa3b162981b50bb72fe1acabb33&boardtype=esp32devkitc&compiletype=alios
             );
+            this.lbn.notify(`download?filehash=${fha}&boardtype=${boardType}`)
+            // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
             console.log(p);
           });
         }

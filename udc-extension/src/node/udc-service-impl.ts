@@ -1,3 +1,4 @@
+import { DisplayBoardBackEnd } from './services/displayboard/displayboard';
 import { UserInfo } from './data_center/user_info';
 import { TinySim } from './services/tinysim/tinysim';
 import { ModelTrainer } from './services/model_trainer.ts/model_trainer';
@@ -46,8 +47,12 @@ export class UdcServiceImpl implements UdcService {
     @inject(FileOpener) protected fileOpener: FileOpener,
     @inject(ModelTrainer) protected modelTrainer: ModelTrainer,
     @inject(TinySim) protected tinySim: TinySim,
-    @inject(UserInfo) protected userInfo:UserInfo
+    @inject(UserInfo) protected userInfo:UserInfo,
+    @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd
   ) { }
+  localBurn(pid: string){
+    this.pc.localSubmit(pid);
+  } 
 
   is_connected(): Promise<Boolean> {
     return new Promise<Boolean>((resolve) => {
@@ -305,10 +310,16 @@ export class UdcServiceImpl implements UdcService {
     return this.udcTerminal.tinyEdgeUpload(pid);
   }
   async processDisplaySubmit(pid: string, info: string) {
-    await this.controller.processDisplaySubmit(pid, info);
+    if (pid == "") await this.dbb.init(info);
+    else{
+        this.localSubmit(pid)
+    }
+    // await this.controller.processDisplaySubmit(pid, info);
   }
   async initDisplayBoard(info: string) {
-    await this.udcTerminal.initDisplayBoard(info);
+    // await this.pc.init(info)
+    await this.dbb.init(info)
+    // await this.udcTerminal.initDisplayBoard(info);
   }
   storeCallInfo(
     time: string,
@@ -328,5 +339,8 @@ export class UdcServiceImpl implements UdcService {
     //this.udcTerminal.submitAlgorithm(pid, currentId);
     console.log("submit algorithm!");
     this.taoFactoryController.submitAlgorithm(pid, currentId);
+  }
+  localSubmit(pid:string){
+    this.pc.localSubmit(pid)
   }
 }

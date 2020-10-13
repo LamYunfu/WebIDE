@@ -1,3 +1,4 @@
+import { LocalBurnData } from './localburn_data';
 import { ViewContainer } from "@theia/core/lib/browser/view-container";
 import {
   FileTreeWidget,
@@ -103,6 +104,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
   bind(ViewContainer)
     .toSelf()
     .inSingletonScope();
+    bind(LocalBurnData) .toSelf().inSingletonScope()
 });
 
 function createDeviceViewWeiget(

@@ -93,7 +93,27 @@ export class ProblemController {
                 passwd: ""
             })
         }
-
+    }
+   async localSubmit(pid:string){
+        try {
+            if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
+                if (!await this.freeCodingDataService.parseProjectDataFromFile(this.pData))
+                    return false;
+                this.dataService.refreshMultiData()
+            }
+            this.dService.copyDataFromDataMap(pid)
+            this.dService.resetProgramData()
+            await this.experimentController.submitLocal()&& await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
+            
+        } catch (error) {
+            this.outputResult(error, "error")
+        }
+        finally {
+            this.ldcShell.executeFrontCmd({
+                name: "submitEnable",
+                passwd: ""
+            })
+        }
     }
     async checkConnection() {
         this.outputResult("Checking the connection to ldc...")

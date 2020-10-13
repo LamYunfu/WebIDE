@@ -19,6 +19,7 @@ export class LdcShell {
   protected _udcClient: UdcClient | undefined;
   constructor(){
     console.log("start ldcshell.....")
+  
   }
   get udcClient(): UdcClient | undefined {
     console.log("get udcclient:" + !!this._udcClient)

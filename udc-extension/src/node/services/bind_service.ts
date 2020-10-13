@@ -14,6 +14,9 @@ import { bindOneLinkService } from "./one_link_service/onelink";
 import { bindTinySim } from "./tinysim/tinysim";
 import { bindQueryService } from "./query_service/query_service";
 import { bindIndicator } from "./indicator/indicator";
+import { bindLocalBurn } from "./local_burner_notifier/local_burner_notifier";
+import { bindDisplayBoardBackEnd } from "./displayboard/displayboard";
+import { bindLocalBurnService } from "./local_burner_notifier/local_burn_service";
 
 export function bindServices(bind: interfaces.Bind) {
   bindLdcShell(bind);
@@ -31,4 +34,7 @@ export function bindServices(bind: interfaces.Bind) {
   bindTinySim(bind)
   bindQueryService(bind)
   bindIndicator(bind)
+  bindLocalBurn(bind)
+  bindDisplayBoardBackEnd(bind)
+  bindLocalBurnService(bind)
 }

@@ -24,7 +24,14 @@ export class LdcFileServer {
     @inject(CallInfoStorer) protected cis: CallInfoStorer,
     @inject(ProjectData) protected projectData: ProjectData,
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface
-  ) { }
+  ) { 
+//  setInterval((
+
+//  )=>{
+//   this.ldcShell.executeFrontCmd({name:"local_burn",passwd:"1234"})
+//  },3000)
+    
+  }
   async fileUpload(filepath: string, index: string): Promise<boolean> {
     let uploadResult = "scc";
     let configResult = await new Promise((resolve) => {

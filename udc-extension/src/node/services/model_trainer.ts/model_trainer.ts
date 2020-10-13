@@ -36,9 +36,7 @@ export class ModelTrainer {
     return new Promise<boolean>((res, rej) => {
       this.ws!.on("open", () => {
         this.outputResult("Connect to train server successfully")
-        setTimeout(() => {
-          res(true);
-        }, 500);
+        res(true);
       });
       this.ws!.on("error", () => {
 

@@ -333,6 +333,20 @@ export class DeviceViewWidget extends TreeWidget {
     //_this.props.callUpdate()
     // this.ws.open(new URI("file:/home/project/串口打印"))
   }
+  async localBurnOnMenu() {
+    // alert($("textarea").text())
+    let val = $(".title_timer").attr("title");
+    Logger.info("start connecting from frontend");
+    if (val == undefined) {
+      Logger.info("val is undefined");
+      return;
+    }
+    this.localBurn(val);
+    // this.openExplorer()
+    // this.connect("a", "b", val!, "20")
+    //_this.props.callUpdate()
+    // this.ws.open(new URI("file:/home/project/串口打印"))
+  }
   openWorkSpace = (urlStr: string) => {
     if (
       decodeURI(window.location.href)
@@ -492,6 +506,9 @@ export class DeviceViewWidget extends TreeWidget {
 
   postFreeCodingFile = (pid: string) => {
     this.udcService.postFreeCodingFile(pid);
+  };
+  localBurn= (pid: string) => {
+    this.udcService.localBurn(pid);
   };
   initPid = (pid: string) => {
     this.ppid = pid;

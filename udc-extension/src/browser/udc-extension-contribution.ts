@@ -1,3 +1,4 @@
+import { LocalBurnData } from './localburn_data';
 import {
   WidgetManager,
   OpenerService,
@@ -97,7 +98,22 @@ export namespace UdcCommands {
     category: UDC_MENU_CATEGORY,
     label: "program",
   };
-
+  
+  export const LocalBurn: Command = {
+    id: "udc.menu.local_burn",
+    category: UDC_MENU_CATEGORY,
+    label: "local_burn",
+  };
+  export const PrintLog: Command = {
+    id: "printLog",
+    category: UDC_MENU_CATEGORY,
+    label: "print_log",
+  };
+  export const SetPort: Command = {
+    id: "setPort",
+    category: UDC_MENU_CATEGORY,
+    label: "set_port",
+  };
   export const Reset: Command = {
     id: "udc.menu.reset",
     category: UDC_MENU_CATEGORY,
@@ -240,7 +256,8 @@ export class UdcExtensionCommandContribution
     @inject(WidgetManager) protected wm: WidgetManager,
     @inject(EditorQuickOpenService) readonly eqos: EditorQuickOpenService,
     @inject(OpenerService) readonly os: OpenerService,
-    @inject(NewWidgetFactory) readonly nf: NewWidgetFactory
+    @inject(NewWidgetFactory) readonly nf: NewWidgetFactory,
+    @inject(LocalBurnData) readonly lbd :LocalBurnData,
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -258,7 +275,7 @@ export class UdcExtensionCommandContribution
         } else if (data.name == "openWorkspace") {
           await this.ds.openWorkspace(data.passwd);
           return;
-        } else if (data.name == "openShell") {
+        } else if (data.name == "openShell") { 
           this.deviceViewService.openShell();
           return;
         } else if (data.name == "submitEnable") {
@@ -270,7 +287,20 @@ export class UdcExtensionCommandContribution
         } else if (data.name == "executeSelectPanel") {
           this.deviceViewService.openExecutePanel();
           return;
-        } else if (data.name == "redirect") {
+        }  else if (data.name == "local_burn") {
+          let myHeaders = new Headers({
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'text/plain'
+        });
+          fetch(`http://192.168.190.224:${this.lbd.port}${data.passwd}`,
+          {
+              method: 'GET',
+              headers: myHeaders,
+              mode: 'cors'
+          })
+          return;
+        } 
+        else if (data.name == "redirect") {
           // // this.url=data.passwd
           this.ds.openTinyMobile(data.passwd);
           // this.x= window.open("http://120.55.102.225:12359/phone/index.html")
@@ -345,6 +375,16 @@ export class UdcExtensionCommandContribution
   }
 
   registerCommands(registry: CommandRegistry): void {
+    registry.registerCommand(UdcCommands.PrintLog,{
+      execute:(log:string )=>{
+        this.udcConsoleSession.appendLine(log)
+      }
+    })
+    registry.registerCommand(UdcCommands.SetPort,{
+      execute:(log:any )=>{
+        this.lbd.port=log
+      }
+    })
     registry.registerCommand(UdcCommands.ABOUT, {
       execute: () => {
         this.aboutDialog.open();
@@ -491,6 +531,13 @@ export class UdcExtensionCommandContribution
         this.ds.submitOnMenu();
       },
     });
+    registry.registerCommand(UdcCommands.LocalBurn, {
+      execute: () => {
+        // this.applicationShell.activateWidget("files")
+        this.applicationShell.saveAll();
+        this.ds.localBurnOnMenu();
+      },
+    });
     registry.registerCommand(UdcCommands.Reset, {
       execute: async () => {
         let dev_list = await this.udcService.get_devices();
@@ -513,6 +560,10 @@ export class UdcExtensionCommandContribution
     this.kr.registerKeybinding({
       command: "submitonmenu",
       keybinding: "ctrl+m",
+    });
+    this.kr.registerKeybinding({
+      command: "local_burn",
+      keybinding: "",
     });
   }
 }
@@ -585,6 +636,12 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       label: "LiteralAnalysis",
       icon: "x",
       order: "a_2",
+    });
+    menus.registerMenuAction([...UdcMenus.UDC], {
+      commandId: UdcCommands.LocalBurn.id,
+      label: "LocalBurn",
+      icon: "x",
+      order: "a_3",
     });
     // menus.registerSubmenu(UdcMenus.linkedge, "linkedge");
     // // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');

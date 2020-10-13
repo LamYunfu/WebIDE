@@ -99,6 +99,7 @@ export class TinySim {
     if (!this.tinySimClient) {
       return false;
     }
+    console.log(content);
     this.tinySimClient.send(content);
     this.cis.storeCallInfoInstantly("end", CallSymbol.TISM);
     return true;

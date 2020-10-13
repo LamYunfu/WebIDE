@@ -38,7 +38,6 @@ export class ExperimentController {
     @inject(Indicator) protected waitingIndicator:Indicator
   ) { }
   async submitQueue(): Promise<boolean> {
-
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
 
@@ -50,7 +49,7 @@ export class ExperimentController {
       );
       let targetPath = path.join(
         this.multiProjectData.rootDir,
-        projectData.projectRootDir,
+        projectData.projectRootDir,  
         projectData.subProjectArray[i],
         projectData.subHexFileDirs[i],
         "sketch.hex"
@@ -71,7 +70,6 @@ export class ExperimentController {
           )
         );
       }
-
     }
     let ra = await Promise.all(pa);
     this.waitingIndicator.unRegister();
@@ -83,6 +81,42 @@ export class ExperimentController {
     let result =await this.queueProgramer.burn();
     this.waitingIndicator.unRegister()
     return result
+  }
+  async submitLocal(): Promise<boolean> {
+    let projectData = this.projectData;
+    let pa: Promise<boolean>[] = [];
+
+    for (let i in projectData.subProjectArray) {
+      let srcPath = path.join(
+        this.multiProjectData.rootDir,
+        projectData.projectRootDir,
+        projectData.subProjectArray[i]
+      );
+      let targetPath = path.join(
+        this.multiProjectData.rootDir,
+        projectData.projectRootDir,  
+        projectData.subProjectArray[i],
+        projectData.subHexFileDirs[i],
+        "sketch.hex"
+      );
+      this.outputResult(`Compiling ${this.projectData.subProjectArray[i]}...`)
+      if (projectData.subCompileTypes[i].trim() == "tinylink") {
+        let fa = fs.readdirSync(srcPath)
+        pa.push(this.tinyLinkCompiler.compile(path.join(srcPath, fa[0]), i))
+      } else {
+        pa.push(
+          this.dsc.compile(
+            srcPath,
+            targetPath,
+            projectData.subBoardTypes[i],
+            projectData.subCompileTypes[i],
+            i
+          )
+        );
+      }
+    }
+    await Promise.all(pa);
+    return  true ;
   }
   async submitAdhoc() {
     let cr = await this.lcc.connect();
