@@ -1,3 +1,5 @@
+import { LocalBurningService } from './../services/local_burner_notifier/local_burn_service';
+import { DisplayBoardBackEnd } from './../services/displayboard/displayboard';
 import { ConfigSetter } from "./configsetter";
 import { Extractor } from "./extractor";
 import { UdcTerminal } from "./udc-terminal";
@@ -27,13 +29,15 @@ export class Controller {
     @inject(Extractor) protected readonly et: Extractor,
     @inject(Programer) protected readonly pm: Programer,
     @inject(ConfigSetter) protected readonly cs: ConfigSetter, // @inject(Event) protected readonly evt: Event
-    @inject(RootDirPath) public rootDir: RootDirPath
+    @inject(RootDirPath) public rootDir: RootDirPath,
+    @inject(DisplayBoardBackEnd) public dbb :DisplayBoardBackEnd,
+    @inject(LocalBurningService) public lbs :LocalBurningService
   ) {}
 
   events = new events.EventEmitter();
   async processDisplaySubmit(pid: string, info: string) {
     Logger.info("start process issue");
-    if (pid == "") await this.ut.initDisplayBoard(info);
+    if (pid == "") await this.dbb.init(info);
     else {
       // if (this.ut.is_connected) this.ut.disconnect();
       // this.ut.connect("", "", "", "30");
