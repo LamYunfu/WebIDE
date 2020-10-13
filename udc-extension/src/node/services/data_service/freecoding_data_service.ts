@@ -17,7 +17,7 @@ export class FreeCodingDataService {
     console.log("---parse all data---")
     let ob = this.multiProjectData.dataMap
     for (let item of Object.keys(this.multiProjectData.dataMap)) {
-      if (!!ob[item].experimentType && ob[item].experimentType!.trim() == "freecoding")
+      if (!!ob[item].experimentType && (ob[item].experimentType!.trim() == "freecoding"|| ob[item].experimentType!.trim() == "displayboard"))
         await this.parseProjectDataFromFile(ob[item])
     }
 

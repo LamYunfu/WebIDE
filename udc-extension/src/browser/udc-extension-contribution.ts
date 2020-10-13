@@ -1,3 +1,4 @@
+import { LocalBurnData } from './localburn_data';
 import {
   WidgetManager,
   OpenerService,
@@ -103,7 +104,16 @@ export namespace UdcCommands {
     category: UDC_MENU_CATEGORY,
     label: "local_burn",
   };
-
+  export const PrintLog: Command = {
+    id: "printLog",
+    category: UDC_MENU_CATEGORY,
+    label: "print_log",
+  };
+  export const SetPort: Command = {
+    id: "setPort",
+    category: UDC_MENU_CATEGORY,
+    label: "set_port",
+  };
   export const Reset: Command = {
     id: "udc.menu.reset",
     category: UDC_MENU_CATEGORY,
@@ -246,7 +256,8 @@ export class UdcExtensionCommandContribution
     @inject(WidgetManager) protected wm: WidgetManager,
     @inject(EditorQuickOpenService) readonly eqos: EditorQuickOpenService,
     @inject(OpenerService) readonly os: OpenerService,
-    @inject(NewWidgetFactory) readonly nf: NewWidgetFactory
+    @inject(NewWidgetFactory) readonly nf: NewWidgetFactory,
+    @inject(LocalBurnData) readonly lbd :LocalBurnData,
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -277,7 +288,16 @@ export class UdcExtensionCommandContribution
           this.deviceViewService.openExecutePanel();
           return;
         }  else if (data.name == "local_burn") {
-          fetch(data.passwd)
+          let myHeaders = new Headers({
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'text/plain'
+        });
+          fetch(`http://192.168.190.224:${this.lbd.port}${data.passwd}`,
+          {
+              method: 'GET',
+              headers: myHeaders,
+              mode: 'cors'
+          })
           return;
         } 
         else if (data.name == "redirect") {
@@ -353,6 +373,16 @@ export class UdcExtensionCommandContribution
   }
 
   registerCommands(registry: CommandRegistry): void {
+    registry.registerCommand(UdcCommands.PrintLog,{
+      execute:(log:string )=>{
+        this.udcConsoleSession.appendLine(log)
+      }
+    })
+    registry.registerCommand(UdcCommands.SetPort,{
+      execute:(log:any )=>{
+        this.lbd.port=log
+      }
+    })
     registry.registerCommand(UdcCommands.ABOUT, {
       execute: () => {
         this.aboutDialog.open();

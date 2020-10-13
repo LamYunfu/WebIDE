@@ -48,6 +48,21 @@
     "unzip": "^0.1.11",
     "vscode-ripgrep": "^1.6.2",
     "ws": "^7.1.2",
-    "yarn": "^1.21.1"
+    "yarn": "^1.21.1",
+    "@theia/callhierarchy": "^0.8.0",
+    "@theia/file-search": "^0.8.0",
+    "@theia/git": "^0.8.0",
+    "@theia/json": "^0.8.0",
+    "@theia/markers": "^0.8.0",
+    "@theia/messages": "^0.8.0",
+    "@theia/mini-browser": "^0.8.0",
+    "@theia/navigator": "^0.8.0",
+    "@theia/outline-view": "^0.8.0",
+    "@theia/plugin-ext-vscode": "^0.8.0",
+    "@theia/preferences": "^0.8.0",
+    "@theia/preview": "^0.8.0",
+    "@theia/search-in-workspace": "^0.8.0",
+    "@theia/terminal": "^0.8.0",
+    "@theia/plugin": "^0.8.0"
   }
 }

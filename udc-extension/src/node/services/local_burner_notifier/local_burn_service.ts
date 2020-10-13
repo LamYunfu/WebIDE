@@ -1,4 +1,4 @@
-import { inject, injectable, named } from "inversify";
+import { inject, injectable, interfaces, named } from "inversify";
 import { UserInfo } from "../../data_center/user_info";
 import { ProjectData } from "../../data_center/project_data";
 import { ProgramerInterface } from "../programers/interfaces/programer_interface";
@@ -13,7 +13,12 @@ import { TinyLinkCompiler } from "../compiler/tiny_link_compiler";
 import { Indicator } from "../indicator/indicator";
 import * as path from "path";
 import * as fs from "fs";
+export function bindLocalBurnService( bind :interfaces.Bind){
+  bind(LocalBurningService).toSelf().inSingletonScope();
+  
+}
 @injectable()
+
 export class LocalBurningService{   
     constructor(
         @inject(UserInfo) protected userInfo: UserInfo,
@@ -75,10 +80,10 @@ export class LocalBurningService{
         for (let r of ra) {
           if (!r) return false;
         }
-        this.outputResult("Command burning")
-        this.waitingIndicator.register()
-        this.waitingIndicator.unRegister()
-        return result
+        this.outputResult("Command local burning")
+        // this.waitingIndicator.register()
+        // this.waitingIndicator.unRegister()
+        return true ;
 
     }
     outputResult(res: string, type: string = "systemInfo") {

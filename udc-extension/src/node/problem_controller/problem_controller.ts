@@ -95,9 +95,6 @@ export class ProblemController {
         }
     }
    async localSubmit(pid:string){
-        if (!this.acquireLock()) {
-            this.outputResult("please wait until last submit is complete")
-        }
         try {
             if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
                 if (!await this.freeCodingDataService.parseProjectDataFromFile(this.pData))
@@ -112,7 +109,6 @@ export class ProblemController {
             this.outputResult(error, "error")
         }
         finally {
-            this.unLock()
             this.ldcShell.executeFrontCmd({
                 name: "submitEnable",
                 passwd: ""

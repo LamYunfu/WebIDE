@@ -53,7 +53,7 @@ namespace IoTWebview {
           </script>        
         <body style="margin:0">
           <iframe id="iframe"
-           src="http://120.55.102.225:12360/clickjump/index.html"        
+           src="http://localhost:3000"        
             frameborder="0" 
             scrolling="no"
             style="display: block;
@@ -94,9 +94,9 @@ export function start(context: theia.PluginContext) {
                 panel.webview.onDidReceiveMessage((e) => {
                     console.log(JSON.stringify(e))
                     console.log("mesg:" + e.command)
-                    if (e.command == "openUri") {
+                    if (e.command == "printLog") {
                         //e.text是需要打开的文件名 cam1/cam2/cam3/cam4/scanner
-                        theia.commands.executeCommand("openUri", e.text)
+                        theia.commands.executeCommand("printLog", e.text)
                     }
                 })
                 //返回字符串，把仿真页面嵌入到webView里面

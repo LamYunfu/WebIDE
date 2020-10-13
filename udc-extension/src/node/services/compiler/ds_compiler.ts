@@ -106,7 +106,7 @@ export class DistributedCompiler {
             else if (ob["msg"] == "completed") {
               this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
               // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
-              this.lbn.notify("http://localhost:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
+              this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}`)
               // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               resolve("not_query")
               return
@@ -117,7 +117,7 @@ export class DistributedCompiler {
               (p = `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               // b04f3ee8f5e43fa3b162981b50bb72fe1acabb33&boardtype=esp32devkitc&compiletype=alios
             );
-            this.lbn.notify("http://localhost:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
+            this.lbn.notify(`download?filehash=${fha}&boardtype=${boardType}`)
             // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
             console.log(p);
           });

@@ -13,7 +13,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    entry: './src/unity-frontend.ts',
+    entry: './src/localburn-frontend.ts',
     devtool: 'source-map',
     mode: 'production',
     module: {
@@ -32,15 +32,15 @@ module.exports = {
         extensions: ['.ts', '.js','html']
     },
     output: {
-        filename: 'unity-frontend.js',
+        filename: 'localburn-frontend.js',
         libraryTarget: "var",
-        library: "theia_unity",
+        library: "theia_localburn",
 
         path: path.resolve(__dirname, 'dist')
     },
     externals: {
 
-        "@theia/plugin": "theia.unity"
+        "@theia/plugin": "theia.theia_localburn"
 
     }
 };
