@@ -46,7 +46,7 @@ namespace IoTWebview {
                 unityInstance.Quit(function() {
                     console.log("done!");
                 });
-                unityInstance = null;
+                unityInstance = null; 
             })
          }
           

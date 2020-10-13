@@ -4,6 +4,8 @@ chmod +x ./clean.sh
 chmod +x ./deploy.sh
 cd new_widget
 yarn build 
+cd ../grove-extension
+yarn build
 cd ../udc-extension
 yarn build 
 cd ../demo 

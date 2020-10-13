@@ -20,6 +20,7 @@
     "@theia/mini-browser": "^0.8.0",
     "drawboard-extension":"0.0.0",
     "udc-extension":"0.0.0",
+    "grove-extension":"0.0.0",
     "demo":"0.0.0",
     "new_widget":"0.0.0"
   },

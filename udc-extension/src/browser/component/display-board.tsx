@@ -49,7 +49,7 @@ SSID：AZFT
 SSID：AZFT
 密码：AZFT123456`,
         pid: "19",
-      },
+      },     
       {
         title: "温控风扇",
         desciption: `风扇设备根据上报的温度数据，由阿里云IoT Studio云端IFTTT规则控制，实现智能开关

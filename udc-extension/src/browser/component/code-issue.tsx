@@ -101,14 +101,15 @@ export class CodingInfo extends React.Component<
             return;
           }
           let pid = $("#codingInfoArea" + _this.props.sid).attr("title");
+          //和ldc进行连接
           if (!(await _this.context.props.connect("", "", pid, 30))) {
             $("[id*=submitSrcButton]").removeAttr("disabled")
             return;
           }
 
-          $("[id*=connectButton]").attr("disabled", "true");
+          $("[id*=connectButton]").attr("disabled", "true");         //设置按钮不可被点击，等待提交完毕
           _this.context.props.setSubmitEnableWithJudgeTag(false);
-          await _this.context.props.saveAll();
+          await _this.context.props.saveAll();                       //保存编辑器的所有内容
           let index = $("#codingInfoArea" + this.props.sid).attr("title");
           // if (_this.props.currentFocusCodingIndex[0] != index) {
           //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
@@ -121,7 +122,7 @@ export class CodingInfo extends React.Component<
           console.log(
             "click submit:" + index + "#codingInfofArea" + this.props.sid
           );
-          index != undefined && _this.props.postSrcFile(index);
+          index != undefined && _this.props.postSrcFile(index);               // 打包上传文件到后端服务器
           index != undefined && _this.props.addCodingSubmittedIssue(index);
         }
       );

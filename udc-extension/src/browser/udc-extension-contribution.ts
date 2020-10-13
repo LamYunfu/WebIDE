@@ -295,6 +295,8 @@ export class UdcExtensionCommandContribution
         );
       }
     );
+    
+    //把后端返回的信息打印到ldc shell里面
     this.udcWatcher.onDeviceLog((data: string) => {
       // console.log("data is :" + data + "............................")
       let array = data.split(":");

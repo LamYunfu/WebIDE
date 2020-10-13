@@ -109,6 +109,7 @@ export class Experiment extends React.Component<
         dataType: "json",
         contentType: "text/plain",
         data: JSON.stringify({ ppid: _this.props.section.ppid }), //model 为登录类型 alios,组别 ble, logintype 为登录的方式 如adhoc,
+        //请求返回的题目相关的数据
         success: (data) => {
           // alert(JSON.stringify(data))
           console.log(JSON.stringify(data));
@@ -408,11 +409,13 @@ export class Experiment extends React.Component<
               <div className="row">
                 <div className={`coding${this.props.section.sid} col-12`}>
                   <ul className="list-group">
+                    {/* codingItems 显示的就是左边的内容，也就是蓝色小框部分*/}
                     {this.state.codingItems.length == 0 ? "" : this.codingItems}
                   </ul>
                 </div>
               </div>
             </div>
+            {/* 题目信息部分 */}
             <div className={`codingInfos ${this.props.section.sid} col-7`}>
               <CodingInfo
                 programSingleFile={this.props.programSingleFile}
