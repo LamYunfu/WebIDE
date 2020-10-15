@@ -28,6 +28,7 @@ export const TINYLINEDGECOMPILE_IP = `47.96.155.111`;
 export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_GCC_PORT = "12400";
 export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
+
 export const CONFIGPATH = "D:/config";
 export const Call_Log_Path = "D:/call_info.log";
 export const ROOTPATH="D:/all"
