@@ -292,7 +292,7 @@ export class UdcExtensionCommandContribution
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'text/plain'
         });
-          fetch(`http://192.168.190.224:${this.lbd.port}${data.passwd}`,
+          fetch(`http://localhost:${this.lbd.port}${data.passwd}`,
           {
               method: 'GET',
               headers: myHeaders,
