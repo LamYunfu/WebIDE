@@ -93,6 +93,7 @@ export class DistributedCompiler {
               this.outputResult(ob["msg"],"error");
               this.cis.storeCallInfoInstantly(ob["msg"], CallSymbol.CCCE, 1);
               resolve("error");
+              return 
             }
             if (ob["msg"] == "error") {
               this.outputResult(ob["data"]["message"],"error");
@@ -102,18 +103,20 @@ export class DistributedCompiler {
                 1
               );
               resolve("error");
+              return 
             }
             else if (ob["msg"] == "completed") {
               console.log("-----entry-----")
               this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
               // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
-              this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}`)
+
+              this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               resolve("not_query")
               return
             }
             let p;
-            this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}`)
+            this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
             // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
             console.log("-----eeeee-----")
             this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
@@ -138,6 +141,7 @@ export class DistributedCompiler {
     });
     return await p;
   }
+
   async waitCompileFinish(path: string, output: string) {
     let p = new Promise<string>((resolve) => {
       console.log(p);
