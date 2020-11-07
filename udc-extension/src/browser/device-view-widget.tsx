@@ -332,7 +332,7 @@ export class DeviceViewWidget extends TreeWidget {
     //_this.props.callUpdate()
     // this.ws.open(new URI("file:/home/project/串口打印"))
   }
-  async localBurnOnMenu() {
+  async localBurnOnMenu(tag:boolean=false) {
     // alert($("textarea").text())
     let val = $(".title_timer").attr("title");
     Logger.info("start connecting from frontend");
@@ -340,7 +340,7 @@ export class DeviceViewWidget extends TreeWidget {
       Logger.info("val is undefined");
       return;
     }
-    this.localBurn(val);
+    this.localBurn(val,tag);
     // this.openExplorer()
     // this.connect("a", "b", val!, "20")
     //_this.props.callUpdate()
@@ -504,8 +504,8 @@ export class DeviceViewWidget extends TreeWidget {
   postFreeCodingFile = (pid: string) => {
     this.udcService.postFreeCodingFile(pid);
   };
-  localBurn= (pid: string) => {
-    this.udcService.localBurn(pid);
+  localBurn= (pid: string,tag:boolean=false) => {
+    this.udcService.localBurn(pid,tag);
   };
   initPid = (pid: string) => {
     this.ppid = pid;

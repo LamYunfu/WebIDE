@@ -50,8 +50,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(UserInfo) protected userInfo:UserInfo,
     @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd
   ) { }
-  localBurn(pid: string){
-    this.pc.localSubmit(pid);
+  localBurn(pid: string,tag:boolean=false){
+    this.pc.localSubmit(pid,tag);
   } 
 
   is_connected(): Promise<Boolean> {

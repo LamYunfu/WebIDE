@@ -104,6 +104,11 @@ export namespace UdcCommands {
     category: UDC_MENU_CATEGORY,
     label: "local_burn",
   };
+  export const local_compile_burn: Command = {
+    id: "udc.menu.local_compile_burn",
+    category: UDC_MENU_CATEGORY,
+    label: "local_compile_burn",
+  };
   export const PrintLog: Command = {
     id: "printLog",
     category: UDC_MENU_CATEGORY,
@@ -533,7 +538,14 @@ export class UdcExtensionCommandContribution
       execute: () => {
         // this.applicationShell.activateWidget("files")
         this.applicationShell.saveAll();
-        this.ds.localBurnOnMenu();
+        this.ds.localBurnOnMenu(false);
+      },
+    });
+    registry.registerCommand(UdcCommands.local_compile_burn, {
+      execute: () => {
+        // this.applicationShell.activateWidget("files")
+        this.applicationShell.saveAll();
+        this.ds.localBurnOnMenu(true);
       },
     });
     registry.registerCommand(UdcCommands.Reset, {
