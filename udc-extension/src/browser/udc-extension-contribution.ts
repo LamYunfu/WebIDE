@@ -98,7 +98,11 @@ export namespace UdcCommands {
     category: UDC_MENU_CATEGORY,
     label: "program",
   };
-  
+  export const LocalBurnView: Command = {
+    id: "udc.menu.local_burn_view",
+    category: UDC_MENU_CATEGORY,
+    label: "local_burn",
+  };
   export const LocalBurn: Command = {
     id: "udc.menu.local_burn",
     category: UDC_MENU_CATEGORY,
@@ -481,6 +485,7 @@ export class UdcExtensionCommandContribution
           });
       },
     });
+    
     registry.registerCommand(UdcCommands.literalAnalysis, {
       execute: (pid) => {
         this.ds.literalAnalysis();
@@ -495,6 +500,12 @@ export class UdcExtensionCommandContribution
       execute: async (uri: string, videoName: string) => {
         console.log("<<<<<<<<<<<<<<<<<<<<=video name" + videoName);
         registry.executeCommand("iot.plugin.tinylink.compile", uri, videoName);
+      },
+    });
+    registry.registerCommand(UdcCommands.LocalBurnView, {
+      execute: async () => {
+       
+        registry.executeCommand("iot.plugin.LocalBurner");
       },
     });
     registry.registerCommand(UdcCommands.JudgeButton, {
@@ -648,7 +659,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       order: "a_2",
     });
     menus.registerMenuAction([...UdcMenus.UDC], {
-      commandId: UdcCommands.LocalBurn.id,
+      commandId: UdcCommands.LocalBurnView.id,
       label: "LocalBurn",
       icon: "x",
       order: "a_3",
