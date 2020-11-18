@@ -30,14 +30,14 @@ export const RASPBERRY_GCC_PORT = "12400";
 export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
 
 //本地使用的路径
-export const CONFIGPATH = "D:/config";
-export const Call_Log_Path = "D:/call_info.log";
-export const ROOTPATH="D:/all"
+// export const CONFIGPATH = "D:/config";
+// export const Call_Log_Path = "D:/call_info.log";
+// export const ROOTPATH="D:/all"
 
 //服务器上使用的路径
-// export const ROOTPATH="/home/project"
-// export const Call_Log_Path="/home/project/call_info.log"
-// export const CONFIGPATH="/home/config"
+export const ROOTPATH="/home/project"
+export const Call_Log_Path="/home/project/call_info.log"
+export const CONFIGPATH="/home/config"
 
 @injectable()
 export class RootDirPath {
