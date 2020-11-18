@@ -1,0 +1,37 @@
+{
+  "name": "udc-extension",
+  "keywords": [
+    "theia-extension"
+  ],
+  "version": "0.0.0",
+  "files": [
+    "data",
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "json2typescript": "latest",
+    "@theia/core": "latest",
+    "axios": "^0.18.0",
+    "describe": "^1.2.0",
+    "tsc": "^1.20150623.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "rimraf": "latest",
+    "typescript": "latest"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib",
+    "build": "tsc  --jsx react",
+    "watch": "tsc -w",
+    "test": "jest"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/udc-extension-frontend-module",
+      "backend": "lib/node/index"
+    }
+  ]
+}

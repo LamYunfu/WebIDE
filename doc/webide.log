@@ -1,0 +1,4 @@
+log 路径 /root/LinkLab/webide/logs/webide.log
+第一行为docker 个数
+其他的格式为
+{{.ID}}::{{.Names}}::{{.Status}}::{{.MemPerc}}::{{.CPUPerc}}::{{.NetIO}}

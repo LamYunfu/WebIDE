@@ -1,0 +1,22 @@
+{
+    "version": "1.0.0", //版本号
+    "usage": "queue",//ldc运行模式  
+    "hexFileDir": "hexFileDir",//二进制文件目录
+    "serverType": "alios_esp32",//板子系统
+    "projects": [
+        {
+            "projectName": "alios",//源代码目录
+            "compileType": "alios",//编译方法
+            "boardType": "developerkit",//板子类型
+            "burnType": "queue",//烧写模式
+            "program": {
+                "model": "developer_kit",//板子类型
+                "runtime": 60,//预计运行时间
+                "address": "0x10000",// 烧写地址
+                "clientId": "",//板子id
+                "devPort": ""//板子连的端口号
+            }
+        }
+    ]
+}
+

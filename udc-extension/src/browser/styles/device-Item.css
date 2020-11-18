@@ -1,0 +1,186 @@
+.container {
+    font-size: 15px;
+    display: inline
+}
+
+.codingInfos {
+    font-size: 16px;
+    display: none;
+    position: sticky;
+    top: 0;
+}
+
+.optionInfos {
+    font-size: 16px;
+    display: none;
+    position: sticky;
+    top: 0;
+    padding: 5px;
+}
+
+.list-group-item {
+    font-size: 15px;
+    padding-left: 25px;
+    padding-right: 0px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-left: 35px;
+    margin-right: 5px;
+    border-color: #3c3c43;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+}
+
+.codeItemexperiment.list-group-item {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+pre {
+
+    white-space: pre-wrap;
+
+    word-wrap: break-word;
+
+}
+
+h4 {
+    text-align: center;
+}
+
+.expander:hover {
+    cursor: pointer;
+}
+
+.title_timer {
+    text-align: center;
+    border-bottom-color: gray;
+    border-top: none;
+    border-bottom-style: solid;
+    height: 10%;
+}
+
+span[class*=section] {
+    cursor: pointer;
+}
+
+.indicateTag {
+    float: right;
+}
+
+.indicateTagChanged {
+    float: right;
+}
+
+.indicateTag::after {
+    background-color: #4F5150;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    color: #FFFFFF;
+    content: "-";
+    display: block;
+    float: right;
+    font-weight: bold;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 5px;
+    text-align: center;
+    width: 20px;
+    cursor: pointer;
+}
+
+.sidebar:hover {
+    text-decoration-line: underline;
+    cursor: pointer;
+
+}
+
+.indicateTagChanged::after {
+    background-color: #4F5150;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    color: #FFFFFF;
+    content: "+";
+    display: block;
+    float: right;
+    font-weight: bold;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 5px;
+    text-align: center;
+    width: 20px;
+    cursor: pointer;
+}
+
+.oneOptionDescription:hover {
+    border-color: skyblue;
+    background-color: skyblue;
+}
+
+.skyblueItem {
+    color: blue;
+    background-color: skyblue;
+}
+
+.optionDescription {
+    display: none;
+}
+
+.list-group-item:hover {}
+
+.optionChocies {
+    display: none;
+}
+
+/* .p-Widget>ul>li:nth-child(8) {
+    display: none
+}
+
+.p-Widget>ul>li:nth-child(6) {
+    display: none
+}
+
+.p-Widget>ul>li:nth-child(7) {
+    display: none
+} */
+
+.oi-check {
+    color: green
+}
+
+.oi-x {
+    color: red;
+}
+
+.simInfo {
+    display: none;
+}
+
+button[id*=submitSimButton] {
+    display: none;
+}
+
+/* .newRedoButton {
+    content: 重做;
+    right: '5px';
+    bottom: '10px';
+    position: "absolute"
+}
+.newSubmitButton {
+    content: 提交;
+    right: '5px';
+    bottom: '10px';
+    position: "absolute"
+} */
+
+/* .sections {
+    counter-reset: section 1;
+} */
+
+/* span[class*=section]::before {
+    counter-increment: seciton;
+    content: counter(section)". "
+} */

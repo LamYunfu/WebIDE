@@ -1,0 +1,20 @@
+连接时
+    连接成功
+    连接失败：
+            原因：
+                        设备不足 暂无
+                        ldc 未发设备表 No device information returned from LDC. Please disconnect and retry!.
+                        LDC故障  暂无
+提交时
+    编译：   编译成功
+            编译失败： 
+                原因：   
+                        在线编译器故障  暂无
+                        代码存在错误 Online compiling error!" +显示编译器报错信息
+    烧写： 烧写成功
+            烧写失败：
+                    原因：
+                            
+                            文件上传失败 Initializing burning tools successful!
+                            烧写初始化失败 something error happened when configuring burning.
+                            LDC烧写失败  重新加入队列

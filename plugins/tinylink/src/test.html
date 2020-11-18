@@ -1,0 +1,21 @@
+<html>
+<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js">
+</script>
+<script>
+    window.onload = function () {
+        document.getElementById('login_page')
+        .contentWindow.postMessage(JSON.stringify({
+            name:"1234fsdofs",
+            passwd:"123fsdfsa 4"
+      //  }),"./testiframe.html")
+   }),"http://localhost/login_page.php")
+   }
+</script>
+
+<body>
+   
+</body>
+<iframe src="http://localhost/login_page.php" frameborder="0" id ="login_page"></iframe>
+<!-- <iframe src="./testiframe.html" frameborder="0" id ="login_page"></iframe> -->
+
+</html>

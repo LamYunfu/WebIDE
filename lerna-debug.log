@@ -1,0 +1,54 @@
+0 silly input [ 'prepare' ]
+1 silly flags { _: [ 'run' ], script: 'prepare', args: [] }
+2 verbose rootPath C:\Users\dqb\Desktop\webide
+3 info version 2.4.0
+4 silly existsSync C:\Users\dqb\Desktop\webide\VERSION
+5 silly initialize attempt
+6 silly initialize success
+7 silly execute attempt
+8 silly runScriptInPackageStreaming [ 'prepare', [], 'drawboard-extension' ]
+9 silly getExecOpts { cwd: 'C:\\Users\\dqb\\Desktop\\webide\\drawboard-extension' }
+10 silly runScriptInPackageStreaming [ 'prepare', [], 'udc-extension' ]
+11 silly getExecOpts { cwd: 'C:\\Users\\dqb\\Desktop\\webide\\udc-extension' }
+12 silly runScriptInPackageStreaming [ 'prepare', [], 'demo' ]
+13 silly getExecOpts { cwd: 'C:\\Users\\dqb\\Desktop\\webide\\demo' }
+14 silly runScriptInPackageStreaming [ 'prepare', [], 'new_widget' ]
+15 silly getExecOpts { cwd: 'C:\\Users\\dqb\\Desktop\\webide\\new_widget' }
+16 silly runScriptInPackageStreaming [ 'prepare', [], 'esp32_widget' ]
+17 silly getExecOpts { cwd: 'C:\\Users\\dqb\\Desktop\\webide\\esp32_widget' }
+18 error execute callback with error
+19 error Error: Command failed: npm run prepare
+19 error
+19 error ┌──────────────────────────────────────────────────────────┐
+19 error │                 npm update check failed                  │
+19 error │           Try running with sudo or get access            │
+19 error │           to the local update config store via           │
+19 error │ sudo chown -R $USER:$(id -gn $USER) C:\Users\dqb\.config │
+19 error └──────────────────────────────────────────────────────────┘
+19 error warning package.json: No license field
+19 error warning package.json: No license field
+19 error error Command failed with exit code 2.
+19 error npm ERR! code ELIFECYCLE
+19 error npm ERR! errno 2
+19 error npm ERR! demo@0.0.0 prepare: `yarn run clean && yarn run build`
+19 error npm ERR! Exit status 2
+19 error npm ERR!
+19 error npm ERR! Failed at the demo@0.0.0 prepare script.
+19 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+19 error
+19 error npm ERR! A complete log of this run can be found in:
+19 error npm ERR!     C:\Users\dqb\AppData\Roaming\npm-cache\_logs\2020-11-18T11_44_03_949Z-debug.log
+19 error
+19 error
+19 error > demo@0.0.0 prepare C:\Users\dqb\Desktop\webide\demo
+19 error > yarn run clean && yarn run build
+19 error
+19 error yarn run v1.22.0
+19 error $ rimraf lib
+19 error Done in 0.31s.
+19 error yarn run v1.22.0
+19 error $ tsc  --jsx react
+19 error src/browser/demo-widget.tsx(22,28): error TS2307: Cannot find module 'udc-extension/lib/common/udc-service'.
+19 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+19 error
+19 error     at Promise.all.then.arr (C:\Users\dqb\Desktop\webide\node_modules\lerna\node_modules\execa\index.js:236:11)
