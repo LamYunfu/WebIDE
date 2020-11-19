@@ -10,7 +10,7 @@ cd ../demo
 yarn build 
 cd ../drawboard-extension
 yarn build
-cd esp32_widget
+cd ../esp32_widget
 yarn prepare
 ##cd ./plugins/unity
 ##mv unity.theia ../node/unity.theia
