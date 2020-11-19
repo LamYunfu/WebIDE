@@ -82,5 +82,6 @@ export interface UdcService {
     api: string,
     serverity: number
   ) => void;
-  localBurn:(pid:string)=>void
+  localBurn:(pid:string,tag?:boolean)=>void
+
 }

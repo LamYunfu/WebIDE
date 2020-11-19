@@ -91,7 +91,7 @@ export class ExperimentController {
     this.waitingIndicator.unRegister()
     return result
   }
-  async submitLocal(): Promise<boolean> {
+  async submitLocal(tag:boolean =false): Promise<boolean> {
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
 
@@ -119,13 +119,17 @@ export class ExperimentController {
             targetPath,
             projectData.subBoardTypes[i],
             projectData.subCompileTypes[i],
-            i
+            i,
+            tag
           )
         );
       }
     }
     await Promise.all(pa);
     return  true ;
+  }
+  submitAndBurn(){
+    this.submitLocal(true);
   }
   async submitAdhoc() {
     let cr = await this.lcc.connect();

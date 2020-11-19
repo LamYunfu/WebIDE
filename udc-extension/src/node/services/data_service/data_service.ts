@@ -42,7 +42,6 @@ export class DataService {
     }
   }
 
-  //{ dirName: this.props.title, ppid: _this.props.section["ppid"][0], type: "freecoding" }
   async initDataMapFromFrontEnd(info: string): Promise<boolean> {
     console.log("----:" + info)
     try {
@@ -147,6 +146,7 @@ export class DataService {
     this.projectData.fileHash = []
   }
   copyLdcDataFromData() {
+    this.ldcData.serverType = this.projectData.serverType
     this.ldcData.waitingIds = this.projectData.subWaitingIds
     this.ldcData.serverType = this.projectData.serverType
     this.ldcData.clientIds = this.projectData.subClientId

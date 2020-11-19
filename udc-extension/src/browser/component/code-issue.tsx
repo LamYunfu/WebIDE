@@ -111,7 +111,14 @@ export class CodingInfo extends React.Component<
           _this.context.props.setSubmitEnableWithJudgeTag(false);
           await _this.context.props.saveAll();                       //保存编辑器的所有内容
           let index = $("#codingInfoArea" + this.props.sid).attr("title");
-
+          // if (_this.props.currentFocusCodingIndex[0] != index) {
+          //     _this.props.say("所连设备与当前题目所需不一致,请重新连接设备")
+          //     $("[id*=connectButton]").text("连接")
+          //     await _this.context.props.disconnect()
+          //     $("[id*=connectButton]").removeAttr("disabled")
+          //     $("[id*=submitSrcButton]").removeAttr("disabled")
+          //     return
+          // }
           console.log(
             "click submit:" + index + "#codingInfofArea" + this.props.sid
           );

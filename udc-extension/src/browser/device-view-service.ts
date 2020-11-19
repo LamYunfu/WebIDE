@@ -68,9 +68,9 @@ export class DeviceViewService implements WidgetFactory {
         // this.widget!.openFileView()
         this.widget!.submitOnMenu()
     }
-    localBurnOnMenu() {
+    localBurnOnMenu(tag:boolean=false) {
         // this.widget!.openFileView()
-        this.widget!.localBurnOnMenu();
+        this.widget!.localBurnOnMenu(tag);
     }
     public clearDevices(): void {
     }

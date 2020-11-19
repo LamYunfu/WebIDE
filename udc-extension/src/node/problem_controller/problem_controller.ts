@@ -107,7 +107,7 @@ export class ProblemController {
             })
         }
     }
-   async localSubmit(pid:string){
+   async localSubmit(pid:string,tag:boolean=false){
         try {
             if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
                 if (!await this.freeCodingDataService.parseProjectDataFromFile(this.pData))
@@ -116,7 +116,7 @@ export class ProblemController {
             }
             this.dService.copyDataFromDataMap(pid)
             this.dService.resetProgramData()
-            await this.experimentController.submitLocal()&& await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
+            await this.experimentController.submitLocal(tag)&& await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
             
         } catch (error) {
             this.outputResult(error, "error")

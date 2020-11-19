@@ -50,8 +50,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(UserInfo) protected userInfo:UserInfo,
     @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd
   ) { }
-  localBurn(pid: string){
-    this.pc.localSubmit(pid);
+  localBurn(pid: string,tag:boolean=false){
+    this.pc.localSubmit(pid,tag);
   } 
 
   is_connected(): Promise<Boolean> {
@@ -210,7 +210,6 @@ export class UdcServiceImpl implements UdcService {
     this.udcTerminal.setPidInfos(pid, content);
   }
   async initPidQueueInfo(infos: string): Promise<string> {
-    console.log("进入初始化pidQueueInfo");
     this.pc.init(infos)
     // return this.udcTerminal.initPidQueueInfo(infos);
     return "scc"

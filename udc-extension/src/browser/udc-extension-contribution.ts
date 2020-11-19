@@ -99,11 +99,20 @@ export namespace UdcCommands {
     category: UDC_MENU_CATEGORY,
     label: "program",
   };
-  
+  export const LocalBurnView: Command = {
+    id: "udc.menu.local_burn_view",
+    category: UDC_MENU_CATEGORY,
+    label: "local_burn",
+  };
   export const LocalBurn: Command = {
     id: "udc.menu.local_burn",
     category: UDC_MENU_CATEGORY,
     label: "local_burn",
+  };
+  export const local_compile_burn: Command = {
+    id: "udc.menu.local_compile_burn",
+    category: UDC_MENU_CATEGORY,
+    label: "local_compile_burn",
   };
   export const PrintLog: Command = {
     id: "printLog",
@@ -294,7 +303,7 @@ export class UdcExtensionCommandContribution
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'text/plain'
         });
-          fetch(`http://192.168.190.224:${this.lbd.port}${data.passwd}`,
+          fetch(`http://localhost:${this.lbd.port}${data.passwd}`,
           {
               method: 'GET',
               headers: myHeaders,
@@ -509,6 +518,12 @@ export class UdcExtensionCommandContribution
         registry.executeCommand("iot.plugin.tinylink.compile", uri, videoName);
       },
     });
+    registry.registerCommand(UdcCommands.LocalBurnView, {
+      execute: async () => {
+       
+        registry.executeCommand("iot.plugin.LocalBurner");
+      },
+    });
     registry.registerCommand(UdcCommands.JudgeButton, {
       execute: () => {
         this.udcService
@@ -550,7 +565,14 @@ export class UdcExtensionCommandContribution
       execute: () => {
         // this.applicationShell.activateWidget("files")
         this.applicationShell.saveAll();
-        this.ds.localBurnOnMenu();
+        this.ds.localBurnOnMenu(false);
+      },
+    });
+    registry.registerCommand(UdcCommands.local_compile_burn, {
+      execute: () => {
+        // this.applicationShell.activateWidget("files")
+        this.applicationShell.saveAll();
+        this.ds.localBurnOnMenu(true);
       },
     });
     registry.registerCommand(UdcCommands.Reset, {
@@ -653,7 +675,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       order: "a_2",
     });
     menus.registerMenuAction([...UdcMenus.UDC], {
-      commandId: UdcCommands.LocalBurn.id,
+      commandId: UdcCommands.LocalBurnView.id,
       label: "LocalBurn",
       icon: "x",
       order: "a_3",

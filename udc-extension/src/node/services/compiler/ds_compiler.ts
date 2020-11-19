@@ -31,11 +31,13 @@ export class DistributedCompiler {
   outputResult(mes: string, type: string = "sys") {
     this.ldcShell.outputResult(mes, type);
   }
+  fileUrl=""
   async upload(
     path: string,
     boardType: string,
     compileType: string,
-    projectIndex: string
+    projectIndex: string,
+    tag:boolean
   ): Promise<string> {
     console.log("---compile:" + path)
     let ha = Ha.createHash("sha1");
@@ -93,6 +95,7 @@ export class DistributedCompiler {
               this.outputResult(ob["msg"],"error");
               this.cis.storeCallInfoInstantly(ob["msg"], CallSymbol.CCCE, 1);
               resolve("error");
+              return 
             }
             if (ob["msg"] == "error") {
               this.outputResult(ob["data"]["message"],"error");
@@ -102,23 +105,33 @@ export class DistributedCompiler {
                 1
               );
               resolve("error");
+              return 
             }
             else if (ob["msg"] == "completed") {
+              console.log("-----entry-----")
               this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
               // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
-              this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}`)
+              this.outputResult("Compile scc");
+              if(tag){
+                this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+              }
+             
               // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               resolve("not_query")
               return
             }
             let p;
+            if(tag){
+              this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+            }
+            // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
+            console.log("-----eeeee-----")
             this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
             resolve(
               (p = `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
               // b04f3ee8f5e43fa3b162981b50bb72fe1acabb33&boardtype=esp32devkitc&compiletype=alios
             );
-            this.lbn.notify(`download?filehash=${fha}&boardtype=${boardType}`)
-            // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
+           
             console.log(p);
           });
         }
@@ -158,6 +171,7 @@ export class DistributedCompiler {
             let bf = Buffer.concat(x);
             let ob = JSON.parse(bf.toString());
             if (ob["msg"] == "completed") {
+              
               this.cis.storeCallInfoInstantly("end", CallSymbol.WTCP);
               resolve("scc");
             } else {
@@ -184,7 +198,7 @@ export class DistributedCompiler {
     });
     return await p;
   }
-  async queryCompileStatus(path: string, output: string) {
+  async queryCompileStatus(path: string, output: string,tag:boolean=false) {
     console.log("query compile status!")
     let p = new Promise<string>((resolve) => {
       console.log(p);
@@ -209,6 +223,10 @@ export class DistributedCompiler {
             console.log(bf.toString());
             let ob = JSON.parse(bf.toString());
             if (ob["msg"] == "completed") {
+              this.outputResult("Compile scc");
+              if(tag){
+                this.lbn.notify(path)
+              }
               this.cis.storeCallInfoInstantly("end", CallSymbol.DNHX);
               resolve("scc");
             } else {
@@ -236,16 +254,17 @@ export class DistributedCompiler {
     hexPath: string,
     boardType: string,
     compileType: string,
-    projectIndex: string
+    projectIndex: string,
+    tag:boolean =false
   ): Promise<boolean> {
-    let x = await this.upload(path, boardType, compileType, projectIndex);
+    let x = await this.upload(path, boardType, compileType, projectIndex,tag);
     if (x == "error") {
       return false;
     }
     else if (x == "not_query") {
       return true
     }
-    let qr = await this.queryCompileStatus(x, hexPath);
+    let qr = await this.queryCompileStatus(x, hexPath,tag);
     if (qr == "scc") return true;
     else return false;
   }
