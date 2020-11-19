@@ -1,45 +1,49 @@
 0 silly input [ 'prepare' ]
 1 silly flags { _: [ 'run' ], script: 'prepare', args: [] }
-2 verbose rootPath D:\webide\webide-back
+2 verbose rootPath C:\Users\Lucas\Desktop\webide3\webide
 3 info version 2.4.0
-4 silly existsSync D:\webide\webide-back\VERSION
+4 silly existsSync C:\Users\Lucas\Desktop\webide3\webide\VERSION
 5 silly initialize attempt
 6 silly initialize success
 7 silly execute attempt
 8 silly runScriptInPackageStreaming [ 'prepare', [], 'drawboard-extension' ]
-9 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\drawboard-extension' }
+9 silly getExecOpts { cwd:
+9 silly getExecOpts    'C:\\Users\\Lucas\\Desktop\\webide3\\webide\\drawboard-extension' }
 10 silly runScriptInPackageStreaming [ 'prepare', [], 'udc-extension' ]
-11 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\udc-extension' }
-12 silly runScriptInPackageStreaming [ 'prepare', [], 'demo' ]
-13 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\demo' }
-14 silly runScriptInPackageStreaming [ 'prepare', [], 'new_widget' ]
-15 silly getExecOpts { cwd: 'D:\\webide\\webide-back\\new_widget' }
-16 error execute callback with error
-17 error Error: Command failed: npm run prepare
-17 error warning package.json: No license field
-17 error warning package.json: No license field
-17 error error Command failed with exit code 2.
-17 error npm ERR! code ELIFECYCLE
-17 error npm ERR! errno 2
-17 error npm ERR! demo@0.0.0 prepare: `yarn run clean && yarn run build`
-17 error npm ERR! Exit status 2
-17 error npm ERR!
-17 error npm ERR! Failed at the demo@0.0.0 prepare script.
-17 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-17 error
-17 error npm ERR! A complete log of this run can be found in:
-17 error npm ERR!     C:\Users\10344\AppData\Roaming\npm-cache\_logs\2020-09-26T11_43_25_675Z-debug.log
-17 error
-17 error
-17 error > demo@0.0.0 prepare D:\webide\webide-back\demo
-17 error > yarn run clean && yarn run build
-17 error
-17 error yarn run v1.22.0
-17 error $ rimraf lib
-17 error Done in 0.53s.
-17 error yarn run v1.22.0
-17 error $ tsc  --jsx react
-17 error src/browser/demo-widget.tsx(22,28): error TS2307: Cannot find module 'udc-extension/lib/common/udc-service'.
-17 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
-17 error
-17 error     at Promise.all.then.arr (D:\webide\webide-back\node_modules\lerna\node_modules\execa\index.js:236:11)
+11 silly getExecOpts { cwd: 'C:\\Users\\Lucas\\Desktop\\webide3\\webide\\udc-extension' }
+12 silly runScriptInPackageStreaming [ 'prepare', [], 'grove-extension' ]
+13 silly getExecOpts { cwd:
+13 silly getExecOpts    'C:\\Users\\Lucas\\Desktop\\webide3\\webide\\grove-extension' }
+14 silly runScriptInPackageStreaming [ 'prepare', [], 'demo' ]
+15 silly getExecOpts { cwd: 'C:\\Users\\Lucas\\Desktop\\webide3\\webide\\demo' }
+16 silly runScriptInPackageStreaming [ 'prepare', [], 'new_widget' ]
+17 silly getExecOpts { cwd: 'C:\\Users\\Lucas\\Desktop\\webide3\\webide\\new_widget' }
+18 error execute callback with error
+19 error Error: Command failed: npm run prepare
+19 error warning package.json: No license field
+19 error warning package.json: No license field
+19 error error Command failed with exit code 2.
+19 error npm ERR! code ELIFECYCLE
+19 error npm ERR! errno 2
+19 error npm ERR! demo@0.0.0 prepare: `yarn run clean && yarn run build`
+19 error npm ERR! Exit status 2
+19 error npm ERR!
+19 error npm ERR! Failed at the demo@0.0.0 prepare script.
+19 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+19 error
+19 error npm ERR! A complete log of this run can be found in:
+19 error npm ERR!     C:\Users\Lucas\AppData\Roaming\npm-cache\_logs\2020-10-16T03_45_34_568Z-debug.log
+19 error
+19 error
+19 error > demo@0.0.0 prepare C:\Users\Lucas\Desktop\webide3\webide\demo
+19 error > yarn run clean && yarn run build
+19 error
+19 error yarn run v1.22.0
+19 error $ rimraf lib
+19 error Done in 1.11s.
+19 error yarn run v1.22.0
+19 error $ tsc  --jsx react
+19 error src/browser/demo-widget.tsx(22,28): error TS2307: Cannot find module 'udc-extension/lib/common/udc-service'.
+19 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+19 error
+19 error     at Promise.all.then.arr (C:\Users\Lucas\Desktop\webide3\webide\node_modules\lerna\node_modules\execa\index.js:236:11)

@@ -21,6 +21,7 @@
   "workspaces": [
     "drawboard-extension",
     "udc-extension",
+    "grove-extension",
     "browser-app",
     "demo",
     "new_widget"

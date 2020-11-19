@@ -243,7 +243,7 @@ export class View extends React.Component<View.Props, View.State> {
         withCredentials: true,
       },
       method: "GET",
-      url: USER_INFO_URL,
+      url: USER_INFO_URL,   //请求用户信息，用于记录日志和统计用户信息
       // processData: false,
       dataType: "json",
       contentType: "text/plain",
@@ -251,7 +251,7 @@ export class View extends React.Component<View.Props, View.State> {
       success: function(data) {
         let time = new Date().toISOString().replace(/T|Z/gi, " ");
         _this.props.storeCallInfo(time, "end", CallSymbol.QUIF, 0);
-        $(".userName").text(data.data.uname);
+        $(".userName").text(data.data.uname);                //将用户名显示到webide界面上？可能已经废弃
         ////alert(data.data.JSESSIONID)
         _this.props.setTinyLink(
           data.data.tinyId,
@@ -277,7 +277,7 @@ export class View extends React.Component<View.Props, View.State> {
         withCredentials: true,
       },
       method: "GET",
-      url: VIEW_DETAIL_URL,
+      url: VIEW_DETAIL_URL,      //返回题目集合
       dataType: "json",
       contentType: "text/plain",
       data: "",
@@ -295,9 +295,9 @@ export class View extends React.Component<View.Props, View.State> {
           console.log("INFO:GET VIEW DETAIL FAILED!!!!!!!!!!!!!!!!!!!!!!!!!");
           return;
         }
-        _this.type = data.data.type;
+        _this.type = data.data.type;        //实验题类型
 
-        _this.vid = data.data.vid;
+        _this.vid = data.data.vid;        //实验类型代表的视图。（自由实验、LinkLab实验。。。）
         // setInterval(() => {
         //     _this.props.storeData(JSON.stringify(_this.typeDataPool))
         // }, 8000)
@@ -384,7 +384,7 @@ export class View extends React.Component<View.Props, View.State> {
     });
 
     console.log("rendering......................................");
-    let viewState = await this.props.getLocal("viewState", {});
+    let viewState = await this.props.getLocal("viewState", {});    //获取当前缓存在本地的做题信息
     if (viewState["viewState"] == undefined) viewState["viewState"] = false;
     this.setState((state) => ({
       ...state,

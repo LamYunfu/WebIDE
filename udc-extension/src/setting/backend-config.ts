@@ -14,8 +14,8 @@ export const PROGRAM_SERVER_IP = `${DEPLOY_SERVER_IP}`;
 export const PROGRAM_SERVER_PORT = "8081";
 export const SENCE_SERVER_URL = "ws://47.98.249.190:8004/";
 export const LDC_SERVER_IP = `${DEPLOY_SERVER_IP}`;
-export const LDC_SERVER_PORT = 5000;
-// export const LDC_SERVER_PORT = 65003;
+//export const LDC_SERVER_PORT = 5000;
+export const LDC_SERVER_PORT = 65003;
 export const TEMPLATE_SERVER = `judge.${DEPLOY_SERVER_DOMAIN}`;
 export const RASPBERRY_QUERRY_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_QUERRY_PORT = "12320";
@@ -28,12 +28,13 @@ export const TINYLINEDGECOMPILE_IP = `47.96.155.111`;
 export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_GCC_PORT = "12400";
 export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
+
 export const CONFIGPATH = "D:/config";
 export const Call_Log_Path = "D:/call_info.log";
 export const ROOTPATH="D:/all"
 @injectable()
 export class RootDirPath {
-  private rootDir: string = `D:/all`;
+  private rootDir: string = `/home/project`;
   get val(): string {
     return this.rootDir;
   }
@@ -41,7 +42,7 @@ export class RootDirPath {
     this.rootDir = path.join(this.rootDir, val);
   }
   reset() {
-    this.rootDir = `D:/all`;
+    this.rootDir = `/home/project`;
   }
 }
 

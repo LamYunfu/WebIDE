@@ -46,6 +46,7 @@ export class DeviceViewContribution
     this.applicationState.onStateChanged(async (e) => {
       if (e == "initialized_layout") {
         console.log(" close tabs");
+        //清除上次做题的状态，关闭所有打开的组件
         await this.applicationShell.closeTabs("main");
         await this.applicationShell.closeTabs("bottom");
         await this.applicationShell.closeTabs("right");
