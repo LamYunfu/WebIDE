@@ -8,7 +8,7 @@ import { UdcConsoleWidget } from "./udc-console-contribution";
 
 
 @injectable()
-export class UdcConsoleSession extends ConsoleSession {
+export class UdcConsoleSession extends ConsoleSession {//定义几种对输出模块的操作
     static uri = new URI("udcconsole")
     readonly id = 'udc';
     protected items: ConsoleItem[] = [];

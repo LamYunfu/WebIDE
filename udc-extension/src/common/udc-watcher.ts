@@ -10,16 +10,11 @@ export interface UdcClient {
     onDeviceList(data: { [key: string]: number }): void
     onConfigLog(data: { name: string, passwd: string }): void
 }
-
-
 @injectable()
 export class UdcWatcher {
     protected onDeviceLogEmitter = new Emitter<string>();
     protected onDeviceListEmitter = new Emitter<{ [key: string]: number }>();
-    protected onConfigEmitter = new Emitter<{ name: string, passwd: string }>();
-    
-
-
+    protected onConfigEmitter = new Emitter<{ name: string, passwd: string }>(); 
     getUdcWatcherClient(): UdcClient {
         const logEmitter = this.onDeviceLogEmitter;
         const devsEmitter = this.onDeviceListEmitter;
@@ -37,7 +32,6 @@ export class UdcWatcher {
             }
         }
     }
-
     get onConfigLog(): Event<{ name: string, passwd: string }> {
         return this.onConfigEmitter.event;
     }

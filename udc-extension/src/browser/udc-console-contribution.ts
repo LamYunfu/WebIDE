@@ -8,7 +8,7 @@ export const InUdcReplContextKey = Symbol('inUdcReplContextKey');
 
 
 @injectable()
-export class UdcConsoleWidget extends ConsoleWidget  {
+export class UdcConsoleWidget extends ConsoleWidget  {//输出模块
     constructor() {
         super();
     }
@@ -21,10 +21,8 @@ export class UdcConsoleWidget extends ConsoleWidget  {
         }
     }
 }
-
-
 @injectable()
-export class UdcConsoleContribution extends AbstractViewContribution< UdcConsoleWidget>{
+export class UdcConsoleContribution extends AbstractViewContribution< UdcConsoleWidget>{//前端Widget配置
     constructor() {
         super({
             widgetId: UdcConsoleContribution.options.id,
@@ -36,9 +34,7 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
             toggleKeybinding: 'ctrlcmd+shift+c'
         });
     }
-
-
-    static options: ConsoleOptions = {
+        static options: ConsoleOptions = {
         id: 'udc-shell',
         title: {
             label: 'LDC shell',
@@ -47,16 +43,9 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
         ,
         input: {
             uri: UdcConsoleSession.uri,
-            // options: {
-            //     autoSizing: true,
-            //     minHeight: 1,
-            //     maxHeight: 10,
-            // }
         }
 
     };
-
-
     static create(parent: interfaces.Container): ConsoleWidget {
         const inputFocusContextKey = parent.get<InUdcReplContextKey>(InUdcReplContextKey);
         const child = UdcConsoleWidget.createContainer(parent, {
@@ -67,23 +56,14 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
         widget.session = child.get(UdcConsoleSession);
 
         return widget;
-    }
-
-    
-    static bindContribution(bind: interfaces.Bind): void {
-        // bind(InUdcReplContextKey).toDynamicValue(({ container }) =>
-        //     container.get(ContextKeyService).createKey('inUdcRepl', false)
-        // ).inSingletonScope();
-
-        // bind(UdcConsoleWidget).toSelf().inSingletonScope();
-        // bind(UdcConsoleSession).toSelf().inSingletonScope();
+    }   
+    static bindContribution(bind: interfaces.Bind): void {//定义容器绑定方式
         bind(InUdcReplContextKey).toDynamicValue(({ container }) =>
             container.get(ContextKeyService).createKey('inUdcRepl', false)
         ).inSingletonScope()
         bind(UdcConsoleWidget).toSelf()
         bind(UdcConsoleSession).toSelf().inSingletonScope()
         bindViewContribution(bind, UdcConsoleContribution).onActivation((context, _) => {
-            // eagerly initialize the debug console session
             context.container.get(UdcConsoleSession)
             return _;
         });

@@ -252,8 +252,7 @@ export class ServerConnection implements ServerConnectionInterface {
         }
         if (item.startsWith("0E")) {
           if (
-            item
-              .split("0010")
+            item.split("0010")
               .pop()
               .trim() == ""
           ) {
