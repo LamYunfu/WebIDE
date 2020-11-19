@@ -1,7 +1,7 @@
 
-import { OneLinkData } from './../../data_center/one_link_data';
-import { ProjectData } from './../../data_center/project_data';
-import { MultiProjectData } from './../../data_center/multi_project_data';
+import { OneLinkData } from '../../data_center/one_link_data';
+import { ProjectData } from '../../data_center/project_data';
+import { MultiProjectData } from '../../data_center/multi_project_data';
 import * as fs from "fs-extra"
 import * as path from "path"
 import { inject, injectable } from "inversify";

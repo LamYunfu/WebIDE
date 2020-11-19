@@ -1,5 +1,5 @@
 
-import { TrainData } from './../../data_center/train_data';
+import { TrainData } from '../../data_center/train_data';
 import { JsonConvert, OperationMode, ValueCheckingMode } from 'json2typescript';
 import { injectable, inject } from "inversify";
 import * as fs from "fs-extra"

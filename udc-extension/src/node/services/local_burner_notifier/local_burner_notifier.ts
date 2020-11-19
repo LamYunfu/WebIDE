@@ -1,5 +1,5 @@
 import { interfaces } from 'inversify';
-import { UserInfo } from './../../data_center/user_info';
+import { UserInfo } from '../../data_center/user_info';
 import { injectable, inject } from 'inversify';
 import { LdcShellInterface } from '../ldc_shell/interfaces/ldc_shell_interface';
 export function bindLocalBurn(bind: interfaces.Bind) {

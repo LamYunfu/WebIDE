@@ -1,5 +1,5 @@
 import { FreeCodingDataService } from './freecoding_data_service';
-import { LdcData } from './../../data_center/ldc_data';
+import { LdcData } from '../../data_center/ldc_data';
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
 import { inject, injectable } from "inversify";
 import { CallInfoStorerInterface } from "../log/interfaces/call_storer_interface";

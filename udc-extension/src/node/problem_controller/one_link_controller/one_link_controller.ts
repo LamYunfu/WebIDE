@@ -1,5 +1,5 @@
 import { TinySim } from './../../services/tinysim/tinysim';
-import { OneLinkData } from './../../data_center/one_link_data';
+import { OneLinkData } from '../../data_center/one_link_data';
 import { injectable, inject, interfaces } from "inversify";
 import { OneLinkDataService } from "../../services/data_service/onelink_data_service";
 export function bindOneLinkController(bind: interfaces.Bind) {

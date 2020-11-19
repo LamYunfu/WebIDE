@@ -1,5 +1,5 @@
 
-import { ProjectData } from './../../data_center/project_data';
+import { ProjectData } from '../../data_center/project_data';
 import { injectable, inject, interfaces } from "inversify";
 import * as fs from "fs";
 import * as path from "path";

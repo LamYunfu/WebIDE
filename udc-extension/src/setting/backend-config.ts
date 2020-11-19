@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 import * as path from "path";
-export const DEPLOY_SERVER_IP = "10.200.20.5";
-export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn"; 
-// export const DEPLOY_SERVER_IP = "120.55.102.225";
-// export const DEPLOY_SERVER_DOMAIN = "tinylink.cn";
+// export const DEPLOY_SERVER_IP = "10.200.20.5";
+// export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn"; 
+export const DEPLOY_SERVER_IP = "120.55.102.225";
+export const DEPLOY_SERVER_DOMAIN = "tinylink.cn";
 export const FILE_SERVER_HOST = `fileserver.${DEPLOY_SERVER_DOMAIN}`
 export const CONTIKI_IP = `${DEPLOY_SERVER_IP}`;
 export const CONTIKI_PORT = "12382";
@@ -14,8 +14,8 @@ export const PROGRAM_SERVER_IP = `${DEPLOY_SERVER_IP}`;
 export const PROGRAM_SERVER_PORT = "8081";
 export const SENCE_SERVER_URL = "ws://47.98.249.190:8004/";
 export const LDC_SERVER_IP = `${DEPLOY_SERVER_IP}`;
-//export const LDC_SERVER_PORT = 5000;                            //正式版ldc端口
-export const LDC_SERVER_PORT = 65003;                         //测试版ldc端口
+export const LDC_SERVER_PORT = 5000;                            //正式版ldc端口
+//export const LDC_SERVER_PORT = 65003;                         //测试版ldc端口
 export const TEMPLATE_SERVER = `judge.${DEPLOY_SERVER_DOMAIN}`;
 export const RASPBERRY_QUERRY_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_QUERRY_PORT = "12320";

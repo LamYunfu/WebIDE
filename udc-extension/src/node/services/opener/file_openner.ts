@@ -1,8 +1,8 @@
 import { OneLinkDataService } from './../data_service/onelink_data_service';
-import { OneLinkData } from './../../data_center/one_link_data';
+import { OneLinkData } from '../../data_center/one_link_data';
 import { DataService } from './../data_service/data_service';
-import { ProjectData } from './../../data_center/project_data';
-import { MultiProjectData } from './../../data_center/multi_project_data';
+import { ProjectData } from '../../data_center/project_data';
+import { MultiProjectData } from '../../data_center/multi_project_data';
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
 import { inject, injectable } from "inversify";
 import { OS } from "@theia/core";

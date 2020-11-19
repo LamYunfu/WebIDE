@@ -1,4 +1,4 @@
-import { ProjectData } from './../../data_center/project_data';
+import { ProjectData } from '../../data_center/project_data';
 import { EventDefinition } from './../tools/event_definition';
 import { Logger } from "../tools/logger";
 import * as net from "net";

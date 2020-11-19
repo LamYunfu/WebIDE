@@ -1,5 +1,5 @@
 import { DataService } from './../data_service/data_service';
-import { LdcData } from './../../data_center/ldc_data';
+import { LdcData } from '../../data_center/ldc_data';
 import { ProgramerInterface } from "./interfaces/programer_interface";
 import { inject, injectable } from "inversify";
 import { ProjectData } from "../../data_center/project_data";

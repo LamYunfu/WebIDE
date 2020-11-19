@@ -1,6 +1,6 @@
 import { TrainDataService } from './../services/data_service/train_data_service';
 import { EventDefinition } from './../services/tools/event_definition';
-import { LdcData } from './../data_center/ldc_data';
+import { LdcData } from '../data_center/ldc_data';
 import { QueryService } from './../services/query_service/query_service';
 import { FreeCodingDataService } from './../services/data_service/freecoding_data_service';
 import { LdcClientControllerInterface } from './../services/ldc/interfaces/ldc_client_controller_interface';
@@ -9,7 +9,7 @@ import { FileTemplate } from './../services/file_template/file_template';
 import { FileOpener } from './../services/opener/file_openner';
 import { LdcShellInterface } from './../services/ldc_shell/interfaces/ldc_shell_interface';
 import { DistributedCompiler } from './../services/compiler/ds_compiler';
-import { ProjectData } from './../data_center/project_data';
+import { ProjectData } from '../data_center/project_data';
 import { DataService } from './../services/data_service/data_service';
 import { injectable, inject } from "inversify";
 import { ExperimentController } from './experiment_controller/experiment_controller';

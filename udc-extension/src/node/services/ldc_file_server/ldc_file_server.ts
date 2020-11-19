@@ -1,5 +1,5 @@
 import { FILE_SERVER_HOST } from './../../../setting/backend-config';
-import { ProjectData } from './../../data_center/project_data';
+import { ProjectData } from '../../data_center/project_data';
 import { Logger } from "../tools/logger";
 import * as http from "http";
 import * as fs from "fs-extra";

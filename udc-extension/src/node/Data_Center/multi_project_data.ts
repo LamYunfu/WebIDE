@@ -1,4 +1,4 @@
-import { ROOTPATH } from './../../setting/backend-config';
+import { ROOTPATH } from '../../setting/backend-config';
 import { ProjectData } from "./project_data";
 import { injectable } from "inversify";
 @injectable()

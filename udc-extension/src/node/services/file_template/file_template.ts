@@ -1,4 +1,4 @@
-import { MultiProjectData } from './../../data_center/multi_project_data';
+import { MultiProjectData } from '../../data_center/multi_project_data';
 import { CallSymbol } from "../../../setting/callsymbol";
 import { CallInfoStorer } from "../log/call_info_storer";
 import * as http from "http";
