@@ -8,7 +8,7 @@ import { DemoService } from "../common/demo-service";
 // import { DemoViewService } from './demo-widget-sservice';
 import { ClientObject } from "../common/test";
 import { DemoViewService } from "./demo-widget-sservice";
-import { MenuContribution } from "@theia/core";
+import { MenuContribution, MenuModelRegistry } from "@theia/core";
 
 @injectable()
 export class DemoContribution extends AbstractViewContribution<DemoWidget>
@@ -36,5 +36,9 @@ export class DemoContribution extends AbstractViewContribution<DemoWidget>
   }
   onStart?(app: FrontendApplication) {
     this.openView({ toggle: true, reveal: true, activate: true });
+  }
+  registerMenus(menus:MenuModelRegistry){
+    let menuBar=menus.getMenu(["menubar","4_view"])
+    menuBar.removeNode("demo-view")
   }
 }

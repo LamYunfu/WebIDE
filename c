@@ -6,8 +6,6 @@ cd new_widget
 yarn build 
 cd ../grove-extension
 yarn build
-cd ../demo 
-yarn build 
 cd ../drawboard-extension
 yarn build
 cd ../esp32_widget
@@ -15,6 +13,8 @@ yarn prepare
 ##cd ./plugins/unity
 ##mv unity.theia ../node/unity.theia
 cd ../udc-extension
+yarn build 
+cd ../demo 
 yarn build 
 cd ../browser-app
 yarn theia build

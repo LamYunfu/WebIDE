@@ -736,11 +736,25 @@ export class UdcExtensionMenuContribution implements MenuContribution {
     // for(let item of menus.getMenu(['menubar']).children ){
     //     console.log(item.id)
     // }
+
     let menuBar = menus.getMenu(["menubar"]);
+    menuBar.removeNode("1_file")
     menuBar.removeNode("9_help");
     menuBar.removeNode("7_terminal");
     menuBar.removeNode("6_debug");
     menuBar.removeNode("");
+    menuBar.removeNode("3_selection")
+    menuBar=menus.getMenu(["menubar","4_view","1_views"])
+    menuBar.removeNode("drawboardView:toggle")
+    menuBar.removeNode("debug:toggle")
+    menuBar.removeNode("device-view")
+    menuBar.removeNode("debug:console:toggle")
+    menuBar.removeNode("outlineView:toggle")
+    menuBar.removeNode("pluginsView:toggle")
+    menuBar.removeNode("problemsView:toggle")
+    menuBar.removeNode("search-in-workspace.toggle")
+    menuBar=menus.getMenu(["menubar","4_view"])
+    menuBar.removeNode("2_layout")
 
     // menus.registerMenuAction([...UdcMenus.UDC], { commandId:UdcCommands.OpenCommand.id });
   }
