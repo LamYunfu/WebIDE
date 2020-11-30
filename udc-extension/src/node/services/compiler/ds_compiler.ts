@@ -148,6 +148,7 @@ export class DistributedCompiler {
     });
     return await p;
   }
+
   async waitCompileFinish(path: string, output: string) {
     let p = new Promise<string>((resolve) => {
       console.log(p);

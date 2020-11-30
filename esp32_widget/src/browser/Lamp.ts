@@ -25,8 +25,8 @@ export class Lamp {
     this.position[0] = (cv.width * cor[0]) / 100;
     this.position[1] = (cv.height * cor[1]) / 100;
     this.cv = cv;
-    this.marginX = 0.07 * this.cv.height;
-    this.marginY = 0.07 * this.cv.width;
+    this.marginX = 0.10 * this.cv.height;
+    this.marginY = 0.10 * this.cv.width;
 
     let ctx = this.cv.getContext("2d");
     if (!ctx) return;
@@ -76,8 +76,8 @@ export class Lamp {
   drawX(x: number, y: number, width: number, height: number, label: string) {
     let ctx = this.cv.getContext("2d");
     if (!ctx) return;
-    ctx.strokeStyle = "blue";
-    ctx.fillStyle = "red";
+    ctx.strokeStyle = "#00FFFF";              //指示画笔的颜色
+    ctx.fillStyle = "#00FFFF";
     ctx.textBaseline = "middle";
     ctx.font = `${(2 * height) / 3}px serif`;
     //画指向线
@@ -100,6 +100,8 @@ export class Lamp {
    * @param y1 
    */
   calculatePath(x2: number, y2: number, x1: number, y1: number) {
+    y2 = y2 + 15;
+    x1 = x1 + 10;
     let k = (1.5 * (y2 - y1)) / (x2 - x1);
     // let x = k / Math.abs(k);
     let dxu = (x2 - x1) / Math.abs(x2 - x1);
@@ -113,10 +115,10 @@ export class Lamp {
     let tmpY = y1 + 0.33 * d * Math.abs(Math.sin(theta)) * dyu;
     k;
     ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(tmpX, tmpY);
-    ctx.moveTo(tmpX, tmpY);
-    ctx.lineTo(x2, y2);
+    ctx.moveTo(x1, y1);               //设置第一条线起点
+    ctx.lineTo(tmpX, tmpY);           //设置第一条线目的点
+    ctx.moveTo(tmpX, tmpY);           //设置第二条线起点
+    ctx.lineTo(x2, y2);               //设置第二条线目的点
     ctx.closePath();
     ctx.stroke();
   }
@@ -200,7 +202,7 @@ export class Lamp {
    * 灯亮换成黄色
    */
   lighton() {
-    this.color = "yellow";
+    this.color = "yellow";           //灯亮的时候是黄色
     this.paint();
   }
 
@@ -208,7 +210,7 @@ export class Lamp {
    * 灯灭变成其他颜色
    */
   lightoff() {
-    this.color = "#bcbdbf";
+    this.color = "#bcbdbf";           //灯暗下来的时候是灰色
     this.paint();
   }
 

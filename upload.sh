@@ -1,5 +1,5 @@
 #!/bin/bash
-git archive mergetest --format zip -o ./src.zip
+git archive mergetest   --format zip -o ./src.zip
 if [ "$1" == "formal" ]; then
     scp ./src.zip root@120.55.102.225:~
 else
