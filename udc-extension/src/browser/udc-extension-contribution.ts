@@ -662,24 +662,25 @@ export class UdcExtensionMenuContribution implements MenuContribution {
   registerMenus(menus: MenuModelRegistry): void {
     menus.registerSubmenu(UdcMenus.UDC, "LinkLab");
     // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
-    menus.registerMenuAction([...UdcMenus.UDC], {
-      commandId: UdcCommands.SubmitOnMenu.id,
-      label: "Submit",
-      icon: "x",
-      order: "a_1",
-    });
-    menus.registerMenuAction([...UdcMenus.UDC], {
-      commandId: UdcCommands.literalAnalysis.id,
-      label: "LiteralAnalysis",
-      icon: "x",
-      order: "a_2",
-    });
-    menus.registerMenuAction([...UdcMenus.UDC], {
-      commandId: UdcCommands.LocalBurnView.id,
-      label: "LocalBurn",
-      icon: "x",
-      order: "a_3",
-    });
+      // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.SubmitOnMenu.id,
+        label: "RemoteBurn",
+        icon: "x",
+        order: "a_2",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.local_compile_burn.id,
+        label: "Compile",
+        icon: "x",
+        order: "a_1",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.LocalBurnView.id,
+        label: "LocalBurn",
+        icon: "x",
+        order: "a_3",
+      });
     // menus.registerSubmenu(UdcMenus.linkedge, "linkedge");
     // // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
     // menus.registerMenuAction([...UdcMenus.linkedge], {
@@ -706,13 +707,6 @@ export class UdcExtensionMenuContribution implements MenuContribution {
     //   icon: "x",
     //   order: "a_4"
     // });
-
-    menus.registerMenuAction([...UdcMenus.UDC], {
-      commandId: UdcCommands.compileEdge.id,
-      label: "Compile",
-      icon: "x",
-      order: "a_5",
-    });
     menus.unregisterMenuAction({
       commandId: "outlineView:toggle ",
     });
