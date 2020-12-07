@@ -65,7 +65,8 @@ export class New_widgetContribution extends AbstractViewContribution<NewWidget> 
      * 
      * @param menus
      */
-    registerMenus(menus: MenuModelRegistry): void {
-        super.registerMenus(menus);
+    registerMenus(menus:MenuModelRegistry){
+        let menuBar=menus.getMenu(["menubar","4_view"])
+        menuBar.removeNode( NewWidget.ID)
+      }
     }
-}

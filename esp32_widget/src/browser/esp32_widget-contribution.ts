@@ -65,7 +65,8 @@ export class Esp32_widgetContribution extends AbstractViewContribution<Esp32Widg
      * 
      * @param menus
      */
-    registerMenus(menus: MenuModelRegistry): void {
-        super.registerMenus(menus);
-    }
+    registerMenus(menus:MenuModelRegistry){
+        let menuBar=menus.getMenu(["menubar","4_view"])
+        menuBar.removeNode( Esp32Widget.ID)
+      }
 }

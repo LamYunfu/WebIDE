@@ -31,6 +31,7 @@ import { Lamp } from "./lamp";
 import ReactDOM from "react-dom";
 import { DisplayBoard } from "./component/display-board";
 import { TestWidget } from "./test";
+import { UI_Setting } from "./isEnable";
 // import { LinkEdgeView } from "./component/linkedge";
 export interface DeviceViewSymbolInformationNode
   extends CompositeTreeNode,
@@ -76,11 +77,13 @@ export class DeviceViewWidget extends TreeWidget {
     @inject(WorkspaceService) protected readonly ws: WorkspaceService,
     @inject(WidgetManager) protected readonly wm: WidgetManager,
     @inject(FileTreeWidget) protected readonly ftw: FileTreeWidget,
-    @inject(ViewContainer) protected readonly vc: ViewContainer
+    @inject(ViewContainer) protected readonly vc: ViewContainer,
+    @inject(UI_Setting) protected readonly ui_setting:UI_Setting,
   ) {
     super(treePros, model, contextMenuRenderer);
     this.id = "device-view";
     // this.title.label = "题目目录";
+    this.title.closable=false
     this.title.caption = "Device";
     this.title.closable = true;
     this.title.iconClass = "fa fa-gg";
@@ -112,6 +115,7 @@ export class DeviceViewWidget extends TreeWidget {
     return (
       <div style={{ height: "100%" }}>
         <View
+          ui_setting={this.ui_setting}
           storeCallInfo={this.storeCallInfo}
           openLinkEdge={this.openLinkedge}
           delProject={this.delProject}
@@ -595,6 +599,7 @@ export class DeviceViewWidget extends TreeWidget {
   virtualOpen = () => {
     this.commandRegistry.executeCommand("iot.plugin.tinylink.unity");
   };
+
   gotoVirtualScene = () => {
     if (
       this.applicationShell.getTabBarFor("main") != null &&

@@ -10,7 +10,7 @@ import {
 } from "@theia/core/lib/browser";
 import { DeviceViewWidget } from "./device-view-widget";
 import { FrontendApplicationStateService } from "@theia/core/lib/browser/frontend-application-state";
-import { CommandRegistry } from "@theia/core";
+import { CommandRegistry, MenuModelRegistry } from "@theia/core";
 import { find } from "@phosphor/algorithm";
 import { UdcService } from "../common/udc-service";
 // import { UdcConsoleContribution } from "./udc-console-contribution";
@@ -32,15 +32,18 @@ export class DeviceViewContribution
     @inject(UdcService) readonly udc: UdcService
   ) {
     super({
+
       widgetId: DEVICE_WIDGET_FACTORY_ID,
       widgetName: "Online IOT Study System",
       defaultWidgetOptions: {
         area: "left",
         rank: 574,
+      
         // rank: 1380
       },
       toggleCommandId: "UDC devices",
     });
+    
   }
   async onStart(app: FrontendApplication) {
     this.applicationState.onStateChanged(async (e) => {
@@ -94,6 +97,9 @@ export class DeviceViewContribution
       // }
     });
   }
-
+  registerMenus(menus:MenuModelRegistry){
+    let menuBar=menus.getMenu(["menubar","4_view"])
+    menuBar.removeNode( DEVICE_WIDGET_FACTORY_ID)
+  }
   async initializeLayout(app: FrontendApplication): Promise<void> {}
 }

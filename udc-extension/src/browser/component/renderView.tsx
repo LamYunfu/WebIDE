@@ -22,6 +22,7 @@ import { DisplayBoard } from "./display-board";
 import { CallSymbol } from "../../setting/callsymbol";
 import { TaoFactoryView } from "./taoFactory-view";
 import { DiyMainView } from "../diy/diy-main-view";
+import { UI_Setting } from "../isEnable";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
@@ -143,6 +144,7 @@ export namespace View {
     gotoTaoUnity: () => void;
     //打开本地烧写页面
     showLocalBurn:()=>void;
+    ui_setting:UI_Setting;
   }
   export interface State {
     ajaxNotFinish: boolean;
@@ -160,6 +162,7 @@ export namespace View {
     defaultOptionViewToogle: boolean;
     redo: boolean;
     viewState: boolean;
+   
   }
 }
 export class View extends React.Component<View.Props, View.State> {
@@ -1165,7 +1168,7 @@ export class View extends React.Component<View.Props, View.State> {
   render(): JSX.Element {
     let _this = this;
     return this.state.viewType == "1" || this.state.viewType == "4" ? ( //选择 &&考试
-      this.state.viewState == true ? (
+     ( this.props.ui_setting.setExperiment(),   this.state.viewState == true )? (
         <div style={{ height: "100%", zIndex: 0 }}>
           <div className="title_timer col-12">
             <h4> {_this.title}</h4>
@@ -1668,7 +1671,7 @@ export class View extends React.Component<View.Props, View.State> {
           linkEdgeConnect={this.props.linkEdgeConnect}
         />
       </MyContext.Provider>
-    ) : this.state.viewType == "2" ? ( //实验题
+    ) : (  this.props.ui_setting.setExperiment(),   this.state.viewType) == "2" ? ( //实验题
       <MyContext.Provider
         value={{
           showTheDefaultExperimentView: () => {
@@ -1717,7 +1720,7 @@ export class View extends React.Component<View.Props, View.State> {
           </div>
         </div>
       </MyContext.Provider>
-    ) : this.state.viewType == "3" ? ( //场景模式
+    ) : (this.props.ui_setting.setVirtualScene(),this.state.viewType )== "3" ? ( //场景模式
       <MyContext.Provider
         value={{
           showTheDefaultExperimentView: () => {
@@ -1771,7 +1774,7 @@ export class View extends React.Component<View.Props, View.State> {
           </div>
         </div>
       </MyContext.Provider>
-    ) : this.state.viewType == "5" ? (
+    ) : (this.props.ui_setting.setFreeCoding(),this.state.viewType ) == "5" ? (
       //自由编程
       <MyContext.Provider
         value={{
@@ -1820,14 +1823,14 @@ export class View extends React.Component<View.Props, View.State> {
         />
       </MyContext.Provider>
     ) : //自由编程演示
-    this.state.viewType == "13" ? (
+    (this.props.ui_setting.setVirtualScene(),this.state.viewType ) == "13" ? (
       <DisplayBoard
         openWorkSpace={this.props.openWorkSpace}
         setSize={this.props.setSize}
         processDisplaySubmit={this.props.processDisplaySubmit}
         attach={this.props.attach}
       />
-    ) : this.state.viewType == "12" ? (
+    ) : (this.props.ui_setting.setVirtualScene(),this.state.viewType ) == "12" ? (
       <MyContext.Provider
         value={{
           showTheDefaultFreeCodingView: () => {},
@@ -1871,7 +1874,7 @@ export class View extends React.Component<View.Props, View.State> {
           postSrcFile={_this.props.postSrcFile}
         />
       </MyContext.Provider>
-    ) : this.state.viewType == "8" ? ( //人工智能
+    ) : (this.props.ui_setting.setAI(),this.state.viewType ) == "8" ? ( //人工智能
       <MyContext.Provider
         value={{
           showTheDefaultFreeCodingView: () => {},
@@ -1905,7 +1908,7 @@ export class View extends React.Component<View.Props, View.State> {
           say={_this.props.say}
         />
       </MyContext.Provider>
-    ) : this.state.viewType == "9" ? (
+    ) : (this.props.ui_setting.setTaoFactory(),this.state.viewType ) == "9" ? (
       _this.ppid == "54" ? (
         <MyContext.Provider
           value={{
@@ -2020,6 +2023,7 @@ export class View extends React.Component<View.Props, View.State> {
       }}
     >
       <DiyMainView
+        ui_setting={this.props.ui_setting}
         title={this.title}
         programSingleFile={_this.props.programSingleFile}
         config={_this.props.config}

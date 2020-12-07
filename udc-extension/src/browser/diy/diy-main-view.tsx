@@ -7,8 +7,10 @@ import { DiyExperiment } from "./diy-experiment-view";
 import { CONFIG_JSON_URL } from "../../setting/front-end-config";
 import * as $ from "jquery";
 import { DiyAIView } from "./diy-ai-view";
+import { UI_Setting } from "../isEnable";
 export namespace diyMainView {
     export interface Props {
+      ui_setting:UI_Setting
       title: string
       section: { [key: string]: any } 
       connect: (loginType: string, model: string, pid: string, timeout: string) => Promise<boolean>
@@ -99,6 +101,7 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
           case "free_coding":
               //自由 编程实验 
               _this.viewType = 1;
+              this.props.ui_setting.setFreeCoding()
               this.setState(state =>({
                 ldc: jsonConfigData.ldc,
                 localBurn: jsonConfigData.localBurn,
@@ -106,6 +109,7 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
               break;
           case "linklab_experiment":
               //Linklab实验
+              this.props.ui_setting.setExperiment()
               _this.viewType = 2;
               this.setState({
                 ldc: jsonConfigData.ldc,
@@ -115,6 +119,7 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
               break;
           case "multi_device":
               //多设备实验
+              this.props.ui_setting.setFreeCoding()
               _this.viewType = 3;
               this.setState({
                 ldc: jsonConfigData.ldc,
@@ -124,6 +129,7 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
               break;
           case "ai_experiment":
               //ai实验
+              this.props.ui_setting.setAI()
               _this.viewType = 4;
               this.setState({
                 discription: jsonConfigData.discription,

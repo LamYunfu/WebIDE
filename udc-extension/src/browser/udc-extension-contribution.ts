@@ -1,3 +1,4 @@
+import { UI_Setting } from './isEnable';
 import { LocalBurnData } from './localburn_data';
 import {
   WidgetManager,
@@ -207,6 +208,26 @@ export namespace UdcCommands {
     category: LINKEDGE_CATEGORY,
     label: "stop",
   };
+  export const LinkedgeView:Command={
+    id:"LinkEdge",
+    category:LINKEDGE_CATEGORY,
+    label:"OpenLinkedgeView"
+  }
+  export const esp32View:Command={
+    id:"esp32",
+    category:LINKEDGE_CATEGORY,
+    label:"OpenLinkedgeView"
+  }
+  export const arduinoView:Command={
+    id:"arduino",
+    category:LINKEDGE_CATEGORY,
+    label:"OpenLinkedgeView"
+  }
+  export const ldcShellView:Command={
+    id:"ldcShell",
+    category:LINKEDGE_CATEGORY,
+    label:"OpenLDCShell"
+  }  
 }
 
 @injectable()
@@ -269,6 +290,7 @@ export class UdcExtensionCommandContribution
     @inject(NewWidgetFactory) readonly nf: NewWidgetFactory,
     @inject(Esp32WidgetFactory) readonly esp32WidgetFactory: Esp32WidgetFactory,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
+    @inject(UI_Setting) readonly ui_Setting:UI_Setting
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -404,11 +426,35 @@ export class UdcExtensionCommandContribution
         this.udcConsoleSession.appendLine(log)
       }
     })
+    registry.registerCommand(UdcCommands.esp32View,{
+      isEnabled:()=>this.ui_Setting.esp32Status,
+      execute:()=>{
+       registry.executeCommand('esp32_widget:command')
+      }
+    })
+    registry.registerCommand(UdcCommands.ldcShellView,{
+      isEnabled:()=>this.ui_Setting.ldcShellStatus,
+      execute:()=>{
+       registry.executeCommand("udc:shell:toggle")
+      }
+    })
+    registry.registerCommand(UdcCommands.arduinoView,{
+      isEnabled:()=>this.ui_Setting.arduinoStatus,
+      execute:()=>{
+       registry.executeCommand("new_widget:command")
+      }
+    })
     registry.registerCommand(UdcCommands.SetPort,{
       execute:(log:any )=>{
         this.lbd.port=log
       }
     })
+    registry.registerCommand(UdcCommands.LinkedgeView, {
+      isEnabled:()=>this.ui_Setting.linkedgeViewStatus,
+      execute: () => {
+        registry.executeCommand("something")
+      },
+    });
     registry.registerCommand(UdcCommands.ABOUT, {
       execute: () => {
         this.aboutDialog.open();
@@ -437,11 +483,13 @@ export class UdcExtensionCommandContribution
       },
     });
     registry.registerCommand(UdcCommands.releaseLinkedge, {
+      isEnabled:()=>this.ui_Setting.linkedgeViewStatus,
       execute: () => {
         this.udcService.linkEdgeConnect("32", { action: "release" });
       },
     });
     registry.registerCommand(UdcCommands.compileEdge, {
+      isEnabled:()=>this.ui_Setting.linkedgeCompileStatus,
       execute: () => {
         this.udcService.tinyEdgeCompile("35");
       },
@@ -519,6 +567,7 @@ export class UdcExtensionCommandContribution
       },
     });
     registry.registerCommand(UdcCommands.LocalBurnView, {
+      isEnabled:()=>this.ui_Setting.remoteBurnStatus,
       execute: async () => {
        
         registry.executeCommand("iot.plugin.LocalBurner");
@@ -555,6 +604,7 @@ export class UdcExtensionCommandContribution
       },
     });
     registry.registerCommand(UdcCommands.SubmitOnMenu, {
+      isEnabled:()=>this.ui_Setting.remoteBurnStatus,
       execute: () => {
         // this.applicationShell.activateWidget("files")
         this.applicationShell.saveAll();
@@ -569,6 +619,7 @@ export class UdcExtensionCommandContribution
       },
     });
     registry.registerCommand(UdcCommands.local_compile_burn, {
+      isEnabled:()=>this.ui_Setting.remoteCompileStatus,
       execute: () => {
         // this.applicationShell.activateWidget("files")
         this.applicationShell.saveAll();
@@ -670,6 +721,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
         order: "a_2",
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
+        
         commandId: UdcCommands.local_compile_burn.id,
         label: "Compile",
         icon: "x",
@@ -681,6 +733,41 @@ export class UdcExtensionMenuContribution implements MenuContribution {
         icon: "x",
         order: "a_3",
       });
+      let sub =UdcMenus.UDC
+      let t =[...sub ,"1_subtest"]
+      menus.registerSubmenu(t,"VirtualDevice"); 
+      menus.registerMenuAction([...t], {
+        commandId: UdcCommands.esp32View.id,
+        label: "Esp32",
+        icon: "x",
+        order: "a_3",
+      });
+      menus.registerMenuAction([...t], {
+        commandId: UdcCommands.arduinoView.id,
+        label: "Arduino",
+        icon: "x",
+        order: "a_3",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.compileEdge.id,
+        label: "EdgeCompile",
+        icon: "x",
+        order: "a_5",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.LinkedgeView.id,
+        label: "OpenLinkedge",
+        icon: "x",
+        order: "a_6",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.ldcShellView.id,
+        label: "OpenLDCShell",
+        icon: "x",
+        order: "a_6",
+      });
+    
+
     // menus.registerSubmenu(UdcMenus.linkedge, "linkedge");
     // // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
     // menus.registerMenuAction([...UdcMenus.linkedge], {

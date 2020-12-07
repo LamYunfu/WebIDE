@@ -133,9 +133,30 @@ export class DiyFreeCoding extends React.Component<DiyFreeCoding.Props, DiyFreeC
     render(): JSX.Element {
         return (
 
-            <div style={{ height: "100%", display: "none" }}>
-               
-            </div>
+              <div style={{ height: "100%", display: "none" }}>
+                        <div className="title_timer" title={this.props.section["ppid"][0]} style={{ height: "10%" }}><h4 className={`section experiment`}>自由实验</h4><span id='timer'></span></div>
+                        <div className="row col-12" style={{ height: "80%" }} >
+                            <div className="col-12" style={{ fontSize: "30px", height: "20%" }}>
+                                项目:{this.props.title}
+                                <div style={{ marginLeft: '0px', fontSize: "30px" }} >
+                                    这是一个关于{this.props.title}的项目
+                                </div>
+            
+                                {/* <img src="http://5b0988e595225.cdn.sohucs.com/images/20180721/0f6e106b88544c0b8b91fbf7d196898d.jpeg"
+                                    style={{ "position": "absolute", "width": "200px", height: "200px", top: '0px', right: '0px', paddingLeft: "10px" }}></img> */}
+                            </div>
+                            <div className="col-12" style={{ fontSize: "30px", height: "30%" }}>
+                                可用设备：
+                            <div style={{ marginLeft: '100px', fontSize: "25px" }} >
+                                    <li>tinylink_lora</li>
+                                    <li>esp32</li>
+                                    <li>tinylink_platform</li>
+                                    <li>developerkit</li>
+                                </div>
+                            </div>
+            
+                        </div>
+                        </div>
 
         )
     }

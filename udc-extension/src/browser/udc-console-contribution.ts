@@ -3,6 +3,7 @@ import { injectable, interfaces } from "inversify";
 import { ConsoleWidget, ConsoleOptions } from '@theia/console/lib/browser/console-widget';
 import { ContextKey, ContextKeyService } from '@theia/core/lib/browser/context-key-service';
 import { UdcConsoleSession } from './udc-console-session';
+import { MenuModelRegistry } from '@theia/core';
 export type InUdcReplContextKey = ContextKey<boolean>;
 export const InUdcReplContextKey = Symbol('inUdcReplContextKey');
 
@@ -30,6 +31,7 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
             defaultWidgetOptions: {
                 area: 'bottom'
             },
+            
             toggleCommandId: 'udc:shell:toggle',
             toggleKeybinding: 'ctrlcmd+shift+c'
         });
@@ -46,6 +48,10 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
         }
 
     };
+    registerMenus(menus:MenuModelRegistry){
+        let menuBar=menus.getMenu(["menubar","4_view"])
+        menuBar.removeNode("udc-shell")
+      }
     static create(parent: interfaces.Container): ConsoleWidget {
         const inputFocusContextKey = parent.get<InUdcReplContextKey>(InUdcReplContextKey);
         const child = UdcConsoleWidget.createContainer(parent, {
@@ -72,4 +78,6 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
             createWidget: () => UdcConsoleContribution.create(container)
         }));
     }
+    
+    
 }

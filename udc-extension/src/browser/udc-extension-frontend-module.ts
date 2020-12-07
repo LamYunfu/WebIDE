@@ -1,3 +1,4 @@
+import { UI_Setting } from './isEnable';
 import { LocalBurnData } from './localburn_data';
 import { ViewContainer } from "@theia/core/lib/browser/view-container";
 import {
@@ -73,6 +74,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     })
     .inSingletonScope();
   createCommonBindings(bind);
+  bind(UI_Setting).toSelf().inSingletonScope()
   bind(AboutDialog)
     .toSelf()
     .inSingletonScope();
