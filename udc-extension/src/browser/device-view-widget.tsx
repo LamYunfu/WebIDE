@@ -420,9 +420,11 @@ export class DeviceViewWidget extends TreeWidget {
     let client = this.uwc.getUdcWatcherClient();
     switch (types) {
       case "wrongAnswer":
+        this.udcService.judge("错误")
         client.OnDeviceLog("::" + res.red);
         break;
       case "rightAnswer":
+        this.udcService.judge("正确")
         client.OnDeviceLog("::" + res.blue);
         break;
       default:

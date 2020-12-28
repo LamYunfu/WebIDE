@@ -3,6 +3,7 @@
     "usage": "queue",//ldc运行模式  
     "hexFileDir": "hexFileDir",//二进制文件目录
     "serverType": "alios_esp32",//板子系统
+    "modifyOSCore":false,//修改操作系统内核
     "projects": [
         {
             "projectName": "alios",//源代码目录

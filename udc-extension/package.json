@@ -10,11 +10,12 @@
     "src"
   ],
   "dependencies": {
-    "json2typescript": "latest",
     "@theia/core": "latest",
     "axios": "^0.18.0",
     "describe": "^1.2.0",
-    "tsc": "^1.20150623.0"
+    "json2typescript": "latest",
+    "tsc": "^1.20150623.0",
+    "typescript-node": "^0.1.3"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",

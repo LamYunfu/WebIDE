@@ -24,6 +24,7 @@ import { OneLinkService } from './services/one_link_service/onelink';
 import { ConsoleLogger } from '@theia/core/lib/common/logger-protocol';
 import { TaoFactoryController } from './problem_controller/taoFactoryController/tao_factory_controller';
 import { CallInfoStorer } from './services/log/call_info_storer';
+import { BehaviorRecorder } from './services/behavior_recorder/behavior_recorder';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -48,7 +49,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(ModelTrainer) protected modelTrainer: ModelTrainer,
     @inject(TinySim) protected tinySim: TinySim,
     @inject(UserInfo) protected userInfo:UserInfo,
-    @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd
+    @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd,
+    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder
   ) { }
   localBurn(pid: string,tag:boolean=false){
     this.pc.localSubmit(pid,tag);
@@ -84,7 +86,9 @@ export class UdcServiceImpl implements UdcService {
     // this.pc.submit(pid)
     return true;
   }
-
+  async judge(res :string ){
+    this.behaviorRecorder.judge(res)
+  }
   async disconnect(): Promise<string> {
     let result = await this.ldcClient.disconnect()
     this.tinySim.disconnect()

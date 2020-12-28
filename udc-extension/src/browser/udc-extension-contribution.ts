@@ -947,7 +947,8 @@ export class UdcExtensionHighlightContribution
         ".gyp",
         ".gypi",
         ".snakefile",
-        ".smk",
+        ".smk", 
+        
       ],
       aliases: ["Python", "py"],
       firstLine: "^#!\\s*/.*\\bpython[0-9.-]*\\b",

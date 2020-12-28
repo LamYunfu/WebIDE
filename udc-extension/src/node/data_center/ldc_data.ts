@@ -18,6 +18,7 @@ export class LdcData {
   private _ldcState: string = "n"; // "n"： 未连接,"y":连接,"i"连接中
   private _pid: string = "26";
   private _lastCommitDevice: LastCommitDevice | undefined;
+  private _authorization: string | undefined;
 
   constructor() {
     this.uuid = this.generate16ByteNumber();
@@ -113,5 +114,11 @@ export class LdcData {
   }
   set lastCommitDevice(x: LastCommitDevice) {
     this._lastCommitDevice = x;
+  }
+  get Authorization(){
+    return this._authorization!
+  }
+  set Authorization(token :string){
+     this._authorization=token;
   }
 }

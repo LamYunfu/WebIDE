@@ -78,6 +78,8 @@ export class QueueSetting {
   serverType: string | null = null;
   @JsonProperty("projects", [QueueDetail])
   projects: QueueDetail[] | null = null;
+  @JsonProperty("modifyOSCore",Boolean)
+  modifyOSCore:boolean|null=false
 }
 @JsonObject("AdhocSetting")
 export class AdhocSetting {
@@ -91,6 +93,8 @@ export class AdhocSetting {
   serverType: string | null = null;
   @JsonProperty("projects", [AdhocDetail])
   projects: AdhocDetail[] | null = null;
+  @JsonProperty("modifyOSCore",Boolean)
+  modifyOSCore:boolean|null=false
 }
 // export class AdhocConfigSetting {
 //   version!: string;

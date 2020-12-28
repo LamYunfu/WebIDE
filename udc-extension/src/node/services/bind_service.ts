@@ -17,6 +17,8 @@ import { bindIndicator } from "./indicator/indicator";
 import { bindLocalBurn } from "./local_burner_notifier/local_burner_notifier";
 import { bindDisplayBoardBackEnd } from "./displayboard/displayboard";
 import { bindLocalBurnService } from "./local_burner_notifier/local_burn_service";
+import { bindDiffer } from "./diff/diff";
+import { bindBehaviorRecorder } from "./behavior_recorder/behavior_recorder";
 
 export function bindServices(bind: interfaces.Bind) {
   bindLdcShell(bind);
@@ -37,4 +39,6 @@ export function bindServices(bind: interfaces.Bind) {
   bindLocalBurn(bind)
   bindDisplayBoardBackEnd(bind)
   bindLocalBurnService(bind)
+  bindDiffer(bind)
+  bindBehaviorRecorder(bind)
 }

@@ -13,6 +13,7 @@ import { DistributedCompiler } from "../../services/compiler/ds_compiler";
 import { MultiProjectData } from "../../data_center/multi_project_data";
 import * as fs from "fs-extra"
 import { Indicator } from '../../services/indicator/indicator';
+import { BehaviorRecorder } from '../../services/behavior_recorder/behavior_recorder';
 @injectable()
 export class ExperimentController {
   constructor(
@@ -35,9 +36,11 @@ export class ExperimentController {
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
     @inject(TinyLinkCompiler) protected tinyLinkCompiler: TinyLinkCompiler,
-    @inject(Indicator) protected waitingIndicator:Indicator
+    @inject(Indicator) protected waitingIndicator: Indicator,
+    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder
   ) { }
   async submitQueue(): Promise<boolean> {
+    this.behaviorRecorder.submit()
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
 
@@ -51,13 +54,14 @@ export class ExperimentController {
       //存放二进制代码的目标路径
       let targetPath = path.join(
         this.multiProjectData.rootDir,
-        projectData.projectRootDir,  
+        projectData.projectRootDir,
         projectData.subProjectArray[i],
         projectData.subHexFileDirs[i],
         "sketch.hex"
       );
       this.outputResult(`Compiling ${this.projectData.subProjectArray[i]}...`)
       //每隔两秒打印一次waiting
+      this.behaviorRecorder.compile()
       this.waitingIndicator.register()
       // tinyLink类型的实验不需要分布式编译处理，所以这里单独拎出来
       if (projectData.subCompileTypes[i].trim() == "tinylink") {
@@ -73,6 +77,7 @@ export class ExperimentController {
             i
           )
         );
+
       }
     }
     // 将promise里面所有的编译任务全部执行一遍再执行下一步
@@ -87,11 +92,12 @@ export class ExperimentController {
     // 又开始等待
     this.waitingIndicator.register()
     //烧写
-    let result =await this.queueProgramer.burn();
+    this.behaviorRecorder.burn()
+    let result = await this.queueProgramer.burn();
     this.waitingIndicator.unRegister()
     return result
   }
-  async submitLocal(tag:boolean =false): Promise<boolean> {
+  async submitLocal(tag: boolean = false): Promise<boolean> {
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
 
@@ -103,7 +109,7 @@ export class ExperimentController {
       );
       let targetPath = path.join(
         this.multiProjectData.rootDir,
-        projectData.projectRootDir,  
+        projectData.projectRootDir,
         projectData.subProjectArray[i],
         projectData.subHexFileDirs[i],
         "sketch.hex"
@@ -126,16 +132,18 @@ export class ExperimentController {
       }
     }
     await Promise.all(pa);
-    return  true ;
+    return true;
   }
-  submitAndBurn(){
+  submitAndBurn() {
     this.submitLocal(true);
   }
   async submitAdhoc() {
+    this.behaviorRecorder.submit()
     let cr = await this.lcc.connect();
     if (!cr) return false;
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
+    this.behaviorRecorder.compile()
     for (let i in projectData.subProjectArray) {
       let srcPath = path.join(
         this.multiProjectData.rootDir,
@@ -163,6 +171,7 @@ export class ExperimentController {
     for (let r of ra) {
       if (!r) return false;
     }
+    this.behaviorRecorder.compile()
     return await this.adhocProgramer.burn();
   }
   outputResult(res: string, type: string = "systemInfo") {

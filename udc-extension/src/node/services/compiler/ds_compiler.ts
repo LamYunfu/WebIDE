@@ -13,6 +13,7 @@ import { CallSymbol } from "../../../setting/callsymbol";
 import { DISTRIBUTEDCOMPILER_IP } from "../../../setting/backend-config";
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
 import { ProjectData } from "../../data_center/project_data";
+import { Differ } from '../diff/diff';
 export function bindDistributedCompiler(bind: interfaces.Bind) {
   bind(DistributedCompiler)
     .toSelf()
@@ -26,35 +27,26 @@ export class DistributedCompiler {
     @inject(CallInfoStorer) readonly cis: CallInfoStorer,
     @inject(ProjectData) readonly projectData: ProjectData,
     @inject(FileCompressor) readonly fileCompressor: FileCompressor,
-    @inject(LocalBurnerNotifier) readonly lbn:LocalBurnerNotifier
+    @inject(LocalBurnerNotifier) readonly lbn:LocalBurnerNotifier,
+    @inject(Differ) readonly diff:Differ
   ) { }
   outputResult(mes: string, type: string = "sys") {
     this.ldcShell.outputResult(mes, type);
   }
   fileUrl=""
-  async upload(
+  uploadToCompiler(){
+
+  }
+  async upload(//上传源代码到编译服务器
     path: string,
     boardType: string,
     compileType: string,
     projectIndex: string,
     tag:boolean
-  ): Promise<string> {
+  ): Promise<string> {  
     console.log("---compile:" + path)
     let ha = Ha.createHash("sha1");
-    let tp = Path.join(this.fileCompressor.generateTempFilePath());
-    console.log("------tp:" + tp)
-    console.log("arcfile:" + tp);
-    let ws = Fs.createWriteStream(tp, { encoding: "binary" });
-    let ps = new Promise((res) => {
-      ws.on("close", () => {
-        res();
-      });
-    });
-    let arc = Arc.create("zip");
-    arc.directory(path, "/");
-    arc.pipe(ws);
-    await arc.finalize();
-    await ps;
+    let tp =await this.archiveFile(path);
     let fileData = Fs.readFileSync(tp);
     ha.update(fileData);
     let fha = ha.digest("hex");
@@ -148,7 +140,27 @@ export class DistributedCompiler {
     });
     return await p;
   }
-
+  async archiveFile( path: string){//打包源代码
+      let tp = Path.join(this.fileCompressor.generateTempFilePath());
+      if(this.projectData.modifyOSCore){
+        await this.diff.getZipFile(path,tp)
+      }else{
+        console.log("------tp:" + tp)
+        console.log("arcfile:" + tp);
+        let ws = Fs.createWriteStream(tp, { encoding: "binary" });
+        let ps = new Promise<void>((res) => {
+          ws.on("close", () => {
+            res();
+          });
+        });
+        let arc = Arc.create("zip");
+        arc.directory(path, "/");
+        arc.pipe(ws);
+        await arc.finalize();
+        await ps;
+      }  
+      return tp
+  }
   async waitCompileFinish(path: string, output: string) {
     let p = new Promise<string>((resolve) => {
       console.log(p);

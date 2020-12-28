@@ -1,3 +1,4 @@
+import { LdcClientControllerInterface } from './../ldc/interfaces/ldc_client_controller_interface';
 import { FILE_SERVER_HOST } from './../../../setting/backend-config';
 import { ProjectData } from '../../data_center/project_data';
 import { Logger } from "../tools/logger";
@@ -31,6 +32,9 @@ export class LdcFileServer {
 //   this.ldcShell.executeFrontCmd({name:"local_burn",passwd:"1234"})
 //  },3000)
     
+  }
+  async new_fileUpload(filepath: string, index: string){
+
   }
   async fileUpload(filepath: string, index: string): Promise<boolean> {
     let uploadResult = "scc";

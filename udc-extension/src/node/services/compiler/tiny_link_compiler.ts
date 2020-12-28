@@ -1,7 +1,11 @@
+import { ProjectData } from './../../data_center/project_data';
+import { FileServerInterface } from './../ldc/interfaces/file_server_interface';
+
 import { LdcFileServer } from './../ldc_file_server/ldc_file_server';
 import { DataService } from './../data_service/data_service';
 import * as FormData from "form-data";
 import * as fs from "fs-extra";
+import * as crypto from "crypto"
 import { injectable, inject, interfaces } from "inversify";
 import { CallInfoStorer } from "../log/call_info_storer";
 import {
@@ -25,7 +29,10 @@ export class TinyLinkCompiler {
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
     @inject(FileCompressor) protected fileCompressor: FileCompressor,
     @inject(DataService) protected dService: DataService,
-    @inject(LdcFileServer) protected ldcFileServer: LdcFileServer
+    // @inject(LdcFileServer) protected ldcFileServer: LdcFileServer,
+    @inject (ProjectData ) protected projectData:ProjectData,
+    @inject(FileServerInterface) protected ldcFileServer :FileServerInterface
+    
   ) { }
   DEBUG: boolean = false;
   tinyLinkAPIs: {
@@ -52,7 +59,10 @@ export class TinyLinkCompiler {
       console.log("info:" + info)
       console.log("info split:" + info.split("\n")[0].trim())
       if (info.split("\n")[0].trim() == "1") {
-        return await this.ldcFileServer.fileUpload(hexFilePath, index)
+        let buff = fs.readFileSync(hexFilePath);   
+        let bv =await this.ldcFileServer.uploadHex(buff,this.projectData.subBoardTypes[parseInt(index)])
+        this.projectData.fileHash[parseInt(index)] =bv!
+        return  bv==undefined?false:true
       }
       else {
         let verbose = path.join(uPath, "dev_log", tinyapp, "verbose.txt")
@@ -104,7 +114,7 @@ export class TinyLinkCompiler {
             }
           });
           res.on("end", () => {
-            fs.writeFileSync(zip, content);
+            fs.writeFileSync(zip, content!);
             this.cis.storeCallInfoInstantly("end", CallSymbol.CDAT);
             resolve(true);
           });

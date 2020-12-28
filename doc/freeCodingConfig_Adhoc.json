@@ -1,6 +1,7 @@
 {
     "deviceUsage": "ADHOC",
     "hexFileDir": "hexFiles",
+    "modifyOSCore":false,
     "projects": [
         {
             "projectName": "device",

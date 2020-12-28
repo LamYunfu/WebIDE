@@ -19,7 +19,13 @@ export class ProjectData {
   protected _subHexFileDirs: string[] = ["hexFiles"];
   protected _ppid: string = "";
   protected _experimentType: string | undefined = undefined
-
+  protected _modifyOSCore:boolean=false
+  get modifyOSCore(){
+    return this._modifyOSCore
+  }
+  set modifyOSCore(val :boolean){
+    this._modifyOSCore=val
+  }
   get loginType() {
     return this._loginType;
   }

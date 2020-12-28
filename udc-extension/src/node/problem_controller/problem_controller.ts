@@ -14,7 +14,10 @@ import { DataService } from './../services/data_service/data_service';
 import { injectable, inject } from "inversify";
 import { ExperimentController } from './experiment_controller/experiment_controller';
 import { MultiProjectData } from '../data_center/multi_project_data';
-
+import { Differ } from '../services/diff/diff';
+import * as Process from "child_process"
+import * as path from "path"
+import { BehaviorRecorder } from '../services/behavior_recorder/behavior_recorder';
 @injectable()
 export class ProblemController {
     private _lock: boolean = false
@@ -32,8 +35,10 @@ export class ProblemController {
         @inject(EventCenter) protected eventCenter: EventCenter,
         @inject(QueryService) protected queryService: QueryService,
         @inject(EventDefinition) protected eventDefinition: EventDefinition,
-        @inject(TrainDataService) protected trainDataService:TrainDataService,
-        @inject(LdcData) protected ldd: LdcData) {
+        @inject(TrainDataService) protected trainDataService: TrainDataService,
+        @inject(LdcData) protected ldd: LdcData,
+        @inject(Differ) protected differ: Differ,
+        @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder) {
     }
     async init(info: string) {
         console.log("---init problem---")
@@ -48,7 +53,18 @@ export class ProblemController {
         await this.trainDataService.parseAllData()
         await this.fileOpener.openCurrentWorkSpace()
         await this.fileOpener.openFiles()
-        await this.ldcShell.executeFrontCmd({ name: "openShell", passwd: "" })
+        await this.ldcShell.executeFrontCmd({ name: "openShell", passwd: "" }
+        )
+        if (this.pData.modifyOSCore) {
+
+            let srcPath = path.join(
+                this.mpData.rootDir,
+                this.pData.projectRootDir
+            );
+            this.differ.getCheckSum(srcPath);
+
+        }
+
     }
     acquireLock(): boolean {
         if (!this._lock) {
@@ -63,9 +79,7 @@ export class ProblemController {
         this._lock = false
     }
     async submit(pid: string) {
-        if (!this.acquireLock()) {
-            this.outputResult("please wait until last submit is complete")
-        }
+        this.behaviorRecorder.submit()
         try {
             //如果是有config.json的自由编程类型实验,则需要从config.json里面获取配置信息
             if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
@@ -100,14 +114,13 @@ export class ProblemController {
             this.outputResult(error, "error")
         }
         finally {
-            this.unLock()
             this.ldcShell.executeFrontCmd({
                 name: "submitEnable",
                 passwd: ""
             })
         }
     }
-   async localSubmit(pid:string,tag:boolean=false){
+    async localSubmit(pid: string, tag: boolean = false) {
         try {
             if (!!this.pData.experimentType && this.pData.experimentType.trim() == "freecoding") {
                 if (!await this.freeCodingDataService.parseProjectDataFromFile(this.pData))
@@ -116,8 +129,8 @@ export class ProblemController {
             }
             this.dService.copyDataFromDataMap(pid)
             this.dService.resetProgramData()
-            await this.experimentController.submitLocal(tag)&& await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
-            
+            await this.experimentController.submitLocal(tag) && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
+
         } catch (error) {
             this.outputResult(error, "error")
         }

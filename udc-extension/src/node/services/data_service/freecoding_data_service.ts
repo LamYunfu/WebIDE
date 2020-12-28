@@ -134,6 +134,7 @@ export class FreeCodingDataService {
           models.push(it.program!.model!)
         }
       }
+      pd.modifyOSCore=st.modifyOSCore==null?false:st.modifyOSCore
       pd.address = addresses;
       pd.subClientId = clientIds;
       pd.subClientPort = devPorts;

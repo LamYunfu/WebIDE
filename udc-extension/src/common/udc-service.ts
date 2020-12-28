@@ -83,5 +83,6 @@ export interface UdcService {
     serverity: number
   ) => void;
   localBurn:(pid:string,tag?:boolean)=>void
+   judge(res :string ):void
 
 }
