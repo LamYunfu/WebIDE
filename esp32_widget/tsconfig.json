@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "skipLibCheck": true,
+      
         "declaration": true,
         "declarationMap": true,
         "noImplicitAny": true,
@@ -26,5 +27,8 @@
     },
     "include": [
         "src"
+    ],
+    "exclude": [
+        "lib"
     ]
 }

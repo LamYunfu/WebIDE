@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
         "strict": true,
+        "allowJs": true,
         "skipLibCheck": true,
-        "declaration": true,
+        "declaration": false,
         "experimentalDecorators": true,
         "noUnusedLocals": true,
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
-        "declarationMap": true,
+        "declarationMap": false,
         "noImplicitAny": true,
         "noEmitOnError": false,
         "noImplicitThis": true,
@@ -28,5 +29,8 @@
     },
     "include": [
         "src", "./settings/aiconfig.ts"
+    ],
+    "exclude": [
+        "lib"
     ]
 }

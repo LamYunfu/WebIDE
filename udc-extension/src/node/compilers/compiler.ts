@@ -125,7 +125,7 @@ export class Compiler {
         boardType,
         compilerType!
       );
-      if (p == "scc") {
+      if (p == true) {
         let tmp: any = {};
         tmp[item] = new Buffer(`${item}`).toString("hex") + ".hex";
         this.fm.setFileNameMapper(pid, tmp);

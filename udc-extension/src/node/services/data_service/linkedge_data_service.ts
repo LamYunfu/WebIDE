@@ -1,9 +1,10 @@
-import { LdcShellInterface } from '../../../../lib/node/services/ldc_shell/interfaces/ldc_shell_interface';
+
 import { MultiProjectData } from '../../data_center/multi_project_data';
 import { ProjectData } from '../../data_center/project_data';
 import { injectable, inject } from "inversify";
 import * as fs from "fs-extra"
 import * as path from "path"
+import { LdcShellInterface } from '../ldc_shell/interfaces/ldc_shell_interface';
 
 @injectable()
 export class LinkedgeDataService {

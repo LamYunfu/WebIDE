@@ -1,6 +1,6 @@
 {    
     "compilerOptions": {       
-        "strict": true,
+        "strict": false,
         "skipLibCheck": true,
         "declaration": true,
         "experimentalDecorators": true,
@@ -8,11 +8,12 @@
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "declarationMap": true,
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "noEmitOnError": false,
-        "noImplicitThis": true,
-        "strictNullChecks": true,
+        "noImplicitThis": false,
+        "strictNullChecks": false,
         "resolveJsonModule": true,
+        "noStrictGenericChecks":false,
         "allowSyntheticDefaultImports":true,
         "suppressImplicitAnyIndexErrors": true,
         "module": "commonjs",
@@ -29,5 +30,10 @@
     },
     "include": [
         "src"
+    ],
+    "exclude": [
+        "lib",
+        "**/test",
+        "**/*.spec.ts"
     ]
 }

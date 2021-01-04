@@ -1,11 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "lerna run prepare",
+    "dp":"sh ./jenkins.sh",
     "rebuild:browser": "theia rebuild:browser",
     "rebuild:electron": "theia rebuild:electron",
     "start": " cd browser-app && export THEIA_DEFAULT_PLUGINS=local-dir:../plugins/node && yarn start",
-    "build": "bash ./scripts/build.sh"
+    "build": "bash ./c"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.5.5",

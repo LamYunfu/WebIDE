@@ -89,7 +89,7 @@ export class ProjectCreator extends React.Component<
 
   createProject = () => {
     // alert("create project");
-    if (!this.projectName.match("^.[a-z0-9A-Z]*$" || !this.projectName)) {
+    if (!this.projectName||this.projectName.match("^.[a-z0-9A-Z]*$" )) {
       alert(
         "The project name is empty, or there are characters that are not letters, numbers, or underscores!"
       );

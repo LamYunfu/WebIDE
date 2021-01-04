@@ -54,7 +54,7 @@ import { DeviceViewService } from "./device-view-service";
 import "../../src/browser/styles/index.css";
 import { LampWidget } from "./lamp";
 import { DebugAdapterContribution } from "@theia/debug/lib/common/debug-model";
-import { NewWidgetFactory } from "../../../new_widget/lib/browser/new-widget-factory";
+import { NewWidgetFactory } from "new_widget/lib/browser/new-widget-factory";
 export default new ContainerModule((bind: interfaces.Bind) => {
   // bind(DebugAdapterSessionFactory).to(debugAdapterSessionFactory);
   // bind(DebugAdapterContribution).to(DAC);

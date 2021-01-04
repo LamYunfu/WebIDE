@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
         "strict": true,
+        "allowJs": true,
         "skipLibCheck": true,
         "strictPropertyInitialization":false,
-        "declaration": true,
+        "declaration": false,
         "experimentalDecorators": true,
         "noUnusedLocals": false,
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
-        "declarationMap": true,
+        "declarationMap": false,
         "noImplicitAny": true,
         "noEmitOnError": false,
         "noImplicitThis": true,
@@ -29,5 +30,8 @@
     },
     "include": [
         "src"
+    ],
+    "exclude": [
+        "lib"
     ]
 }

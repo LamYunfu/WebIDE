@@ -30,7 +30,7 @@ export class NewContikiCompiler {
       this.udc.outputResult(`Compile:${item}`);
       // let res = await this.postSingleSrcFile(dirName, item, pid);
       let res = await this.compileSingleFile(dirName, item, pid);
-      if (res != "scc") return "err";
+      if (res != true) return "err";
     }
     return "scc";
   }
@@ -46,7 +46,7 @@ export class NewContikiCompiler {
       "sky",
       "contiki"
     );
-    if (p == "scc") {
+    if (p == true) {
       let tmp: any = {};
       tmp[item] = new Buffer(`${item}`).toString("hex") + ".hex";
       this.fm.setFileNameMapper(pid, tmp);

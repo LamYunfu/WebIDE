@@ -10,8 +10,6 @@ import { CommandRegistry, InMemoryResources } from "@theia/core";
 import { UdcWatcher } from "./../common/udc-watcher";
 import { AboutDialog } from "./about-dailog";
 import { UdcService } from "../common/udc-service";
-import { NewWidgetFactory } from "../../../new_widget/lib/browser/new-widget-factory";
-import { Esp32WidgetFactory } from "../../../esp32_widget/lib/browser/esp32-widget-factory";
 import { injectable, inject } from "inversify";
 import {
   DebugAdapterContribution,
@@ -51,6 +49,8 @@ import { EditorManager } from "@theia/editor/lib/browser";
 import { EditorQuickOpenService } from "@theia/editor/lib/browser/editor-quick-open-service";
 import { LampWidget } from "./lamp";
 import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-channel";
+import {NewWidgetFactory} from "new_widget/lib/browser/new-widget-factory"
+import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory"
 export const UdcExtensionCommand = {
   id: "UdcExtension.command",
   label: "test node server",
