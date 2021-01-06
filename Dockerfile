@@ -31,6 +31,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositorie
 ENV HOME /home/theia
 WORKDIR /home/theia
 COPY --chown=theia:theia ./ /home/theia
+RUN mv /home/theia/lcli /usr/bin && \
+    chmod +x /usr/bin/lcli;
 EXPOSE 3000
 ENV SHELL /bin/bash
 #ENV USE_LOCAL_GIT true
