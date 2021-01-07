@@ -1708,6 +1708,7 @@ export class View extends React.Component<View.Props, View.State> {
           <div>
             {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
             <Experiment
+              udc={_this.props.udc}
               programSingleFile={_this.props.programSingleFile}
               config={_this.props.config}
               openShell={_this.props.openShell}

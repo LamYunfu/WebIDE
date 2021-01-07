@@ -350,7 +350,6 @@ export class Experiment extends React.Component<
                   .show();
                 // alert(_this.judgeStatus[x.pid])
                 if (_this.judgeStatus[x.pid] == "1") {
-                  if (x.wrongInfo != "")
                   _this.props.udc.judge("错误")
                   _this.props.outputResult(x.wrongInfo, "wrongAnswer");
                   _this.props.outputResult(
@@ -368,6 +367,7 @@ export class Experiment extends React.Component<
               } else if (status == "TIMEOUT") {
                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=connectButton]").removeAttr("disabled")
                 // _this.context.props.getSubmitEnableWithJudgeTag() == true && $("[id*=submitSrcButton]").removeAttr("disabled")
+                _this.props.udc.judge("超时")
                 _this.context.props.setSubmitEnableWithJudgeTag(false);
                 //$(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`).parent().attr("class", "codeItem list-group-item list-group-item-info");
                 $(`.codeItem${_this.props.section.sid} a[title=${x.pid}]`)
