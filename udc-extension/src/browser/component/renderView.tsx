@@ -23,10 +23,12 @@ import { CallSymbol } from "../../setting/callsymbol";
 import { TaoFactoryView } from "./taoFactory-view";
 import { DiyMainView } from "../diy/diy-main-view";
 import { UI_Setting } from "../isEnable";
+import { UdcService } from "../../common/udc-service";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
   export interface Props {
+    udc:UdcService
     storeCallInfo: (
       time: string,
       info: string,
@@ -284,7 +286,7 @@ export class View extends React.Component<View.Props, View.State> {
     let time = new Date().toISOString().replace(/T|Z/gi, " ");
     _this.props.storeCallInfo(time, "start", CallSymbol.QUIF, 0);
     
-    await new Promise((res) => {
+    await new Promise<void>((res) => {
       $.ajax({
         headers: {
           accept: "application/json",
@@ -350,7 +352,8 @@ export class View extends React.Component<View.Props, View.State> {
             return;
           }
           _this.type = data.data.type;        //实验题类型
-
+          let title=data.data.title;
+          _this.props.udc.setExperimentName(title)
           _this.vid = data.data.vid;        //实验类型代表的视图。（自由实验、LinkLab实验。。。）
           // setInterval(() => {
           //     _this.props.storeData(JSON.stringify(_this.typeDataPool))
@@ -565,7 +568,7 @@ export class View extends React.Component<View.Props, View.State> {
       async (e) => {
         let sp = $(e.currentTarget);
         sp.attr("disabled", "true");
-        await new Promise((res) => {
+        await new Promise<void>((res) => {
           setTimeout(
             (x) => {
               $(x).removeAttr("disabled");
@@ -793,7 +796,7 @@ export class View extends React.Component<View.Props, View.State> {
 
       _this.clickTime = new Date().getTime();
 
-      await new Promise((res) => {
+      await new Promise<void>((res) => {
         setTimeout(() => {
           res();
         }, 1300);
@@ -887,10 +890,13 @@ export class View extends React.Component<View.Props, View.State> {
               return;
             }
           }
-        } else
+        } 
+        else{
           answers[index] = _this.submittedAnswers[_this.state.sid][
             indexStr
           ].uAnswer!.join(",");
+        }
+         
       }
       _this.notForAll = true;
       $.ajax({

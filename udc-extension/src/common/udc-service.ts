@@ -85,4 +85,6 @@ export interface UdcService {
   localBurn:(pid:string,tag?:boolean)=>void
    judge(res :string ):void
 
+  setExperimentName:(name:string)=>void
+
 }

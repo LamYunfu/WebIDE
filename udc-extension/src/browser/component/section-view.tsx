@@ -36,7 +36,6 @@ export namespace SectionUI {
         viewType: string
     }
 
-
     export interface State {
         codeCDM: boolean
         codingItems: JSX.Element[]

@@ -1,3 +1,4 @@
+import { ProjectData } from './data_center/project_data';
 import { DisplayBoardBackEnd } from './services/displayboard/displayboard';
 import { UserInfo } from './data_center/user_info';
 import { TinySim } from './services/tinysim/tinysim';
@@ -50,8 +51,12 @@ export class UdcServiceImpl implements UdcService {
     @inject(TinySim) protected tinySim: TinySim,
     @inject(UserInfo) protected userInfo:UserInfo,
     @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd,
-    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder
+    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder,
+    @inject(ProjectData) readonly projectData:ProjectData
   ) { }
+  setExperimentName(name: string){
+    this.projectData.experimentName=name
+  }
   localBurn(pid: string,tag:boolean=false){
     this.pc.localSubmit(pid,tag);
   } 

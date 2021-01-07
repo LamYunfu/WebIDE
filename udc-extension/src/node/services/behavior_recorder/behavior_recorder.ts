@@ -29,19 +29,19 @@ constructor(@inject(UserInfo)  readonly user:UserInfo,
 
 }
 async submit(){
-    await this.send(new Behavior(this.user.username,`${this.user.username}用户提交${this.pd.projectRootDir}实验`,new Date().getTime(),"30"))
+    await this.send(new Behavior(this.user.username,`${this.user.username}用户提交${this.pd.experimentName}实验`,new Date().getTime(),"30"))
 }
 async compile(){
-    await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.projectRootDir}实验开始编译`,new Date().getTime(),"31"))
+    await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.experimentName}实验开始编译`,new Date().getTime(),"31"))
 }
 async burn(){
-     await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.projectRootDir}实验开始烧写`,new Date().getTime(),"32"))
+     await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.experimentName}实验开始烧写`,new Date().getTime(),"32"))
 }
 async judge(res:string){
-    await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.projectRootDir}实验的判题结果是${res}`,new Date().getTime(),"33"))
+    await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.experimentName}实验的判题结果是${res}`,new Date().getTime(),"33"))
 }
 async close(){
-    await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.projectRootDir}实验的关闭`,new Date().getTime(),"34"))
+    await this.send(new Behavior(this.user.username,`${this.user.username}用户${this.pd.experimentName}实验的关闭`,new Date().getTime(),"34"))
 }
 async send(behavior:Behavior){
     console.log("record :" +JSON.stringify(behavior))
