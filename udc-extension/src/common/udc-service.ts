@@ -86,5 +86,6 @@ export interface UdcService {
    judge(res :string ):void
 
   setExperimentName:(name:string)=>void
-
+  judge:(res:string)=>void
+  close:()=>void
 }

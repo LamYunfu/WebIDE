@@ -88,7 +88,7 @@ export class DeviceViewContribution
         this.ds.openExplorer();
       }
       if(e=="closing_window"){
-        console.log("close window")
+        this.udc.close()
         this.udc.disconnect()
       }
       // if (e == 'closing_window') {

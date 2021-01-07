@@ -60,7 +60,7 @@ export class TinyLinkCompiler {
       console.log("info split:" + info.split("\n")[0].trim())
       if (info.split("\n")[0].trim() == "1") {
         let buff = fs.readFileSync(hexFilePath);   
-        let bv =await this.ldcFileServer.uploadHex(buff,this.projectData.subBoardTypes[parseInt(index)])
+        let bv =await this.ldcFileServer.uploadHex(buff,this.projectData.subModelTypes[parseInt(index)])
         this.projectData.fileHash[parseInt(index)] =bv!
         return  bv==undefined?false:true
       }

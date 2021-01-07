@@ -91,6 +91,9 @@ export class UdcServiceImpl implements UdcService {
     // this.pc.submit(pid)
     return true;
   }
+  close(){
+    this.behaviorRecorder.close()
+  }
   async judge(res :string ){
     this.behaviorRecorder.judge(res)
   }

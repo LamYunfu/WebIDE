@@ -227,7 +227,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
                     deviceid: "",
                     clientid: "",
                     runtime: item.runtime!,
-                    filehash: (await this.uploadToLdc(item.filehash!,this.pdata.subBoardTypes[i],this.pdata.subModelTypes[i],this.pdata.subCompileTypes[i],i))!,
+                    filehash: (await this.uploadToLdc(item.filehash!,this.pdata.subBoardTypes[i],this.pdata.subModelTypes[i]!="null"?this.pdata.subModelTypes[i]:this.pdata.subBoardTypes[i],this.pdata.subCompileTypes[i],i))!,
                     taskindex: parseInt(i) + 1
                 })
             } else {
@@ -237,7 +237,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
                     deviceid: item.devPort!,
                     clientid: item.clientId!,
                     runtime: item.runtime!,
-                    filehash:  (await this.uploadToLdc(item.filehash!,this.pdata.subBoardTypes[i],this.pdata.subModelTypes[i],this.pdata.subCompileTypes[i],i))!,
+                    filehash:  (await this.uploadToLdc(item.filehash!,this.pdata.subBoardTypes[i],this.pdata.subModelTypes[i]!="null"?this.pdata.subModelTypes[i]:this.pdata.subBoardTypes[i],this.pdata.subCompileTypes[i],i))!,
                     taskindex: parseInt(i) + 1
                 })
             }

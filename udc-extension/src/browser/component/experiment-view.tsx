@@ -11,8 +11,10 @@ import {
   PROBLEM_STATUS_URL,
 } from "../../setting/front-end-config";
 import { CallSymbol } from "../../setting/callsymbol";
+import { UdcService } from "../../common/udc-service";
 export namespace Experiment {
   export interface Props {
+    udc:UdcService
     section: { [key: string]: any };
     connect: (
       loginType: string,
@@ -324,6 +326,7 @@ export class Experiment extends React.Component<
                 if (_this.judgeStatus[x.pid] == "1") {
                   //9.27
                   if (x.wrongInfo != "") _this.props.outputResult(x.wrongInfo);
+                  _this.props.udc.judge("正确")
                   _this.props.outputResult(
                     "ACCEPTED" + `(${x.score})`,
                     "rightAnswer"
@@ -348,7 +351,8 @@ export class Experiment extends React.Component<
                 // alert(_this.judgeStatus[x.pid])
                 if (_this.judgeStatus[x.pid] == "1") {
                   if (x.wrongInfo != "")
-                    _this.props.outputResult(x.wrongInfo, "wrongAnswer");
+                  _this.props.udc.judge("错误")
+                  _this.props.outputResult(x.wrongInfo, "wrongAnswer");
                   _this.props.outputResult(
                     "WRONG_ANSWER" + `(${x.score})`,
                     "wrongAnswer"
