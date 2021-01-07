@@ -309,9 +309,8 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
     }
     async uploadHex(buffer: Buffer, boardname: string):Promise<string|undefined> {
         await this.prepare()
-        console.log("upload")
-        let fm = new FormData()
-        
+        console.log("upload:"+boardname)
+        let fm = new FormData()        
         fm.append("file", buffer, "file")
         fm.append("parameters", JSON.stringify({
             boardname: boardname
