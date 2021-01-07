@@ -65,6 +65,8 @@ class AdhocDetail {
   burnType: string | null = null;
   @JsonProperty("program", AdhocBurnDetail)
   program: AdhocBurnDetail | null = null;
+  @JsonProperty("modifyOSCore",Boolean,true)
+  modifyOSCore:boolean|null=false
 }
 @JsonObject("QueueSetting")
 export class QueueSetting {
@@ -78,7 +80,7 @@ export class QueueSetting {
   serverType: string | null = null;
   @JsonProperty("projects", [QueueDetail])
   projects: QueueDetail[] | null = null;
-  @JsonProperty("modifyOSCore",Boolean)
+  @JsonProperty("modifyOSCore",Boolean,true)
   modifyOSCore:boolean|null=false
 }
 @JsonObject("AdhocSetting")
