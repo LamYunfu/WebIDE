@@ -20,18 +20,11 @@ export class ProjectData {
   protected _ppid: string = "";
   protected _experimentType: string | undefined = undefined
   protected _modifyOSCore:boolean=false
-  protected _experimentName:string=""
   get modifyOSCore(){
     return this._modifyOSCore
   }
   set modifyOSCore(val :boolean){
     this._modifyOSCore=val
-  }
-  get experimentName(){
-    return this._experimentName
-  }
-  set experimentName(val :string){
-    this._experimentName=val
   }
   get loginType() {
     return this._loginType;

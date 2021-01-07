@@ -51,11 +51,11 @@ export class UdcServiceImpl implements UdcService {
     @inject(TinySim) protected tinySim: TinySim,
     @inject(UserInfo) protected userInfo:UserInfo,
     @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd,
-    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder,
-    @inject(ProjectData) readonly projectData:ProjectData
+    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder
   ) { }
   setExperimentName(name: string){
-    this.projectData.experimentName=name
+    this.behaviorRecorder.en=name
+
   }
   localBurn(pid: string,tag:boolean=false){
     this.pc.localSubmit(pid,tag);
