@@ -1,6 +1,6 @@
 set -e
 export NODE_TLS_REJECT_UNAUTHORIZED=0
-npm config set strict-ssl false
+yarn  config set strict-ssl false
 yarn install 
 sed -i "s/\r//g" ./clean.sh
 sed -i "s/\r//g" ./deploy.sh
