@@ -1,3 +1,5 @@
+import { UserInfo } from './../data_center/user_info';
+import { Kubedge } from './../services/edge/kubedge';
 import { TrainDataService } from './../services/data_service/train_data_service';
 import { EventDefinition } from './../services/tools/event_definition';
 import { LdcData } from '../data_center/ldc_data';
@@ -38,7 +40,8 @@ export class ProblemController {
         @inject(TrainDataService) protected trainDataService: TrainDataService,
         @inject(LdcData) protected ldd: LdcData,
         @inject(Differ) protected differ: Differ,
-        @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder) {
+        @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder,
+        @inject(Kubedge) readonly kubedge:Kubedge) {
     }
     async init(info: string) {
         console.log("---init problem---")
@@ -55,6 +58,8 @@ export class ProblemController {
         await this.fileOpener.openFiles()
         await this.ldcShell.executeFrontCmd({ name: "openShell", passwd: "" }
         )
+        await this.kubedge.init(path.join(this.mpData.rootDir,this.pData.projectRootDir,"deployment.yaml"))
+        await this.kubedge.createNameSpace()
         if (this.pData.modifyOSCore) {
 
             let srcPath = path.join(

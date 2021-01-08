@@ -1,3 +1,4 @@
+import { Kubedge } from './services/edge/kubedge';
 import { ProjectData } from './data_center/project_data';
 import { DisplayBoardBackEnd } from './services/displayboard/displayboard';
 import { UserInfo } from './data_center/user_info';
@@ -51,7 +52,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(TinySim) protected tinySim: TinySim,
     @inject(UserInfo) protected userInfo:UserInfo,
     @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd,
-    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder
+    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder,
+    @inject(Kubedge) readonly kubedge:Kubedge
   ) { }
   setExperimentName(name: string){
     this.behaviorRecorder.en=name
@@ -92,6 +94,7 @@ export class UdcServiceImpl implements UdcService {
     return true;
   }
   close(){
+    this.kubedge.deleteNameSpace()
     this.behaviorRecorder.close()
   }
   async judge(res :string ){

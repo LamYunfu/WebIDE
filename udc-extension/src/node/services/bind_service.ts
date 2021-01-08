@@ -19,6 +19,7 @@ import { bindDisplayBoardBackEnd } from "./displayboard/displayboard";
 import { bindLocalBurnService } from "./local_burner_notifier/local_burn_service";
 import { bindDiffer } from "./diff/diff";
 import { bindBehaviorRecorder } from "./behavior_recorder/behavior_recorder";
+import { bindKubege } from "./edge/kubedge";
 
 export function bindServices(bind: interfaces.Bind) {
   bindLdcShell(bind);
@@ -41,4 +42,5 @@ export function bindServices(bind: interfaces.Bind) {
   bindLocalBurnService(bind)
   bindDiffer(bind)
   bindBehaviorRecorder(bind)
+  bindKubege(bind)
 }
