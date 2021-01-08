@@ -27,6 +27,8 @@
     "esp32_widget"
   ],
   "dependencies": {
+    "@types/js-yaml":"latest",
+    "js-yaml":"latest",
     "@types/adm-zip": "^0.4.33",
     "@types/archiver": "^3.0.0",
     "@types/colors": "^1.2.1",

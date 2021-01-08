@@ -10,6 +10,7 @@
     "src"
   ],
   "dependencies": {
+
     "@theia/core": "latest",
     "axios": "^0.18.0",
     "describe": "^1.2.0",
