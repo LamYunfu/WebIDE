@@ -34,7 +34,7 @@ export class Kubedge{
 //     image: registry.cn-hangzhou.aliyuncs.com/tinyedge/hello-world
 //     imagePullPolicy: IfNotPresent`
             let ob: any = yaml.load(
-                src
+                src.toString()
             )
             ob["metadata"]["name"] = user
             console.log(JSON.stringify(ob))
