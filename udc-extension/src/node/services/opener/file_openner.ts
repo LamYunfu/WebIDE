@@ -54,9 +54,9 @@ export class FileOpener {
     let pwd = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir)
     let experimentType = this.projectData.experimentType
     if (!!experimentType && (experimentType!.trim() == "freecoding" || experimentType!.trim() == "ai" || experimentType!.trim() == "LinkEdge" || experimentType!.trim() == "OneLinkView")) {
-      this.openWorkspace(pwd)
+      // this.openWorkspace(pwd)
     } else {
-      this.openWorkspace(this.multiProjectData.rootDir)
+      // this.openWorkspace(this.multiProjectData.rootDir)
     }
   }
   openFiles() {
