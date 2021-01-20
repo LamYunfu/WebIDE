@@ -75,9 +75,9 @@ export class LinkEdgeView extends React.Component<
       // this.setState({ ra: ra });
     } else {
       pidQueueInfo[this.pid] = {
-        dirName: "TinyEdge",
+        dirName: "Edge",
         ppid: this.pid,
-        type: "LinkEdge",
+        type: "Edge",
       };
       await this.props.initPidQueueInfo(JSON.stringify(pidQueueInfo));
     }
