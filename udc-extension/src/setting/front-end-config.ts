@@ -1,8 +1,8 @@
 import { DEPLOY_SERVER_DOMAIN } from "./backend-config"
 export const AI5DOC= "http://120.55.102.225:12359/weightindex.html"
 export const AI4DOC= "http://120.55.102.225:12359/hanxin.html"
-export const AI1DOC = "http://linklab.tinylink.cn/static/doc/sidebar1.html"
-export const AI2DOC = "http://linklab.tinylink.cn/static/doc/sidebar2.html"
+export const AI1DOC = "http://linklab.tinylink.cn/Sidebar/sidebar1.html"
+export const AI2DOC = "http://linklab.tinylink.cn/Sidebar/sidebar2.html"
 export const AI3DOC = "http://linklab.tinylink.cn/static/doc/sidebar3.html"
 export const MODEL_DOWNLOAD_URL = "ws://47.98.249.190:8005/"
 export const DETAIL_ISSUE_URL = `http://api.${DEPLOY_SERVER_DOMAIN }/problem/detail`
