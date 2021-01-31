@@ -1,0 +1,101 @@
+@import '~antd/dist/antd.css';
+
+.App {
+  text-align:left;
+  color: white;
+  background-color: black;
+  height: 100%;
+}
+
+.title{
+  padding-left: 20px;
+  height: 3%;
+  width: 100%;
+  background-color: #222225;
+  vertical-align: middle;
+  display:table-cell;
+}
+.select_info{
+  height: 72%;
+  width: 100%;
+  background-color: #2D2D30;
+  
+}
+
+.input_info{
+  height: 25%;
+  width: 100%;
+  background-color: #252526;
+  position: absolute;
+}
+
+.device_type{
+  float: left;
+  width: 30%;
+  height: 100%;
+}
+.compile_type{
+  float: left;
+  width: 40%;
+  height: 99%;
+  background-color: #252526;
+}
+.other_param{
+  float: left;
+  width: 30%;
+  height: 100%;
+}
+.content{
+  margin-top: 8px;
+  margin-left: 15px;
+  font-size: medium;
+}
+.bottom_content{
+  margin-left: 15px;
+  background-color: #252526;
+  margin-top: 20px;
+}
+.icon{
+  vertical-align: middle;
+}
+.device_select:hover{
+  background-color: #4B6EAF;
+}
+.project_name{
+  background-color: #3F3F46;
+  color: white;
+  width: 80%;
+  border: none;
+}
+.folder_name{
+  background-color: #3F3F46;
+  color:white;
+  width: 80%;
+  border: none;
+  float: left;
+}
+.upload_file{
+  margin-top: 10px;
+}
+.file_icon{
+  float: left;
+  margin-left: 10px;
+}
+.file_icon:hover{
+  color: yellow;
+}
+.button_goup{
+  margin-top: 18px;
+  float: right;
+  margin-right: 8%;
+}
+.cancel_button{
+  margin-right: 15px;
+}
+.item{
+  margin-top:"5px";
+  margin-left:"20px"
+}
+.item:hover{
+  background-color: #4B6EAF;
+}

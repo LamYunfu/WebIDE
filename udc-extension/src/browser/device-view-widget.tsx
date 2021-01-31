@@ -361,6 +361,7 @@ export class DeviceViewWidget extends TreeWidget {
         .split("\\")
         .pop() != urlStr.split("\\").pop()
     )
+    console.log("这里可以打开的路径是：" + urlStr);
       this.ws.open(new URI(`${urlStr}`), { preserveWindow: true });
   };
   enableClick() {

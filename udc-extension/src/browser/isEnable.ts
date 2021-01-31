@@ -10,6 +10,7 @@ export class UI_Setting{
     onlineIOTSystem:boolean =false
     esp32Status:boolean=false
     arduinoStatus:boolean=false 
+    haas100Status:boolean=false
     localBurnStatus:boolean=false   
 
     setExperiment(){
@@ -21,6 +22,7 @@ export class UI_Setting{
         this.onlineIOTSystem =false
         this.esp32Status=false
         this.arduinoStatus=false 
+        this.haas100Status=false
         this.localBurnStatus=false   
     }
     setFreeCoding(){
@@ -32,6 +34,7 @@ export class UI_Setting{
         this.onlineIOTSystem =false
         this.esp32Status=true
         this.arduinoStatus=true 
+        this.haas100Status=true
         this.localBurnStatus=true
     }
     setLinkedge(){
@@ -43,6 +46,7 @@ export class UI_Setting{
         this.onlineIOTSystem =false
         this.esp32Status=false
         this.arduinoStatus=false 
+        this.haas100Status=false
         this.localBurnStatus=false   
     }
     setVirtualScene(){
@@ -54,6 +58,7 @@ export class UI_Setting{
         this.onlineIOTSystem =false
         this.esp32Status=false
         this.arduinoStatus=false 
+        this.haas100Status=false
         this.localBurnStatus=false   
     }
     setTaoFactory(){

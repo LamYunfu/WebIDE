@@ -10,6 +10,10 @@ cd ../drawboard-extension
 yarn build
 cd ../esp32_widget
 yarn prepare
+cd ../haas100_widget
+yarn prepare
+cd ../wizard-extension
+yarn build
 ##cd ./plugins/unity
 ##mv unity.theia ../node/unity.theia
 cd ../udc-extension
@@ -17,7 +21,8 @@ yarn build
 cd ../demo 
 yarn build 
 cd ../browser-app
-yarn theia build
+yarn prepare
+yarn theia build --development
 rm browser-app/lib/e817279537a0417d042f62fbb1b99eea.gif
 export THEIA_DEFAULT_PLUGINS=local-dir:../plugins/node
 #export THEIA_DEFAULT_PLUGINS=local-dir:../plugins/unity

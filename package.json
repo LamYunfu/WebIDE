@@ -24,7 +24,9 @@
     "browser-app",
     "demo",
     "new_widget",
-    "esp32_widget"
+    "esp32_widget",
+    "haas100_widget",
+    "wizard-extension"
   ],
   "dependencies": {
     "@types/adm-zip": "^0.4.33",

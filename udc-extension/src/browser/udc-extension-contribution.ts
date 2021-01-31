@@ -49,8 +49,9 @@ import { EditorManager } from "@theia/editor/lib/browser";
 import { EditorQuickOpenService } from "@theia/editor/lib/browser/editor-quick-open-service";
 import { LampWidget } from "./lamp";
 import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-channel";
-import {NewWidgetFactory} from "new_widget/lib/browser/new-widget-factory"
-import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory"
+import {NewWidgetFactory} from "new_widget/lib/browser/new-widget-factory";
+import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory";
+import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory"
 export const UdcExtensionCommand = {
   id: "UdcExtension.command",
   label: "test node server",
@@ -58,6 +59,8 @@ export const UdcExtensionCommand = {
 
 export namespace UdcMenus {
   export const UDC = [...MAIN_MENU_BAR, "1_udc"];
+  //在主菜单新增project菜单
+  export const project = [...MAIN_MENU_BAR, "1_project"];
   export const linkedge = [...MAIN_MENU_BAR, "2_edge"];
   export const UDC_FUNCTION = [...UDC, "2_function"];
   export const UDC_ABOUT = [...UDC, "3_about"];
@@ -66,6 +69,7 @@ export namespace UdcMenus {
 export namespace UdcCommands {
   const UDC_MENU_CATEGORY = "Udc Menu";
   const LINKEDGE_CATEGORY = "linkedge";
+  const PROJECT_MENU_CATEGORY = "Projet Menu"
   export const OpenCommand: Command = {
     id: "OpenCommand",
     category: UDC_MENU_CATEGORY,
@@ -223,11 +227,21 @@ export namespace UdcCommands {
     category:LINKEDGE_CATEGORY,
     label:"OpenLinkedgeView"
   }
+  export const haas100View:Command={
+    id:"haas100",
+    category:LINKEDGE_CATEGORY,
+    label:"OpenLinkedgeView"
+  }
   export const ldcShellView:Command={
     id:"ldcShell",
     category:LINKEDGE_CATEGORY,
     label:"OpenLDCShell"
   }  
+  export const wizardView:Command={
+    id:"wizard",
+    category:PROJECT_MENU_CATEGORY,
+    label:"NewProject"
+  }
 }
 
 @injectable()
@@ -289,6 +303,7 @@ export class UdcExtensionCommandContribution
     @inject(OpenerService) readonly os: OpenerService,
     @inject(NewWidgetFactory) readonly nf: NewWidgetFactory,
     @inject(Esp32WidgetFactory) readonly esp32WidgetFactory: Esp32WidgetFactory,
+    @inject(HaaS100WidgetFactory) readonly hass100WidgetFactory: HaaS100WidgetFactory,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
     @inject(UI_Setting) readonly ui_Setting:UI_Setting
   ) {
@@ -368,16 +383,19 @@ export class UdcExtensionCommandContribution
         .join(":")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
-      // console.log(log);
+      
       let lp = this.nf.widget;
       let esp32Lamp = this.esp32WidgetFactory.widget;
-      let a = log.match("(0E0010)|(0E0011)");
+      let a = log.match("(0E0010)|(0E0011)");             //与Arduino的亮灯进行匹配
       let esp32Match = log.match("(0E0012)|(0E0013)");    //与esp32的开关灯日志进行匹配
-      // if (a != null) {
-      //   if (a[0].trim() == "light off")
-      //     this.deviceViewService.setLampStatus(false);
-      //   else this.deviceViewService.setLampStatus(true);
-      // }
+      let haas100Lamp = this.hass100WidgetFactory.widget;
+
+      //判断是不是HaaS100控制灯亮灭的
+      let haasStr = log.substr(0, 3);
+      if(haasStr == "LED"){
+        haas100Lamp.haasLamp.lightChange(log);
+      }
+      
       if (esp32Match != null){
         if(esp32Lamp.lamp){
           if (esp32Match[0].trim() == "0E0013") {
@@ -442,6 +460,14 @@ export class UdcExtensionCommandContribution
       isEnabled:()=>this.ui_Setting.arduinoStatus,
       execute:()=>{
        registry.executeCommand("new_widget:command")
+      }
+    })
+    //注册点击HaaS100之后的事件，调出HaaS100的图片
+    registry.registerCommand(UdcCommands.haas100View,{
+      //设置是否可点击
+      isEnabled:()=>this.ui_Setting.haas100Status,
+      execute:()=>{
+       registry.executeCommand("haas100_widget:command")
       }
     })
     registry.registerCommand(UdcCommands.SetPort,{
@@ -645,6 +671,12 @@ export class UdcExtensionCommandContribution
           });
       },
     });
+    //注册打开Project wizard命令
+    registry.registerCommand(UdcCommands.wizardView,{
+      execute:()=>{
+       registry.executeCommand("wizard-extension:command")
+      }
+    })
     this.kr.registerKeybinding({
       command: "submitonmenu",
       keybinding: "ctrl+m",
@@ -712,8 +744,16 @@ export class DAC implements DebugAdapterContribution {
 export class UdcExtensionMenuContribution implements MenuContribution {
   registerMenus(menus: MenuModelRegistry): void {
     menus.registerSubmenu(UdcMenus.UDC, "LinkLab");
+    //在主菜单栏上注册Project这个菜单栏
+    menus.registerSubmenu(UdcMenus.project, "Project");
     // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
       // menus.registerSubmenu([...UdcMenus.UDC, 'submit'], 'submit');
+      menus.registerMenuAction([...UdcMenus.project], {
+        commandId: UdcCommands.wizardView.id,
+        label: "New Project",
+        icon: "x",
+        order: "a_1",
+      });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.SubmitOnMenu.id,
         label: "RemoteBurn",
@@ -747,6 +787,12 @@ export class UdcExtensionMenuContribution implements MenuContribution {
         label: "Arduino",
         icon: "x",
         order: "a_3",
+      });
+      menus.registerMenuAction([...t], {
+        commandId: UdcCommands.haas100View.id,
+        label: "HaaS100",
+        icon: "x",
+        order: "a_4",
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.compileEdge.id,

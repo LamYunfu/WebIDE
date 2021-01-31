@@ -54,6 +54,7 @@ export class ProblemController {
         await this.fileTemplate.buildAllProjects()
         await this.freeCodingDataService.parseAllData()
         await this.trainDataService.parseAllData()
+        //打开当前工作空间
         await this.fileOpener.openCurrentWorkSpace()
         await this.fileOpener.openFiles()
         await this.ldcShell.executeFrontCmd({ name: "openShell", passwd: "" }
