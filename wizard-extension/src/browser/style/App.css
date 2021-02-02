@@ -80,6 +80,7 @@
 .file_icon{
   float: left;
   margin-left: 10px;
+  color: white;
 }
 .file_icon:hover{
   color: yellow;
@@ -98,4 +99,10 @@
 }
 .item:hover{
   background-color: #4B6EAF;
+}
+img{
+  width: auto;
+  height: auto;
+  max-width: 90%;
+  max-height: 90%;
 }

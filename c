@@ -13,7 +13,7 @@ yarn prepare
 cd ../haas100_widget
 yarn prepare
 cd ../wizard-extension
-yarn build
+yarn prepare
 ##cd ./plugins/unity
 ##mv unity.theia ../node/unity.theia
 cd ../udc-extension

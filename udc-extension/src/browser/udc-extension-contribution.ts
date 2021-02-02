@@ -389,11 +389,11 @@ export class UdcExtensionCommandContribution
       let a = log.match("(0E0010)|(0E0011)");             //与Arduino的亮灯进行匹配
       let esp32Match = log.match("(0E0012)|(0E0013)");    //与esp32的开关灯日志进行匹配
       let haas100Lamp = this.hass100WidgetFactory.widget;
-
       //判断是不是HaaS100控制灯亮灭的
-      let haasStr = log.substr(0, 3);
-      if(haasStr == "LED"){
-        haas100Lamp.haasLamp.lightChange(log);
+      let n = log.search(/LED\s[1-5]/);
+      if(n != -1){
+        //console.log("该对象是否存在8" + haas100Lamp.haasLamp);
+        haas100Lamp.haasLamp.lightChange(log.substring(n));
       }
       
       if (esp32Match != null){
@@ -418,6 +418,7 @@ export class UdcExtensionCommandContribution
           }
         }
       } else {
+        //在arduino开发板显示屏幕上输出内容
         this.udcConsoleSession.appendLine(log);
         log = log.replace(
           /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,

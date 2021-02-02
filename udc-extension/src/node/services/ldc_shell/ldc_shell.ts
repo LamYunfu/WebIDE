@@ -33,18 +33,22 @@ export class LdcShell {
     console.log("setudcclient:" + !!x)
     this._udcClient = x
   }
+  //在LDC shell里面输出内容
   outputResult(res: string, types: string = "systemInfo") {
     if(res.trim()==""){
       return;
     }
     console.log("----- shell:" + res)
+    //去除里面一些不适合显示的字符串
     res = res.replace(
       /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
       ""
     );
     let d = new Date().toLocaleTimeString();
+    //设置打印出来内容的颜色
     Color.enable();
     types=types.toLowerCase().trim().substring(0,3)
+    //根据不同类型的信息给答应的内容设置不同的颜色
     switch (types) {
       case undefined:
       default:

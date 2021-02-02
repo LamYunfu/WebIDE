@@ -22,6 +22,9 @@ export class UdcConsoleWidget extends ConsoleWidget  {//输出模块
         }
     }
 }
+/**
+ * LDC Shell底部日志打印模块
+ */
 @injectable()
 export class UdcConsoleContribution extends AbstractViewContribution< UdcConsoleWidget>{//前端Widget配置
     constructor() {

@@ -92,10 +92,6 @@ export class HaaSLamp {
     ctx.strokeRect(x - width / 2, y - height / 2, width, height);
     //画L2
     ctx.fillText(label, x - (2 * width) / 5, y, (4 * width) / 5);
-    // ctx.beginPath();
-    // ctx.arc(x, y, 10, 0, 360);
-    // ctx.closePath();
-    // ctx.fill();
   }
 
   /**
@@ -166,15 +162,23 @@ export class HaaSLamp {
    */
   public async lightChange(log:string) {
     //获取LED编号
+    //console.log("进入了lightChange函数里面" + log);
     let SerialNum = log.substr(0, 5);
     //获取编号
+    //console.log("编号是：" + SerialNum)
     let num:number = parseInt(this.reflectMap.get(SerialNum)!);
-    let status = log.substring(6);
-    if(status == "ON"){
+    //console.log("数字是：" + num);
+    let status = log.substring(6).trim();
+    //console.log("灯的状态是1" + status);
+    //更改对应灯号的颜色
+    if(status.substr(0,2) == "ON"){
+      //console.log("点亮");
       this.lightArr[num] = this.colorOn;
     } else{
+      //console.log("熄灭");
       this.lightArr[num] = this.colorOff;
     }
+    //重新绘制灯阵
     await this.paint();
   } 
 
