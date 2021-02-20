@@ -30,7 +30,7 @@ export class UdcConsoleSession extends ConsoleSession {//定义几种对输出�
 
 
     async execute(cmd: string): Promise<void> {
-
+        alert(cmd);
         if (cmd === '' || cmd === null || cmd === undefined) {
             return;
         }

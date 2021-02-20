@@ -1,18 +1,80 @@
 import { AbstractViewContribution, bindViewContribution, WidgetFactory} from '@theia/core/lib/browser';
-import { injectable, interfaces } from "inversify";
+import { BaseWidget, PanelLayout, Widget, Message, MessageLoop, StatefulWidget, CompositeTreeNode } from '@theia/core/lib/browser';
+// import { injectable, interfaces } from "inversify";
+import { injectable, inject, postConstruct, interfaces, Container } from 'inversify';
 import { ConsoleWidget, ConsoleOptions } from '@theia/console/lib/browser/console-widget';
 import { ContextKey, ContextKeyService } from '@theia/core/lib/browser/context-key-service';
 import { UdcConsoleSession } from './udc-console-session';
+import {InputViewWidget} from './inputWidget';
 import { MenuModelRegistry } from '@theia/core';
+import { MonacoEditor } from '@theia/monaco/lib/browser/monaco-editor';
 export type InUdcReplContextKey = ContextKey<boolean>;
 export const InUdcReplContextKey = Symbol('inUdcReplContextKey');
 
 
 @injectable()
 export class UdcConsoleWidget extends ConsoleWidget  {//输出模块
+
+    @inject(InputViewWidget)
+    readonly inputview: InputViewWidget;
+
     constructor() {
         super();
     }
+
+    @postConstruct()
+    protected async init(): Promise<void> {
+        const { id, title, inputFocusContextKey } = this.options;
+        const { label, iconClass, caption } = Object.assign({}, title);
+        this.id = id;
+        this.title.closable = true;
+        this.title.label = label || id;
+        if (iconClass) {
+            this.title.iconClass = iconClass;
+        }
+        this.title.caption = caption || label || id;
+
+        const layout = this.layout = new PanelLayout();
+
+        this.content.node.classList.add(ConsoleWidget.styles.content);
+        this.toDispose.push(this.content);
+        layout.addWidget(this.content);
+
+        // this.content.node.classList.add(ConsoleWidget.styles.content);
+        this.toDispose.push(this.inputview);
+        layout.addWidget(this.inputview);
+
+
+        const inputWidget = new Widget();
+        inputWidget.node.classList.add(ConsoleWidget.styles.input);
+        // layout.addWidget(inputWidget);
+
+        const input = this._input = await this.createInput(inputWidget.node);
+        this.toDispose.push(input);
+        this.toDispose.push(input.getControl().onDidLayoutChange(() => this.resizeContent()));
+        this.toDispose.push(input.getControl().onDidChangeConfiguration(({ fontInfo }) => fontInfo && this.updateFont()));
+        // this.updateFont();
+        // if (inputFocusContextKey) {
+        //     this.toDispose.push(input.onFocusChanged(() => inputFocusContextKey.set(this.hasInputFocus())));
+        // }
+    }
+
+    protected createInput(node: HTMLElement): Promise<MonacoEditor> {
+        return this.editorProvider.createInline(this.options.input.uri, node, this.options.input.options);
+    }
+
+    async execute(): Promise<void> {
+        const value = this.inputview.getValue();
+        if (this.session) {
+            const listener = this.content.model.onNodeRefreshed(() => {
+                listener.dispose();
+                this.revealLastOutput();
+            });
+            await this.session.execute(value);
+        }
+    }
+
+
     upupup(): void {
         if (this.session) {
             const listener = this.content.model.onNodeRefreshed(() => {
@@ -48,6 +110,11 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
         ,
         input: {
             uri: UdcConsoleSession.uri,
+            options: {
+                autoSizing: true,
+                minHeight: 2,
+                maxHeight: 10
+            }
         }
 
     };
@@ -71,6 +138,7 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
             container.get(ContextKeyService).createKey('inUdcRepl', false)
         ).inSingletonScope()
         bind(UdcConsoleWidget).toSelf()
+        bind(InputViewWidget).toSelf()
         bind(UdcConsoleSession).toSelf().inSingletonScope()
         bindViewContribution(bind, UdcConsoleContribution).onActivation((context, _) => {
             context.container.get(UdcConsoleSession)

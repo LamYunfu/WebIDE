@@ -1389,6 +1389,7 @@ export class UdcTerminal {
 
   async run_command(devstr: string, args: string) {
     let content = `${devstr}:${args.replace(" ", "|")}`;
+    console.log(content);
     this.send_packet(Packet.DEVICE_CMD, content);
     await this.wait_cmd_excute_done(1500);
     return this.cmd_excute_state === "done" ? true : false;
