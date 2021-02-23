@@ -1,0 +1,78 @@
+/*
+ * Copyright (C) 2018-present Alibaba Group Holding Limited
+ */
+
+html,
+body {
+    font-family: var(--theia-ui-font-family);
+}
+
+.col {
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-grid {
+    display: flex;
+}
+
+.gs-action-container {
+    line-height: 20px;
+    color: var(--theia-ui-font-color0);
+}
+
+.gs-action-details {
+    padding-left: 5px;
+    color: var(--theia-ui-font-color1);
+}
+
+.gs-container {
+    padding: 20px;
+}
+
+.gs-header h1 {
+    color: var(--theia-ui-font-color0);
+    flex: 1;
+    font-weight: 600;
+}
+
+.gs-hr {
+    background-color: var(--theia-border-color1);
+    height: 1px;
+    border: 0;
+    margin: 0px;
+}
+
+.gs-no-recent {
+    color: var(--theia-ui-font-color1);
+}
+
+.gs-section a {
+    border: none;
+    color: var(--theia-accent-color1);
+    font-weight: 500;
+    outline: 0;
+    text-decoration: none;
+}
+
+.gs-section a:hover {
+    text-decoration: underline;
+}
+
+.gs-section-header {
+    color: var(--theia-ui-font-color0);
+    font-size: var(--theia-ui-font-size2);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.gs-section-header i {
+    padding-right: 5px;
+}
+
+.gs-sub-header {
+    color: var(--theia-ui-font-color2);
+    text-transform: capitalize;
+    font-weight: 400;
+}
