@@ -1,6 +1,13 @@
 import React = require("react");
 import * as $ from "jquery"
-import { Select } from '@linkdesign/components';
+// import { Select } from '@linkdesign/components';
+// import styles from '../styles/index.less';
+import {AutoComplete} from 'antd';
+import {Select} from 'antd';
+import { Input, Tooltip, Icon } from 'antd';
+import { Popover, Button,List,Typography } from 'antd';
+import { Menu, Dropdown ,message} from 'antd';
+const { Option } = Select;
 // import URI from "@theia/core/lib/common/uri";
 import { MyContext } from "./context";
 import { AI1DOC, AI2DOC, AI3DOC, MODEL_DOWNLOAD_URL, AI4DOC, AI5DOC } from '../../setting/front-end-config'
@@ -12,13 +19,38 @@ export namespace AI {
     }
     export interface State {
         dataSource,
-        showLoadMore:boolean
+        showLoadMore:boolean,
     }
 }
 export class InputView extends React.Component<AI.Props, AI.State> {
     pidQueueInfo: { [pid: string]: {} } = {};
     pids: string[] = []
-    codingItems: JSX.Element[] = []
+    codingItems: JSX.Element[] = [];
+    data = [
+        'Racing car sprays burning fuel into crowd.',
+        'Japanese princess to wed commoner.',
+        'Australian walks 100km after outback crash.',
+        'Man charged over missing wedding girl.',
+        'Los Angeles battles huge wildfires.',
+        'Racing car sprays burning fuel into crowd.',
+        'Japanese princess to wed commoner.',
+        'Australian walks 100km after outback crash.',
+        'Man charged over missing wedding girl.',
+        'Los Angeles battles huge wildfires.',
+      ];
+    content = (
+        <div>
+              <List
+      dataSource={this.data}
+      renderItem={item => (
+        <List.Item>
+          <Typography.Text mark>[ITEM]</Typography.Text> {item}
+        </List.Item>
+      )}
+    />
+        </div>
+      );
+    dataSource = ['dumpsys', 'dumpsys mm', 'dumpsys info', 'dumpsys mm_info', 'tasklist', 'dumpsys task', 'time', 'sysver', 'help'];
     constructor(props: Readonly<AI.Props>) {
         super(props);
         this.state = {
@@ -27,7 +59,8 @@ export class InputView extends React.Component<AI.Props, AI.State> {
               { label: 'option2', value: 'option2' },
               { label: 'option3', value: 'option3' }
             ],
-            showLoadMore: true
+            showLoadMore: true,
+            
           };
     }
     componentWillMount() {
@@ -35,6 +68,35 @@ export class InputView extends React.Component<AI.Props, AI.State> {
         let _this = this
 
     }
+
+     handleButtonClick(e) {
+        message.info('Click on left button.');
+        console.log('click left button', e);
+      }
+      
+       handleMenuClick(e) {
+        message.info('Click on menu item.');
+        console.log('click', e);
+      }
+      
+    menu = (
+        <Menu onClick={this.handleMenuClick}>
+          <Menu.Item key="1">
+            <Icon type="user" />
+            1st menu item
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Icon type="user" />
+            2nd menu item
+          </Menu.Item>
+          <Menu.Item key="3">
+            <Icon type="user" />
+            3rd item
+          </Menu.Item>
+        </Menu>
+
+
+      );
 
     loadData = (resolve, reject) => {
         this.setState({
@@ -55,44 +117,19 @@ export class InputView extends React.Component<AI.Props, AI.State> {
         return vak.toString();
     }
 
+     handleChange(value) {
+        console.log(`selected ${value}`);
+        $("#input_text").val(value);
+      }
+
+      onChange(e) {
+        console.log(e);
+      };
+      
+
 
     async componentDidMount() {
         let _this = this
-        if(this.props.title == "韩信点兵"){
-            $("#aiDSP").attr("src", AI4DOC)
-        }
-        else if(this.props.title=="体重指数计算器"){
-            $("#aiDSP").attr("src", AI5DOC)
-        }
-        else if (this.props.title == "画板数字识别")
-            $("#aiDSP").attr("src", AI1DOC)
-        else if (this.props.title == "图像人脸识别")
-            $("#aiDSP").attr("src", AI2DOC)
-        else if (this.props.title == "相机人脸识别") {
-            $("#aiDSP").attr("src", AI3DOC)
-            let sp = document.createElement("script")
-            sp.innerHTML = `
-            db = document.getElementById("downloadButton")         
-            db.addEventListener("click", wrap = function () {
-            console.log("click download button")
-            connection = new WebSocket("ws://localhost:8240")
-            // connection = new WebSocket("${MODEL_DOWNLOAD_URL}")
-            connection.onopen = async () => {                        
-                                    content = "{download,0,0}"
-                                    connection.send(content)
-                                    connection.onmessage = async (mesg) => {
-                                                                link = document.getElementById("downloadlink")
-                                                                file = mesg.data.split(",").pop().split("}")[0]                                         
-                                                                link.href = "data:application/octet-stream;base64,"+file
-                                                                link.download = "model.zip";
-                                                                link.click()
-                                                            }               
-                                 }
-            })
-            `
-            document.head.appendChild(sp)
-
-        }
         $("#submitSrcButton").click(() => {
             // _this.context.props.train(_this.props.section["ppid"][0])
         })
@@ -116,70 +153,18 @@ export class InputView extends React.Component<AI.Props, AI.State> {
           alert(vak);  
         })
     }
+    onPressEnter(e) {
+        this.props.outputResult(e);
+        alert(e);
+        $("#input_text").val('');
+
+    }
 
     render(): JSX.Element {
         return (
-            <div style={{ width: "100%", height: "100%", background: 'white' }}>
-                {/* <h5 id="titleAndStatus" className="card-title" style={{ display: "" }}>
-                    <span id={"coding_title"}>{this.props.title}</span>
-                </h5>
-                <div style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'darkgray',
-                }}>
-                    <iframe id="aiDSP" src="" style={{
-                        width: " 100%",
-                        height: '100%',
-                        borderWidth: '0',
-                        background: 'darkgray',
-                        paddingBottom: "50px",
-                    }}></iframe>
-                </div>
-
-                <a id="downloadlink" style={{ "display": "none" }}></a>
-                {this.props.title == "韩信点兵"||this.props.title == "体重指数计算器"?<div>
-                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>提交</button></span>
-                </div> :this.props.title != "相机人脸识别"? <div>
-                    <span style={{ position: "absolute", left: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"openDrawBoard"}>开关画板</button></span>
-                    <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"submitSrcButton"}>提交</button></span>
-                </div> :
-                    // <span style={{ position: "absolute", right: "30px", bottom: "15px" }}><button className="btn btn-primary" id={"downloadButton"}>下载</button></span>
-                    <div />
-                } */}
-                {/* <h5>
-                    <span>我就是我，是不一样的烟火</span>
-                </h5> */}
-                    {/* <span id="list1" style={{ display: "none" }}>
-                    <dl>
-                        <dt>Coffee</dt>
-                        <dt>Black hot drink</dt>
-                        <dt>Milk</dt>
-                        <dt>White cold drink</dt>
-                    </dl>
-                    </span> */}
+            <div style={{ width: "100%", height: "100%", background: '#5d5d5d' }}>
 
                 <datalist id="commands" title="常用命令" style={{height: "300px"}}>
-                <option value="dumpsys" />
-                <option value="dumpsys mm" />
-                <option value="dumpsys info" />
-                <option value="dumpsys mm_info" />
-                <option value="tasklist" />
-                <option value="dumpsys task" />
-                <option value="time" />
-                <option value="sysver" />
-                <option value="help" />
-
-                <option value="dumpsys" />
-                <option value="dumpsys mm" />
-                <option value="dumpsys info" />
-                <option value="dumpsys mm_info" />
-                <option value="tasklist" />
-                <option value="dumpsys task" />
-                <option value="time" />
-                <option value="sysver" />
-                <option value="help" />
-
                 <option value="dumpsys" />
                 <option value="dumpsys mm" />
                 <option value="dumpsys info" />
@@ -204,7 +189,7 @@ export class InputView extends React.Component<AI.Props, AI.State> {
                 {/* <input id="usedCommnand" list= "commands" style={{width: "160px", height:"50px", marginRight: "10px",  color: "blue", fontSize: "20px",marginTop: "2px", marginBottom:"15px",background:"white"}}></input> */}
                 {/* <input id="input_text" type="text" list= "commands" name="firstname" placeholder="请输入命令" style={{height: "50px", width: "400px", fontSize:"20px", color: "blue", marginRight: "20px", marginTop: "2px", marginBottom:"15px",background: "white"}}  />
                 <button id="sendCommand"  style={{height: "50px", width: "80px", color: "blue", fontSize: "20px", alignItems: "center", alignSelf:"center", alignContent :"center", marginTop: "2px", marginBottom:"15px",background: "white"}} >发送</button> */}
-                <Select
+                {/* <Select
                     visible = {true}
                     size={"large"}
                     dataSource={this.state.dataSource}
@@ -218,8 +203,36 @@ export class InputView extends React.Component<AI.Props, AI.State> {
                         }, 3000);
                     });
                     }}
-                    />
-            </div >
+                    /> */}
+
+                    <Select value="lucy" size = 'large' style={{ width: 240, height: 40, marginRight: 30, marginTop:3, marginLeft: 20,  color:"black"}}  onChange={this.handleChange}>
+                          <Option value="dumpsys">dumpsys</Option>
+                          <Option value="lucy" style={{display:'none'}}>常用命令</Option>
+                          <Option value="dumpsys mm">dumpsys mm</Option>
+                          <Option value="dumpsys info">dumpsys info</Option>
+                          <Option value="dumpsys mm_info">dumpsys mm_info</Option>
+                          <Option value="tasklist">tasklist</Option>
+                          <Option value="dumpsys task">dumpsys task</Option>
+                          <Option value="time">time</Option>
+                          <Option value="sysver">sysver</Option>
+                          <Option value="help">help</Option>
+                          
+
+                        </Select>
+                    {/* <Popover content={this.content} title="Title" trigger="click" style={{ width: 180,height: 60, marginRight: 20}}>
+                    <Button>Click me</Button>
+                    </Popover> */}
+
+                    
+                    {/* <Dropdown overlay={this.menu} placement="topCenter" >
+                    <Button style={{ width: '180px',height: '60px', marginRight: '20px'}}>
+                        常用命令 <Icon type="up" />
+                    </Button>
+                    </Dropdown> */}
+            
+                    <Input id="input_text" size= 'small' placeholder="请输入命令" allowClear onChange={this.onChange} style={{ width: 400,height: 40, marginRight: '30px',fontSize: "20px",marginTop:3 , color: 'black'}} onPressEnter={this.onPressEnter}/>
+                    <button id="sendCommand"  style={{height: 40, width: 80, color: "blue", fontSize: "20px", marginTop: 3,background: "white", borderRadius: 3}} >发送</button>
+            </div>
         )
     }
 }
