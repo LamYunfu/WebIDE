@@ -164,50 +164,7 @@ export class InputView extends React.Component<AI.Props, AI.State> {
     render(): JSX.Element {
         return (
             <div style={{ width: "100%", height: "100%", background: '1c1c1c' }}>
-
-                <datalist id="commands" title="常用命令" style={{height: "300px"}}>
-                <option value="dumpsys" />
-                <option value="dumpsys mm" />
-                <option value="dumpsys info" />
-                <option value="dumpsys mm_info" />
-                <option value="tasklist" />
-                <option value="dumpsys task" />
-                <option value="time" />
-                <option value="sysver" />
-                <option value="help" />
-
-                <option value="dumpsys" />
-                <option value="dumpsys mm" />
-                <option value="dumpsys info" />
-                <option value="dumpsys mm_info" />
-                <option value="tasklist" />
-                <option value="dumpsys task" />
-                <option value="time" />
-                <option value="sysver" />
-                <option value="help" />
-                </datalist>
-                {/* <button id="usedCommnand" style={{width: "160px", height:"50px", marginRight: "10px",  color: "blue", fontSize: "20px",marginTop: "2px", marginBottom:"15px",background:"white"}}>^常用命令</button> */}
-                {/* <input id="usedCommnand" list= "commands" style={{width: "160px", height:"50px", marginRight: "10px",  color: "blue", fontSize: "20px",marginTop: "2px", marginBottom:"15px",background:"white"}}></input> */}
-                {/* <input id="input_text" type="text" list= "commands" name="firstname" placeholder="请输入命令" style={{height: "50px", width: "400px", fontSize:"20px", color: "blue", marginRight: "20px", marginTop: "2px", marginBottom:"15px",background: "white"}}  />
-                <button id="sendCommand"  style={{height: "50px", width: "80px", color: "blue", fontSize: "20px", alignItems: "center", alignSelf:"center", alignContent :"center", marginTop: "2px", marginBottom:"15px",background: "white"}} >发送</button> */}
-                {/* <Select
-                    visible = {true}
-                    size={"large"}
-                    dataSource={this.state.dataSource}
-                    popupStyle={{height: "60px" ,width: "400px"}}
-                    showLoadMore={false}
-                    loadMore={() => {
-                    const self = this;
-                    const promise = new Promise((resolve, reject) => {
-                        setTimeout(() => {
-                        self.loadData(resolve, reject);
-                        }, 3000);
-                    });
-                    }}
-                    /> */}
-
-                    <Select value="lucy" size = 'large'  style={{display: 'inline-block', width: 240, height: 40, marginRight: 30, marginTop:3, marginLeft: 20,  color:"white"}}  onChange={this.handleChange}>
-                    
+                    <Select value="lucy" size = 'large' style={{display: 'inline-block', width: 160, height: '30 !important', marginRight: 30, marginTop:3, marginLeft: 20,  color:"white"}}  onChange={this.handleChange}>
                           <Option value="dumpsys">dumpsys</Option>
                           <Option value="lucy" style={{display:'none'}}>常用命令</Option>
                           <Option value="dumpsys mm">dumpsys mm</Option>
@@ -218,22 +175,9 @@ export class InputView extends React.Component<AI.Props, AI.State> {
                           <Option value="time">time</Option>
                           <Option value="sysver">sysver</Option>
                           <Option value="help">help</Option>
-                          
-
                         </Select>
-                    {/* <Popover content={this.content} title="Title" trigger="click" style={{ width: 180,height: 60, marginRight: 20}}>
-                    <Button>Click me</Button>
-                    </Popover> */}
-
-                    
-                    {/* <Dropdown overlay={this.menu} placement="topCenter" >
-                    <Button style={{ width: '180px',height: '60px', marginRight: '20px'}}>
-                        常用命令 <Icon type="up" />
-                    </Button>
-                    </Dropdown> */}
-            
-                    <Input id="input_text" size= 'small' placeholder="请输入命令" allowClear onChange={this.onChange} style={{ width: 400,height: 40, marginRight: '30px',fontSize: "20px",marginTop:3 , color: 'black'}} onPressEnter={this.onPressEnter}/>
-                    <button id="sendCommand"  style={{height: 40, width: 80, color: "blue", fontSize: "20px", marginTop: 3,background: "#3c3c3c", borderRadius: 3}} >发送</button>
+                    <Input id="input_text" size= 'small' placeholder="请输入命令" allowClear onChange={this.onChange} style={{ width: 400,height: 30, marginRight: '30px',fontSize: "20px",marginTop:3 , color: 'black'}} onPressEnter={this.onPressEnter}/>
+                    <Button id="sendCommand"  style={{height: 30, width: 80, color: "white", fontSize: "15px", marginTop: 3,background: "#3c3c3c", borderRadius: 3}} >发送</Button>
             </div>
         )
     }
