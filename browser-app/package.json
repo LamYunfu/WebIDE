@@ -28,7 +28,8 @@
     "new_widget":"0.0.0",
     "esp32_widget":"0.0.0",
     "haas100_widget":"0.0.0",
-    "wizard-extension":"0.0.0"
+    "wizard-extension":"0.0.0",
+    "guild-page-extension":"0.1.0"
   },
   "devDependencies": {
     
