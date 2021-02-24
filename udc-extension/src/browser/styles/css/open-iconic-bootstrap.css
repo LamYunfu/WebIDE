@@ -21,6 +21,29 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.ant-select-selection
+{
+  background: #3c3c3c !important;
+}
+
+.ant-select-dropdown-menu {
+  background-color: #3c3c3c !important;
+}
+
+.ant-select-dropdown-menu-item{
+  color: white !important;
+}
+
+.ant-select-dropdown-menu-item:hover {
+  background-color: #181715 !important;
+}
+
+.ant-input {
+  background: #3c3c3c !important;
+  color: white !important;
+  font-size: 20px !important;
+}
+
 .oi:empty:before {
   width: 1em;
   text-align: center;

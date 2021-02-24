@@ -2,6 +2,7 @@ import React = require("react");
 import * as $ from "jquery"
 // import { Select } from '@linkdesign/components';
 // import styles from '../styles/index.less';
+// const styles = require('../styles/index.less')
 import {AutoComplete} from 'antd';
 import {Select} from 'antd';
 import { Input, Tooltip, Icon } from 'antd';
@@ -162,7 +163,7 @@ export class InputView extends React.Component<AI.Props, AI.State> {
 
     render(): JSX.Element {
         return (
-            <div style={{ width: "100%", height: "100%", background: '#5d5d5d' }}>
+            <div style={{ width: "100%", height: "100%", background: '1c1c1c' }}>
 
                 <datalist id="commands" title="常用命令" style={{height: "300px"}}>
                 <option value="dumpsys" />
@@ -205,7 +206,8 @@ export class InputView extends React.Component<AI.Props, AI.State> {
                     }}
                     /> */}
 
-                    <Select value="lucy" size = 'large' style={{ width: 240, height: 40, marginRight: 30, marginTop:3, marginLeft: 20,  color:"black"}}  onChange={this.handleChange}>
+                    <Select value="lucy" size = 'large'  style={{display: 'inline-block', width: 240, height: 40, marginRight: 30, marginTop:3, marginLeft: 20,  color:"white"}}  onChange={this.handleChange}>
+                    
                           <Option value="dumpsys">dumpsys</Option>
                           <Option value="lucy" style={{display:'none'}}>常用命令</Option>
                           <Option value="dumpsys mm">dumpsys mm</Option>
@@ -231,7 +233,7 @@ export class InputView extends React.Component<AI.Props, AI.State> {
                     </Dropdown> */}
             
                     <Input id="input_text" size= 'small' placeholder="请输入命令" allowClear onChange={this.onChange} style={{ width: 400,height: 40, marginRight: '30px',fontSize: "20px",marginTop:3 , color: 'black'}} onPressEnter={this.onPressEnter}/>
-                    <button id="sendCommand"  style={{height: 40, width: 80, color: "blue", fontSize: "20px", marginTop: 3,background: "white", borderRadius: 3}} >发送</button>
+                    <button id="sendCommand"  style={{height: 40, width: 80, color: "blue", fontSize: "20px", marginTop: 3,background: "#3c3c3c", borderRadius: 3}} >发送</button>
             </div>
         )
     }
