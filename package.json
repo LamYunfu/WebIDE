@@ -34,6 +34,7 @@
     "@theia/callhierarchy": "^0.8.0",
     "@theia/file-search": "^0.8.0",
     "@theia/git": "^0.8.0",
+    "@theia/cpp": "^0.8.0",
     "@theia/json": "^0.8.0",
     "@theia/markers": "^0.8.0",
     "@theia/messages": "^0.8.0",
