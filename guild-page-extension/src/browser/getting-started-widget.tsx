@@ -13,7 +13,7 @@ import { FileStat, FileSystem } from '@theia/filesystem/lib/common/filesystem';
 import { KeymapsCommands } from '@theia/keymaps/lib/browser';
 // import { WorkspaceCommands, WorkspaceService } from '@theia/workspace/lib/browser';
 //import { ProjectCommands } from 'hacklab-project/lib/browser/project-commands';
-
+import Haas from "./Haas";
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from 'inversify';
 import * as React from 'react';
@@ -70,7 +70,7 @@ export class GettingStartedWidget extends ReactWidget {
 
   protected render(): React.ReactNode {
     return <div className='gs-container'>
-      {this.renderHeader()}
+      {/* {this.renderHeader()}
       <hr className='gs-hr' />
       <div className='flex-grid'>
         <div className='col'>
@@ -79,7 +79,8 @@ export class GettingStartedWidget extends ReactWidget {
         <div className='col'>
           {this.renderTutorials()}
         </div>
-      </div>
+      </div> */}
+      <Haas/>
     </div>;
   }
 

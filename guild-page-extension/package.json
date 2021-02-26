@@ -11,12 +11,16 @@
     "src/browser/style"
   ],
   "dependencies": {
+    "react-router-dom": "^5.2.0",
+    "rimraf": "latest",
+    "typescript": "latest"
+  },
+  "devDependencies": {
     "@theia/core": "^0.8.0",
     "@theia/filesystem": "^0.8.0",
     "@theia/keymaps": "^0.8.0",
-    "@theia/workspace": "^0.8.0"
-  },
-  "devDependencies": {
+    "@theia/workspace": "^0.8.0",
+    "@types/react-router-dom": "^5.1.7",
     "rimraf": "latest",
     "typescript": "latest"
   },

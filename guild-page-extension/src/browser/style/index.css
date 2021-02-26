@@ -1,7 +1,10 @@
 /*
  * Copyright (C) 2018-present Alibaba Group Holding Limited
  */
-
+ @import'./Haas.css';
+ @import'./Setting.css';
+ @import'./SystemDevelopment.css';
+ @import'./Workspace.css';
 html,
 body {
     font-family: var(--theia-ui-font-family);

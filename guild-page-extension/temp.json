@@ -1,0 +1,39 @@
+{
+    "name": "guild-page-extension",
+    "description": "HaaS Lab Getting Started extension",
+    "license": "SEE LICENSE IN LICENSE",
+    "keywords": [
+      "theia-extension"
+    ],
+    "version": "0.1.0",
+    "files": [
+      "lib",
+      "src/browser/style"
+    ],
+    "dependencies": {
+      "@theia/core": "^0.8.0",
+      "@theia/filesystem": "^0.8.0",
+      "@theia/keymaps": "^0.8.0",
+      "@theia/workspace": "^0.8.0",
+      "react": "^17.0.1",
+      "react-router-dom": "^5.2.0",
+      "react-scripts": "4.0.1"
+    },
+    "devDependencies": {
+      "@types/react-router-dom": "^5.1.7",
+      "rimraf": "latest",
+      "typescript": "latest"
+    },
+    "scripts": {
+      "prepare": "yarn run clean && yarn run build",
+      "clean": "rimraf lib",
+      "build": "tsc",
+      "watch": "tsc -w"
+    },
+    "theiaExtensions": [
+      {
+        "frontend": "lib/browser/getting-started-frontend-module"
+      }
+    ]
+  }
+  

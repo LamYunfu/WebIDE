@@ -1,0 +1,38 @@
+.workspace{
+    margin-left: 28px;
+    margin-right: 28px;
+}
+.workspace_title{
+    padding-top: 15px;
+    margin-left: 28px;
+}
+.new_project{
+    margin-top: 28px;
+}
+.gutter_box{
+    background-color: #2F3033;
+    height: 100px;
+}
+.gutter_box:hover{
+    background-color: #3E4045;
+    cursor: pointer;
+}
+.plus_icon{
+    background-color: #383A3D;
+    height: 70px;
+    width: 70px;
+    margin-top: 15px;
+    margin-left: 15px;
+    float: left;
+}
+.new_title{
+    float: left;
+    padding-left: 15px;
+    font-size: 25px;
+    font-weight: bold;
+    color: #D3D5E0;
+    line-height: 100px;
+}
+.my_project{
+    margin-top: 20px;
+}
