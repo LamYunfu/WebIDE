@@ -14,6 +14,7 @@ import { Controller } from "./util/controller";
 import { LOGINTYPE } from "./../common/udc-service";
 import { UdcClient } from "./../common/udc-watcher";
 import { UdcTerminal } from "./util/udc-terminal";
+import {RunCommand} from './services/command/runcommand';
 import { UdcService } from "./../common/udc-service";
 import { injectable, inject } from "inversify";
 import { ILogger } from "@theia/core";
@@ -34,6 +35,7 @@ export class UdcServiceImpl implements UdcService {
     @inject(RawProcessFactory)
     protected readonly rawProcessFactory: RawProcessFactory,
     @inject(UdcTerminal) protected readonly udcTerminal: UdcTerminal,
+    @inject(RunCommand) protected readonly command: RunCommand,
     @inject(Controller) protected readonly controller: Controller,
     @inject(Compiler) protected readonly compiler: Compiler,
     @inject(LinkEdgeManager)
@@ -136,7 +138,8 @@ export class UdcServiceImpl implements UdcService {
 
   rumcmd(devstr: string, cmdstr: string): Promise<Boolean> {
     return new Promise<Boolean>((resolve) => {
-      let result = this.udcTerminal.run_command(devstr, cmdstr);
+      // let result = this.udcTerminal.run_command(devstr, cmdstr);
+      let result = this.command.runcommand(cmdstr);
       resolve(result);
     });
   }

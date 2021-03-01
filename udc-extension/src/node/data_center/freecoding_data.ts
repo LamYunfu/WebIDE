@@ -78,6 +78,8 @@ export class QueueSetting {
   hexFileDir: string | null = null;
   @JsonProperty("serverType", String)
   serverType: string | null = null;
+  @JsonProperty("language", String, true)
+  language: string | null = null;
   @JsonProperty("projects", [QueueDetail])
   projects: QueueDetail[] | null = null;
   @JsonProperty("modifyOSCore",Boolean,true)
@@ -93,6 +95,8 @@ export class AdhocSetting {
   hexFileDir: string | null = null;
   @JsonProperty("serverType", String)
   serverType: string | null = null;
+  @JsonProperty("language", String, true)
+  language: string | null = null;
   @JsonProperty("projects", [AdhocDetail])
   projects: AdhocDetail[] | null = null;
   @JsonProperty("modifyOSCore",Boolean)

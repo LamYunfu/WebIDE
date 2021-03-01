@@ -7,6 +7,7 @@ import * as http from "http"
 import * as WS from "ws"
 import { LdcClientControllerInterface } from "../interfaces/ldc_client_controller_interface";
 import { QueueBurnElem, Skeleton } from "../../../data_center/program_data";
+import { UserInfo } from '../../../data_center/user_info';
 import { fstat, readFileSync, stat } from 'fs-extra';
 import { LdcShellInterface } from '../../ldc_shell/interfaces/ldc_shell_interface';
 class TaskItem {
@@ -78,6 +79,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
     uploadPath = "/linklab/device-control-v2/file-cache/api/file"
     constructor(
         // @inject(LdcData) protected ldcData: LdcData
+        @inject(UserInfo) protected uif: UserInfo,
         @inject(ProjectData) protected pdata: ProjectData,
         @inject(LdcShellInterface) protected ldcshell :LdcShellInterface,
      ) {
@@ -193,7 +195,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
 
                 }
             )
-            request.write(JSON.stringify({ "password": "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918", "id": "UserTest" }))
+            request.write(JSON.stringify({  "id": this.uif.username, "password":"6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918" }))
             request.end()
         }
         )
@@ -211,6 +213,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
         if (!tag) {
             this.outputResult(" User doesn't not login", "err")
         }
+        console.log("new_ldc burn ");
         // this.outputResult("burn")
         let tasks: TaskItem[] = []
         let ps = skelton.program;
@@ -265,7 +268,6 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
                     res.on("close", () => {
                         let raw = tmp!.toString()
                         let json = JSON.parse(raw);
-                        console.log(raw)
                         if (json["code"] == 0) {
                             // this.outputResult(raw)
                             bk(true)
@@ -300,9 +302,15 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
             // buff=
             return this.pdata.fileHash[parseInt(index)]
         }else{
-            buff=await this.downloadHex(hash,boardType,compileType)
-        }       
+            if(this.pdata.language == "python") {
+                console.log(" this.pdata.language == python index = " + index + " pythonFileData = " + this.pdata.pythonFileData);
+                buff = this.pdata.pythonFileData[parseInt(index)];
+            } else {
+                buff=await this.downloadHex(hash,boardType,compileType)
+            }
+        }      
         if(!buff){
+            console.log("buff is null");
             return ""
         }
         return await this.uploadHex(buff,deviceType)
@@ -310,8 +318,12 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
     async uploadHex(buffer: Buffer, boardname: string):Promise<string|undefined> {
         await this.prepare()
         console.log("upload:"+boardname)
-        let fm = new FormData()        
-        fm.append("file", buffer, "file")
+        let fm = new FormData()
+        if(this.pdata.language == "python") {
+            fm.append("file", buffer, "file.zip")
+        } else {    
+            fm.append("file", buffer, "file")
+        }
         fm.append("parameters", JSON.stringify({
             boardname: boardname
         }))

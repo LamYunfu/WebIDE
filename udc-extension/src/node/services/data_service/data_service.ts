@@ -85,6 +85,7 @@ export class DataService {
         let hexFileDirs: string[] = [];
         let subProjects: string[] = [];
         let timeouts: number[] = [];
+        let language:string[] = [];
         //console.log("deviceRole的长度是 " + ob[key].deviceRole!.length);
         if (!!ob[key].deviceRole!) {
           for (let v of ob[key].deviceRole!) {
@@ -105,7 +106,7 @@ export class DataService {
         pd.subProjectArray = subProjects;
         pd.subModelTypes = modelTypes;
         pd.subTimeouts = timeouts;
-        pd.experimentType = ob[key].type
+        pd.experimentType = ob[key].type;
         // if (!!ob[key].type && ob[key].type!.trim() == "freecoding") {
         //   this.freeCodingDataService.parseProjectDataFromFile(pd)
         // }

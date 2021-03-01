@@ -3,6 +3,7 @@ import { bindLdcShell } from "./ldc_shell/ldc_shell";
 import { bindCallInfoStorer } from "./log/call_info_storer";
 import { bindLdcClientController } from "./ldc/bind_ldc";
 import { bindCompilers } from "./compiler/bind_compiler";
+import { bindCommandExecute } from "./command/runcommand";
 import { bindFileTemplate } from "./file_template/file_template";
 import { bindLdcFileServer } from "./ldc_file_server/ldc_file_server";
 import { bindProgramers } from "./programers/bind_programmer";
@@ -24,6 +25,7 @@ import { bindKubege } from "./edge/kubedge";
 export function bindServices(bind: interfaces.Bind) {
   bindLdcShell(bind);
   bindCompilers(bind);
+  bindCommandExecute(bind);
   bindTools(bind);
   bindFileTemplate(bind);
   bindCallInfoStorer(bind);

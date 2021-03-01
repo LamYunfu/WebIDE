@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { NewLineKind } from "typescript";
 export type LoginType = "adhoc" | "queue" | string;
 @injectable()
 export class ProjectData {
@@ -20,6 +21,15 @@ export class ProjectData {
   protected _ppid: string = "";
   protected _experimentType: string | undefined = undefined
   protected _modifyOSCore:boolean=false
+  protected _pythonFileData:Buffer[]= [];
+  protected _language: string = ""
+
+  get language() {
+    return this._language;
+  }
+  set language(lang :string) {
+    this._language = lang;
+  }
   get modifyOSCore(){
     return this._modifyOSCore
   }
@@ -115,6 +125,12 @@ export class ProjectData {
   }
   set subBoardTypes(subBoardTypes: string[]) {
     this._subBoardTypes = subBoardTypes;
+  }
+  get pythonFileData(): Buffer[] {
+    return this._pythonFileData;
+  }
+  set pythonFileData(pythonFileData: Buffer[]) {
+    this._pythonFileData = pythonFileData;
   }
   get fileHash(): string[] {
     return this._fileHash;

@@ -53,6 +53,13 @@ export class DistributedCompiler {
     let fhas = this.projectData.fileHash;
     fhas[parseInt(projectIndex)] = fha;
     this.projectData.fileHash = fhas;
+
+    let fileDataZip = this.projectData.pythonFileData;
+    fileDataZip[parseInt(projectIndex)] = fileData;
+    this.projectData.pythonFileData = fileDataZip;
+    if(this.projectData.language == "python") {
+      return;
+    }
     let fm = new FormData();
     let parameters = {
       filehash: fha,
@@ -271,6 +278,9 @@ export class DistributedCompiler {
     tag:boolean =false
   ): Promise<boolean> {
     let x = await this.upload(path, boardType, compileType, projectIndex,tag);
+    if(this.projectData.language == "python") {
+      return true;
+    }
     if (x == "error") {
       return false;
     }

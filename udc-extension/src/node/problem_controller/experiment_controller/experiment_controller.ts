@@ -46,11 +46,13 @@ export class ExperimentController {
 
     for (let i in projectData.subProjectArray) {
       //源路径
+      console.log("this.multiProjectData.rootDir is "+ this.multiProjectData.rootDir + " projectData.projectRootDir is " + projectData.projectRootDir + " projectData.subProjectArray[i] is " + projectData.subProjectArray[i]);
       let srcPath = path.join(
         this.multiProjectData.rootDir,
         projectData.projectRootDir,
         projectData.subProjectArray[i]
       );
+      // srcPath = "/Users/dongwei/Desktop/Python_LED/python";
       //存放二进制代码的目标路径
       let targetPath = path.join(
         this.multiProjectData.rootDir,
@@ -68,15 +70,17 @@ export class ExperimentController {
         let fa = fs.readdirSync(srcPath)
         pa.push(this.tinyLinkCompiler.compile(path.join(srcPath, fa[0]), i))
       } else {
-        pa.push(
-          this.dsc.compile(
-            srcPath,
-            targetPath,
-            projectData.subBoardTypes[i],
-            projectData.subCompileTypes[i],
-            i
-          )
-        );
+        console.log("submitQueue projectData.language is " + projectData.language);
+
+          pa.push(
+            this.dsc.compile(
+              srcPath,
+              targetPath,
+              projectData.subBoardTypes[i],
+              projectData.subCompileTypes[i],
+              i
+            )
+          );
 
       }
     }

@@ -41,13 +41,14 @@ export class UdcConsoleWidget extends ConsoleWidget  {//输出模块
         layout.addWidget(this.content);
 
         // this.content.node.classList.add(ConsoleWidget.styles.content);
-        this.toDispose.push(this.inputview);
-        layout.addWidget(this.inputview);
+        // this.toDispose.push(this.inputview);
+        // this.inputview.node.classList.add(ConsoleWidget.styles.input);
+        // layout.addWidget(this.inputview);
 
 
         const inputWidget = new Widget();
         inputWidget.node.classList.add(ConsoleWidget.styles.input);
-        // layout.addWidget(inputWidget);
+        layout.addWidget(inputWidget);
 
         const input = this._input = await this.createInput(inputWidget.node);
         this.toDispose.push(input);
@@ -110,11 +111,11 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
         ,
         input: {
             uri: UdcConsoleSession.uri,
-            options: {
-                autoSizing: true,
-                minHeight: 2,
-                maxHeight: 10
-            }
+            // options: {
+            //     autoSizing: true,
+            //     minHeight: 2,
+            //     maxHeight: 10
+            // }
         }
 
     };

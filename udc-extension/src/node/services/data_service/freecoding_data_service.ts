@@ -18,8 +18,8 @@ export class FreeCodingDataService {
     let ob = this.multiProjectData.dataMap
     //对于服务器配置数据是从config.json文件中来的，需要单独解析该文件
     for (let item of Object.keys(this.multiProjectData.dataMap)) {
-      if (!!ob[item].experimentType && (ob[item].experimentType!.trim() == "freecoding"|| ob[item].experimentType!.trim() == "displayboard"))
-        await this.parseProjectDataFromFile(ob[item])
+      if (!!ob[item].experimentType && (ob[item].experimentType!.trim() == "freecoding"|| ob[item].experimentType!.trim() == "displayboard"))  
+      await this.parseProjectDataFromFile(ob[item])
     }
 
     Object.assign(this.projectData, this.multiProjectData.dataMap[this.projectData.pid])
@@ -144,6 +144,7 @@ export class FreeCodingDataService {
       pd.subCompileTypes = compileTypes;
       pd.subTimeouts = timeouts;
       pd.subModelTypes = models;
+      pd.language = st.language;
       return true;
     } catch (error) {
       console.log(error);
