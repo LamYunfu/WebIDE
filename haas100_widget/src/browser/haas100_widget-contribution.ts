@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { MenuModelRegistry } from '@theia/core';
-import { HaaS100Widget } from './HaaS100_widget-widget';
+import { HaaS100Widget } from './haas100_widget-widget';
 import { AbstractViewContribution } from '@theia/core/lib/browser';
 import { Command, CommandRegistry } from '@theia/core/lib/common/command';
 
