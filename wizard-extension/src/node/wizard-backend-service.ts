@@ -2,7 +2,7 @@ import {  injectable} from "inversify";
 import { BackendClient, WizardBackendService} from "../common/protocol";
 import * as path from "path";
 import * as fs from "fs-extra";
-import {ROOTPATH} from "../../../udc-extension/lib/setting/backend-config";
+import {ROOTPATH} from "udc-extension/lib/setting/backend-config";
 //import URI from "@theia/core/lib/common/uri";
 
 @injectable()

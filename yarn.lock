@@ -1542,6 +1542,16 @@
     "@theia/node-pty" "0.7.8-theia004"
     string-argv "^0.1.1"
 
+"@theia/python@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.npm.taobao.org/@theia/python/download/@theia/python-0.8.0.tgz#080303f84c8d477e7fcbbddbf22f981e23fb36dd"
+  integrity sha1-CAMD+EyNR35/y73b8i+YHiP7Nt0=
+  dependencies:
+    "@theia/core" "^0.8.0"
+    "@theia/languages" "^0.8.0"
+    "@theia/monaco" "^0.8.0"
+    "@theia/process" "^0.8.0"
+
 "@theia/scm@^0.8.0":
   version "0.8.0"
   resolved "https://registry.npm.taobao.org/@theia/scm/download/@theia/scm-0.8.0.tgz#39539f19ba9476ce720a284b93c7a58687e2da37"

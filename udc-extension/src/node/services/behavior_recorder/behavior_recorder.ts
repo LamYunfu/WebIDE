@@ -4,7 +4,7 @@ import { inject } from 'inversify';
 import { UserInfo } from './../../data_center/user_info';
 import * as Hs from "http"
 import * as fm from "form-data"
-const host  ="api.test.tinylink.cn"
+const host  ="api.tinylink.cn"
 const path ="/userActivity/record"
 // type Behavior={
   
