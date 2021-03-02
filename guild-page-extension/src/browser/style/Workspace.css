@@ -1,22 +1,35 @@
 .workspace{
-    margin-left: 28px;
-    margin-right: 28px;
+    text-align:left;
+    color: white;
+    height: 100%;
+    width: 100%;
 }
 .workspace_title{
+    color: white;
     padding-top: 15px;
-    margin-left: 28px;
+    font-size: 20px;
 }
 .new_project{
     margin-top: 28px;
 }
-.gutter_box{
+.gutter_box_app{
     background-color: #2F3033;
     height: 100px;
 }
-.gutter_box:hover{
-    background-color: #3E4045;
+.gutter_box_app:hover{
+    background-color: rgb(53, 89, 180);
     cursor: pointer;
 }
+
+.gutter_box_system{
+    background-color: #2F3033;
+    height: 100px;
+}
+.gutter_box_system:hover{
+    background-color: #2F3033;
+    cursor: pointer;
+}
+
 .plus_icon{
     background-color: #383A3D;
     height: 70px;

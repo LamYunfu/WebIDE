@@ -13,7 +13,8 @@ import { FileStat, FileSystem } from '@theia/filesystem/lib/common/filesystem';
 import { KeymapsCommands } from '@theia/keymaps/lib/browser';
 // import { WorkspaceCommands, WorkspaceService } from '@theia/workspace/lib/browser';
 //import { ProjectCommands } from 'hacklab-project/lib/browser/project-commands';
-import Haas from "./Haas";
+//import Haas from "./Haas";
+import WorkSpace from "./Workspace";
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from 'inversify';
 import * as React from 'react';
@@ -80,7 +81,7 @@ export class GettingStartedWidget extends ReactWidget {
           {this.renderTutorials()}
         </div>
       </div> */}
-      <Haas/>
+      <WorkSpace/>
     </div>;
   }
 

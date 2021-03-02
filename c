@@ -15,7 +15,7 @@ yarn prepare
 cd ../wizard-extension
 yarn prepare
 cd ../guild-page-extension
-yarn build
+yarn prepare
 ##cd ./plugins/unity
 ##mv unity.theia ../node/unity.theia
 cd ../udc-extension

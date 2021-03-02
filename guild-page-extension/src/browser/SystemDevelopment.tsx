@@ -118,7 +118,7 @@ class SystemDevelopment extends React.Component<Props,State> {
                                             <i className="fa fa-check-circle-o" aria-hidden="true" style={{float:"right",marginRight:"10px", fontSize:"22px", color: this.state.boradChecked[0]}}></i>
                                         </div>
                                         <div className="board_discription">
-                                            内置AliOS操作系统
+                                            内置AliOS Things操作系统
                                         </div>
                                     </div>
                                 </div>
