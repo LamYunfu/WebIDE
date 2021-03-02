@@ -130,30 +130,34 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
             // this.outputResult(msg.data)
             let json:LdcDataPacket=JSON.parse(msg.data)
             let data:any =json.data
+            // console.log("ws receive " + data.msg)
             if( this.isValidated(LogData.example,data)){
                 this.outputResult(data.msg,"log")
                 // console.log("--------dd:"+data.msg)
             }else  if( this.isValidated(DeviceList.example,data)){
              
-                // console.log("--------dd:"+data.msg)
+                console.log("--------dd:"+data.msg)
             }
             bk(true)
         })
         this.ws.addEventListener("close", () => {
             // this.outputResult("close ldc ")
             bk(true)
-            this.dispose()
+            // this.dispose()
         })
         this.ws.addEventListener('error', () => {
-            // this.outputResult("connection to ldc error ")
+            this.outputResult("connection to ldc error ")
             bk(true)
             this.dispose()
         })
     })
 }
     async disconnect() {
+        // console.log("disconnect ws")
         if (this.isConnected()) {
+            this.ws.removeAllListeners()
             this.ws!.close();
+            this.ws = undefined
         }
         return true
     }

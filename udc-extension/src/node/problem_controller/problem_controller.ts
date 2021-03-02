@@ -103,7 +103,7 @@ export class ProblemController {
             this.dService.resetProgramData()
 
             //检测有没有与ldc连接， 提交代码到编译器编译烧写， 等待返回结果
-            let res = await this.checkConnection() && await this.experimentController.submitQueue() && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
+            let res = await this.checkConnection() && await this.experimentController.submitQueue() && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 1000000)
             if (res) {
                 if (this.pData.ppid == "31") {
                     setTimeout(() => {
@@ -135,7 +135,7 @@ export class ProblemController {
             }
             this.dService.copyDataFromDataMap(pid)
             this.dService.resetProgramData()
-            await this.experimentController.submitLocal(tag) && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 100000)
+            await this.experimentController.submitLocal(tag) && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 1000000)
 
         } catch (error) {
             this.outputResult(error, "error")
@@ -154,6 +154,7 @@ export class ProblemController {
             return await this.lcc.connect();
 
         } else if (this.dService.needReconnectServer() || true) {
+            console.log("need reconnect server")
             await this.lcc.disconnect()
 
             //将projectData中的ldcData部分摘录出来单独存放
