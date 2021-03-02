@@ -178,6 +178,7 @@ export class DeviceViewWidget extends TreeWidget {
           submitAlgorithm={this.submitAlgorithm}
           gotoTaoUnity={this.gotoTaoUnity}
           showLocalBurn={this.showLocalBurn}
+          openGettingStartPage={this.openGettingStartPage}
         />
         {/* <Lamp imgDisplay={this.imgDisplay} lampStatus={this.lampStatus}></Lamp> */}
 
@@ -746,6 +747,10 @@ export class DeviceViewWidget extends TreeWidget {
   showLocalBurn = () => {
     this.commandRegistry.executeCommand("iot.plugin.LocalBurner");
   }
+
+  openGettingStartPage = () => {
+    this.commandRegistry.executeCommand("GettingStartPage");
+  };
 }
 
 

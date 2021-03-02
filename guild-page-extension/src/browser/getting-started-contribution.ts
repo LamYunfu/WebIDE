@@ -36,6 +36,7 @@ export class GettingStartedContribution extends AbstractViewContribution<Getting
       },
       widgetId: GettingStartedWidget.ID,
       widgetName: GettingStartedWidget.LABEL,
+      toggleCommandId: 'GettingStartPage'
     });
   }
 

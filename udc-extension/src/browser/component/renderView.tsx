@@ -24,6 +24,7 @@ import { TaoFactoryView } from "./taoFactory-view";
 import { DiyMainView } from "../diy/diy-main-view";
 import { UI_Setting } from "../isEnable";
 import { UdcService } from "../../common/udc-service";
+import {GettingStart} from "./getting-started";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
@@ -147,6 +148,7 @@ export namespace View {
     //打开本地烧写页面
     showLocalBurn:()=>void;
     ui_setting:UI_Setting;
+    openGettingStartPage: ()=>void;
   }
   export interface State {
     ajaxNotFinish: boolean;
@@ -2049,6 +2051,9 @@ export class View extends React.Component<View.Props, View.State> {
         showLocalBurn={_this.props.showLocalBurn}
       />
     </MyContext.Provider>
+    ): this.state.viewType == "15" ? (
+      // this.state.viewType == "5" ?
+      <GettingStart openGettingStartPage={this.props.openGettingStartPage}/>
     ) :
      (
       <div></div>
