@@ -1,3 +1,5 @@
+import { EventDefinition } from './../../tools/event_definition';
+import { EventCenter } from './../../tools/event_center';
 import { FileServerInterface } from './../interfaces/file_server_interface';
 import { LdcShell } from './../../ldc_shell/ldc_shell';
 import { ProjectData } from './../../../data_center/project_data';
@@ -55,7 +57,7 @@ class TaskAllocate {
     "data":{[key:string]:string}|null=null
 }
 class TaskBurnMsg {
-    static=new TaskBurnMsg()
+    static example=new TaskBurnMsg()
    "groupid": string|null=null
    "taskindex": number|null=null
    "type":string= "TaskBurnMsg"
@@ -82,6 +84,8 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
         @inject(UserInfo) protected uif: UserInfo,
         @inject(ProjectData) protected pdata: ProjectData,
         @inject(LdcShellInterface) protected ldcshell :LdcShellInterface,
+        @inject(EventCenter) protected eventCenter:EventCenter,
+        @inject(EventDefinition) protected eventDefinition:EventDefinition
      ) {
     }
     async dispose() {
@@ -134,9 +138,14 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
             if( this.isValidated(LogData.example,data)){
                 this.outputResult(data.msg,"log")
                 // console.log("--------dd:"+data.msg)
-            }else  if( this.isValidated(DeviceList.example,data)){
-             
+            }else  if( this.isValidated(DeviceList.example,data)){             
                 console.log("--------dd:"+data.msg)
+            }else if( this. isValidated(TaskBurnMsg.example,data)){
+                if(json.code==0){
+                    this.eventCenter.emit(this.eventDefinition.programState,true)
+                }else{
+                    this.eventCenter.emit(this.eventDefinition.programState,false)
+                }
             }
             bk(true)
         })
