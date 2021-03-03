@@ -7,7 +7,7 @@ export namespace GettingStart {
 }
 
 export class GettingStart extends React.Component<GettingStart.Props> {
-  componentWillMount(){
+  componentDidMount(){
     this.props.openGettingStartPage();
   }
   render(): JSX.Element {

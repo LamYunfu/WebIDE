@@ -748,8 +748,8 @@ export class DeviceViewWidget extends TreeWidget {
     this.commandRegistry.executeCommand("iot.plugin.LocalBurner");
   }
 
-  openGettingStartPage = () => {
-    this.commandRegistry.executeCommand("GettingStartPage");
+  openGettingStartPage =  () => {
+    this.commandRegistry.executeCommand("help.getting.started.widget");
   };
 }
 
