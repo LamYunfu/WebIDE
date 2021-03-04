@@ -60,7 +60,7 @@ class ApplicationDevelopment extends React.Component<Props,State> {
         }
     
         //点击提交
-        submit = ()=>{
+        submit = async ()=>{
             //检查是否勾选
             if(this.config_json.project_name === ""){
                 alert("请填写project name！");
@@ -70,10 +70,41 @@ class ApplicationDevelopment extends React.Component<Props,State> {
                 return;
             }else if(this.config_json.boardType === ""){
                 alert("请选择开发板类型！")
-            }else{
-                alert(JSON.stringify(this.config_json));
+                return;
             }
+
+            const vid_value = this.config_json.template;
+            console.log(`vid is ${vid_value}!!!!!!!!`);
+            const data = {vid:vid_value}
+            await  fetch("http://api.tinylink.cn/user/view/activate", {
+                credentials: 'include',
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            })
+
+            const proj_data = {projectName: null}
+            await fetch("http://api.tinylink.cn/docker/create?type=2",{
+                credentials: 'include',
+                method: 'POST',
+                body: JSON.stringify(proj_data),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })}).then(async (res)=>{
+                    const json= await res.json()
+                    try {
+                        const url = json["data"]["dockerURL"]
+                        console.log(`json data is ${JSON.stringify(json)}`!!!!!!);
+                        window.open(url,"_self")
+                    } catch (error) {
+                        console.log("create experiment failed");
+                    }
+
+                })
         }
+
         render(){
         return (
             <div>
@@ -120,7 +151,7 @@ class ApplicationDevelopment extends React.Component<Props,State> {
                         <span style={{float:"left"}}>应用模板 </span>
                         <Select defaultValue="default" style={{ width: "150px", marginLeft:"50px", backgroundColor:"#2F3033", height:"33px", border:"1px solid #4A4C51"}} onChange={this.setTemplate}>
                             <Option value="default">默认模板</Option>
-                            <Option value="light">亮灯应用</Option>
+                            <Option value="200">亮灯应用</Option>
                             <Option value="screen">显示屏应用</Option>
                         </Select>
                     </div>
