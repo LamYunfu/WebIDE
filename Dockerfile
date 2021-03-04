@@ -34,6 +34,9 @@ WORKDIR /home/theia
 COPY --chown=theia:theia ./ /home/theia
 RUN mv /home/theia/lcli /usr/bin && \
     chmod +x /usr/bin/lcli;
+RUN mv /home/theia/mpy-mod-sdk/linkkit /usr/lib/python3.6/site-packages/
+RUN mv /home/theia/mpy-mod-sdk/haascv /usr/lib/python3.6/site-packages/
+RUN mv /home/theia/mpy-mod-sdk/netmgr.py /usr/lib/python3.6/site-packages/
 EXPOSE 3000
 ENV SHELL /bin/bash
 #ENV USE_LOCAL_GIT true
