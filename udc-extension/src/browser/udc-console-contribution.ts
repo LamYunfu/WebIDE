@@ -15,8 +15,8 @@ export const InUdcReplContextKey = Symbol('inUdcReplContextKey');
 @injectable()
 export class UdcConsoleWidget extends ConsoleWidget  {//输出模块
 
-    @inject(InputViewWidget)
-    readonly inputview: InputViewWidget;
+    // @inject(InputViewWidget)
+    // readonly inputview: InputViewWidget;
 
     constructor() {
         super();
@@ -65,13 +65,13 @@ export class UdcConsoleWidget extends ConsoleWidget  {//输出模块
     }
 
     async execute(): Promise<void> {
-        const value = this.inputview.getValue();
+        // const value = this.inputview.getValue();
         if (this.session) {
             const listener = this.content.model.onNodeRefreshed(() => {
                 listener.dispose();
                 this.revealLastOutput();
             });
-            await this.session.execute(value);
+            // await this.session.execute(value);
         }
     }
 
@@ -139,7 +139,7 @@ export class UdcConsoleContribution extends AbstractViewContribution< UdcConsole
             container.get(ContextKeyService).createKey('inUdcRepl', false)
         ).inSingletonScope()
         bind(UdcConsoleWidget).toSelf()
-        bind(InputViewWidget).toSelf()
+        // bind(InputViewWidget).toSelf()
         bind(UdcConsoleSession).toSelf().inSingletonScope()
         bindViewContribution(bind, UdcConsoleContribution).onActivation((context, _) => {
             context.container.get(UdcConsoleSession)
