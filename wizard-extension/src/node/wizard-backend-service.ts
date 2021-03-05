@@ -12,6 +12,7 @@ export class WizardBackendServiceImpl implements WizardBackendService {
 
     createProject(jsonFile: string, otherConfig:string) : boolean {
         let config = JSON.parse(JSON.parse(jsonFile));
+        console.log(config);
         //let pageConfig = JSON.parse(jsonFile);
         let folderName:string = config.projects[0].projectName;
         //拼接文件夹路径

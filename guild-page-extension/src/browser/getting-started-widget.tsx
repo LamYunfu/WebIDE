@@ -18,6 +18,7 @@ import WorkSpace from "./Workspace";
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from 'inversify';
 import * as React from 'react';
+import { BackendClient, GuildBackendService, GuildBackendServiceSymbol } from '../common/protocol';
 
 @injectable()
 export class GettingStartedWidget extends ReactWidget {
@@ -30,6 +31,10 @@ export class GettingStartedWidget extends ReactWidget {
   protected home: string | undefined;
   protected readonly recentLimit = 5;
   protected recentWorkspaces: string[] = [];
+
+  //注入后端对象
+  @inject(GuildBackendServiceSymbol)
+  protected gbs:GuildBackendService;
 
   protected readonly deviceDriverUrl = 'https://gaic.alicdn.com/doc/hacklab/hqqro6.html';
   protected readonly deviceAgentUrl = 'https://gaic.alicdn.com/doc/hacklab/duaucu.html';
@@ -54,7 +59,8 @@ export class GettingStartedWidget extends ReactWidget {
   protected readonly fileSystem: FileSystem;
   // @inject(WorkspaceService)
   // protected readonly workspaceService: WorkspaceService;
-
+  
+  
   @postConstruct()
   protected async init(): Promise<void> {
     this.id = GettingStartedWidget.ID;
@@ -81,10 +87,15 @@ export class GettingStartedWidget extends ReactWidget {
           {this.renderTutorials()}
         </div>
       </div> */}
-      <WorkSpace/>
+      <WorkSpace projectCreation = {this.projectCreation.bind(this)}/>
     </div>;
   }
 
+  protected projectCreation(config_json:string):void{
+    //console.log("gbs是否存在:" + this.gbs.test().toString);
+    //console.log(this.id);
+    this.gbs.createProject(JSON.stringify(config_json));
+  }
   protected renderHeader(): React.ReactNode {
     return <div className='gs-header'>
       <h1>{this.applicationName}<span className='gs-sub-header'> Cloud Ladder for Embedded Developers</span></h1>
@@ -236,4 +247,12 @@ export class GettingStartedWidget extends ReactWidget {
   protected doOpenKeyboardShortcuts = () => this.commandRegistry.executeCommand(KeymapsCommands.OPEN_KEYMAPS.id);
   // protected open = (workspace: URI) => this.workspaceService.open(workspace);
   //protected doOpenProject = () => this.commandRegistry.executeCommand(ProjectCommands.CREATE_PROJECT.id);
+}
+
+@injectable()
+export class BackendClientImpl implements BackendClient {
+   //打开文件的工作空间
+   openWorkSpace = (urlStr: string) => {
+       
+  };
 }

@@ -400,7 +400,7 @@ export class DiyExperiment extends React.Component<
         });
     }, 3000);
     while (this.state.codingItems.length == 0){
-      await new Promise((resolve) => {
+      await new Promise<void>((resolve) => {
         setTimeout(() => {
           resolve();
         }, 300);

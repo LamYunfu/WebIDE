@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React = require("react");
-import WorkSpace from './Workspace';
+// import WorkSpace from './Workspace';
 import Setting from './Setting';
 import {Menu} from 'antd';  
 import { HashRouter as Router, Link, Route} from "react-router-dom";
@@ -56,7 +56,7 @@ class Haas extends React.Component<Props,State> {
               </Menu>          
           </div>
           <div className="main_panel">
-              <Route path="/WorkSpace" exact render={() => <WorkSpace></WorkSpace>}></Route>
+              {/* <Route path="/WorkSpace" exact render={() => <WorkSpace></WorkSpace>}></Route> */}
               <Route path="/Setting" component={Setting}></Route>
           </div> 
           </Router>  

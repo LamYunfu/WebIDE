@@ -12,10 +12,10 @@ export interface State{
 }
 
 interface Props{
-
+    projectCreation:(config_json:string) => boolean;
 }
 class Home extends React.Component<Props,State> {
-  constructor(props: {} | Readonly<{}>){
+  constructor(props: Props | Readonly<Props>){
     super(props);
     this.state={MainDisplay:"block", SystemAppDisplay:"none", ApplicationAppDisplay:"none"};
   }
@@ -52,10 +52,10 @@ class Home extends React.Component<Props,State> {
     return (
         <div>
             <div style={{display:this.state.SystemAppDisplay}}>
-                <SystemDevelopment showMain = {this.showMain.bind(this)}/>
+                <SystemDevelopment showMain = {this.showMain.bind(this)} projectCreation={this.props.projectCreation}/>
             </div>
             <div style={{display:this.state.ApplicationAppDisplay}}>
-                <ApplicationDevelopment showMain = {this.showMain.bind(this)}/>
+                <ApplicationDevelopment showMain = {this.showMain.bind(this)} projectCreation={this.props.projectCreation}/>
             </div>
             <div className="workspace" style={{display:this.state.MainDisplay}}>
             <div className="new_project">

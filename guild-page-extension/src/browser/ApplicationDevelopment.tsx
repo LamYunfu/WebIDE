@@ -14,6 +14,7 @@ export interface State{
 
 interface Props{
     showMain: ()=>void
+    projectCreation:(config_json:string) => boolean;
 }
 class ApplicationDevelopment extends React.Component<Props,State> {
     constructor(props:Props | Readonly<Props>){
@@ -73,36 +74,39 @@ class ApplicationDevelopment extends React.Component<Props,State> {
                 return;
             }
 
-            const vid_value = this.config_json.template;
-            console.log(`vid is ${vid_value}!!!!!!!!`);
-            const data = {vid:vid_value}
-            await  fetch("http://api.tinylink.cn/user/view/activate", {
-                credentials: 'include',
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: new Headers({
-                    'Content-Type': 'application/json'
-                })
-            })
+            let _this = this;
+            this.props.projectCreation(JSON.stringify(_this.config_json));
+            //创建新的同名文件夹
+            // const vid_value = this.config_json.template;
+            // console.log(`vid is ${vid_value}!!!!!!!!`);
+            // const data = {vid:vid_value}
+            // await  fetch("http://api.tinylink.cn/user/view/activate", {
+            //     credentials: 'include',
+            //     method: 'POST',
+            //     body: JSON.stringify(data),
+            //     headers: new Headers({
+            //         'Content-Type': 'application/json'
+            //     })
+            // })
 
-            const proj_data = {projectName: null}
-            await fetch("http://api.tinylink.cn/docker/create?type=2",{
-                credentials: 'include',
-                method: 'POST',
-                body: JSON.stringify(proj_data),
-                headers: new Headers({
-                    'Content-Type': 'application/json'
-                })}).then(async (res)=>{
-                    const json= await res.json()
-                    try {
-                        const url = json["data"]["dockerURL"]
-                        console.log(`json data is ${JSON.stringify(json)}`!!!!!!);
-                        window.open(url,"_self")
-                    } catch (error) {
-                        console.log("create experiment failed");
-                    }
+            // const proj_data = {projectName: null}
+            // await fetch("http://api.tinylink.cn/docker/create?type=2",{
+            //     credentials: 'include',
+            //     method: 'POST',
+            //     body: JSON.stringify(proj_data),
+            //     headers: new Headers({
+            //         'Content-Type': 'application/json'
+            //     })}).then(async (res)=>{
+            //         const json= await res.json()
+            //         try {
+            //             const url = json["data"]["dockerURL"]
+            //             console.log(`json data is ${JSON.stringify(json)}`!!!!!!);
+            //             window.open(url,"_self")
+            //         } catch (error) {
+            //             console.log("create experiment failed");
+            //         }
 
-                })
+            //     })
         }
 
         render(){

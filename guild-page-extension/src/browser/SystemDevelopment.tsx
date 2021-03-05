@@ -11,6 +11,7 @@ export interface State{
 
 interface Props{
     showMain: ()=>void
+    projectCreation:(config_json:string) => boolean;
 }
 class SystemDevelopment extends React.Component<Props,State> {
     constructor(props: Props | Readonly<Props>){
