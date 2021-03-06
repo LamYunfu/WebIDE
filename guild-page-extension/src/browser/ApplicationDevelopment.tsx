@@ -30,7 +30,7 @@ class ApplicationDevelopment extends React.Component<Props,State> {
             "template": "defalut",         //模板类型
             
         };
-        
+
         boardCheckedArr:string[] = ["white"];
         selectBoard = (num:any)=>{
             this.boardCheckedArr[num] === "white" ? (this.boardCheckedArr[num] = "#2BD37D") : (this.boardCheckedArr[num] = "white");

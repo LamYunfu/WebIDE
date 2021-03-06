@@ -18,8 +18,9 @@ import WorkSpace from "./Workspace";
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from 'inversify';
 import * as React from 'react';
-import { BackendClient, GuildBackendService, GuildBackendServiceSymbol } from '../common/protocol';
-
+import { BackendClient, WizardBackendService, WizardBackendServiceSymbol } from '../common/protocol';
+import { WorkspaceService } from "@theia/workspace/lib/browser";
+import { ApplicationShell } from '@theia/core/lib/browser';
 @injectable()
 export class GettingStartedWidget extends ReactWidget {
 
@@ -32,9 +33,6 @@ export class GettingStartedWidget extends ReactWidget {
   protected readonly recentLimit = 5;
   protected recentWorkspaces: string[] = [];
 
-  //注入后端对象
-  @inject(GuildBackendServiceSymbol)
-  protected gbs:GuildBackendService;
 
   protected readonly deviceDriverUrl = 'https://gaic.alicdn.com/doc/hacklab/hqqro6.html';
   protected readonly deviceAgentUrl = 'https://gaic.alicdn.com/doc/hacklab/duaucu.html';
@@ -59,7 +57,8 @@ export class GettingStartedWidget extends ReactWidget {
   protected readonly fileSystem: FileSystem;
   // @inject(WorkspaceService)
   // protected readonly workspaceService: WorkspaceService;
-  
+  @inject(WizardBackendServiceSymbol)
+    protected wbs:WizardBackendService;
   
   @postConstruct()
   protected async init(): Promise<void> {
@@ -92,10 +91,10 @@ export class GettingStartedWidget extends ReactWidget {
   }
 
   protected projectCreation(config_json:string):void{
-    //console.log("gbs是否存在:" + this.gbs.test().toString);
-    //console.log(this.id);
-    this.gbs.createProject(JSON.stringify(config_json));
-  }
+    //alert(config_json);
+    this.wbs.createProject(JSON.stringify(config_json));  
+}
+  
   protected renderHeader(): React.ReactNode {
     return <div className='gs-header'>
       <h1>{this.applicationName}<span className='gs-sub-header'> Cloud Ladder for Embedded Developers</span></h1>
@@ -251,8 +250,53 @@ export class GettingStartedWidget extends ReactWidget {
 
 @injectable()
 export class BackendClientImpl implements BackendClient {
+  @inject(WorkspaceService) protected readonly ws: WorkspaceService;
+  @inject(ApplicationShell) protected applicationShell: ApplicationShell;
+  @inject(CommandRegistry)  protected readonly commandRegistry: CommandRegistry;
+  openFileView = async () => {
+    let _this = this;
+    let wds = this.applicationShell.widgets;
+    if (
+      !wds.find((it) => {
+        if (it.id == "files") {
+          return true;
+        }
+      })
+    ) {
+      await _this.commandRegistry.executeCommand("fileNavigator:toggle");
+    }
+
+    _this.applicationShell.activateWidget("files");
+    // _this.applicationShell.leftPanelHandler.dockPanel.addClass("theia-maximized")
+    // _this.applicationShell.leftPanelHandler.setLayoutData({})
+    // _this.applicationShell.closeTabs("left")
+  };
+
    //打开文件的工作空间
    openWorkSpace = (urlStr: string) => {
-       
+        //urlStr = "/" + urlStr;
+        console.log(`11111111111111:url str is:${urlStr}!!!!!!!!!!!!!!`);
+        // alert(urlStr);
+        if (
+        decodeURI(window.location.href)
+            .split("/")
+            .pop() != urlStr.split("/").pop() &&
+        decodeURI(window.location.href)
+            .split("\\")
+            .pop() != urlStr.split("\\").pop()
+        ) {
+          //alert("so baby pull closer in the back seat");
+          console.log(`url str is:${urlStr}!!!!!!!!!!!!!!`);
+          // console.log("open explorer!!!!!!!!");
+          // let _this = this;
+          // setTimeout(() => {
+          //   _this.openFileView();
+          //   console.log("delay to open FileView!!!!!!");
+          // }, 5000);
+          this.ws.open(new URI(urlStr), { preserveWindow: true }); 
+        }
+        //关掉之前所有打开的文件
+        //alert("the workspace has been opened successfully!");
+        //this.applicationShell.closeTabs("main");
   };
 }
