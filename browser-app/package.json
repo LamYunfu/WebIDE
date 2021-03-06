@@ -1,5 +1,5 @@
 {
-  "private": true,
+  "private": false,
   "name": "browser-app",
   "version": "0.0.0",
   "dependencies": {
