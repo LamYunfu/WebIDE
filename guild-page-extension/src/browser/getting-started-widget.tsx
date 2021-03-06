@@ -303,7 +303,13 @@ export class BackendClientImpl implements BackendClient {
           //   _this.openFileView();
           //   console.log("delay to open FileView!!!!!!");
           // }, 5000);
-          this.ws.open(new URI(urlStr), { preserveWindow: true }); 
+          let post_str = urlStr.replace("\\","/");
+          if(post_str!=urlStr){
+            this.ws.open(new URI(`/${post_str}`), { preserveWindow: true }); 
+          }else{
+            this.ws.open(new URI(post_str), { preserveWindow: true }); 
+          }
+         
         }
         //关掉之前所有打开的文件
         //alert("the workspace has been opened successfully!");
