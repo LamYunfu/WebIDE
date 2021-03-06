@@ -49,3 +49,7 @@
 .my_project{
     margin-top: 20px;
 }
+.workspace-item{
+    color: cadetblue;
+    text-decoration: underline;
+}

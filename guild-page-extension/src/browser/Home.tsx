@@ -4,20 +4,34 @@ import { Row, Col } from 'antd';
 import {Tooltip} from 'antd';
 import SystemDevelopment from './SystemDevelopment';
 import ApplicationDevelopment from './ApplicationDevelopment';
+import { WizardBackendService } from "../common/protocol";
+import RecentWorkspace from "./RecentWorkspace";
 
 export interface State{
     MainDisplay:string;
     SystemAppDisplay:string;
     ApplicationAppDisplay:string;
+    projects:string []
+    
 }
 
 interface Props{
     projectCreation:(config_json:string) => boolean;
+    wbs:WizardBackendService
+    openWorkspace:(st:string)=>void
+    
 }
 class Home extends React.Component<Props,State> {
   constructor(props: Props | Readonly<Props>){
     super(props);
-    this.state={MainDisplay:"block", SystemAppDisplay:"none", ApplicationAppDisplay:"none"};
+    this.state={MainDisplay:"block", SystemAppDisplay:"none", ApplicationAppDisplay:"none" ,projects:[]};
+  }
+  async componentDidMount(){
+     let ps = await this.props.wbs.getProjects()
+      this.setState({
+          ...this.state,
+          projects:ps
+      })
   }
  
   showSystemDevelop = ()=>{
@@ -85,16 +99,20 @@ class Home extends React.Component<Props,State> {
                     </Col>
                 </Row>
             </div>
-            <div className="my_project">
-                <span style={{fontSize:"15px"}}>我的工作空间</span>
+            <div  className="my_project">
+                <span  style={{fontSize:"15px"}}>我的工作空间</span>              
             </div>
             <hr style={{backgroundColor:"#2D2D2D",border:"0px",height:"1px"}}/>
+            <RecentWorkspace openWorkspace ={this.props.openWorkspace} ps={this.state.projects}></RecentWorkspace>
         </div>
         </div>
         
       );
+      
     }
-    
+    renderRecentWorkspace(){
+        return 
+    }
   }
   
   export default Home;

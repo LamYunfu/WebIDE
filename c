@@ -24,7 +24,6 @@ cd ../demo
 yarn build 
 cd ../browser-app
 yarn prepare
-yarn theia build --development
 rm browser-app/lib/e817279537a0417d042f62fbb1b99eea.gif
 export THEIA_DEFAULT_PLUGINS=local-dir:../plugins/node
 #export THEIA_DEFAULT_PLUGINS=local-dir:../plugins/unity

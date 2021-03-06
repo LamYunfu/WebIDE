@@ -3,6 +3,7 @@ import { BackendClient, WizardBackendService} from "../common/protocol";
 import * as path from "path";
 import * as fs from "fs-extra";
 import {ROOTPATH} from "udc-extension/lib/setting/backend-config";
+import { OS } from "@theia/core";
 //import URI from "@theia/core/lib/common/uri";
 
 @injectable()
@@ -40,6 +41,7 @@ export class WizardBackendServiceImpl implements WizardBackendService {
 
         return true;
     }
+    
 
     dispose(): void {
         // do nothing
@@ -47,7 +49,19 @@ export class WizardBackendServiceImpl implements WizardBackendService {
     setClient(client: BackendClient): void {
         this.client = client;
     }
-
+    getProjects(){
+        console.log("-----------------------get projects")
+        let _path = OS.type()==OS.Type.Windows?"d://all":OS.type()==OS.Type.Linux?"/home/project":"/home/project"
+        let projects =fs.readdirSync(_path)
+        let bv = [] 
+        for(let item of projects){
+           if(fs.statSync(path.join(_path,item)).isDirectory()){
+               bv.push(item)
+           }
+        }
+        console.log(JSON.stringify(bv))
+        return bv;
+    }
     
 }
 

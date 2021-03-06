@@ -8,6 +8,7 @@ export const WizardBackendServiceSymbol = Symbol('WizardBackendServiceSymbol');
 // 类型声明
 export interface WizardBackendService extends JsonRpcServer<BackendClient>{
     createProject(jsonFile: string) : boolean
+    getProjects():string []
 }
 export const BackendClient = Symbol('BackendClient');
 export interface BackendClient {

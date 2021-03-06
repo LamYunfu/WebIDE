@@ -6,7 +6,7 @@ import { CommonCommands } from '@theia/core/lib/browser';
 import { FrontendApplicationConfigProvider } from '@theia/core/lib/browser/frontend-application-config-provider';
 import { ReactWidget } from '@theia/core/lib/browser/widgets/react-widget';
 // import { CommandRegistry, environment, isOSX } from '@theia/core/lib/common';
-import { CommandRegistry } from '@theia/core/lib/common';
+import { CommandRegistry, OS } from '@theia/core/lib/common';
 import { ApplicationInfo, ApplicationServer } from '@theia/core/lib/common/application-protocol';
 import { FileStat, FileSystem } from '@theia/filesystem/lib/common/filesystem';
 // import { FileSystemUtils } from '@theia/filesystem/lib/common/filesystem-utils';
@@ -51,6 +51,7 @@ export class GettingStartedWidget extends ReactWidget {
 
   @inject(ApplicationServer)
   protected readonly appServer: ApplicationServer;
+  @inject(WorkspaceService) readonly ws:WorkspaceService
   @inject(CommandRegistry)
   protected readonly commandRegistry: CommandRegistry;
   @inject(FileSystem)
@@ -75,7 +76,7 @@ export class GettingStartedWidget extends ReactWidget {
   }
 
   protected render(): React.ReactNode {
-    return <div className='gs-container'>
+    return <div  id ="workspace-anchor" className='gs-container'>
       {/* {this.renderHeader()}
       <hr className='gs-hr' />
       <div className='flex-grid'>
@@ -86,10 +87,19 @@ export class GettingStartedWidget extends ReactWidget {
           {this.renderTutorials()}
         </div>
       </div> */}
-      <WorkSpace projectCreation = {this.projectCreation.bind(this)}/>
+      <WorkSpace  openWorkspace ={this.openWorkspace} wbs={this.wbs} projectCreation = {this.projectCreation.bind(this)}/>
     </div>;
   }
-
+ openWorkspace=(st :string)=>{
+  let base =decodeURI(window.location.href)
+  base =base.split("#")[0]
+  if(OS.type()==OS.Type.Windows){
+    this.ws.open(new URI(`/d:all/${st}`),{preserveWindow:true}) 
+   }else{
+     this.ws.open(new URI(`/home/project/${st}`),{preserveWindow:true}) 
+   }
+   
+ }
   protected projectCreation(config_json:string):void{
     //alert(config_json);
     this.wbs.createProject(JSON.stringify(config_json));  
