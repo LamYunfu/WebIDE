@@ -383,8 +383,8 @@ export class UdcExtensionCommandContribution
     //把后端返回的信息打印到ldc shell里面
     this.udcWatcher.onDeviceLog((data: string) => {
       // console.log("data is :" + data + "............................")
-      let drawboardwidget = this.drawboardFactory.widget;
-      drawboardwidget.showNumber();
+      //let drawboardwidget = this.drawboardFactory.widget;
+      //drawboardwidget.showNumber();
       let array = data.split(":");
       let log = array
         .slice(2)
