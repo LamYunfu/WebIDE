@@ -9,7 +9,7 @@ import { ProxyObject } from '../common/drawboardproxy';
 export class DrawboardViewService implements WidgetFactory {
 
     id = 'drawboard-view';
-    protected widget?: DrawboardViewWidget;
+    widget?: DrawboardViewWidget;
     protected readonly onDidChangeDrawboardEmitter = new Emitter<DrawboardSymbolInformationNode[]>();
     protected readonly onDidChangeOpenStateEmitter = new Emitter<boolean>();
     protected readonly onDidSelectEmitter = new Emitter<DrawboardSymbolInformationNode>();

@@ -25,12 +25,13 @@ export class FileOpener {
       pt = this.getFilePath(rootPath, pt);
     }
 
-    if (OS.type() == OS.Type.Linux) +
+    if (OS.type() == OS.Type.Linux || OS.type() == OS.Type.OSX)
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
         passwd: pt,
       });
     else {
+      console.log("openFile file is " + `/` + pt)
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
         passwd: `/` + pt,

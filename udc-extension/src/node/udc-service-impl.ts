@@ -28,6 +28,7 @@ import { ConsoleLogger } from '@theia/core/lib/common/logger-protocol';
 import { TaoFactoryController } from './problem_controller/taoFactoryController/tao_factory_controller';
 import { CallInfoStorer } from './services/log/call_info_storer';
 import { BehaviorRecorder } from './services/behavior_recorder/behavior_recorder';
+import { MultiProjectData } from './data_center/multi_project_data';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -55,6 +56,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(UserInfo) protected userInfo:UserInfo,
     @inject(DisplayBoardBackEnd) protected  dbb :DisplayBoardBackEnd,
     @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder,
+    @inject(ProjectData) protected pData: ProjectData,
+    @inject(MultiProjectData) protected mpData: MultiProjectData,
     @inject(Kubedge) readonly kubedge:Kubedge
   ) { }
   setExperimentName(name: string){
@@ -142,6 +145,17 @@ export class UdcServiceImpl implements UdcService {
       let result = this.command.runcommand(cmdstr);
       resolve(result);
     });
+  }
+
+  async getprojectDir():Promise<string> {
+    let root = this.mpData.rootDir;
+    let rootDir = this.pData.projectRootDir;
+    let project = this.pData.subProjectArray[0]
+    return(root + "/" + rootDir + "/" + project)
+  }
+
+  async getProjectName(): Promise<string> {
+    return this.pData.projectRootDir
   }
 
   control(devstr: string, operation: string): Promise<Boolean> {

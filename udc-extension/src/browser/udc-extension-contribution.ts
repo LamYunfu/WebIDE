@@ -52,6 +52,8 @@ import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-ch
 import {NewWidgetFactory} from "new_widget/lib/browser/new-widget-factory";
 import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory";
 import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory"
+import {DrawboardViewService} from "drawboard-extension/lib/browser/drawboard-view-service"
+
 export const UdcExtensionCommand = {
   id: "UdcExtension.command",
   label: "test node server",
@@ -304,12 +306,16 @@ export class UdcExtensionCommandContribution
     @inject(NewWidgetFactory) readonly nf: NewWidgetFactory,
     @inject(Esp32WidgetFactory) readonly esp32WidgetFactory: Esp32WidgetFactory,
     @inject(HaaS100WidgetFactory) readonly hass100WidgetFactory: HaaS100WidgetFactory,
+    @inject(DrawboardViewService) readonly drawboardFactory: DrawboardViewService,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
     @inject(UI_Setting) readonly ui_Setting:UI_Setting
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
         let tmp = data;
+        let drawboardwidget = this.drawboardFactory.widget;
+        // drawboardwidget.showNumber();
+        // drawboardwidget.showImage();
         if (data.name == "openSrcFile") {
           console.log(data.passwd);
           // this.commandRegistry.executeCommand(UdcCommands.OpenCommand.id,`file://`+data.passwd)
@@ -377,6 +383,8 @@ export class UdcExtensionCommandContribution
     //把后端返回的信息打印到ldc shell里面
     this.udcWatcher.onDeviceLog((data: string) => {
       // console.log("data is :" + data + "............................")
+      let drawboardwidget = this.drawboardFactory.widget;
+      drawboardwidget.showNumber();
       let array = data.split(":");
       let log = array
         .slice(2)

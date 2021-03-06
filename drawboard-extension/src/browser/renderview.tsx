@@ -10,6 +10,8 @@ export namespace View {
         pushData:(data:any)=>Promise<boolean>
         connect:(authen:any)=>Promise<boolean>
         disconnect:()=>Promise<boolean>
+        uploadFile:(uri:string, file: File)=>void
+        getProjectName:()=>Promise<string>
     }
 }
 export class View extends React.Component<View.Props>{
@@ -48,8 +50,11 @@ export class View extends React.Component<View.Props>{
             this.boardType = "practice"
         else if (this.title == "实时拍照人脸识别应用")
             this.boardType = "application"
-        // else if (this.title == "实时拍照人脸识别应用")
+        else if (this.title == "Python: LED")
+            this.boardType = "digit"
     }
+
+
     recv = (e: any) => {
         if (e.data.origin == "voiceRecognize") {
             let result: string = e.data.result
@@ -102,6 +107,27 @@ export class View extends React.Component<View.Props>{
     }
   async  componentDidMount() {
         // alert( await  this.props.getData())
+        $('#predictbutton').click(() => {
+
+            console.log("11111111111")
+            var canvas  = document.getElementById("sketchpad") as HTMLCanvasElement;
+            // var canvas = $('#sketchpad')[0]
+            var dataurl = canvas.toDataURL('image/png');
+            let arr = dataurl.split(',')
+            let mime = "image/png"
+            let bstr = atob(arr[1])
+            let n = bstr.length
+            let u8arr = new Uint8Array(n)
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n)
+            }
+            let file = new File([u8arr], "test.png", {type: mime})
+            console.log("before uploadfiles")
+            this.props.uploadFile("/Users/dongwei/project", file);
+
+ 
+            
+        })
         this.connect()
         window.addEventListener('message', this.recv)
         const script = document.createElement("script", {
@@ -122,16 +148,16 @@ export class View extends React.Component<View.Props>{
         // We set it to -1 at the start to indicate that we don't have a good value for it yet
         var lastX, lastY = -1;
         console.log("script is running")
-        pb = document.getElementById("predictbutton")
         cb = document.getElementById("clearbutton")        
-        pb.addEventListener("click", predict)
         cb.addEventListener("click", wrap = function () {
             document.getElementById("errorMesg").innerHTML = ""
             document.getElementsByClassName("res")[0].innerHTML = ""
             document.getElementById("submitIndicator").style.display="none"
             clearCanvas(canvas, ctx)
         })
+        console.log("script is running before init")
         init()
+        console.log("script is running after init")
 
         // Draws a line between the specified position on the supplied canvas name
         // Parameters are: A canvas context, the x position, the y position, the size of the dot
@@ -178,7 +204,8 @@ export class View extends React.Component<View.Props>{
         function clearCanvas(canvas, ctx) {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        function predict() { 
+        function predict() {
+            console.log("2222222222")
             document.getElementById("predictbutton").disabled=true
             document.getElementById("submitIndicator").style.display="flex"
             document.getElementsByClassName("res")[0].innerHTML = ""
@@ -321,6 +348,8 @@ export class View extends React.Component<View.Props>{
                 ctx = canvas.getContext('2d');
             ctx.fillStyle = "black"
             ctx.fillRect(0, 0, canvas.width, canvas.height)
+            console.log("canvas is "+ canvas)
+            console.log("ctx is " + ctx)
             // Check that we have a valid context to draw on/with before adding event handlers
             if (ctx) {
                 // React to mouse events on the canvas, and mouseup on the entire document
@@ -350,9 +379,7 @@ export class View extends React.Component<View.Props>{
           function ini() {
               init()
               console.log("script is running")
-              pb = document.getElementById("predictbutton")
               cb = document.getElementById("clearbutton")
-              // pb.addEventListener("click", predict)
               cb.addEventListener("click", wrap = function () {
                   console.log("clean")
                   document.getElementsByClassName("res")[0].innerHTML = ""
@@ -360,9 +387,6 @@ export class View extends React.Component<View.Props>{
                   document.getElementById("errorMesg").innerHTML = ""
                   clearCanvas(canvas, ctx)
               })
-              pb.addEventListener("click", wrap = function () {
-                predict()
-            })
           }
           
           function clearCanvas(canvas, ctx) {
@@ -525,7 +549,8 @@ export class View extends React.Component<View.Props>{
         //         iframe.style={{}}
         //         $("#codingInfoArea").html(iframe)
     }
-    render(): JSX.Element {
+     render(): JSX.Element {
+         console.log("render this.boardType is " + this.boardType)
         return (
             this.boardType == "digit" ?
                 < div id="mnistapp" style={{ width: '100%', height: "100%" }}>
@@ -536,7 +561,7 @@ export class View extends React.Component<View.Props>{
                     </div>
                     <div className="leftside" style={{ position: "relative", width: '100%', height: "55%", display: "flex", justifyContent: "center", paddingTop: "20px" }}>
                         <div style={{ position: "relative" }}>
-                            <canvas id="sketchpad" height="400px" width="400px" style={{
+                            <canvas ref="canvas" id="sketchpad" height="400px" width="400px" style={{
                                 borderRadius: "20px",
                                 position: "relative"
                                 ,

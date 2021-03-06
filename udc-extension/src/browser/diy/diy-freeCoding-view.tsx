@@ -89,6 +89,7 @@ export class DiyFreeCoding extends React.Component<DiyFreeCoding.Props, DiyFreeC
 
     }
     async componentDidMount() {
+        this.props.openShell()
         this.context.props.openExplorer()
         this.context.props.openSrcFile(this.props.section["ppid"][0])
         let _this = this
@@ -141,6 +142,8 @@ export class DiyFreeCoding extends React.Component<DiyFreeCoding.Props, DiyFreeC
                                 <div style={{ marginLeft: '0px', fontSize: "30px" }} >
                                     这是一个关于{this.props.title}的项目
                                 </div>
+                                <span id={"coding_title"}>{this.props.title}</span>
+
             
                                 {/* <img src="http://5b0988e595225.cdn.sohucs.com/images/20180721/0f6e106b88544c0b8b91fbf7d196898d.jpeg"
                                     style={{ "position": "absolute", "width": "200px", height: "200px", top: '0px', right: '0px', paddingLeft: "10px" }}></img> */}

@@ -31,6 +31,8 @@ export interface UdcService {
   outputResult(res: string, types?: string): void;
   storeState(stat: string): void;
   getState(type: string): Promise<string>;
+  getprojectDir():Promise<string>;
+  getProjectName():Promise<string>;
   setQueue(): void;
   setPidInfos(
     pid: string,

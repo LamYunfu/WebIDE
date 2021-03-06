@@ -32,6 +32,7 @@ import ReactDOM from "react-dom";
 import { DisplayBoard } from "./component/display-board";
 import { TestWidget } from "./test";
 import { UI_Setting } from "./isEnable";
+import { Upload } from "antd";
 // import { LinkEdgeView } from "./component/linkedge";
 export interface DeviceViewSymbolInformationNode
   extends CompositeTreeNode,
@@ -444,9 +445,14 @@ export class DeviceViewWidget extends TreeWidget {
   ) => {
     this.udcService.storeCallInfo(time, info, api, serverity);
   };
-  openDrawBoard = () => {
+   openDrawBoard = () => {
     this.commandRegistry.executeCommand("drawboardView:toggle");
-  };
+   
+   }
+
+   uploadFiles(uri: string, file :File) {
+   }
+
 
   //登录类型：排队/独立，  设备类型：板子类型， pid：实验的pid， timeout: 超时时间
   connect = async (
