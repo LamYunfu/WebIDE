@@ -3,6 +3,10 @@ import React = require("react");
 // import { Link } from "react-router-dom";
 import { Row, Col, Button, Select} from 'antd';
 // import { Link } from "react-router-dom";
+import {
+    VIEW_DETAIL_URL
+  } from "udc-extension/lib/setting/front-end-config";
+
 const { Option } = Select;
 
 export interface State{
@@ -74,39 +78,61 @@ class ApplicationDevelopment extends React.Component<Props,State> {
                 return;
             }
 
+            //创建新的同名文件夹
+            const vid_value = this.config_json.template;
+            console.log(`vid is ${vid_value}!!!!!!!!`);
+            const data = {vid:vid_value}
+            await  fetch("http://api.tinylink.cn/user/view/activate", {
+                credentials: 'include',
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            })
+
+            // $.ajax({
+            //     headers: {
+            //     accept: "application/json",
+            //     },
+            //     //crossDomain: true,
+            //     xhrFields: {
+            //     withCredentials: true,
+            //     },
+            //     method: "GET",
+            //     url: VIEW_DETAIL_URL, //请求用户信息，用于记录日志和统计用户信息
+            //     // processData: false,
+            //     dataType: "json",
+            //     contentType: "text/plain",
+            //     data: "", // serializes the form's elements.
+            //     success: function(data) {
+            //     console.log("success!!!!!!!!!!!!!!!!!!!!!!");
+            //     console.log(`current project name is:${data.data.title}!!!!!!!!!!!!!!`);
+            //     this.config_json.project_name =data.data.title;
+            //     },
+            //     error: function(e){
+            //     alert(arguments[1]);
+            //     console.log("return error !!!!!!!!!!!!!!!!!");
+            // }
+            // });
+
+            await fetch(VIEW_DETAIL_URL,{
+                credentials: 'include',
+                method: 'GET',
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })}).then(async (res)=>{
+                    const json= await res.json()
+                    try {
+                    console.log(`current project name is:${json.data.title}!!!!!!!!!!!!!!`);
+                    this.config_json.project_name =json.data.title;
+                    } catch (error) {
+                        console.log("create experiment failed");
+                    }
+                });
+    
             let _this = this;
             this.props.projectCreation(JSON.stringify(_this.config_json));
-            //创建新的同名文件夹
-            // const vid_value = this.config_json.template;
-            // console.log(`vid is ${vid_value}!!!!!!!!`);
-            // const data = {vid:vid_value}
-            // await  fetch("http://api.tinylink.cn/user/view/activate", {
-            //     credentials: 'include',
-            //     method: 'POST',
-            //     body: JSON.stringify(data),
-            //     headers: new Headers({
-            //         'Content-Type': 'application/json'
-            //     })
-            // })
-
-            // const proj_data = {projectName: null}
-            // await fetch("http://api.tinylink.cn/docker/create?type=2",{
-            //     credentials: 'include',
-            //     method: 'POST',
-            //     body: JSON.stringify(proj_data),
-            //     headers: new Headers({
-            //         'Content-Type': 'application/json'
-            //     })}).then(async (res)=>{
-            //         const json= await res.json()
-            //         try {
-            //             const url = json["data"]["dockerURL"]
-            //             console.log(`json data is ${JSON.stringify(json)}`!!!!!!);
-            //             window.open(url,"_self")
-            //         } catch (error) {
-            //             console.log("create experiment failed");
-            //         }
-
-            //     })
         }
 
         render(){
@@ -155,7 +181,8 @@ class ApplicationDevelopment extends React.Component<Props,State> {
                         <span style={{float:"left"}}>应用模板 </span>
                         <Select defaultValue="default" style={{ width: "150px", marginLeft:"50px", backgroundColor:"#2F3033", height:"33px", border:"1px solid #4A4C51"}} onChange={this.setTemplate}>
                             <Option value="default">默认模板</Option>
-                            <Option value="200">亮灯应用</Option>
+                            <Option value="200">亮灯交互</Option>
+                            <Option value="201">LinkKit实验</Option>
                             <Option value="screen">显示屏应用</Option>
                         </Select>
                     </div>
