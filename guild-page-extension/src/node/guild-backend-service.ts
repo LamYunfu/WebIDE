@@ -1,7 +1,7 @@
 import {  injectable} from "inversify";
 import { BackendClient, WizardBackendService} from "../common/protocol";
 import * as path from "path";
-//import * as fs from "fs-extra";
+import * as fs from "fs-extra";
 import {ROOTPATH} from "udc-extension/lib/setting/backend-config";
 //import URI from "@theia/core/lib/common/uri";
 
@@ -21,7 +21,7 @@ export class WizardBackendServiceImpl implements WizardBackendService {
         //let uri = `${rootPath}/${folderName}`
         console.log("路径是：" + uri);
         //创建文件夹
-        // fs.existsSync(uri) ? "" : fs.mkdirSync(uri);
+         fs.existsSync(uri) ? "" : fs.mkdirSync(uri);
         // console.log("111111111");
         // //新建配置文件config.json
         // let configJsonUri = path.join(uri, "config.json");
