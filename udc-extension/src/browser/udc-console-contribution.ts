@@ -5,7 +5,7 @@ import { injectable, inject, postConstruct, interfaces, Container } from 'invers
 import { ConsoleWidget, ConsoleOptions } from '@theia/console/lib/browser/console-widget';
 import { ContextKey, ContextKeyService } from '@theia/core/lib/browser/context-key-service';
 import { UdcConsoleSession } from './udc-console-session';
-import {InputViewWidget} from './inputWidget';
+//import {InputViewWidget} from './inputWidget';
 import { MenuModelRegistry } from '@theia/core';
 import { MonacoEditor } from '@theia/monaco/lib/browser/monaco-editor';
 export type InUdcReplContextKey = ContextKey<boolean>;
