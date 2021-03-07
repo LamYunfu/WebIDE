@@ -3,6 +3,7 @@ import React = require("react");
 // import { Link } from "react-router-dom";
 import { Row, Col, Button, Select} from 'antd';
 // import { Link } from "react-router-dom";
+import {Tooltip} from 'antd';
 import {
     VIEW_DETAIL_URL
   } from "udc-extension/lib/setting/front-end-config";
@@ -179,12 +180,13 @@ class ApplicationDevelopment extends React.Component<Props,State> {
                     </div>
                     <div style={{marginTop:"25px"}}>
                         <span style={{float:"left"}}>应用模板 </span>
+                        <Tooltip title="不同的模版项目只能有一个">
                         <Select defaultValue="default" style={{ width: "150px", marginLeft:"50px", backgroundColor:"#2F3033", height:"33px", border:"1px solid #4A4C51"}} onChange={this.setTemplate}>
                             <Option value="default">默认模板</Option>
                             <Option value="200">亮灯交互</Option>
                             <Option value="201">LinkKit实验</Option>
-                            <Option value="screen">显示屏应用</Option>
                         </Select>
+                        </Tooltip>
                     </div>
                     <div style={{marginTop:"15px", marginLeft:"110px"}}>
                         <Button type="primary" className="create_button" onClick={this.submit}>创建</Button>

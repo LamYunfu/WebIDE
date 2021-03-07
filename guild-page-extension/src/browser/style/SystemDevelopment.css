@@ -47,3 +47,15 @@
 option{
     height: 33px;
 }
+
+.ant-select {
+    color:white !important;
+}
+
+.ant-select-selection{
+    background-color:#2F3033 !important;
+}
+
+.ant-select-selection--single {
+    background-color:#2F3033 !important;
+}
