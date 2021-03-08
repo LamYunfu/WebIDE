@@ -93,11 +93,7 @@ export class GettingStartedWidget extends ReactWidget {
  openWorkspace=(st :string)=>{
   let base =decodeURI(window.location.href)
   base =base.split("#")[0]
-  if(OS.type()==OS.Type.Windows){
-    this.ws.open(new URI(`/d:all/${st}`),{preserveWindow:true}) 
-   }else{
      this.ws.open(new URI(`/home/project/${st}`),{preserveWindow:true}) 
-   }
    
  }
   protected projectCreation(config_json:string):void{
