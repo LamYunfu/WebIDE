@@ -1031,5 +1031,62 @@ export class UdcExtensionHighlightContribution
       },
     });
     registry.mapLanguageIdToTextmateGrammar(this.pyId, "source.python");
+        monaco.languages.register({
+	      id: "myjs",
+	            extensions: [
+		            ".js",       
+			          ],
+				        aliases: ["JavaScript", "js"]
+					    });
+					        // monaco.languages.setLanguageConfiguration(this.pyId, this.config);
+						    const jsplatformGrammar = require("../../data/MagicJS.tmLanguage.json");
+						        registry.registerTextmateGrammarScope("source.js", {
+							      async getGrammarDefinition(): Promise<GrammarDefinition> {
+								              return {
+									                format: "json",
+											          content: jsplatformGrammar,
+												          };
+													        },
+														    });
+
+														        registry.mapLanguageIdToTextmateGrammar("myjs", "source.js");
+															    
+															    monaco.languages.register({
+															          id: "html",
+																        extensions: [
+																	        ".html",       
+																		      ],
+																		            aliases: ["html"]
+																			        });
+																				    // monaco.languages.setLanguageConfiguration(this.pyId, this.config);
+																				        const htmlplatformGrammar = require("../../data/html.tmLanguage.json");
+																					    registry.registerTextmateGrammarScope("text.html.basic", {
+																					          async getGrammarDefinition(): Promise<GrammarDefinition> {
+																							          return {
+																								            format: "json",
+																									              content: htmlplatformGrammar,
+																										              };
+																											            },
+																												        });
+
+																													    registry.mapLanguageIdToTextmateGrammar("html", "text.html.basic");
+																													        monaco.languages.register({
+																														      id: "json",
+																														            extensions: [
+																															            ".json",       
+																																          ],
+																																	        aliases: ["json"]
+																																		    });
+																																		        // monaco.languages.setLanguageConfiguration(this.pyId, this.config);
+																																			    const jsonplatformGrammar = require("../../data/json.tmLanguage.json");
+																																			        registry.registerTextmateGrammarScope("source.json", {
+																																				      async getGrammarDefinition(): Promise<GrammarDefinition> {
+																																					              return {
+																																						                format: "json",
+																																								          content: jsonplatformGrammar,
+																																									          };
+																																										        },
+																																											    });
+																																											        registry.mapLanguageIdToTextmateGrammar("json", "source.json");
   }
 }

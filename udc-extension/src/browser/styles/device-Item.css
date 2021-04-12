@@ -46,8 +46,12 @@ pre {
 }
 
 h4 {
-    text-align: center;
+     text-align: center;
+     color:white !important;
 }
+h1{
+    color: white !important;
+   }
 
 .expander:hover {
     cursor: pointer;

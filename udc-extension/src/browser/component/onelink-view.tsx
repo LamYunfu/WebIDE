@@ -129,13 +129,13 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
                     {/* <Input label="*appName:" hint="please input appName" copy={true} onChange={this.changeAppName}></Input>
                     <button className="btn btn-primary" onClick={this.createProject}>创建</button> */}
                     <div className="row" >
-                        <div className="col-6">设备端联合开发:</div><a  className="col-2" style={{ color: 'green', cursor: "pointer",textDecoration:"underline" }}>教程</a><button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }}  onClick={this.props.openFileView}>开发</button> <button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }} onClick={this.submit}> 编译</button>
+                        <div className="col-6">设备端联合开发:</div><a target="_blank" href ="http://120.55.102.225:12359/onelink.pdf" className="col-2" style={{ color: 'green', cursor: "pointer",textDecoration:"underline" }}>教程</a><button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }}  onClick={this.props.openFileView}>开发</button> <button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }} onClick={this.submit}> 编译</button>
                     </div>
                     <div className ="row">
                       <br style={ { borderBottom:"1px solid black"}}/>
                     </div>
                     <div className="row" >                    
-                        <div className="col-6">移动端联合开发:</div><a className="col-2" style={{ color: 'green', cursor: "pointer" ,textDecoration:"underline" }}>教程</a><button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }} onClick={this.openMobile}>开发</button> <button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }} onClick={this.complileMobile}> 编译</button>
+                        <div className="col-6">移动端联合开发:</div><a target="_blank" href="http://120.55.102.225:12359/onelink.pdf"className="col-2" style={{ color: 'green', cursor: "pointer" ,textDecoration:"underline" }}>教程</a><button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }} onClick={this.openMobile}>开发</button> <button className="btn btn-dark col-2" style={{ color: 'green', cursor: "pointer" }} onClick={this.complileMobile}> 编译</button>
                     </div>
                  
                 </div>
