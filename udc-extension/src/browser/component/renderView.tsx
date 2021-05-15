@@ -25,10 +25,13 @@ import { DiyMainView } from "../diy/diy-main-view";
 import { UI_Setting } from "../isEnable";
 import { UdcService } from "../../common/udc-service";
 import {GettingStart} from "./getting-started";
+import { CommandRegistry } from "@theia/core";
+import { AIBox } from "./ai-box";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
   export interface Props {
+    cr:CommandRegistry
     udc:UdcService
     storeCallInfo: (
       time: string,
@@ -151,6 +154,7 @@ export namespace View {
     openGettingStartPage: ()=>void;
   }
   export interface State {
+ 
     ajaxNotFinish: boolean;
     optionDescription: string;
     optionChoicesDecription: JSX.Element[];
@@ -1783,7 +1787,61 @@ export class View extends React.Component<View.Props, View.State> {
           </div>
         </div>
       </MyContext.Provider>
-    ) : (this.props.ui_setting.setFreeCoding(),this.state.viewType ) == "5" ? (
+    ) :
+     (this.props.ui_setting.setFreeCoding(),this.state.viewType ) == "17" ? (
+      //自由编程
+      <MyContext.Provider
+        value={{
+          showTheDefaultFreeCodingView: async () => {
+            await this.props.openShell();
+            await this.props.openFileView();
+          },
+          setClickTime: () => {
+            _this.clickTime = new Date().getTime();
+          },
+          setOptionDescription: (a: string) => {
+            _this.setOptionDescription(a);
+          },
+          setOptionChoicesDescription: (a: JSX.Element[]) => {
+            _this.setOptionChoicesDescription(a);
+          },
+          setState: (tmp: object) => {
+            _this.setState({
+              ...tmp,
+            });
+          },
+          getState: (key: string) => {
+            let tmp: any = this.state;
+            return tmp[key];
+          },
+          props: _this.props,
+        }}
+      >
+        {/* <div><h4> {_this.title}<span id='timer' style={{"float":'right'}}></span></h4></div> */}
+        <AIBox
+          initPid={this.props.initPid}
+          cr={this.props.cr}
+          title={this.title}
+          programSingleFile={_this.props.programSingleFile}
+          config={_this.props.config}
+          openShell={_this.props.openShell}
+          initPidQueueInfo={_this.props.initPidQueueInfo}
+          closeTabs={_this.props.closeTabs}
+          setQueue={_this.props.setQueue}
+          section={{ ppid: [_this.ppid], sid: "experiment" }}
+          outputResult={_this.props.outputResult}
+          say={_this.props.say}
+          setCookie={_this.props.setCookie}
+          disconnect={_this.props.disconnect}
+          connect={_this.props.connect}
+          callUpdate={_this.props.callUpdate}
+          postSrcFile={_this.props.postSrcFile}
+        />
+      </MyContext.Provider>
+    ) :
+    
+    
+    (this.props.ui_setting.setFreeCoding(),this.state.viewType ) == "5" ? (
       //自由编程
       <MyContext.Provider
         value={{
@@ -2002,7 +2060,7 @@ export class View extends React.Component<View.Props, View.State> {
           say={_this.props.say}
         />
       </MyContext.Provider>
-    )): this.state.viewType  == "10" ? (
+    )): ((this.props.ui_setting.setFreeCoding(),this.state.viewType)  == "10" ? (
       <MyContext.Provider
       value={{
 
@@ -2032,6 +2090,8 @@ export class View extends React.Component<View.Props, View.State> {
       }}
     >
       <DiyMainView
+        initPid={this.props.initPid}
+        cr={this.props.cr}
         ui_setting={this.props.ui_setting}
         title={this.title}
         programSingleFile={_this.props.programSingleFile}
@@ -2057,6 +2117,6 @@ export class View extends React.Component<View.Props, View.State> {
     ) :
      (
       <div></div>
-    );
+    ));
   }
 }

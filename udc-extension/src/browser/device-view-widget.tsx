@@ -116,6 +116,7 @@ export class DeviceViewWidget extends TreeWidget {
     return (
       <div style={{ height: "100%" }}>
         <View
+          cr ={this.commandRegistry}
           udc={this.udcService}
           ui_setting={this.ui_setting}
           storeCallInfo={this.storeCallInfo}

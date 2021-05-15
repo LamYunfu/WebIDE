@@ -8,8 +8,12 @@ import { CONFIG_JSON_URL } from "../../setting/front-end-config";
 import * as $ from "jquery";
 import { DiyAIView } from "./diy-ai-view";
 import { UI_Setting } from "../isEnable";
+import { AIBox } from "./ai-box";
+import { CommandRegistry } from "@theia/core";
 export namespace diyMainView {
     export interface Props {
+      initPid:(pid:string)=>void
+      cr:CommandRegistry
       ui_setting:UI_Setting
       title: string
       section: { [key: string]: any } 
@@ -98,6 +102,15 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
       })
       
       switch(jsonConfig['layout']){
+        case "ai_box":
+          _this.viewType = 5;
+         this.props.ui_setting.setFreeCoding()
+         this.setState(state =>({
+           ldc: jsonConfigData.ldc,
+           localBurn: jsonConfigData.localBurn,
+           viewType:5
+         }));
+       break;   
           case "free_coding":
               //自由 编程实验 
               _this.viewType = 1;
@@ -133,9 +146,11 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
               _this.viewType = 4;
               this.setState({
                 discription: jsonConfigData.discription,
-                buttons: jsonConfigData.buttons
+                buttons: jsonConfigData.buttons,
+               
               })
               break;   
+         
           default:
             this.setState(state =>({
               viewType : 100
@@ -213,7 +228,27 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
                 outputResult={_this.props.outputResult}
                 say={_this.props.say}
               />
-          ): (<div> </div>);
+          ): _this.state.viewType == 5? (  
+            <div> 
+            <AIBox
+            initPid={_this.props.initPid}
+            cr={_this.props.cr}
+            title={_this.state.title}
+            programSingleFile={_this.props.programSingleFile}
+            config={_this.props.config}
+            openShell={_this.props.openShell}
+            initPidQueueInfo={_this.props.initPidQueueInfo}
+            closeTabs={_this.props.closeTabs}
+            setQueue={_this.props.setQueue}
+            section={{ ppid: [_this.ppid], sid: "experiment" }}
+            outputResult={_this.props.outputResult}
+            say={_this.props.say}
+            setCookie={_this.props.setCookie}
+            disconnect={_this.props.disconnect}
+            connect={_this.props.connect}
+            callUpdate={_this.props.callUpdate}
+            postSrcFile={_this.props.postSrcFile}
+          /></div>): (<div> </div>);
     }
 }
 

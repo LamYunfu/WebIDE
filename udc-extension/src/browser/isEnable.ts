@@ -14,6 +14,7 @@ export class UI_Setting{
     localBurnStatus:boolean=false   
 
     setExperiment(){
+        console.log("set experiment")
         this.remoteBurnStatus=false
         this.remoteCompileStatus=false
         this.ldcShellStatus=false
@@ -26,6 +27,7 @@ export class UI_Setting{
         this.localBurnStatus=false   
     }
     setFreeCoding(){
+        console.log("set Freecoding")
         this.remoteBurnStatus=true
         this.remoteCompileStatus=true
         this.ldcShellStatus=true
@@ -38,6 +40,7 @@ export class UI_Setting{
         this.localBurnStatus=true
     }
     setLinkedge(){
+        console.log("set linkedge ui")
         this.remoteBurnStatus=false
         this.remoteCompileStatus=false
         this.ldcShellStatus=true
@@ -50,6 +53,7 @@ export class UI_Setting{
         this.localBurnStatus=false   
     }
     setVirtualScene(){
+        console.log("set virtual scene")
         this.remoteBurnStatus=false
         this.remoteCompileStatus=false
         this.ldcShellStatus=true
@@ -62,6 +66,7 @@ export class UI_Setting{
         this.localBurnStatus=false   
     }
     setTaoFactory(){
+        console.log("set tao factory")
       this.setVirtualScene()
     }
     setAI(){

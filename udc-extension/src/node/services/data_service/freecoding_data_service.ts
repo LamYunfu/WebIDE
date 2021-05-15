@@ -18,7 +18,7 @@ export class FreeCodingDataService {
     let ob = this.multiProjectData.dataMap
     //对于服务器配置数据是从config.json文件中来的，需要单独解析该文件
     for (let item of Object.keys(this.multiProjectData.dataMap)) {
-      if (!!ob[item].experimentType && (ob[item].experimentType!.trim() == "freecoding"|| ob[item].experimentType!.trim() == "displayboard"))  
+      if (!!ob[item].experimentType && (ob[item].experimentType!.trim() == "freecoding"|| ob[item].experimentType!.trim() == "displayboard"||ob[item].experimentType!.trim() == "AIBOX"))  
       await this.parseProjectDataFromFile(ob[item])
     }
 

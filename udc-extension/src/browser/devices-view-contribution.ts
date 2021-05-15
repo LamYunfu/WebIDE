@@ -47,6 +47,7 @@ export class DeviceViewContribution
   }
   async onStart(app: FrontendApplication) {
     this.applicationState.onStateChanged(async (e) => {
+      
       if (e == "initialized_layout") {
         console.log(" close tabs");
         //清除上次做题的状态，关闭所有打开的组件

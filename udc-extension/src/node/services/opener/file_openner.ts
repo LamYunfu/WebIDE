@@ -19,12 +19,17 @@ export class FileOpener {
     @inject(OneLinkDataService) protected oneLinkDataService: OneLinkDataService
   ) { }
   async openFile(pt: string) {
-    if (this.projectData.experimentType == "OneLinkView") {
-      await this.oneLinkDataService.parseVirtualConfig(this.projectData.pid)
-      let rootPath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString());
-      pt = this.getFilePath(rootPath, pt);
+    if (this.projectData.experimentType == "OneLinkView"||this.projectData.experimentType=="AIBOX"){
+      if(this.projectData.experimentType!="AIBOX"){
+        await this.oneLinkDataService.parseVirtualConfig(this.projectData.pid)
+        let rootPath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.oneLinkData.projects![0].projectName!.toString());
+        pt = this.getFilePath(rootPath, pt);
+      }    else{
+        let rootPath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir, this.projectData.subProjectArray[0]);
+        pt = this.getFilePath(rootPath, pt);
+      }
+   
     }
-
     if (OS.type() == OS.Type.Linux || OS.type() == OS.Type.OSX)
       this.ldcShell.executeFrontCmd({
         name: "openSrcFile",
@@ -61,6 +66,9 @@ export class FileOpener {
     }
   }
   openFiles() {
+    if(this.projectData.experimentType=="AIBOX"){
+      return 
+    }
     console.log("---open files:-----")
     console.log("根路径是：" + this.projectData.projectRootDir);
     let cpath = path.join(this.multiProjectData.rootDir, this.projectData.projectRootDir);
