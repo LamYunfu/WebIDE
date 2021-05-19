@@ -765,7 +765,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.SubmitOnMenu.id,
-        label: "RemoteBurn",
+        label: "Remote Burn",
         icon: "x",
         order: "a_2",
       });
@@ -778,13 +778,13 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.LocalBurnView.id,
-        label: "LocalBurn",
+        label: "Local Burn",
         icon: "x",
         order: "a_3",
       });
       let sub =UdcMenus.UDC
       let t =[...sub ,"1_subtest"]
-      menus.registerSubmenu(t,"VirtualDevice"); 
+      menus.registerSubmenu(t,"Virtual Device"); 
       menus.registerMenuAction([...t], {
         commandId: UdcCommands.esp32View.id,
         label: "Esp32",
@@ -805,19 +805,19 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.compileEdge.id,
-        label: "EdgeCompile",
+        label: "Edge Compile",
         icon: "x",
         order: "a_5",
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.LinkedgeView.id,
-        label: "OpenLinkedge",
+        label: "Open Linkedge",
         icon: "x",
         order: "a_6",
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.ldcShellView.id,
-        label: "OpenLDCShell",
+        label: "Open LDC Shell",
         icon: "x",
         order: "a_6",
       });

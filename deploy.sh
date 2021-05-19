@@ -1,3 +1,4 @@
+docker build ./ -t webidelatest 
 redis-cli flushdb
 docker stop `docker container ls | grep emmyar/webide | awk '{ print $1 }'`
 docker rm `docker container ls -a | grep emmyar/webide | awk '{ print $1 }'`

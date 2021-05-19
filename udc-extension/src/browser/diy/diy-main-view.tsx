@@ -240,7 +240,7 @@ export class DiyMainView extends React.Component<diyMainView.Props, diyMainView.
             initPidQueueInfo={_this.props.initPidQueueInfo}
             closeTabs={_this.props.closeTabs}
             setQueue={_this.props.setQueue}
-            section={{ ppid: [_this.ppid], sid: "experiment" }}
+            section={{ ppid: _this.ppid, sid: "experiment" }}
             outputResult={_this.props.outputResult}
             say={_this.props.say}
             setCookie={_this.props.setCookie}
