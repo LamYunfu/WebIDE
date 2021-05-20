@@ -1,15 +1,15 @@
 import { DEPLOY_SERVER_DOMAIN } from "./backend-config"
-export const AI5DOC= "//120.55.102.225:12359/weightindex.html"
-export const AI4DOC= "//120.55.102.225:12359/hanxin.html"
-export const AI1DOC = "//linklab.tinylink.cn/Sidebar/sidebar1.html"
-export const AI2DOC = "//linklab.tinylink.cn/Sidebar/sidebar2.html"
-export const AI3DOC = "//linklab.tinylink.cn/static/doc/sidebar3.html"
+export const AI5DOC= "http://120.55.102.225:12359/weightindex.html"
+export const AI4DOC= "http://120.55.102.225:12359/hanxin.html"
+export const AI1DOC = "http://linklab.tinylink.cn/Sidebar/sidebar1.html"
+export const AI2DOC = "http://linklab.tinylink.cn/Sidebar/sidebar2.html"
+export const AI3DOC = "http://linklab.tinylink.cn/static/doc/sidebar3.html"
 export const MODEL_DOWNLOAD_URL = "ws://47.98.249.190:8005/"
 export const DETAIL_ISSUE_URL = `//api.${DEPLOY_SERVER_DOMAIN }/problem/detail`
 export const LINK_LAB_HOMEPAGE_URL = `//linklab.${DEPLOY_SERVER_DOMAIN }`
 export const QUIZE_JUDGE_URL = `//api.${DEPLOY_SERVER_DOMAIN }/problem/quiz/judge`
 export const CHOICE_JUDGE_URL = "//judge.tinylink.cn/quiz/choices/judge"
-export const USER_INFO_URL = `://api.${DEPLOY_SERVER_DOMAIN }/user/info`
+export const USER_INFO_URL = `https://api.${DEPLOY_SERVER_DOMAIN }/user/info`
 export const VIEW_DETAIL_URL = `//api.${DEPLOY_SERVER_DOMAIN }/view/active/detail`
 export const VIDEO_URL = "//linklab.tinylink.cn/"
 export const QUIZ_CONTENT_URL = "//judge.tinylink.cn/quiz/content"
@@ -17,4 +17,4 @@ export const PROBLEM_STATUS_URL = `//api.${DEPLOY_SERVER_DOMAIN }/problem/status
 export const MULTIPLY_PROBLEM_STATUS_URL = `//judge.${DEPLOY_SERVER_DOMAIN }/problem/status`
 export const FINISH_URL= `//api.${DEPLOY_SERVER_DOMAIN }/problem/aliyun/report`
 export const TEACHER_PPID_URL = `//api.${DEPLOY_SERVER_DOMAIN }/tview/active/detail`
-export const CONFIG_JSON_URL = `://api.${DEPLOY_SERVER_DOMAIN }/tview/config`
+export const CONFIG_JSON_URL = `//api.${DEPLOY_SERVER_DOMAIN }/tview/config`
