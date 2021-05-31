@@ -10,6 +10,8 @@ cd ../drawboard-extension
 yarn build
 cd ../esp32_widget
 yarn prepare
+cd ../stm32_widget
+yarn prepare
 cd ../haas100_widget
 yarn prepare
 cd ../wizard-extension

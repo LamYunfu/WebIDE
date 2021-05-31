@@ -38,7 +38,7 @@ export class FileTemplate implements FileTemplateInterface {
     targetPath: string
   ): Promise<boolean> {
     this.cis.storeCallInfoInstantly("start", CallSymbol.GTML);
-    //通过ppid向模板服务器发起请求请求实验的模板文件
+    //通过ppid向模板服务器发起请求请求库文件的模板文件
     return await new Promise<boolean>((resolve) => {
       if (ppid != null) {
         let fileRequest = http.request(
@@ -46,6 +46,7 @@ export class FileTemplate implements FileTemplateInterface {
             //
             method: "POST",
             hostname: TEMPLATE_SERVER,
+            ///
             path: "/problem/template",
             headers: {
               "Content-Type": "application/json",

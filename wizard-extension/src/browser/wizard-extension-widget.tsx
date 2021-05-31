@@ -45,8 +45,6 @@ export class WizardExtensionWidget extends ReactWidget {
         //alert(config_json);
         this.wbs.createProject(JSON.stringify(config_json), JSON.stringify(otherConfig));  
     }
-
-
 }
 
 @injectable()

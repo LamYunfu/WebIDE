@@ -25,6 +25,7 @@
     "demo",
     "new_widget",
     "esp32_widget",
+    "stm32_widget",
     "haas100_widget",
     "wizard-extension",
     "guild-page-extension"

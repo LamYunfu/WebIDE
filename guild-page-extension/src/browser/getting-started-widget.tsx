@@ -6,7 +6,7 @@ import { CommonCommands } from '@theia/core/lib/browser';
 import { FrontendApplicationConfigProvider } from '@theia/core/lib/browser/frontend-application-config-provider';
 import { ReactWidget } from '@theia/core/lib/browser/widgets/react-widget';
 // import { CommandRegistry, environment, isOSX } from '@theia/core/lib/common';
-import { CommandRegistry, OS } from '@theia/core/lib/common';
+import { CommandRegistry } from '@theia/core/lib/common';
 import { ApplicationInfo, ApplicationServer } from '@theia/core/lib/common/application-protocol';
 import { FileStat, FileSystem } from '@theia/filesystem/lib/common/filesystem';
 // import { FileSystemUtils } from '@theia/filesystem/lib/common/filesystem-utils';

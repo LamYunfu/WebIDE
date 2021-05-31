@@ -51,6 +51,7 @@ import { LampWidget } from "./lamp";
 import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-channel";
 import {NewWidgetFactory} from "new_widget/lib/browser/new-widget-factory";
 import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory";
+//import {STM32WidgetFactory} from "stm32_widget/lib/browser/stm32-widget-factory";
 import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory"
 import {DrawboardViewService} from "drawboard-extension/lib/browser/drawboard-view-service"
 
@@ -221,6 +222,11 @@ export namespace UdcCommands {
   }
   export const esp32View:Command={
     id:"esp32",
+    category:LINKEDGE_CATEGORY,
+    label:"OpenLinkedgeView"
+  }
+  export const stm32View:Command={
+    id:"stm32",
     category:LINKEDGE_CATEGORY,
     label:"OpenLinkedgeView"
   }
@@ -457,6 +463,12 @@ export class UdcExtensionCommandContribution
       isEnabled:()=>this.ui_Setting.esp32Status,
       execute:()=>{
        registry.executeCommand('esp32_widget:command')
+      }
+    })
+    registry.registerCommand(UdcCommands.stm32View,{
+      isEnabled:()=>this.ui_Setting.stm32Status,
+      execute:()=>{
+       registry.executeCommand('STM32_widget:command')
       }
     })
     registry.registerCommand(UdcCommands.ldcShellView,{
@@ -790,6 +802,12 @@ export class UdcExtensionMenuContribution implements MenuContribution {
         label: "Esp32",
         icon: "x",
         order: "a_3",
+      });
+      menus.registerMenuAction([...t], {
+        commandId: UdcCommands.stm32View.id,
+        label: "STM32",
+        icon: "x",
+        order: "a_5",
       });
       menus.registerMenuAction([...t], {
         commandId: UdcCommands.arduinoView.id,

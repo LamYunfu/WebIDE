@@ -29,6 +29,7 @@ import { TaoFactoryController } from './problem_controller/taoFactoryController/
 import { CallInfoStorer } from './services/log/call_info_storer';
 import { BehaviorRecorder } from './services/behavior_recorder/behavior_recorder';
 import { MultiProjectData } from './data_center/multi_project_data';
+import { LdcLogger } from './services/ldc/new_ldc/new_ldc';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -58,7 +59,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder,
     @inject(ProjectData) protected pData: ProjectData,
     @inject(MultiProjectData) protected mpData: MultiProjectData,
-    @inject(Kubedge) readonly kubedge:Kubedge
+    @inject(Kubedge) readonly kubedge:Kubedge,
+    @inject(LdcLogger) protected ldcLogger:LdcLogger
   ) { }
   setExperimentName(name: string){
     this.behaviorRecorder.en=name
@@ -374,5 +376,9 @@ export class UdcServiceImpl implements UdcService {
   }
   localSubmit(pid:string){
     this.pc.localSubmit(pid)
+  }
+  //发送信息到LDC后端
+  serialPortInput(message:string){
+    this.ldcLogger.serialPortInput(message);
   }
 }
