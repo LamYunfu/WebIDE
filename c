@@ -10,8 +10,6 @@ cd ../drawboard-extension
 yarn build
 cd ../esp32_widget
 yarn prepare
-cd ../stm32_widget
-yarn prepare
 cd ../haas100_widget
 yarn prepare
 cd ../wizard-extension
@@ -22,6 +20,8 @@ yarn prepare
 ##mv unity.theia ../node/unity.theia
 cd ../udc-extension
 yarn build 
+cd ../stm32_widget
+yarn prepare
 cd ../demo 
 yarn build 
 cd ../browser-app

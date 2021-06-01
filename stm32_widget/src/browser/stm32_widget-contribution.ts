@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { MenuModelRegistry } from '@theia/core';
-import { STM32Widget } from './STM32_widget-widget';
+import { STM32Widget } from './stm32_widget-widget';
 import { AbstractViewContribution } from '@theia/core/lib/browser';
 import { Command, CommandRegistry } from '@theia/core/lib/common/command';
 
