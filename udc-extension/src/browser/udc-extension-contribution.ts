@@ -52,7 +52,8 @@ import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-ch
 import {NewWidgetFactory} from "new_widget/lib/browser/new-widget-factory";
 import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory";
 //import {STM32WidgetFactory} from "stm32_widget/lib/browser/stm32-widget-factory";
-import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory"
+import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory";
+import {STM32WidgetFactory} from "stm32_widget/lib/browser/stm32-widget-factory";
 import {DrawboardViewService} from "drawboard-extension/lib/browser/drawboard-view-service"
 
 export const UdcExtensionCommand = {
@@ -257,7 +258,7 @@ export class UdcExtensionCommandContribution
   implements CommandContribution, QuickOpenModel {
   selectDeviceModel = "";
   x: Window | null = null;
-  url: string = "";
+  url: string = ""; 
 
   async onType(
     lookFor: string,
@@ -314,7 +315,8 @@ export class UdcExtensionCommandContribution
     @inject(HaaS100WidgetFactory) readonly hass100WidgetFactory: HaaS100WidgetFactory,
     @inject(DrawboardViewService) readonly drawboardFactory: DrawboardViewService,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
-    @inject(UI_Setting) readonly ui_Setting:UI_Setting
+    @inject(UI_Setting) readonly ui_Setting:UI_Setting,
+    @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -391,6 +393,7 @@ export class UdcExtensionCommandContribution
       // console.log("data is :" + data + "............................")
       //let drawboardwidget = this.drawboardFactory.widget;
       //drawboardwidget.showNumber();
+      let notPrint = false;
       let array = data.split(":");
       let log = array
         .slice(2)
@@ -402,15 +405,19 @@ export class UdcExtensionCommandContribution
       let esp32Lamp = this.esp32WidgetFactory.widget;
       let a = log.match("(0E0010)|(0E0011)");             //与Arduino的亮灯进行匹配
       let esp32Match = log.match("(0E0012)|(0E0013)");    //与esp32的开关灯日志进行匹配
+      let stm32Match = log.match("rgb");           //与stm32亮灯日志进行匹配
       let haas100Lamp = this.hass100WidgetFactory.widget;
+      let stm32Lamp = this.stm32.widget;
       //判断是不是HaaS100控制灯亮灭的
       let n = log.search(/LED\s[1-5]/);
       if(n != -1){
+        notPrint = true;
         //console.log("该对象是否存在8" + haas100Lamp.haasLamp);
         haas100Lamp.haasLamp.lightChange(log.substring(n));
       }
       
       if (esp32Match != null){
+        notPrint = true;
         if(esp32Lamp.lamp){
           if (esp32Match[0].trim() == "0E0013") {
             esp32Lamp.lamp.lightoff();
@@ -422,6 +429,7 @@ export class UdcExtensionCommandContribution
         }
       }
       else if (a != null) {
+        notPrint = true;
         if (lp.lp) {
           if (a[0].trim() == "0E0010") {
             lp.lp.lightoff();
@@ -431,6 +439,13 @@ export class UdcExtensionCommandContribution
             return;
           }
         }
+      }else if (stm32Match != null){
+        //调用stm32接口控制灯亮灭
+        let rgb_str = log.substr(log.indexOf("rgb") + 6, 5);
+        let rgb_num = rgb_str.split(",").map(Number);
+        console.log(rgb_num.map(String));
+        stm32Lamp.lamp.lightChange(rgb_num);
+        console.log(rgb_str);
       } else {
         //在arduino开发板显示屏幕上输出内容
         this.udcConsoleSession.appendLine(log);

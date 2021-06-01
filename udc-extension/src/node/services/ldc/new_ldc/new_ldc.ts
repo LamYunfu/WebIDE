@@ -199,6 +199,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
 
                             this.authorization = json["data"]["token"];
                             // this.outputResult(json["data"]["token"])
+                            console.log("登录后得到的authorization是" + this.authorization);
                             bk(true)
                         } else {
                             // this.outputResult(json["msg"])
@@ -235,7 +236,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
         }
         for (let i in ps) {
             let item = ps[i]
-            console.log(i+JSON.stringify(this.pdata))
+            //console.log(i+JSON.stringify(this.pdata))
             if (item instanceof QueueBurnElem) {               
                 tasks.push({
                     // boardname: "ESP32DevKitC",
@@ -446,17 +447,18 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
             "deviceid":"/dev/Haas100-0", 
             "clientid":"ClientTest-25"
         };
-        // console.log("LDC端收到的消息是：" + message);
         //查看是否已经连接
-        this.prepare();
+        await this.prepare();
+       // console.log("LDC端收到的消息是：" + message);
+        console.log("连接后使用的Authentication是：" + this.authorization);
         //获取用户的id
         //获取用户占用的设备的id
         let p = new Promise<string|undefined>((bk) => {
             let request = http.request(
                 {
-                    method: "POST",
-                    hostname: this.loginHostName,
-                    path: device_location,
+                    method: "GET",
+                    hostname: "kubernetes.tinylink.cn",
+                    path: "/linklab/device-control-v2/user-service/api/device/listuserdevice",
                     headers:{
                         Authorization:this.authorization,   
                     }
@@ -475,25 +477,28 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
                     res.on("close", () => {
                         let raw = tmp!.toString()
                         let json = JSON.parse(raw.toString());
-                        console.log("从LDC收到的数据是 :"+raw)
-                        deviceid = json["devices"][0]["deviceid"];
-                        clientid = json["devices"][0]["clientid"];
-                        //if (json["code"] == 0) {
-                        //     // this.outputResult("up---"+raw)
-                        //     bk(json["data"]["filehash"])
-                        // } else {
-                        //     this.outputResult(json["msg"],"err")
-                        //     bk(undefined)
-                        // }
+                        console.log("从LDC收到的数据,查询占用的设备是 :"+raw)
+                        deviceid = json["data"]["devices"][0]["deviceid"];
+                        clientid = json["data"]["devices"][0]["clientid"];
+                        console.log("deviceid是" + deviceid + "clientid是" + clientid);
+                        if (json["code"] == 0) {
+                            // this.outputResult("up---"+raw)
+                            bk(json["data"]["devices"][0])
+                        } else {
+                            this.outputResult(json["msg"],"err")
+                            bk(undefined)
+                        }
                     })
                 }
             )
         request.end()
         });
+        let data_tmp = await p;
         //构建发送的串口命令
-        data["clientid"] = clientid;
-        data["deviceid"] = deviceid;
+        data["clientid"] = data_tmp["clientid"];
+        data["deviceid"] = data_tmp["deviceid"];
         data["cmd"] = message;
+        console.log("最终发送的数据是：" + JSON.stringify(data));
         //发送串口数据
         let p1 = new Promise<string|undefined>((bk) => {
             let request = http.request(
@@ -519,11 +524,11 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
                     res.on("close", () => {
                         let raw = tmp!.toString()
                         let json = JSON.parse(raw.toString());
-                        console.log("从LDC收到的数据是 :"+raw);
+                        console.log("发送串口数据， 从LDC收到的数据是 :"+raw);
                     })
                 }
             )
-        request.write(data);
+        request.write(JSON.stringify(data));
         request.end()
         });
     }

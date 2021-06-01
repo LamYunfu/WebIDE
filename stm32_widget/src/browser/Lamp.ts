@@ -152,7 +152,10 @@ export class Lamp {
     let green = rgb_color[1] == 1 ? 255: 0;
     let blue = rgb_color[2] == 1 ? 255: 0;
     this.color = "rgb(" + red + "," + green + "," + blue + ")";   
-    console.log(this.color);        
+    if(red == 0 && green == 0 && blue == 0){
+      this.color = "#C7C3C4";
+    }
+    //console.log(this.color);        
     this.paint();
   }
 

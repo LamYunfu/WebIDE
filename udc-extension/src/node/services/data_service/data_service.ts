@@ -159,7 +159,7 @@ export class DataService {
   refreshMultiData() {
     let pid = this.projectData.pid
     this.copyLdcDataFromData();
-    console.log("--refresh multiData"+JSON.stringify(this.projectData))
+    //console.log("--refresh multiData"+JSON.stringify(this.projectData))
     this.multiProjectData.dataMap[pid] = this.projectData
   }
   private generate16ByteNumber(): string {
