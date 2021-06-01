@@ -1,3 +1,5 @@
+import { OutExperimentSetting } from './outer-experiment-setting';
+import { DeviceViewWidget } from './device-view-widget';
 import { UI_Setting } from './isEnable';
 import { LocalBurnData } from './localburn_data';
 import {
@@ -115,6 +117,11 @@ export namespace UdcCommands {
     id: "udc.menu.local_burn",
     category: UDC_MENU_CATEGORY,
     label: "local_burn",
+  };
+  export const Compile_Save: Command = {
+    id: "udc.menu.compile_save",
+    category: UDC_MENU_CATEGORY,
+    label: "compile save",
   };
   export const local_compile_burn: Command = {
     id: "udc.menu.local_compile_burn",
@@ -252,7 +259,7 @@ export class UdcExtensionCommandContribution
   selectDeviceModel = "";
   x: Window | null = null;
   url: string = "";
-
+    
   async onType(
     lookFor: string,
     acceptor: (items: QuickOpenItem<QuickOpenItemOptions>[]) => void
@@ -308,7 +315,8 @@ export class UdcExtensionCommandContribution
     @inject(HaaS100WidgetFactory) readonly hass100WidgetFactory: HaaS100WidgetFactory,
     @inject(DrawboardViewService) readonly drawboardFactory: DrawboardViewService,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
-    @inject(UI_Setting) readonly ui_Setting:UI_Setting
+    @inject(UI_Setting) readonly ui_Setting:UI_Setting,
+    @inject(OutExperimentSetting) readonly outExperimentSetting:OutExperimentSetting
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -346,6 +354,11 @@ export class UdcExtensionCommandContribution
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'text/plain'
         });
+        if(this.outExperimentSetting.expType=="research"){
+          console.log("research!!!")
+          window.opener.postMessage(data.passwd,"*")
+          return
+        }     
           fetch(`http://localhost:${this.lbd.port}${data.passwd}`,
           {
               method: 'GET',
@@ -620,6 +633,12 @@ export class UdcExtensionCommandContribution
           });
       },
     });
+    registry.registerCommand(UdcCommands.Compile_Save, {
+      execute: () => {
+        this.outExperimentSetting.expType="research"
+        this.commandRegistry.executeCommand(UdcCommands.local_compile_burn.id)
+      },
+    });
     // registry.registerCommand(UdcCommands.QueryStatus, {
     //     execute: (x: string) => {
     //         this.udcService.queryStatus(x).then((out) => console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" + out))
@@ -779,6 +798,12 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.LocalBurnView.id,
         label: "Local Burn",
+        icon: "x",
+        order: "a_3",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.Compile_Save.id,
+        label: "Compile and Save",
         icon: "x",
         order: "a_3",
       });

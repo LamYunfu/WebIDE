@@ -14,6 +14,7 @@
     "@theia/preferences":  "^0.8.0",
     "@theia/terminal":"^0.8.0",
     "@theia/process":  "^0.8.0",
+    "@theia/git":"0.8.0",
     "@theia/editor":  "^0.8.0",
     "@theia/languages":  "^0.8.0",
     "@theia/markers":  "^0.8.0",

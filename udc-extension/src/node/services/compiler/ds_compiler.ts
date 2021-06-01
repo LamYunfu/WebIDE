@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import { LocalBurnerNotifier } from './../local_burner_notifier/local_burner_notifier';
 import { FileCompressor } from './../tools/file_compressor';
 import * as Hs from "http";
@@ -113,6 +114,15 @@ export class DistributedCompiler {
               this.outputResult("Compile scc");
               if(tag){
                 this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+                let xx={
+                  code:0,
+                  message:"ok",
+                  data:{
+                    url:"http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                  }
+
+                }
+                this.lbn.notify(JSON.stringify(xx))
               }
              
               // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
