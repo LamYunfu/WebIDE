@@ -90,4 +90,5 @@ export interface UdcService {
   setExperimentName:(name:string)=>void
   judge:(res:string)=>void
   close:()=>void
+  serialPortInput: (message:string) => void
 }

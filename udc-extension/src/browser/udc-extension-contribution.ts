@@ -53,7 +53,9 @@ import { LampWidget } from "./lamp";
 import { WebSocketChannel } from "@theia/core/lib/common/messaging/web-socket-channel";
 import {NewWidgetFactory} from "new_widget/lib/browser/new-widget-factory";
 import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory";
-import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory"
+//import {STM32WidgetFactory} from "stm32_widget/lib/browser/stm32-widget-factory";
+import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory";
+import {STM32WidgetFactory} from "stm32_widget/lib/browser/stm32-widget-factory";
 import {DrawboardViewService} from "drawboard-extension/lib/browser/drawboard-view-service"
 
 export const UdcExtensionCommand = {
@@ -231,6 +233,11 @@ export namespace UdcCommands {
     category:LINKEDGE_CATEGORY,
     label:"OpenLinkedgeView"
   }
+  export const stm32View:Command={
+    id:"stm32",
+    category:LINKEDGE_CATEGORY,
+    label:"OpenLinkedgeView"
+  }
   export const arduinoView:Command={
     id:"arduino",
     category:LINKEDGE_CATEGORY,
@@ -258,8 +265,13 @@ export class UdcExtensionCommandContribution
   implements CommandContribution, QuickOpenModel {
   selectDeviceModel = "";
   x: Window | null = null;
+<<<<<<< HEAD
   url: string = "";
     
+=======
+  url: string = ""; 
+
+>>>>>>> 112ffac6076c2057fe443b711d73b7dc47189408
   async onType(
     lookFor: string,
     acceptor: (items: QuickOpenItem<QuickOpenItemOptions>[]) => void
@@ -316,7 +328,8 @@ export class UdcExtensionCommandContribution
     @inject(DrawboardViewService) readonly drawboardFactory: DrawboardViewService,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
     @inject(UI_Setting) readonly ui_Setting:UI_Setting,
-    @inject(OutExperimentSetting) readonly outExperimentSetting:OutExperimentSetting
+    @inject(OutExperimentSetting) readonly outExperimentSetting:OutExperimentSetting,
+    @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -405,6 +418,7 @@ export class UdcExtensionCommandContribution
       // console.log("data is :" + data + "............................")
       //let drawboardwidget = this.drawboardFactory.widget;
       //drawboardwidget.showNumber();
+      let notPrint = false;
       let array = data.split(":");
       let log = array
         .slice(2)
@@ -416,15 +430,19 @@ export class UdcExtensionCommandContribution
       let esp32Lamp = this.esp32WidgetFactory.widget;
       let a = log.match("(0E0010)|(0E0011)");             //与Arduino的亮灯进行匹配
       let esp32Match = log.match("(0E0012)|(0E0013)");    //与esp32的开关灯日志进行匹配
+      let stm32Match = log.match("rgb");           //与stm32亮灯日志进行匹配
       let haas100Lamp = this.hass100WidgetFactory.widget;
+      let stm32Lamp = this.stm32.widget;
       //判断是不是HaaS100控制灯亮灭的
       let n = log.search(/LED\s[1-5]/);
       if(n != -1){
+        notPrint = true;
         //console.log("该对象是否存在8" + haas100Lamp.haasLamp);
         haas100Lamp.haasLamp.lightChange(log.substring(n));
       }
       
       if (esp32Match != null){
+        notPrint = true;
         if(esp32Lamp.lamp){
           if (esp32Match[0].trim() == "0E0013") {
             esp32Lamp.lamp.lightoff();
@@ -436,6 +454,7 @@ export class UdcExtensionCommandContribution
         }
       }
       else if (a != null) {
+        notPrint = true;
         if (lp.lp) {
           if (a[0].trim() == "0E0010") {
             lp.lp.lightoff();
@@ -445,6 +464,13 @@ export class UdcExtensionCommandContribution
             return;
           }
         }
+      }else if (stm32Match != null){
+        //调用stm32接口控制灯亮灭
+        let rgb_str = log.substr(log.indexOf("rgb") + 6, 5);
+        let rgb_num = rgb_str.split(",").map(Number);
+        console.log(rgb_num.map(String));
+        stm32Lamp.lamp.lightChange(rgb_num);
+        console.log(rgb_str);
       } else {
         //在arduino开发板显示屏幕上输出内容
         this.udcConsoleSession.appendLine(log);
@@ -477,6 +503,12 @@ export class UdcExtensionCommandContribution
       isEnabled:()=>this.ui_Setting.esp32Status,
       execute:()=>{
        registry.executeCommand('esp32_widget:command')
+      }
+    })
+    registry.registerCommand(UdcCommands.stm32View,{
+      isEnabled:()=>this.ui_Setting.stm32Status,
+      execute:()=>{
+       registry.executeCommand('STM32_widget:command')
       }
     })
     registry.registerCommand(UdcCommands.ldcShellView,{
@@ -822,6 +854,12 @@ export class UdcExtensionMenuContribution implements MenuContribution {
         label: "Esp32",
         icon: "x",
         order: "a_3",
+      });
+      menus.registerMenuAction([...t], {
+        commandId: UdcCommands.stm32View.id,
+        label: "STM32",
+        icon: "x",
+        order: "a_5",
       });
       menus.registerMenuAction([...t], {
         commandId: UdcCommands.arduinoView.id,

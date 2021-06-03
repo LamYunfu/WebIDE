@@ -199,6 +199,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
 
                             this.authorization = json["data"]["token"];
                             // this.outputResult(json["data"]["token"])
+                            console.log("登录后得到的authorization是" + this.authorization);
                             bk(true)
                         } else {
                             // this.outputResult(json["msg"])
@@ -235,7 +236,7 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
         }
         for (let i in ps) {
             let item = ps[i]
-            console.log(i+JSON.stringify(this.pdata))
+            //console.log(i+JSON.stringify(this.pdata))
             if (item instanceof QueueBurnElem) {               
                 tasks.push({
                     // boardname: "ESP32DevKitC",
@@ -427,10 +428,108 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
         // http://kubernetes.tinylink.cn/linklab/compilev2/api/compile/block\?filehash\="98bca5e26f43055315c81dc79cda22d29950f3d2"\&boardtype\="developerkit"\&compiletype\="alios"
     }
 
+    /**
+     * stm32开发板串口输入信息
+     * @param message 
+     */
+    async serialPortInput(message:string){
+        let deviceid:string = "";
+        let clientid:string = "";
+        //验证码
+        let authorization_command:string = this.authorization;
+        //发送串口命令访问地址
+        let cmd_location:string = "/linklab/device-control-v2/user-service/api/device/cmd";
+        //获取client-id和device-id的地址
+        let device_location:string = "/linklab/device-control-v2/user-service/api/device/listuserdevice";
+        //发送的数据
+        let data = {
+            "cmd":"netmgr -t wifi -c linklab-wifi-1 eagle402\r\n", 
+            "deviceid":"/dev/Haas100-0", 
+            "clientid":"ClientTest-25"
+        };
+        //查看是否已经连接
+        await this.prepare();
+       // console.log("LDC端收到的消息是：" + message);
+        console.log("连接后使用的Authentication是：" + this.authorization);
+        //获取用户的id
+        //获取用户占用的设备的id
+        let p = new Promise<string|undefined>((bk) => {
+            let request = http.request(
+                {
+                    method: "GET",
+                    hostname: "kubernetes.tinylink.cn",
+                    path: "/linklab/device-control-v2/user-service/api/device/listuserdevice",
+                    headers:{
+                        Authorization:this.authorization,   
+                    }
+                    
+                }
+                ,
+                (res) => {
+                    let tmp: Buffer | undefined = undefined
+                    res.on("data", (data) => {
+                        if (tmp == undefined) {
+                            tmp = data
+                        } else {
+                            tmp = Buffer.concat([tmp, data])
+                        }
+                    })
+                    res.on("close", () => {
+                        let raw = tmp!.toString()
+                        let json = JSON.parse(raw.toString());
+                        console.log("从LDC收到的数据,查询占用的设备是 :"+raw)
+                        deviceid = json["data"]["devices"][0]["deviceid"];
+                        clientid = json["data"]["devices"][0]["clientid"];
+                        console.log("deviceid是" + deviceid + "clientid是" + clientid);
+                        if (json["code"] == 0) {
+                            // this.outputResult("up---"+raw)
+                            bk(json["data"]["devices"][0])
+                        } else {
+                            this.outputResult(json["msg"],"err")
+                            bk(undefined)
+                        }
+                    })
+                }
+            )
+        request.end()
+        });
+        let data_tmp = await p;
+        //构建发送的串口命令
+        data["clientid"] = data_tmp["clientid"];
+        data["deviceid"] = data_tmp["deviceid"];
+        data["cmd"] = message;
+        console.log("最终发送的数据是：" + JSON.stringify(data));
+        //发送串口数据
+        let p1 = new Promise<string|undefined>((bk) => {
+            let request = http.request(
+                {
+                    method: "POST",
+                    hostname: this.loginHostName,
+                    path: cmd_location,
+                    headers:{
+                        Authorization:this.authorization,   
+                    }
+                    
+                }
+                ,
+                (res) => {
+                    let tmp: Buffer | undefined = undefined
+                    res.on("data", (data) => {
+                        if (tmp == undefined) {
+                            tmp = data
+                        } else {
+                            tmp = Buffer.concat([tmp, data])
+                        }
+                    })
+                    res.on("close", () => {
+                        let raw = tmp!.toString()
+                        let json = JSON.parse(raw.toString());
+                        console.log("发送串口数据， 从LDC收到的数据是 :"+raw);
+                    })
+                }
+            )
+        request.write(JSON.stringify(data));
+        request.end()
+        });
+    }
 }
-// let lg = new LdcLogger()
-// lg.login().then(() => {
-//     lg.burn('{"tasks":[{"boardname":"ArduinoMega2560","deviceid":"/dev/ArduinoMega2560-8","runtime":30,"filehash":"eb3920b037e505b19c9a0ce0d8f28ae56f5ed28d9f70830ed22e11fd07d01c82","clientid":"ClientTest","taskindex":1},{"boardname":"ESP32DevKitC","deviceid":"/dev/ESP32DevKitC-0","runtime":30,"filehash":"6ec0d4238b7164784a62f4b163c712c480b45b2a931ed6c2c6b00e4c66890ca1","clientid":"ClientTest","taskindex":2}]}')
-// }).then(() => {
-//     lg.getLog()
-// })

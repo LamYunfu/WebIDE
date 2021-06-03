@@ -20,6 +20,8 @@ yarn prepare
 ##mv unity.theia ../node/unity.theia
 cd ../udc-extension
 yarn build 
+cd ../stm32_widget
+yarn prepare
 cd ../demo 
 yarn build 
 cd ../browser-app
