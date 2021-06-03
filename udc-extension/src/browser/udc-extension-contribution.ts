@@ -265,13 +265,8 @@ export class UdcExtensionCommandContribution
   implements CommandContribution, QuickOpenModel {
   selectDeviceModel = "";
   x: Window | null = null;
-<<<<<<< HEAD
   url: string = "";
-    
-=======
-  url: string = ""; 
 
->>>>>>> 112ffac6076c2057fe443b711d73b7dc47189408
   async onType(
     lookFor: string,
     acceptor: (items: QuickOpenItem<QuickOpenItemOptions>[]) => void
