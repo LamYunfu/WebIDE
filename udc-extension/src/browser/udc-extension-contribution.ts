@@ -356,7 +356,14 @@ export class UdcExtensionCommandContribution
         });
         if(this.outExperimentSetting.expType=="research"){
           console.log("research!!!")
-          window.opener.postMessage(data.passwd,"*")
+          let ob ={
+            code:0,
+            message:"ok",
+            data:{
+              url:data.passwd
+            }
+          }
+          window.opener.postMessage(JSON.stringify(ob),"*")
           return
         }     
           fetch(`http://localhost:${this.lbd.port}${data.passwd}`,
