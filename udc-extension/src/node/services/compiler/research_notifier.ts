@@ -1,6 +1,7 @@
 import { ProjectData } from './../../data_center/project_data';
 import { RESEARCHING_API } from './../../../setting/backend-config';
 import * as https from "https"
+import * as http from "http"
 import * as fm from "form-data"
 import { inject, injectable, interfaces } from 'inversify';
 import { UserInfo } from '../../data_center/user_info';
@@ -23,7 +24,7 @@ export class  ResearchNotifier{
      notify(){
         let url =this.url
         
-        let rq=  https.request({
+        let rq=  http.request({
              host:RESEARCHING_API,
              path:"/research/firmware/webideFirmware",
              method:"POST",
