@@ -136,6 +136,17 @@ export class DistributedCompiler {
             let p;
             if(tag){
               this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+                let url= `http://${DISTRIBUTEDCOMPILER_IP}/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                this.rn.setURL(url)
+                let xx={
+                  code:0,
+                  message:"ok",
+                  data:{
+                    url:url
+                  }
+
+                }
+                this.lbn.notify(JSON.stringify(xx))
             }
             // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
             console.log("-----eeeee-----")

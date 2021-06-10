@@ -31,10 +31,11 @@ export class  ResearchNotifier{
          data.append("userId",this.ui.username)
          data.append("firewareName",this.pd.subProjectArray[0])
          data.append("firmwareUrl",url)
-         data.pipe(rq);
          data.on("close",()=>{
-             console.log("----------------upload to research")
-         })      
+            console.log("----------------upload to research")
+        })      
+         data.pipe(rq);
+        
 
     }
 }

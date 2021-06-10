@@ -838,7 +838,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.Compile_Save.id,
-        label: "Compile and Save",
+        label: "Save Binary",
         icon: "x",
         order: "a_3",
       });
