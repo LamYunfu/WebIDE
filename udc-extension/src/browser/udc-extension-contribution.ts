@@ -371,7 +371,8 @@ export class UdcExtensionCommandContribution
               url:data.passwd
             }
           }
-          window.opener.postMessage(JSON.stringify(ob),"*")
+          this.udcService.notifyResearcher()
+          window.opener.postMessage(JSON.stringify(ob),"*")        
           return
         }     
           fetch(`http://localhost:${this.lbd.port}${data.passwd}`,

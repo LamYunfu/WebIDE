@@ -15,6 +15,7 @@ import { DISTRIBUTEDCOMPILER_IP } from "../../../setting/backend-config";
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
 import { ProjectData } from "../../data_center/project_data";
 import { Differ } from '../diff/diff';
+import { ResearchNotifier } from './research_notifier';
 export function bindDistributedCompiler(bind: interfaces.Bind) {
   bind(DistributedCompiler)
     .toSelf()
@@ -29,7 +30,8 @@ export class DistributedCompiler {
     @inject(ProjectData) readonly projectData: ProjectData,
     @inject(FileCompressor) readonly fileCompressor: FileCompressor,
     @inject(LocalBurnerNotifier) readonly lbn:LocalBurnerNotifier,
-    @inject(Differ) readonly diff:Differ
+    @inject(Differ) readonly diff:Differ,
+    @inject(ResearchNotifier) readonly rn :ResearchNotifier
   ) { }
   outputResult(mes: string, type: string = "sys") {
     this.ldcShell.outputResult(mes, type);
@@ -114,11 +116,13 @@ export class DistributedCompiler {
               this.outputResult("Compile scc");
               if(tag){
                 this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+                let url= `http://${DISTRIBUTEDCOMPILER_IP}/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                this.rn.setURL(url)
                 let xx={
                   code:0,
                   message:"ok",
                   data:{
-                    url:"http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                    url:url
                   }
 
                 }

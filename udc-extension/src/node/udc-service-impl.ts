@@ -30,6 +30,7 @@ import { CallInfoStorer } from './services/log/call_info_storer';
 import { BehaviorRecorder } from './services/behavior_recorder/behavior_recorder';
 import { MultiProjectData } from './data_center/multi_project_data';
 import { LdcLogger } from './services/ldc/new_ldc/new_ldc';
+import { ResearchNotifier } from './services/compiler/research_notifier';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -60,7 +61,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(ProjectData) protected pData: ProjectData,
     @inject(MultiProjectData) protected mpData: MultiProjectData,
     @inject(Kubedge) readonly kubedge:Kubedge,
-    @inject(LdcLogger) protected ldcLogger:LdcLogger
+    @inject(LdcLogger) protected ldcLogger:LdcLogger,
+    @inject(ResearchNotifier) protected rn :ResearchNotifier
   ) { }
   setExperimentName(name: string){
     this.behaviorRecorder.en=name
@@ -380,5 +382,8 @@ export class UdcServiceImpl implements UdcService {
   //发送信息到LDC后端
   serialPortInput(message:string){
     this.ldcLogger.serialPortInput(message);
+  }
+  notifyResearcher(){
+    this.rn.notify()
   }
 }

@@ -91,4 +91,5 @@ export interface UdcService {
   judge:(res:string)=>void
   close:()=>void
   serialPortInput: (message:string) => void
+  notifyResearcher:()=>void
 }
