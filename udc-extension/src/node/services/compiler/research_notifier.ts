@@ -23,15 +23,18 @@ export class  ResearchNotifier{
     }
      notify(){
         let url =this.url
-        
+        let data =new fm();
         let rq=  http.request({
              host:RESEARCHING_API,
              path:"/research/firmware/webideFirmware",
-             method:"POST",
+             method:"POST",             
+             headers:{ ...data.getHeaders(),
+                    cookie:this.ui.cookie
+                }
          },(msg)=>{
              let x =""
              msg.on("data",(bf:Buffer)=>{
-                x+=bf.toString()                
+                x+=bf.toString("utf8")                
              })
              msg.on("close",()=>{
                  console.log("--bk:"+x)
@@ -40,10 +43,12 @@ export class  ResearchNotifier{
                 console.log("--err:"+x)
             })
          })
-         let data =new fm();
+       
          data.append("userId",this.ui.username)
          data.append("firewareName",this.pd.subProjectArray[0])
          data.append("firmwareUrl",url)
+         data.append("descriptions","none")
+         data.append("compileType",this.pd.subCompileTypes[0])
          data.on("close",()=>{
             console.log("----------------upload to research")
         })      
