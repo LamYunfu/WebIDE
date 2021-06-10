@@ -22,10 +22,22 @@ export class  ResearchNotifier{
     }
      notify(){
         let url =this.url
+        
         let rq=  https.request({
              host:RESEARCHING_API,
-             path:"/research/webideFirmware",
+             path:"/research/firmware/webideFirmware",
              method:"POST",
+         },(msg)=>{
+             let x =""
+             msg.on("data",(bf:Buffer)=>{
+                x+=bf.toString()                
+             })
+             msg.on("close",()=>{
+                 console.log("--bk:"+x)
+             })
+             msg.on("err",()=>{
+                console.log("--err:"+x)
+            })
          })
          let data =new fm();
          data.append("userId",this.ui.username)
