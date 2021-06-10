@@ -29,7 +29,7 @@ export class  ResearchNotifier{
              path:"/research/firmware/webideFirmware",
              method:"POST",             
              headers:{ ...data.getHeaders(),
-                    cookie:this.ui.cookie
+                    Cookie:this.ui.cookie
                 }
          },(msg)=>{
              let x =""
