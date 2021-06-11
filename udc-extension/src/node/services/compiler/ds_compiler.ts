@@ -116,7 +116,7 @@ export class DistributedCompiler {
               this.outputResult("Compile scc");
               if(tag){
                 this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
-                let url= `http://${DISTRIBUTEDCOMPILER_IP}/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                let url= `/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
                 this.rn.setURL(url)
                 let xx={
                   code:0,
@@ -136,7 +136,7 @@ export class DistributedCompiler {
             let p;
             if(tag){
               this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
-                let url= `http://${DISTRIBUTEDCOMPILER_IP}/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                let url= `/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
                 this.rn.setURL(url)
                 let xx={
                   code:0,

@@ -212,7 +212,8 @@ export class UdcServiceImpl implements UdcService {
     this.fileOpener.openFile(filename)
   }
   setCookie(cookie: string): boolean {
-    return this.udcTerminal.setCookie(cookie);
+  this.userInfo.cookie=cookie
+  return this.udcTerminal.setCookie(cookie);
   }
   outputResult(res: string, types?: string) {
     this.udcTerminal.outputResult(res);
