@@ -181,6 +181,7 @@ export class DeviceViewWidget extends TreeWidget {
           gotoTaoUnity={this.gotoTaoUnity}
           showLocalBurn={this.showLocalBurn}
           openGettingStartPage={this.openGettingStartPage}
+          openOSDev={this.openOSDev}
         />
         {/* <Lamp imgDisplay={this.imgDisplay} lampStatus={this.lampStatus}></Lamp> */}
 
@@ -655,6 +656,9 @@ export class DeviceViewWidget extends TreeWidget {
     this.udcService.openConfigFile(pid);
   };
 
+  openOSDev = () => {
+    this.commandRegistry.executeCommand("OSdev-extension:command");
+  }
   // submitCode = (pid: string) => {
   //   //判断有没有打开scanner.cpp
   //   let isOpened = false;

@@ -1,4 +1,4 @@
-/* @import '~antd/dist/antd.css'; */
+@import '~antd/dist/antd.css';
 
 .App {
   text-align:left;
@@ -16,7 +16,7 @@
   display:table-cell;
 }
 .select_info{
-  height: 72%;
+  height: 75%;
   width: 100%;
   background-color: #2D2D30;
   
@@ -64,7 +64,7 @@
 .project_name{
   background-color: #3F3F46;
   color: white;
-  width: 80%;
+  width:500px;
   border: none;
 }
 .folder_name{
@@ -100,9 +100,18 @@
 .item:hover{
   background-color: #4B6EAF;
 }
+.item:focus{
+  background-color: #4B6EAF;
+}
+.device_select:focus{
+  background-color: #4B6EAF;
+}
 img{
   width: auto;
   height: auto;
   max-width: 90%;
   max-height: 90%;
+}
+.name_input{
+  display: flex;
 }

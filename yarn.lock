@@ -11,11 +11,7 @@
 
 "@ant-design/colors@^6.0.0":
   version "6.0.0"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/@ant-design/colors/download/@ant-design/colors-6.0.0.tgz#9b9366257cffcc47db42b9d0203bb592c13c0298"
-=======
   resolved "https://registry.npm.taobao.org/@ant-design/colors/download/@ant-design/colors-6.0.0.tgz#9b9366257cffcc47db42b9d0203bb592c13c0298"
->>>>>>> 74c221b (add stm32)
   integrity sha1-m5NmJXz/zEfbQrnQIDu1ksE8Apg=
   dependencies:
     "@ctrl/tinycolor" "^3.4.0"
@@ -38,20 +34,12 @@
 
 "@ant-design/icons-svg@^4.0.0":
   version "4.1.0"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/@ant-design/icons-svg/download/@ant-design/icons-svg-4.1.0.tgz#480b025f4b20ef7fe8f47d4a4846e4fee84ea06c"
-=======
   resolved "https://registry.npm.taobao.org/@ant-design/icons-svg/download/@ant-design/icons-svg-4.1.0.tgz#480b025f4b20ef7fe8f47d4a4846e4fee84ea06c"
->>>>>>> 74c221b (add stm32)
   integrity sha1-SAsCX0sg73/o9H1KSEbk/uhOoGw=
 
 "@ant-design/icons@^4.5.0":
   version "4.6.2"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/@ant-design/icons/download/@ant-design/icons-4.6.2.tgz?cache=0&sync_timestamp=1618846964060&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40ant-design%2Ficons%2Fdownload%2F%40ant-design%2Ficons-4.6.2.tgz#290f2e8cde505ab081fda63e511e82d3c48be982"
-=======
   resolved "https://registry.npm.taobao.org/@ant-design/icons/download/@ant-design/icons-4.6.2.tgz#290f2e8cde505ab081fda63e511e82d3c48be982"
->>>>>>> 74c221b (add stm32)
   integrity sha1-KQ8ujN5QWrCB/aY+UR6C08SL6YI=
   dependencies:
     "@ant-design/colors" "^6.0.0"
@@ -1870,11 +1858,7 @@
 
 "@types/history@*":
   version "4.7.8"
-<<<<<<< HEAD
-  resolved "https://registry.npm.taobao.org/@types/history/download/@types/history-4.7.8.tgz?cache=0&sync_timestamp=1613379239144&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fhistory%2Fdownload%2F%40types%2Fhistory-4.7.8.tgz#49348387983075705fe8f4e02fb67f7daaec4934"
-=======
   resolved "https://registry.npm.taobao.org/@types/history/download/@types/history-4.7.8.tgz#49348387983075705fe8f4e02fb67f7daaec4934"
->>>>>>> 74c221b (add stm32)
   integrity sha1-STSDh5gwdXBf6PTgL7Z/farsSTQ=
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
@@ -2026,11 +2010,7 @@
 
 "@types/react-router-dom@^5.1.7":
   version "5.1.7"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/@types/react-router-dom/download/@types/react-router-dom-5.1.7.tgz#a126d9ea76079ffbbdb0d9225073eb5797ab7271"
-=======
   resolved "https://registry.npm.taobao.org/@types/react-router-dom/download/@types/react-router-dom-5.1.7.tgz#a126d9ea76079ffbbdb0d9225073eb5797ab7271"
->>>>>>> 74c221b (add stm32)
   integrity sha1-oSbZ6nYHn/u9sNkiUHPrV5ercnE=
   dependencies:
     "@types/history" "*"
@@ -2039,11 +2019,7 @@
 
 "@types/react-router@*":
   version "5.1.14"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/@types/react-router/download/@types/react-router-5.1.14.tgz?cache=0&sync_timestamp=1620201845142&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Freact-router%2Fdownload%2F%40types%2Freact-router-5.1.14.tgz#e0442f4eb4c446541ad7435d44a97f8fe6df40da"
-=======
   resolved "https://registry.nlark.com/@types/react-router/download/@types/react-router-5.1.14.tgz#e0442f4eb4c446541ad7435d44a97f8fe6df40da"
->>>>>>> 74c221b (add stm32)
   integrity sha1-4EQvTrTERlQa10NdRKl/j+bfQNo=
   dependencies:
     "@types/history" "*"
@@ -2117,6 +2093,14 @@
   dependencies:
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
+
+"@types/shelljs@^0.8.8":
+  version "0.8.8"
+  resolved "https://registry.nlark.com/@types/shelljs/download/@types/shelljs-0.8.8.tgz?cache=0&sync_timestamp=1621243494131&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fshelljs%2Fdownload%2F%40types%2Fshelljs-0.8.8.tgz#e439c69929b88a2c8123c1a55e09eb708315addf"
+  integrity sha1-5DnGmSm4iiyBI8GlXgnrcIMVrd8=
+  dependencies:
+    "@types/glob" "*"
+    "@types/node" "*"
 
 "@types/sizzle@*":
   version "2.3.2"
@@ -4214,6 +4198,11 @@ checksum@^0.1.1:
   integrity sha1-3GUn1MkL6FYNvR7Uzs8yl9Uo6ek=
   dependencies:
     optimist "~0.3.5"
+
+child_process@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npm.taobao.org/child_process/download/child_process-1.0.2.tgz#b1f7e7fc73d25e7fd1d455adc94e143830182b5a"
+  integrity sha1-sffn/HPSXn/R1FWtyU4UODAYK1o=
 
 chokidar@^2.0.2:
   version "2.1.6"
@@ -7320,11 +7309,7 @@ highlight.js@^9.12.0:
 
 history@^4.9.0:
   version "4.10.1"
-<<<<<<< HEAD
-  resolved "https://registry.npm.taobao.org/history/download/history-4.10.1.tgz#33371a65e3a83b267434e2b3f3b1b4c58aad4cf3"
-=======
   resolved "https://registry.nlark.com/history/download/history-4.10.1.tgz#33371a65e3a83b267434e2b3f3b1b4c58aad4cf3"
->>>>>>> 74c221b (add stm32)
   integrity sha1-MzcaZeOoOyZ0NOKz87G0xYqtTPM=
   dependencies:
     "@babel/runtime" "^7.1.2"
@@ -9553,11 +9538,7 @@ mimic-response@^1.0.0:
 
 mini-create-react-context@^0.4.0:
   version "0.4.1"
-<<<<<<< HEAD
-  resolved "https://registry.npm.taobao.org/mini-create-react-context/download/mini-create-react-context-0.4.1.tgz?cache=0&sync_timestamp=1603392178687&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmini-create-react-context%2Fdownload%2Fmini-create-react-context-0.4.1.tgz#072171561bfdc922da08a60c2197a497cc2d1d5e"
-=======
   resolved "https://registry.nlark.com/mini-create-react-context/download/mini-create-react-context-0.4.1.tgz#072171561bfdc922da08a60c2197a497cc2d1d5e"
->>>>>>> 74c221b (add stm32)
   integrity sha1-ByFxVhv9ySLaCKYMIZekl8wtHV4=
   dependencies:
     "@babel/runtime" "^7.12.1"
@@ -10673,11 +10654,7 @@ path-to-regexp@0.1.7:
 
 path-to-regexp@^1.7.0:
   version "1.8.0"
-<<<<<<< HEAD
-  resolved "https://registry.npm.taobao.org/path-to-regexp/download/path-to-regexp-1.8.0.tgz?cache=0&sync_timestamp=1601400247487&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fpath-to-regexp%2Fdownload%2Fpath-to-regexp-1.8.0.tgz#887b3ba9d84393e87a0a0b9f4cb756198b53548a"
-=======
   resolved "https://registry.nlark.com/path-to-regexp/download/path-to-regexp-1.8.0.tgz?cache=0&sync_timestamp=1618847046445&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fpath-to-regexp%2Fdownload%2Fpath-to-regexp-1.8.0.tgz#887b3ba9d84393e87a0a0b9f4cb756198b53548a"
->>>>>>> 74c221b (add stm32)
   integrity sha1-iHs7qdhDk+h6CgufTLdWGYtTVIo=
   dependencies:
     isarray "0.0.1"
@@ -11831,11 +11808,7 @@ rc-util@^4.0.4, rc-util@^4.1.1, rc-util@^4.13.0, rc-util@^4.15.3, rc-util@^4.15.
 
 rc-util@^5.9.4:
   version "5.12.2"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/rc-util/download/rc-util-5.12.2.tgz#41572687a2cd174fdaec028da756d288e398e9f8"
-=======
   resolved "https://registry.nlark.com/rc-util/download/rc-util-5.12.2.tgz?cache=0&sync_timestamp=1620285199919&other_urls=https%3A%2F%2Fregistry.nlark.com%2Frc-util%2Fdownload%2Frc-util-5.12.2.tgz#41572687a2cd174fdaec028da756d288e398e9f8"
->>>>>>> 74c221b (add stm32)
   integrity sha1-QVcmh6LNF0/a7AKNp1bSiOOY6fg=
   dependencies:
     "@babel/runtime" "^7.12.5"
@@ -11917,11 +11890,7 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
 
 react-router-dom@^5.2.0:
   version "5.2.0"
-<<<<<<< HEAD
-  resolved "https://registry.npm.taobao.org/react-router-dom/download/react-router-dom-5.2.0.tgz?cache=0&sync_timestamp=1592608787345&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Freact-router-dom%2Fdownload%2Freact-router-dom-5.2.0.tgz#9e65a4d0c45e13289e66c7b17c7e175d0ea15662"
-=======
   resolved "https://registry.nlark.com/react-router-dom/download/react-router-dom-5.2.0.tgz?cache=0&sync_timestamp=1618846865798&other_urls=https%3A%2F%2Fregistry.nlark.com%2Freact-router-dom%2Fdownload%2Freact-router-dom-5.2.0.tgz#9e65a4d0c45e13289e66c7b17c7e175d0ea15662"
->>>>>>> 74c221b (add stm32)
   integrity sha1-nmWk0MReEyieZsexfH4XXQ6hVmI=
   dependencies:
     "@babel/runtime" "^7.1.2"
@@ -12500,11 +12469,7 @@ resolve-from@^3.0.0:
 
 resolve-pathname@^3.0.0:
   version "3.0.0"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/resolve-pathname/download/resolve-pathname-3.0.0.tgz#99d02224d3cf263689becbb393bc560313025dcd"
-=======
   resolved "https://registry.npm.taobao.org/resolve-pathname/download/resolve-pathname-3.0.0.tgz#99d02224d3cf263689becbb393bc560313025dcd"
->>>>>>> 74c221b (add stm32)
   integrity sha1-mdAiJNPPJjaJvsuzk7xWAxMCXc0=
 
 resolve-url@^0.2.1:
@@ -12888,6 +12853,15 @@ shelljs@^0.8.0:
   version "0.8.3"
   resolved "https://registry.npm.taobao.org/shelljs/download/shelljs-0.8.3.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fshelljs%2Fdownload%2Fshelljs-0.8.3.tgz#a7f3319520ebf09ee81275b2368adb286659b097"
   integrity sha1-p/MxlSDr8J7oEnWyNorbKGZZsJc=
+  dependencies:
+    glob "^7.0.0"
+    interpret "^1.0.0"
+    rechoir "^0.6.2"
+
+shelljs@^0.8.4:
+  version "0.8.4"
+  resolved "https://registry.npm.taobao.org/shelljs/download/shelljs-0.8.4.tgz#de7684feeb767f8716b326078a8a00875890e3c2"
+  integrity sha1-3naE/ut2f4cWsyYHiooAh1iQ48I=
   dependencies:
     glob "^7.0.0"
     interpret "^1.0.0"

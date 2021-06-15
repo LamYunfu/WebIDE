@@ -30,6 +30,7 @@ import { CallInfoStorer } from './services/log/call_info_storer';
 import { BehaviorRecorder } from './services/behavior_recorder/behavior_recorder';
 import { MultiProjectData } from './data_center/multi_project_data';
 import { LdcLogger } from './services/ldc/new_ldc/new_ldc';
+import { OSTemplate } from './services/file_template/os_template';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -60,8 +61,17 @@ export class UdcServiceImpl implements UdcService {
     @inject(ProjectData) protected pData: ProjectData,
     @inject(MultiProjectData) protected mpData: MultiProjectData,
     @inject(Kubedge) readonly kubedge:Kubedge,
-    @inject(LdcLogger) protected ldcLogger:LdcLogger
+    @inject(LdcLogger) protected ldcLogger:LdcLogger,
+  //  @inject(OSTemplate) protected osTemplate:OSTemplate
   ) { }
+  //搜索单个文件
+  // searchFile(file_path: string){
+  //   this.osTemplate.downLoadSingleFile(file_path);
+  // } 
+  // //设置相关参数
+  // setParam(os_name: string, os_version: string, rootDir: string){
+  //   this.osTemplate.setParam(os_name,os_version,rootDir);
+  // }
   setExperimentName(name: string){
     this.behaviorRecorder.en=name
 

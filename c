@@ -14,6 +14,8 @@ cd ../haas100_widget
 yarn prepare
 cd ../wizard-extension
 yarn prepare
+cd ../os-dev-extension
+yarn prepare
 cd ../guild-page-extension
 yarn prepare
 ##cd ./plugins/unity

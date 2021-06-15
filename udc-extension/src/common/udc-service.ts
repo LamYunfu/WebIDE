@@ -91,4 +91,7 @@ export interface UdcService {
   judge:(res:string)=>void
   close:()=>void
   serialPortInput: (message:string) => void
+  //操作系统库开发下载单个文件和设置相关参数
+  // searchFile:(file_path:string) => void
+  // setParam:(os_name:string, os_version:string, rootDir:string) => void
 }

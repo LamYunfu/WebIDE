@@ -30,7 +30,7 @@
     },
     "include": [
         "src"
-    ],
+, "../stm32_widget/src/browser/new-editor-manager.ts"    ],
     "exclude": [
         "lib",
         "**/test",

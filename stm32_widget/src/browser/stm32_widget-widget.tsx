@@ -83,19 +83,19 @@ export class STM32Widget extends ReactWidget {
 
   //reset按钮点击时响应事件
   protected reset(){
-    alert("resetdown");
+    //alert("resetdown");
     //this.udcService.serialPortInput("reset key down");
   }
 
   //k1按钮点击时响应事件
   protected k1(){  
-    alert("key1down");
+    //alert("key1down");
     this.udcService.serialPortInput("key1down\r\n");
   }
 
   //k2按钮点击时响应事件
   k2(){
-    alert("key2down");
+    //alert("key2down");
     //console.log("k2是否被成功点击" + this.stmBackService.sendMessage("K2 key down test"));
     this.udcService.serialPortInput("key2down\r\n");
     //this.lamp.lightChange([0,0,1]);

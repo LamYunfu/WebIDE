@@ -54,7 +54,8 @@ import {Esp32WidgetFactory} from "esp32_widget/lib/browser/esp32-widget-factory"
 //import {STM32WidgetFactory} from "stm32_widget/lib/browser/stm32-widget-factory";
 import {HaaS100WidgetFactory} from "haas100_widget/lib/browser/haas100-widget-factory";
 import {STM32WidgetFactory} from "stm32_widget/lib/browser/stm32-widget-factory";
-import {DrawboardViewService} from "drawboard-extension/lib/browser/drawboard-view-service"
+import {DrawboardViewService} from "drawboard-extension/lib/browser/drawboard-view-service";
+import {OSdevExtensionWidget} from "os-dev-extension/lib/browser/os-dev-extension-widget";
 
 export const UdcExtensionCommand = {
   id: "UdcExtension.command",
@@ -123,6 +124,11 @@ export namespace UdcCommands {
     category: UDC_MENU_CATEGORY,
     label: "local_compile_burn",
   };
+  export const lib_compile_burn: Command = {
+    id:"udc.menu.lib_compile_burn",
+    category:UDC_MENU_CATEGORY,
+    label:"library_compile_burn",
+  }
   export const PrintLog: Command = {
     id: "printLog",
     category: UDC_MENU_CATEGORY,
@@ -251,6 +257,11 @@ export namespace UdcCommands {
     category:PROJECT_MENU_CATEGORY,
     label:"NewProject"
   }
+  export const OSView:Command={
+    id:"osDev",
+    category:PROJECT_MENU_CATEGORY,
+    label:"System Development"
+  }
 }
 
 @injectable()
@@ -316,7 +327,8 @@ export class UdcExtensionCommandContribution
     @inject(DrawboardViewService) readonly drawboardFactory: DrawboardViewService,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
     @inject(UI_Setting) readonly ui_Setting:UI_Setting,
-    @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory
+    @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory,
+    @inject(OSdevExtensionWidget) protected osDev:OSdevExtensionWidget
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -673,6 +685,11 @@ export class UdcExtensionCommandContribution
         this.ds.submitOnMenu();
       },
     });
+    registry.registerCommand(UdcCommands.lib_compile_burn, {
+      execute: () => {
+          this.osDev.libRemoteBurn();
+      }
+    })
     registry.registerCommand(UdcCommands.LocalBurn, {
       execute: () => {
         // this.applicationShell.activateWidget("files")
@@ -711,6 +728,12 @@ export class UdcExtensionCommandContribution
     registry.registerCommand(UdcCommands.wizardView,{
       execute:()=>{
        registry.executeCommand("wizard-extension:command")
+      }
+    })
+    //注册打开System Development命令
+    registry.registerCommand(UdcCommands.OSView,{
+      execute:()=>{
+       registry.executeCommand("OSdev-extension:command")
       }
     })
     this.kr.registerKeybinding({
@@ -790,11 +813,23 @@ export class UdcExtensionMenuContribution implements MenuContribution {
         icon: "x",
         order: "a_1",
       });
+      menus.registerMenuAction([...UdcMenus.project], {
+        commandId: UdcCommands.OSView.id,
+        label: "System Development",
+        icon: "x",
+        order: "a_2",
+      });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.SubmitOnMenu.id,
         label: "Remote Burn",
         icon: "x",
         order: "a_2",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.lib_compile_burn.id,
+        label: "Library Remote Burn",
+        icon: "x",
+        order: "a_3",
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         

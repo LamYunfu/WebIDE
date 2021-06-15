@@ -28,6 +28,7 @@
     "stm32_widget",
     "haas100_widget",
     "wizard-extension",
+    "os-dev-extension",
     "guild-page-extension"
   ],
   "dependencies": {
@@ -45,6 +46,7 @@
     "@theia/plugin-ext-vscode": "^0.8.0",
     "@theia/preferences": "^0.8.0",
     "@theia/preview": "^0.8.0",
+    "@theia/python": "^0.8.0",
     "@theia/search-in-workspace": "^0.8.0",
     "@theia/terminal": "^0.8.0",
     "@types/adm-zip": "^0.4.33",
@@ -58,6 +60,7 @@
     "alibabacloud-iot-device-sdk": "^1.2.8",
     "antd": "^3.26.11",
     "archiver": "^3.1.1",
+    "child_process": "^1.0.2",
     "colors": "^1.4.0",
     "inversify": "^5.0.1",
     "jquery": "^3.4.1",
@@ -68,11 +71,10 @@
     "react-autosize-textarea": "^7.1.0",
     "react-virtualized": "^9.22.3",
     "rhea": "^1.0.12",
+    "shelljs": "^0.8.4",
     "ts-node": "^8.10.2",
     "unzip": "^0.1.11",
     "ws": "^7.1.2",
-    "yarn": "^1.21.1",
-    "@theia/python": "^0.8.0"
-
+    "yarn": "^1.21.1"
   }
 }

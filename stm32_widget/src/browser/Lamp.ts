@@ -39,7 +39,7 @@ export class Lamp {
     ctx.closePath();
     ctx.stroke();
     //画指向灯的线
-   // this.drawASlot();
+    //this.drawASlot();
     this.save();
     this.color = "#C7C3C4";
     //绘制灯
@@ -61,7 +61,7 @@ export class Lamp {
       3 + this.marginY,
       0.9 * this.marginX,
       0.7 * this.marginY,
-      "light"
+      "button"
     );
   }
   
@@ -159,24 +159,7 @@ export class Lamp {
     this.paint();
   }
 
-  async blink() {
-    while (true) {
-      await new Promise((res) => {
-        setTimeout(() => {
-//          res();
-        }, 1000);
-      });
-      this.save();
-      this.paint();
-      // alert("fasd");
-      await new Promise((res) => {
-        setTimeout(() => {
-//          res();
-        }, 3000);
-      });
-      await this.restore();
-    }
-  }
+  
 
   /**
    * 保存当前的canvas图像，将其压入栈中

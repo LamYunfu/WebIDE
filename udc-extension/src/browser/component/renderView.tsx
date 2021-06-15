@@ -15,13 +15,14 @@ import {
   TEACHER_PPID_URL,
 } from "../../setting/front-end-config";
 import { LinkEdgeView, Input } from "./linkedge";
-import { OneLinkView } from "./onelink-view";
+import { OneLinkView } from "./onelink-view"; 
 import { ProjectCreator } from "../projectCreator";
 import { FreeCodingDisplay } from "./freecoding-view-display";
 import { DisplayBoard } from "./display-board";
 import { CallSymbol } from "../../setting/callsymbol";
 import { TaoFactoryView } from "./taoFactory-view";
 import { DiyMainView } from "../diy/diy-main-view";
+import {OsDevView} from "./osDev-view";
 import { UI_Setting } from "../isEnable";
 import { UdcService } from "../../common/udc-service";
 import {GettingStart} from "./getting-started";
@@ -152,6 +153,8 @@ export namespace View {
     showLocalBurn:()=>void;
     ui_setting:UI_Setting;
     openGettingStartPage: ()=>void;
+    //打开系统开发的界面
+    openOSDev:()=>void;
   }
   export interface State {
  
@@ -2111,12 +2114,54 @@ export class View extends React.Component<View.Props, View.State> {
         showLocalBurn={_this.props.showLocalBurn}
       />
     </MyContext.Provider>
-    ): this.state.viewType == "15" ? (
+    ):  this.state.viewType == "15" ? (
       // this.state.viewType == "5" ?
       <GettingStart openGettingStartPage={this.props.openGettingStartPage}/>
+    ): (this.state.viewType ) == "18" ? (
+      //自由编程
+      <MyContext.Provider
+        value={{
+          showTheDefaultFreeCodingView: async () => {
+            await this.props.openShell();
+            await this.props.openFileView();
+          },
+          setClickTime: () => {
+            _this.clickTime = new Date().getTime();
+          },
+          setOptionDescription: (a: string) => {
+            _this.setOptionDescription(a);
+          },
+          setOptionChoicesDescription: (a: JSX.Element[]) => {
+            _this.setOptionChoicesDescription(a);
+          },
+          setState: (tmp: object) => {
+            _this.setState({
+              ...tmp,
+            });
+          },
+          getState: (key: string) => {
+            let tmp: any = this.state;
+            return tmp[key];
+          },
+          props: _this.props,
+        }}
+      >
+      <OsDevView
+        initPid={this.props.initPid}
+        openShell={this.props.openShell}
+        section={{ ppid: [_this.ppid], sid: "experiment" }}
+        title={this.title}
+        config={_this.props.config}
+        say={_this.props.say}
+        outputResult={_this.props.outputResult}
+        initPidQueueInfo={_this.props.initPidQueueInfo}
+        openOSDev={_this.props.openOSDev}
+      />
+      </MyContext.Provider>
     ) :
      (
-      <div></div>
+      <div>
+      </div>
     ));
   }
 }

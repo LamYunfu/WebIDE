@@ -42,7 +42,8 @@ import {
   bindViewContribution,
   FrontendApplicationContribution,
   WidgetFactory,
-  TreeDecoratorService
+  TreeDecoratorService,
+  OpenHandler
 } from "@theia/core/lib/browser";
 import { createCommonBindings } from "../common/udc-common-module";
 import {
@@ -55,7 +56,7 @@ import "../../src/browser/styles/index.css";
 import { LampWidget } from "./lamp";
 import { DebugAdapterContribution } from "@theia/debug/lib/common/debug-model";
 import { NewWidgetFactory } from "new_widget/lib/browser/new-widget-factory";
-export default new ContainerModule((bind: interfaces.Bind) => {
+export default new ContainerModule((bind, _unbind, _isBound) => {
   // bind(DebugAdapterSessionFactory).to(debugAdapterSessionFactory);
   // bind(DebugAdapterContribution).to(DAC);
   bind(CommandContribution).to(UdcExtensionCommandContribution);
@@ -106,7 +107,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
   bind(ViewContainer)
     .toSelf()
     .inSingletonScope();
-    bind(LocalBurnData) .toSelf().inSingletonScope()
+    bind(LocalBurnData) .toSelf().inSingletonScope();
 });
 
 function createDeviceViewWeiget(

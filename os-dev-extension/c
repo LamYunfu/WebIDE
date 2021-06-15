@@ -1,0 +1,6 @@
+pwd
+yarn  prepare 
+cd ../browser-app
+pwd
+yarn theia build --mode development
+yarn start
