@@ -16,4 +16,7 @@ export class LocalBurnerNotifier{
         
         this.ldcShell.executeFrontCmd({name:"local_burn",passwd:url})    
     }
+    notifyResearch(url:string){       
+        this.ldcShell.executeFrontCmd({name:"research",passwd:url})    
+    }
 }

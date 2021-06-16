@@ -109,6 +109,7 @@ export class DistributedCompiler {
               resolve("error");
               return 
             }
+            
             else if (ob["msg"] == "completed") {
               console.log("-----entry-----")
               this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
@@ -126,7 +127,7 @@ export class DistributedCompiler {
                   }
 
                 }
-                this.lbn.notify(JSON.stringify(xx))
+                this.lbn.notifyResearch(JSON.stringify(xx))
               }
              
               // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
@@ -146,7 +147,7 @@ export class DistributedCompiler {
                   }
 
                 }
-                this.lbn.notify(JSON.stringify(xx))
+                this.lbn.notifyResearch(JSON.stringify(xx))
             }
             // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
             console.log("-----eeeee-----")

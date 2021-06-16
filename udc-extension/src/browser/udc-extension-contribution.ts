@@ -362,7 +362,14 @@ export class UdcExtensionCommandContribution
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'text/plain'
         });
-        if(this.outExperimentSetting.expType=="research"){
+          fetch(`http://localhost:${this.lbd.port}${data.passwd}`,
+          {
+              method: 'GET',
+              headers: myHeaders,
+              mode: 'cors'
+          })
+          return;
+        } else if( data.name=="research"&&this.outExperimentSetting.expType=="research"){
           console.log("research!!!")
           let ob ={
             code:0,
@@ -375,14 +382,6 @@ export class UdcExtensionCommandContribution
           window.opener.postMessage(JSON.stringify(ob),"*")        
           return
         }     
-          fetch(`http://localhost:${this.lbd.port}${data.passwd}`,
-          {
-              method: 'GET',
-              headers: myHeaders,
-              mode: 'cors'
-          })
-          return;
-        } 
         else if (data.name == "redirect") {
           // // this.url=data.passwd
           this.ds.openTinyMobile(data.passwd);
