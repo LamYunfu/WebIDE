@@ -36,7 +36,8 @@ export class  ResearchNotifier{
              msg.on("data",(bf:Buffer)=>{
                 x+=bf.toString("utf8")                
              })
-             msg.on("close",()=>{
+	     msg.on("close",()=>{
+	     	 console.log("state:"+msg.statusCode +"cookie:"+rq.getHeader("Cookie"))
                  console.log("--bk:"+x)
              })
              msg.on("err",()=>{
