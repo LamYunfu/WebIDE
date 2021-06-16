@@ -27,7 +27,7 @@ RUN chmod g+rw /home && \
     chown -R theia:theia /home/theia && \
     chown -R theia:theia /home/project;
 #RUN apk add  git openssh bash
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && apk add openssh make gcc g++ python3 python3-dev bash 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && apk add openssh make gcc g++ python3 python3-dev bash  git
 RUN pip3 install python-language-server  -i https://pypi.tuna.tsinghua.edu.cn/simple && ln -s /usr/bin/python3 /usr/bin/python
 ENV HOME /home/theia
 WORKDIR /home/theia
