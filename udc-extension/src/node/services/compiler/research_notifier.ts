@@ -46,7 +46,7 @@ export class  ResearchNotifier{
          })
        
          data.append("userId",this.ui.username)
-         data.append("firewareName",this.pd.subProjectArray[0])
+         data.append("firewareName",this.pd.projectRootDir)
          data.append("firmwareUrl",url)
          data.append("descriptions","none")
          data.append("compileType",this.pd.subCompileTypes[0])
