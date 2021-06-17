@@ -1,3 +1,4 @@
+import { LdcShellInterface } from './../ldc_shell/interfaces/ldc_shell_interface';
 import { ProjectData } from './../../data_center/project_data';
 import { RESEARCHING_API } from './../../../setting/backend-config';
 import * as https from "https"
@@ -14,7 +15,8 @@ export function bindResearchNotifier(bind: interfaces.Bind) {
 export class  ResearchNotifier{
     url:string=""
     constructor(@inject(ProjectData) protected readonly pd:ProjectData,
-    @inject(UserInfo) protected readonly ui:UserInfo
+    @inject(UserInfo) protected readonly ui:UserInfo,
+    @inject(LdcShellInterface) protected shell:LdcShellInterface
     ){
         
     }
@@ -22,6 +24,7 @@ export class  ResearchNotifier{
         this.url=url
     }
      notify(){
+         let _this=this
         let url =this.url
         let data =new fm();
         let rq=  http.request({
@@ -38,9 +41,11 @@ export class  ResearchNotifier{
              })
 	     msg.on("close",()=>{
 	     	 console.log("state:"+msg.statusCode +"cookie:"+rq.getHeader("Cookie"))
+                _this.shell.outputResult("Save binary success","sys")
                  console.log("--bk:"+x)
              })
              msg.on("err",()=>{
+                _this.shell.outputResult("Save binary error","sys")
                 console.log("--err:"+x)
             })
          })
