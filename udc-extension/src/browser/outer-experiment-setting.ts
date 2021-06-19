@@ -10,7 +10,7 @@ export class OutExperimentSetting{//需要依靠其他组件实现的实验设�
         return this._expType;
     }
     public set expType(value: string) {
-
+        this.udc.setOutExperimentSetting(value)
         this._expType = value;
     }
     
