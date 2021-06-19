@@ -128,6 +128,11 @@ export class ExperimentController {
         projectData.subHexFileDirs[i],
         "sketch.hex"
       );
+       if (projectData.subCompileTypes[i].trim() == "Python3Exec"&& this.outExperimentSetting=="research") { 
+        this.researchNotifier.notifyPath()
+        return true
+        
+      }
       this.outputResult(`Compiling ${this.projectData.subProjectArray[i]}...`)
       if (projectData.subCompileTypes[i].trim() == "tinylink") {
         let fa = fs.readdirSync(srcPath)
@@ -158,6 +163,7 @@ export class ExperimentController {
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
     this.behaviorRecorder.compile()
+    
     for (let i in projectData.subProjectArray) {
       let srcPath = path.join(
         this.multiProjectData.rootDir,

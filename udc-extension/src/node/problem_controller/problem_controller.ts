@@ -135,7 +135,7 @@ export class ProblemController {
             }
             this.dService.copyDataFromDataMap(pid)
             this.dService.resetProgramData()
-            await this.experimentController.submitLocal(tag) && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 1000000)
+            await this.experimentController.submitLocal(tag) && await this.eventCenter.waitNmsForBackValue<boolean>(this.eventDefinition.programState, 10000000)
 
         } catch (error) {
             this.outputResult(error, "error")
