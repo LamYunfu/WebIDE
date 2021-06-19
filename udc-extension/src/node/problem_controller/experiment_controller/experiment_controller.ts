@@ -79,10 +79,7 @@ export class ExperimentController {
         let fa = fs.readdirSync(srcPath)
         pa.push(this.tinyLinkCompiler.compile(path.join(srcPath, fa[0]), i))
       } 
-      else if (projectData.subCompileTypes[i].trim() == "Python3Exec"&& this.outExperimentSetting=="research") { 
-        this.researchNotifier.notifyPath()
-        
-      }else {
+      else {
         console.log("submitQueue projectData.language is " + projectData.language);
 
           pa.push(

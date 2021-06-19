@@ -314,7 +314,7 @@ export class View extends React.Component<View.Props, View.State> {
           let time = new Date().toISOString().replace(/T|Z/gi, " ");
           _this.props.storeCallInfo(time, "end", CallSymbol.QUIF, 0);
           if(data.data.isResearch==1){
-            this.props.deviceWidget.oes.expType="research"
+            _this.props.deviceWidget.oes.expType="research"
           }
           $(".userName").text(data.data.uname);                //将用户名显示到webide界面上？可能已经废弃
           ////alert(data.data.JSESSIONID)

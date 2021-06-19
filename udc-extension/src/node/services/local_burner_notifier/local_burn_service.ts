@@ -13,6 +13,7 @@ import { TinyLinkCompiler } from "../compiler/tiny_link_compiler";
 import { Indicator } from "../indicator/indicator";
 import * as path from "path";
 import * as fs from "fs";
+import { ResearchNotifier } from "../compiler/research_notifier";
 export function bindLocalBurnService( bind :interfaces.Bind){
   bind(LocalBurningService).toSelf().inSingletonScope();
   
@@ -40,7 +41,8 @@ export class LocalBurningService{
         @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
         @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
         @inject(TinyLinkCompiler) protected tinyLinkCompiler: TinyLinkCompiler,
-        @inject(Indicator) protected waitingIndicator:Indicator
+        @inject(Indicator) protected waitingIndicator:Indicator,
+        @inject(ResearchNotifier) readonly researchNotifier:ResearchNotifier
       ) { }
       async submitQueue(): Promise<boolean> {    
         let projectData = this.projectData;
@@ -63,7 +65,10 @@ export class LocalBurningService{
           if (projectData.subCompileTypes[i].trim() == "tinylink") {
             let fa = fs.readdirSync(srcPath)
             pa.push(this.tinyLinkCompiler.compile(path.join(srcPath, fa[0]), i))
-          } else {
+          } if (projectData.subCompileTypes[i].trim() == "Python3Exec"&& this.outExperimentSetting=="research") { 
+            this.researchNotifier.notifyPath()
+            
+          }else {
             pa.push(
               this.dsc.compile(
                 srcPath,
