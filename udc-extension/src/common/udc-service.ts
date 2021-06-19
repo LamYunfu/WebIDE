@@ -92,4 +92,5 @@ export interface UdcService {
   close:()=>void
   serialPortInput: (message:string) => void
   notifyResearcher:()=>void
+  setOutExperimentSetting:(type:string)=>void
 }

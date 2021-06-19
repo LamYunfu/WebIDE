@@ -21,7 +21,7 @@ export function bindCommandExecute(bind: interfaces.Bind) {
     .inSingletonScope();
 }
 
-
+//暂时应该没用到，负责执行ldc 的一些指令
 
 @injectable()
 export class RunCommand {

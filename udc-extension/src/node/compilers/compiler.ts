@@ -1,3 +1,5 @@
+
+//  file is deprecated 
 import { NewContikiCompiler } from "./contiki-complier";
 import { NewAliosCompiler } from "./new-alios-compiler";
 import { Logger } from "../util/logger";
@@ -17,6 +19,8 @@ import { BoardAndCompileType } from "./boardtocompilemethod";
 /*
 编译
 */
+
+
 export class Compiler {
   constructor(
     @inject(BoardAndCompileType) readonly bat: BoardAndCompileType,

@@ -1,4 +1,4 @@
-// import { getCompilerType } from './../globalconst';
+//file is deprecated
 import { UdcTerminal } from "./udc-terminal";
 import { FileMapper } from "./filemapper";
 import { Logger } from "./logger";

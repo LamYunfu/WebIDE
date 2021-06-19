@@ -1,3 +1,4 @@
+//file is deprecated
 import { LocalBurningService } from './../services/local_burner_notifier/local_burn_service';
 import { DisplayBoardBackEnd } from './../services/displayboard/displayboard';
 import { ConfigSetter } from "./configsetter";

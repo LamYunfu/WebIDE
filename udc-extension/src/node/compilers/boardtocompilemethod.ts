@@ -1,3 +1,5 @@
+
+//  file is deprecated 
 import { injectable } from "inversify";
 export type BoardInfo = {
   possibleBoardName: string;

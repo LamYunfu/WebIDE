@@ -1,3 +1,4 @@
+//file is deprecated
 import { injectable } from "inversify";
 
 @injectable()

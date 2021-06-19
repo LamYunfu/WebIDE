@@ -1,3 +1,4 @@
+import { ExperimentController } from './problem_controller/experiment_controller/experiment_controller';
 import { Kubedge } from './services/edge/kubedge';
 import { ProjectData } from './data_center/project_data';
 import { DisplayBoardBackEnd } from './services/displayboard/displayboard';
@@ -62,7 +63,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(MultiProjectData) protected mpData: MultiProjectData,
     @inject(Kubedge) readonly kubedge:Kubedge,
     @inject(LdcLogger) protected ldcLogger:LdcLogger,
-    @inject(ResearchNotifier) protected rn :ResearchNotifier
+    @inject(ResearchNotifier) protected rn :ResearchNotifier,
+    @inject(ExperimentController) readonly experimentController:ExperimentController
   ) { }
   setExperimentName(name: string){
     this.behaviorRecorder.en=name
@@ -386,5 +388,8 @@ export class UdcServiceImpl implements UdcService {
   }
   notifyResearcher(){
     this.rn.notify()
+  }
+  setOutExperimentSetting(type:string){
+      this.experimentController.outExperimentSetting=type
   }
 }

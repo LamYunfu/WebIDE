@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+//存储用户的信息
 @injectable()
 export class UserInfo {
   private _username: string = "";

@@ -1,6 +1,7 @@
 import { injectable } from "inversify";
 import { NewLineKind } from "typescript";
 export type LoginType = "adhoc" | "queue" | string;
+//这里记录了当前实验的一些信息
 @injectable()
 export class ProjectData {
   protected _projectRootDir: string = `串口打印(AliOS)`;

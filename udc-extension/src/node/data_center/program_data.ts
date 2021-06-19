@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+//定义了两种烧写模型，一种是Adhoc 独占式 一种是 queue 队列
 export class QueueBurnElem {
   model: string = "";
   waitingId: string = (

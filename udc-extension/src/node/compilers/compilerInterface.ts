@@ -1,3 +1,5 @@
+
+//  file is deprecated 
 export interface CompilerInterFace{
     archiveFile(fileDir:string,out:string):Promise<string>
     config(data:any):Promise<string>

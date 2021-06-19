@@ -22,7 +22,7 @@ export function bindDistributedCompiler(bind: interfaces.Bind) {
     .inSingletonScope();
 }
 @injectable()
-export class DistributedCompiler {
+export class DistributedCompiler { //分布式编译器
   //   constructor(@inject(UdcTerminal) readonly udc: UdcTerminal) {}
   constructor(
     @inject(LdcShellInterface) readonly ldcShell: LdcShellInterface,
@@ -244,7 +244,7 @@ export class DistributedCompiler {
     });
     return await p;
   }
-  async queryCompileStatus(path: string, output: string,tag:boolean=false) {
+  async queryCompileStatus(path: string, output: string,tag:boolean=false) {//查询编译状态至编译结束
     console.log("query compile status!")
     let p = new Promise<string>((resolve) => {
       console.log(p);

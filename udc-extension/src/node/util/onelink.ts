@@ -1,3 +1,4 @@
+//file is deprecated
 import { injectable, inject } from "inversify";
 import { UdcTerminal } from "./udc-terminal";
 import * as fs from "fs";

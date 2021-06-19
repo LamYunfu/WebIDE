@@ -7,7 +7,7 @@ import { UdcTerminal } from "../util/udc-terminal";
 import * as http from "http";
 import { Logger } from "../util/logger";
 import { RootDirPath } from "../../setting/backend-config";
-
+//  file is deprecated 
 @injectable()
 export class AliosCompiler {
   constructor(

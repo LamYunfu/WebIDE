@@ -6,9 +6,8 @@ import * as Hs from "http"
 import * as fm from "form-data"
 const host  ="api.tinylink.cn"
 const path ="/userActivity/record"
-// type Behavior={
-  
-// }
+
+// 记录用户的行为
 class Behavior{    
     constructor(UID:string,activityName:string,startTime:number,activityId:string){
         this.UID=UID

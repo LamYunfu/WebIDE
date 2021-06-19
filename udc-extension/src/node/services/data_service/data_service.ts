@@ -42,7 +42,7 @@ export class DataService {
     }
   }
 
-  async initDataMapFromFrontEnd(info: string): Promise<boolean> {
+  async initDataMapFromFrontEnd(info: string): Promise<boolean> { // 根据前端传过来的的数据来初始化数据
     console.log("----:" + info)
     try {
       let ob: {
@@ -133,7 +133,7 @@ export class DataService {
       return false;
     }
   }
-  async copyDataFromDataMap(pid: string): Promise<boolean> {
+  async copyDataFromDataMap(pid: string): Promise<boolean> { 
     try {
       Object.assign(this.projectData, this.multiProjectData.dataMap[pid]);
       return true;

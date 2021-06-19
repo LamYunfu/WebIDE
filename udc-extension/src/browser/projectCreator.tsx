@@ -1,3 +1,5 @@
+
+//deprecated
 import * as React from "react";
 import { Input, Selection } from "./component/linkedge";
 export namespace ProjectCreator {
