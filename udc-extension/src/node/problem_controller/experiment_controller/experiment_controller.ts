@@ -14,6 +14,7 @@ import { MultiProjectData } from "../../data_center/multi_project_data";
 import * as fs from "fs-extra"
 import { Indicator } from '../../services/indicator/indicator';
 import { BehaviorRecorder } from '../../services/behavior_recorder/behavior_recorder';
+import { ResearchNotifier } from '../../services/compiler/research_notifier';
 @injectable()
 export class ExperimentController {
   constructor(
@@ -37,8 +38,16 @@ export class ExperimentController {
     @inject(MultiProjectData) protected multiProjectData: MultiProjectData,
     @inject(TinyLinkCompiler) protected tinyLinkCompiler: TinyLinkCompiler,
     @inject(Indicator) protected waitingIndicator: Indicator,
-    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder
+    @inject(BehaviorRecorder) readonly behaviorRecorder:BehaviorRecorder,
+    @inject(ResearchNotifier) readonly researchNotifier:ResearchNotifier
   ) { }
+  private _outExperimentSetting: string;
+  public get outExperimentSetting(): string {
+    return this._outExperimentSetting;
+  }
+  public set outExperimentSetting(value: string) {
+    this._outExperimentSetting = value;
+  }
   async submitQueue(): Promise<boolean> {
     this.behaviorRecorder.submit()
     let projectData = this.projectData;
@@ -69,7 +78,8 @@ export class ExperimentController {
       if (projectData.subCompileTypes[i].trim() == "tinylink") {
         let fa = fs.readdirSync(srcPath)
         pa.push(this.tinyLinkCompiler.compile(path.join(srcPath, fa[0]), i))
-      } else {
+      } 
+      else {
         console.log("submitQueue projectData.language is " + projectData.language);
 
           pa.push(
@@ -118,6 +128,11 @@ export class ExperimentController {
         projectData.subHexFileDirs[i],
         "sketch.hex"
       );
+       if (projectData.subCompileTypes[i].trim() == "Python3Exec"&& this.outExperimentSetting=="research") { 
+        this.researchNotifier.notifyPath()
+        return true
+        
+      }
       this.outputResult(`Compiling ${this.projectData.subProjectArray[i]}...`)
       if (projectData.subCompileTypes[i].trim() == "tinylink") {
         let fa = fs.readdirSync(srcPath)
@@ -148,6 +163,7 @@ export class ExperimentController {
     let projectData = this.projectData;
     let pa: Promise<boolean>[] = [];
     this.behaviorRecorder.compile()
+    
     for (let i in projectData.subProjectArray) {
       let srcPath = path.join(
         this.multiProjectData.rootDir,

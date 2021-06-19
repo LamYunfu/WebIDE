@@ -22,7 +22,7 @@ export function bindTinyLinkCompiler(bind: interfaces.Bind) {
     .inSingletonScope();
 }
 @injectable()
-export class TinyLinkCompiler {
+export class TinyLinkCompiler { //编译tinylink的源码
   constructor(
     @inject(CallInfoStorer) readonly cis: CallInfoStorer,
     @inject(UserInfo) protected uif: UserInfo,

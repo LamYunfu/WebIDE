@@ -1,5 +1,7 @@
 import { injectable } from "inversify";
 import { JsonObject, JsonProperty } from "json2typescript";
+//这是一个使用了json2typescript来解析config json 的文件 这里定义了解析的模板
+
 // export type QueueConfigSetting = {
 //   version: "1.0.0";
 //   usage: "queue";
@@ -19,6 +21,7 @@ import { JsonObject, JsonProperty } from "json2typescript";
 //     }
 //   ];
 // };
+
 @JsonObject("QueueBurnDetail")
 class QueueBurnDetail {
   @JsonProperty("model", String)

@@ -32,7 +32,9 @@
         "src"
 , "../stm32_widget/src/browser/new-editor-manager.ts"    ],
     "exclude": [
-        "lib",
+        "lib/*",
+	"node_modules",
+	"*/lib",
         "**/test",
         "**/*.spec.ts"
     ]

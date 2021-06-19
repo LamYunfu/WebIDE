@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import { JsonObject, JsonProperty } from "json2typescript";
+//这里定义了人工智能实验config.json 的模板
 @injectable()
 @JsonObject("TrainDataElement")
 export class TrainDataElement {

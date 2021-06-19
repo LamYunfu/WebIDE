@@ -1,3 +1,4 @@
+//file is deprecated
 import { Logger } from "./logger";
 import { Extractor } from "./extractor";
 import { FileMapper } from "./filemapper";

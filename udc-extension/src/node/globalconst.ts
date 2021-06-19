@@ -1,3 +1,4 @@
+//file is deprecated
 import { Logger } from "./util/logger";
 export const hexFileDir = "hexFiles";
 export const getCompilerType = (model: string): string => {

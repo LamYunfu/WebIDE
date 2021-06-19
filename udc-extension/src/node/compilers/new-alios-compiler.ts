@@ -1,3 +1,4 @@
+//  file is deprecated 
 import { getBoardType } from "./../globalconst";
 import { FileMapper } from "./../util/filemapper";
 import { UdcTerminal } from "./../util/udc-terminal";

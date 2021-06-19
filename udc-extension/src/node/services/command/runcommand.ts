@@ -21,7 +21,7 @@ export function bindCommandExecute(bind: interfaces.Bind) {
     .inSingletonScope();
 }
 
-
+//暂时应该没用到，负责执行ldc 的一些指令
 
 @injectable()
 export class RunCommand {
@@ -95,7 +95,7 @@ export class RunCommand {
                   console.log("-----entry-----")
                   this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
                   // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
-                  this.outputResult("Compile scc");
+                  this.outputResult("Compile success");
                  
                   // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
                   resolve("not_query")
@@ -156,7 +156,7 @@ export class RunCommand {
                 console.log(bf.toString());
                 let ob = JSON.parse(bf.toString());
                 if (ob["msg"] == "completed") {
-                  this.outputResult("Compile scc");
+                  this.outputResult("Compile success");
                   this.cis.storeCallInfoInstantly("end", CallSymbol.DNHX);
                   resolve("scc");
                 } else {

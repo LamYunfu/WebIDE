@@ -30,7 +30,7 @@ export const TINYLINEDGECOMPILE_IP = `47.96.155.111`;
 export const RASPBERRY_GCC_IP = DEPLOY_SERVER_IP;
 export const RASPBERRY_GCC_PORT = "12400";
 export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
-
+export const RESEARCHING_API="api.test.tinylink.cn"
 // //本地使用的路径
 export const CONFIGPATH = OS.type()==OS.Type.Windows? "D:/config":"/home/config";
 export const Call_Log_Path = OS.type()==OS.Type.Windows?"D:/call_info.log":"/home/project/call_info.log"

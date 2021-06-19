@@ -5,6 +5,7 @@ export type LastCommitDevice =
   }
   | undefined;
 import { injectable } from "inversify";
+//存储一些烧写时需要用到的数据
 @injectable()
 export class LdcData {
   private _uuid: string = "";

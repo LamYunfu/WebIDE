@@ -1,3 +1,4 @@
+//file is deprecated
 import * as EventEmitor from "events";
 import { Logger } from "./logger";
 

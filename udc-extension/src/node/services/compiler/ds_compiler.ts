@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import { LocalBurnerNotifier } from './../local_burner_notifier/local_burner_notifier';
 import { FileCompressor } from './../tools/file_compressor';
 import * as Hs from "http";
@@ -14,13 +15,14 @@ import { DISTRIBUTEDCOMPILER_IP } from "../../../setting/backend-config";
 import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
 import { ProjectData } from "../../data_center/project_data";
 import { Differ } from '../diff/diff';
+import { ResearchNotifier } from './research_notifier';
 export function bindDistributedCompiler(bind: interfaces.Bind) {
   bind(DistributedCompiler)
     .toSelf()
     .inSingletonScope();
 }
 @injectable()
-export class DistributedCompiler {
+export class DistributedCompiler { //分布式编译器
   //   constructor(@inject(UdcTerminal) readonly udc: UdcTerminal) {}
   constructor(
     @inject(LdcShellInterface) readonly ldcShell: LdcShellInterface,
@@ -28,7 +30,8 @@ export class DistributedCompiler {
     @inject(ProjectData) readonly projectData: ProjectData,
     @inject(FileCompressor) readonly fileCompressor: FileCompressor,
     @inject(LocalBurnerNotifier) readonly lbn:LocalBurnerNotifier,
-    @inject(Differ) readonly diff:Differ
+    @inject(Differ) readonly diff:Differ,
+    @inject(ResearchNotifier) readonly rn :ResearchNotifier
   ) { }
   outputResult(mes: string, type: string = "sys") {
     this.ldcShell.outputResult(mes, type);
@@ -106,13 +109,25 @@ export class DistributedCompiler {
               resolve("error");
               return 
             }
+            
             else if (ob["msg"] == "completed") {
               console.log("-----entry-----")
               this.cis.storeCallInfoInstantly("end", CallSymbol.CCCE);
               // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
-              this.outputResult("Compile scc");
+              this.outputResult("Compile success");
               if(tag){
                 this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+                let url= `/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                this.rn.setURL(url)
+                let xx={
+                  code:0,
+                  message:"ok",
+                  data:{
+                    url:url
+                  }
+
+                }
+                this.lbn.notifyResearch(JSON.stringify(xx))
               }
              
               // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
@@ -122,6 +137,17 @@ export class DistributedCompiler {
             let p;
             if(tag){
               this.lbn.notify(`/download?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
+                let url= `/linklab/compilev2/api/compile/block?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`
+                this.rn.setURL(url)
+                let xx={
+                  code:0,
+                  message:"ok",
+                  data:{
+                    url:url
+                  }
+
+                }
+                this.lbn.notifyResearch(JSON.stringify(xx))
             }
             // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
             console.log("-----eeeee-----")
@@ -218,7 +244,7 @@ export class DistributedCompiler {
     });
     return await p;
   }
-  async queryCompileStatus(path: string, output: string,tag:boolean=false) {
+  async queryCompileStatus(path: string, output: string,tag:boolean=false) {//查询编译状态至编译结束
     console.log("query compile status!")
     let p = new Promise<string>((resolve) => {
       console.log(p);
@@ -243,7 +269,7 @@ export class DistributedCompiler {
             console.log(bf.toString());
             let ob = JSON.parse(bf.toString());
             if (ob["msg"] == "completed") {
-              this.outputResult("Compile scc");
+              this.outputResult("Compile success");
               if(tag){
                 this.lbn.notify(path)
               }

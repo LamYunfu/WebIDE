@@ -1,3 +1,5 @@
+import { OutExperimentSetting } from './outer-experiment-setting';
+import { DeviceViewWidget } from './device-view-widget';
 import { UI_Setting } from './isEnable';
 import { LocalBurnData } from './localburn_data';
 import {
@@ -118,6 +120,11 @@ export namespace UdcCommands {
     id: "udc.menu.local_burn",
     category: UDC_MENU_CATEGORY,
     label: "local_burn",
+  };
+  export const Compile_Save: Command = {
+    id: "udc.menu.compile_save",
+    category: UDC_MENU_CATEGORY,
+    label: "compile save",
   };
   export const local_compile_burn: Command = {
     id: "udc.menu.local_compile_burn",
@@ -269,7 +276,7 @@ export class UdcExtensionCommandContribution
   implements CommandContribution, QuickOpenModel {
   selectDeviceModel = "";
   x: Window | null = null;
-  url: string = ""; 
+  url: string = "";
 
   async onType(
     lookFor: string,
@@ -327,8 +334,13 @@ export class UdcExtensionCommandContribution
     @inject(DrawboardViewService) readonly drawboardFactory: DrawboardViewService,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
     @inject(UI_Setting) readonly ui_Setting:UI_Setting,
+<<<<<<< HEAD
     @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory,
     @inject(OSdevExtensionWidget) protected osDev:OSdevExtensionWidget
+=======
+    @inject(OutExperimentSetting) readonly outExperimentSetting:OutExperimentSetting,
+    @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory
+>>>>>>> temp
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -373,7 +385,19 @@ export class UdcExtensionCommandContribution
               mode: 'cors'
           })
           return;
-        } 
+        } else if( data.name=="research"&&this.outExperimentSetting.expType=="research"){
+          console.log("research!!!")
+          let ob ={
+            code:0,
+            message:"ok",
+            data:{
+              url:data.passwd
+            }
+          }
+          this.udcService.notifyResearcher()
+          window.opener.postMessage(JSON.stringify(ob),"*")        
+          return
+        }     
         else if (data.name == "redirect") {
           // // this.url=data.passwd
           this.ds.openTinyMobile(data.passwd);
@@ -659,6 +683,12 @@ export class UdcExtensionCommandContribution
           });
       },
     });
+    registry.registerCommand(UdcCommands.Compile_Save, {
+      execute: () => {
+        this.outExperimentSetting.expType="research"
+        this.commandRegistry.executeCommand(UdcCommands.local_compile_burn.id)
+      },
+    });
     // registry.registerCommand(UdcCommands.QueryStatus, {
     //     execute: (x: string) => {
     //         this.udcService.queryStatus(x).then((out) => console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" + out))
@@ -841,6 +871,12 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.LocalBurnView.id,
         label: "Local Burn",
+        icon: "x",
+        order: "a_3",
+      });
+      menus.registerMenuAction([...UdcMenus.UDC], {
+        commandId: UdcCommands.Compile_Save.id,
+        label: "Save Binary",
         icon: "x",
         order: "a_3",
       });

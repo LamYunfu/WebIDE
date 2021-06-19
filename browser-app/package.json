@@ -14,6 +14,7 @@
     "@theia/preferences":  "^0.8.0",
     "@theia/terminal":"^0.8.0",
     "@theia/process":  "^0.8.0",
+    "@theia/git":"0.8.0",
     "@theia/editor":  "^0.8.0",
     "@theia/languages":  "^0.8.0",
     "@theia/markers":  "^0.8.0",
@@ -28,10 +29,14 @@
     "new_widget":"0.0.0",
     "esp32_widget":"0.0.0",
     "stm32_widget":"0.0.0",
+<<<<<<< HEAD
     "haas100_widget":"0.0.0",
     "wizard-extension":"0.0.0",
     "os-dev-extension":"0.0.0",
     "guild-page-extension":"0.1.0"
+=======
+    "haas100_widget":"0.0.0"
+>>>>>>> temp
   },
   "devDependencies": {
     

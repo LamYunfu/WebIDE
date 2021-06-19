@@ -1,3 +1,5 @@
+
+//file is deprecated
 import { injectable } from 'inversify';
 import * as fs from 'fs-extra';
 import * as crypto from "crypto"

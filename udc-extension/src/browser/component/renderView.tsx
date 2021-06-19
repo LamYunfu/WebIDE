@@ -28,10 +28,12 @@ import { UdcService } from "../../common/udc-service";
 import {GettingStart} from "./getting-started";
 import { CommandRegistry } from "@theia/core";
 import { AIBox } from "./ai-box";
+import { DeviceViewWidget } from "../device-view-widget";
 // import { OneLinkView } from "./onelink-view";
 // import { CodingInfo } from "./code-issue";
 export namespace View {
   export interface Props {
+    deviceWidget:DeviceViewWidget
     cr:CommandRegistry
     udc:UdcService
     storeCallInfo: (
@@ -290,6 +292,7 @@ export class View extends React.Component<View.Props, View.State> {
   };
 
   async componentWillMount() {
+    this.props.deviceWidget.oes.expType="local_burn"
     $("title").html("WebIDE");
     let _this = this;
     let time = new Date().toISOString().replace(/T|Z/gi, " ");
@@ -313,6 +316,9 @@ export class View extends React.Component<View.Props, View.State> {
         success: function(data) {
           let time = new Date().toISOString().replace(/T|Z/gi, " ");
           _this.props.storeCallInfo(time, "end", CallSymbol.QUIF, 0);
+          if(data.data.isResearch==1){
+            _this.props.deviceWidget.oes.expType="research"
+          }
           $(".userName").text(data.data.uname);                //将用户名显示到webide界面上？可能已经废弃
           ////alert(data.data.JSESSIONID)
           _this.props.setTinyLink(
@@ -374,7 +380,7 @@ export class View extends React.Component<View.Props, View.State> {
             _this.typeDataPool[_this.type][_this.vid] = {};
           }
           console.log(`"VID:${_this.vid}!!!!!!!!!!!!!!!!!!!!!!!!!"`);
-
+          
           switch (_this.type) {
             case "4":
             case "1": {
@@ -560,6 +566,7 @@ export class View extends React.Component<View.Props, View.State> {
 
   componentDidMount() {
     let _this = this;
+    console.log("window.parent:"+window.parent)
     $(".oneOptionDescription").removeClass("skyblueItem");
     $(".resultBoard").text("");
     setInterval(() => $("#timer").text(new Date().toLocaleString()), 1000);

@@ -33,6 +33,7 @@ import { DisplayBoard } from "./component/display-board";
 import { TestWidget } from "./test";
 import { UI_Setting } from "./isEnable";
 import { Upload } from "antd";
+import { OutExperimentSetting } from "./outer-experiment-setting";
 // import { LinkEdgeView } from "./component/linkedge";
 export interface DeviceViewSymbolInformationNode
   extends CompositeTreeNode,
@@ -80,6 +81,7 @@ export class DeviceViewWidget extends TreeWidget {
     @inject(FileTreeWidget) protected readonly ftw: FileTreeWidget,
     @inject(ViewContainer) protected readonly vc: ViewContainer,
     @inject(UI_Setting) protected readonly ui_setting:UI_Setting,
+    @inject(OutExperimentSetting) public oes:OutExperimentSetting
   ) {
     super(treePros, model, contextMenuRenderer);
     this.id = "device-view";
@@ -116,6 +118,7 @@ export class DeviceViewWidget extends TreeWidget {
     return (
       <div style={{ height: "100%" }}>
         <View
+          deviceWidget ={this}
           cr ={this.commandRegistry}
           udc={this.udcService}
           ui_setting={this.ui_setting}
@@ -610,7 +613,6 @@ export class DeviceViewWidget extends TreeWidget {
   virtualOpen = () => {
     this.commandRegistry.executeCommand("iot.plugin.tinylink.unity");
   };
-
   gotoVirtualScene = () => {
     if (
       this.applicationShell.getTabBarFor("main") != null &&

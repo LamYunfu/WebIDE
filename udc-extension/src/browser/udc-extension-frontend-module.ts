@@ -1,3 +1,4 @@
+import { OutExperimentSetting } from './outer-experiment-setting';
 import { UI_Setting } from './isEnable';
 import { LocalBurnData } from './localburn_data';
 import { ViewContainer } from "@theia/core/lib/browser/view-container";
@@ -89,6 +90,7 @@ export default new ContainerModule((bind, _unbind, _isBound) => {
   bind(LampWidget)
     .toSelf()
     .inSingletonScope();
+  bind(OutExperimentSetting) .toSelf().inSingletonScope()
   // bind(LampViewWidgetFactory).toFactory(ctx=>()=>creatLamp(ctx.container))
   bind(WidgetFactory).toService(DeviceViewService);
   bindViewContribution(bind, DeviceViewContribution);

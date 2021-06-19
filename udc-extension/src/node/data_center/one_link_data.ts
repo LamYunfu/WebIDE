@@ -1,5 +1,7 @@
 import { JsonObject, JsonProperty } from 'json2typescript';
 import { injectable } from "inversify";
+
+//智能家居实验定义的config.json 模板
 @JsonObject("OneLinkDataElement")
 export class OneLinkDataElement {
     @JsonProperty("projectName", String)

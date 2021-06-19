@@ -1,3 +1,4 @@
+//file is deprecated
 import { injectable } from "inversify";
 import * as fs from "fs-extra";
 import { Call_Log_Path } from "../../setting/backend-config";

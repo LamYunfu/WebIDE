@@ -1,3 +1,4 @@
+import { ExperimentController } from './problem_controller/experiment_controller/experiment_controller';
 import { Kubedge } from './services/edge/kubedge';
 import { ProjectData } from './data_center/project_data';
 import { DisplayBoardBackEnd } from './services/displayboard/displayboard';
@@ -30,7 +31,11 @@ import { CallInfoStorer } from './services/log/call_info_storer';
 import { BehaviorRecorder } from './services/behavior_recorder/behavior_recorder';
 import { MultiProjectData } from './data_center/multi_project_data';
 import { LdcLogger } from './services/ldc/new_ldc/new_ldc';
+<<<<<<< HEAD
 import { OSTemplate } from './services/file_template/os_template';
+=======
+import { ResearchNotifier } from './services/compiler/research_notifier';
+>>>>>>> temp
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -62,7 +67,12 @@ export class UdcServiceImpl implements UdcService {
     @inject(MultiProjectData) protected mpData: MultiProjectData,
     @inject(Kubedge) readonly kubedge:Kubedge,
     @inject(LdcLogger) protected ldcLogger:LdcLogger,
+<<<<<<< HEAD
   //  @inject(OSTemplate) protected osTemplate:OSTemplate
+=======
+    @inject(ResearchNotifier) protected rn :ResearchNotifier,
+    @inject(ExperimentController) readonly experimentController:ExperimentController
+>>>>>>> temp
   ) { }
   //搜索单个文件
   // searchFile(file_path: string){
@@ -220,7 +230,8 @@ export class UdcServiceImpl implements UdcService {
     this.fileOpener.openFile(filename)
   }
   setCookie(cookie: string): boolean {
-    return this.udcTerminal.setCookie(cookie);
+  this.userInfo.cookie=cookie
+  return this.udcTerminal.setCookie(cookie);
   }
   outputResult(res: string, types?: string) {
     this.udcTerminal.outputResult(res);
@@ -390,5 +401,11 @@ export class UdcServiceImpl implements UdcService {
   //发送信息到LDC后端
   serialPortInput(message:string){
     this.ldcLogger.serialPortInput(message);
+  }
+  notifyResearcher(){
+    this.rn.notify()
+  }
+  setOutExperimentSetting(type:string){
+      this.experimentController.outExperimentSetting=type
   }
 }

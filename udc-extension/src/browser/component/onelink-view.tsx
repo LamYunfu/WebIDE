@@ -77,7 +77,7 @@ export class OneLinkView extends React.Component<OneLinkView.Props, OneLinkView.
         if(this.projectName!=""){
            let res=await this.props.createOnelinkProject(this.projectName,this.props.section["ppid"][0])
            if(res){
-               alert("create project scc")
+               alert("create project success")
            }
         }
         else{
