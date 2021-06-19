@@ -69,7 +69,7 @@ export class  ResearchNotifier{
         let data =new fm();
         let rq=  http.request({
              host:RESEARCHING_API,
-             path:"/research/firmware/webideFirmware",
+             path:"/research/firmware/webideFirmware2",
              method:"POST",             
              headers:{ ...data.getHeaders(),
                     Cookie:this.ui.cookie
