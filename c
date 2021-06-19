@@ -3,11 +3,11 @@ sed -i "s/\r//g" ./deploy.sh
 chmod +x ./clean.sh
 chmod +x ./deploy.sh
 cd new_widget
-yarn build 
+yarn prepare 
 cd ../grove-extension
-yarn build
+yarn prepare
 cd ../drawboard-extension
-yarn build
+yarn prepare
 cd ../esp32_widget
 yarn prepare
 cd ../haas100_widget
@@ -19,11 +19,11 @@ yarn prepare
 ##cd ./plugins/unity
 ##mv unity.theia ../node/unity.theia
 cd ../udc-extension
-yarn build 
+yarn prepare 
 cd ../stm32_widget
 yarn prepare
 cd ../demo 
-yarn build 
+yarn prepare 
 cd ../browser-app
 yarn prepare
 rm browser-app/lib/e817279537a0417d042f62fbb1b99eea.gif
