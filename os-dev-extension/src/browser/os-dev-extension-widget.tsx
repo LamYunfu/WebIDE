@@ -51,7 +51,10 @@ export class OSdevExtensionWidget extends ReactWidget {
         //alert(config_json);
       //  let config = JSON.parse(config_json);
       //  this.editorManager.setRemoteTag(config.osType, config.branch, config.projects[0].projectName);
-        await this.wbs.createProject(JSON.stringify(config_json), JSON.stringify(otherConfig));
+        let result = await this.wbs.createProject(JSON.stringify(config_json), JSON.stringify(otherConfig));
+        if(!result){
+            alert("存在同名项目！");
+        }
         //alert("文件夹创建完毕，开始打开右边的视图");
     }
 
@@ -91,7 +94,7 @@ export class BackendClientImpl implements BackendClient {
 
   //打开文件导航栏
   openExplore(){
-    alert("创建项目后，点击菜单栏View -> Explore打开文件视图");
+    //alert("创建项目后，点击菜单栏View -> Explore打开文件视图");
     //this.commandRegistry.executeCommand("fileNavigator:toggle");
   }
 }

@@ -2156,6 +2156,7 @@ export class View extends React.Component<View.Props, View.State> {
         outputResult={_this.props.outputResult}
         initPidQueueInfo={_this.props.initPidQueueInfo}
         openOSDev={_this.props.openOSDev}
+        openFileView={_this.props.openFileView}
       />
       </MyContext.Provider>
     ) :

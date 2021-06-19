@@ -7,7 +7,7 @@ else if [ "$1" == "my" ]; then
 else if [ "$1" == "pi" ]; then
   ssh pi@192.168.88.31
 else
-    ssh root@118.31.19.202
+    ssh root@47.111.141.133
 fi
 fi
 fi
