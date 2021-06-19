@@ -1,4 +1,4 @@
-import { UdcService } from 'udc-extension/lib/common/udc-service';
+import { UdcService } from '../common/udc-service';
 import { inject, injectable } from "inversify";
 
 @injectable()
