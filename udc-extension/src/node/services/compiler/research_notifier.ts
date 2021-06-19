@@ -62,6 +62,7 @@ export class  ResearchNotifier{
          data.pipe(rq);       
     }
     notifyPath(){//通知科研版在后端服务器拿源码
+        console.log("------------------------notify path")
         let pt = `/root/userWorkspace/${this.ui.username}/${this.ui.username}/${this.pd.projectRootDir}/${this.pd.subProjectArray[0]}`
         let _this=this
         let url =this.url
@@ -84,7 +85,7 @@ export class  ResearchNotifier{
                  console.log("--bk:"+x)
              })
              msg.on("err",()=>{
-                _this.shell.outputResult("Save binary error","sys")
+                _this.shell.outputResult("Save to error","sys")
                 console.log("--err:"+x)
             })
          })
@@ -93,7 +94,7 @@ export class  ResearchNotifier{
          data.append("firewareName",this.pd.projectRootDir)
          data.append("firmwarePath",pt)
          data.append("descriptions","none")
-         data.append("compileType",this.pd.subCompileTypes[0])         
+         data.append("compileType",this.pd.subCompileTypes[0])                 
          data.on("close",()=>{
             console.log("----------------upload to research")
         })      
