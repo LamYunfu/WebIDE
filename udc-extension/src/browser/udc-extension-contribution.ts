@@ -334,13 +334,9 @@ export class UdcExtensionCommandContribution
     @inject(DrawboardViewService) readonly drawboardFactory: DrawboardViewService,
     @inject(LocalBurnData) readonly lbd :LocalBurnData,
     @inject(UI_Setting) readonly ui_Setting:UI_Setting,
-<<<<<<< HEAD
     @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory,
-    @inject(OSdevExtensionWidget) protected osDev:OSdevExtensionWidget
-=======
+    @inject(OSdevExtensionWidget) protected osDev:OSdevExtensionWidget,
     @inject(OutExperimentSetting) readonly outExperimentSetting:OutExperimentSetting,
-    @inject(STM32WidgetFactory) readonly stm32:STM32WidgetFactory
->>>>>>> temp
   ) {
     this.udcWatcher.onConfigLog(
       async (data: { name: string; passwd: string }) => {
@@ -442,6 +438,7 @@ export class UdcExtensionCommandContribution
       let a = log.match("(0E0010)|(0E0011)");             //与Arduino的亮灯进行匹配
       let esp32Match = log.match("(0E0012)|(0E0013)");    //与esp32的开关灯日志进行匹配
       let stm32Match = log.match("rgb");           //与stm32亮灯日志进行匹配
+      let stm32_screen_match = log.match("stm32_screen_display");
       let haas100Lamp = this.hass100WidgetFactory.widget;
       let stm32Lamp = this.stm32.widget;
       //判断是不是HaaS100控制灯亮灭的
@@ -482,7 +479,10 @@ export class UdcExtensionCommandContribution
         console.log(rgb_num.map(String));
         stm32Lamp.lamp.lightChange(rgb_num);
         console.log(rgb_str);
-      } else {
+      } else if(stm32_screen_match != null){
+        let screen_str = log.substr(log.indexOf("stm32_screen_display"));
+        stm32Lamp.lamp.writeOnScreen(screen_str);
+      }else {
         //在arduino开发板显示屏幕上输出内容
         this.udcConsoleSession.appendLine(log);
         log = log.replace(

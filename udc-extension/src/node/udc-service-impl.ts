@@ -31,11 +31,8 @@ import { CallInfoStorer } from './services/log/call_info_storer';
 import { BehaviorRecorder } from './services/behavior_recorder/behavior_recorder';
 import { MultiProjectData } from './data_center/multi_project_data';
 import { LdcLogger } from './services/ldc/new_ldc/new_ldc';
-<<<<<<< HEAD
 import { OSTemplate } from './services/file_template/os_template';
-=======
 import { ResearchNotifier } from './services/compiler/research_notifier';
->>>>>>> temp
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -67,12 +64,9 @@ export class UdcServiceImpl implements UdcService {
     @inject(MultiProjectData) protected mpData: MultiProjectData,
     @inject(Kubedge) readonly kubedge:Kubedge,
     @inject(LdcLogger) protected ldcLogger:LdcLogger,
-<<<<<<< HEAD
   //  @inject(OSTemplate) protected osTemplate:OSTemplate
-=======
     @inject(ResearchNotifier) protected rn :ResearchNotifier,
     @inject(ExperimentController) readonly experimentController:ExperimentController
->>>>>>> temp
   ) { }
   //搜索单个文件
   // searchFile(file_path: string){

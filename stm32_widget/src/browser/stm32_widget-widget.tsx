@@ -71,6 +71,9 @@ export class STM32Widget extends ReactWidget {
             <button style={{marginTop:"428px", backgroundColor:"#5F5F67",borderRadius:"50%", height:"15px",  width:"15px", marginLeft:"33px", border:"none", outline:"none"}} onClick= {this.k2.bind(this)}></button>
         </div>
         {/* <img src={require("../../data/stm32.png")} style={{height:"467px", width:"372px", objectFit:"none"}} /> */}
+
+{/* 
+        <button style = {{marginTop:"500px", marginLeft:"100px"}} onClick={this.testButton.bind(this)}>屏幕显示</button> */}
       </div>
     );
   }
@@ -99,6 +102,10 @@ export class STM32Widget extends ReactWidget {
     //console.log("k2是否被成功点击" + this.stmBackService.sendMessage("K2 key down test"));
     this.udcService.serialPortInput("key2down\r\n");
     //this.lamp.lightChange([0,0,1]);
+  }
+
+  testButton(){
+      this.lamp.writeOnScreen('stm32_screen_display{"color":"63448,31", "content":["打印内容测试测试好吗打印内容测","123456789012345678901234567890","第三行","第四行","第五行","第六行","第七行","第八行","第九行","第十行","第十一行","第十二行","第十三行","第十四行","第十五行","第十六行","第十七行","第十八行","第十九行","第二十行"]}');
   }
 }
 

@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { createTextChangeRange } from "typescript";
 export class Lamp {
   position = [0, 1];
   status = "";
@@ -190,5 +191,63 @@ export class Lamp {
     if (!ctx || !r) return;
     ctx.drawImage(await createImageBitmap(r), 0, 0);
   }
+  
+  /**
+   * 在屏幕位置显示内容
+   * @param something 
+   * @returns 
+   */
+  async writeOnScreen(something: string) {
+    //alert("收到的消息是：" + something);
+    //stm32_screen_display{"color":"63448, 0", "content":["打印内容","第一行","第二行","第三行","第四行","第五行","第六行","第七行","第八行","第九行"]}\
+    //解析显示的内容，获取需要显示的信息
+    let a = something.indexOf('{');
+    let info = something.substr(a);
+    let info_json = JSON.parse(info);
+    let background_color = info_json.color.split(',')[1];
+    let font_color = info_json.color.split(',')[0]
+    let content = info_json.content;
+    //alert("背景颜色是：" + background_color + " 字体颜色是：" + font_color + " 显示内容是：" + content);
+    //设置屏幕背景颜色
+    this.turnOnScreen("#" + Number(background_color).toString(16));
+    let ctx = this.cv.getContext("2d");
+    if (!ctx) return;
+    ctx.fillStyle = "#" + Number(font_color).toString(16);
+    ctx.font= "12px SimSun";//Microsoft YaHei
+    
+    //显示文字
+    for(let i = 0;i < content.length;i++){
+      ctx.fillText(content[i], 97, 100+i*13);
+    }
+    
+    // let ctx = this.cv.getContext("2d");
+    // if (!ctx) return;
+    // //await this.turnOnScreen(color);
+    // let w = this.cv.width;
+    // let h = this.cv.height;
+    // ctx.fillStyle = "white";
+    // ctx.font = "TimesNewRoman";
+    // ctx.fillText(something, w * 0.379, h * 0.499, w * 0.25);
+    // this.screenScheduler = setTimeout(() => {
+    //   //this.turnOffScreen();
+    // }, 1000);
+  }
 
+  async turnOnScreen(screen_color:string) {
+    let ctx = this.cv.getContext("2d");
+    if (!ctx) return;
+    clearTimeout(this.screenScheduler);
+    //alert("屏幕颜色是：" + screen_color);
+    ctx.fillStyle = "black";//screen_color;
+    ctx.fillRect(90, 80, 195, 278);
+    // ctx.drawImage(
+    //   this.screenOn,
+    //   400 * 0.348,
+    //   600 * 0.456,
+    //   400 * 0.307,
+    //   600 * 0.109
+    // );
+  }
+
+  
 }
