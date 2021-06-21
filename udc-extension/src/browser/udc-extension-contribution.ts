@@ -403,20 +403,7 @@ export class UdcExtensionCommandContribution
           // }, 2000);
           return;
         }
-        applicationShell.closeTabs("bottom");
-        // applicationShell.closeTabs("left")
-        console.log(JSON.stringify(data) + "::::::front ");
-        this.commandRegistry.executeCommand(
-          "iot.plugin.tinylink.scence.config",
-          "http://tinylink.cn:12352/tinylink/tinylinkApp/login.php",
-          tmp.name,
-          tmp.passwd
-        );
-        this.commandRegistry.executeCommand(
-          "iot.plugin.tinylink.scence.node",
-          tmp.name,
-          tmp.passwd
-        );
+    
       }
     );
     
