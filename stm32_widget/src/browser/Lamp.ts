@@ -197,12 +197,13 @@ export class Lamp {
    * @param something 
    * @returns 
    */
-  async writeOnScreen(something: string) {
-    //alert("收到的消息是：" + something);
+  public writeOnScreen(something: string) {
+    alert("收到的消息是：" + something);
     //stm32_screen_display{"color":"63448, 0", "content":["打印内容","第一行","第二行","第三行","第四行","第五行","第六行","第七行","第八行","第九行"]}\
     //解析显示的内容，获取需要显示的信息
     let a = something.indexOf('{');
-    let info = something.substr(a);
+    let info = something.substring(a, something.lastIndexOf('}') + 1);
+    console.log("获取到的消息是：" + info);
     let info_json = JSON.parse(info);
     let background_color = info_json.color.split(',')[1];
     let font_color = info_json.color.split(',')[0]
@@ -214,7 +215,7 @@ export class Lamp {
     if (!ctx) return;
     ctx.fillStyle = "#" + Number(font_color).toString(16);
     ctx.font= "12px SimSun";//Microsoft YaHei
-    
+    alert("打印的字符串是：" + content);
     //显示文字
     for(let i = 0;i < content.length;i++){
       ctx.fillText(content[i], 97, 100+i*13);

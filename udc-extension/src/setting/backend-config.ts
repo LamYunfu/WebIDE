@@ -1,7 +1,7 @@
 import { OS } from '@theia/core';
 import { injectable } from "inversify";
 import * as path from "path";
-export const isDeploy=true//
+export const isDeploy=false//
 // export const DEPLOY_SERVER_IP = "10.200.20.5";
 //  export const DEPLOY_SERVER_DOMAIN = "test.tinylink.cn"; 
 export const DEPLOY_SERVER_IP = "120.55.102.225";

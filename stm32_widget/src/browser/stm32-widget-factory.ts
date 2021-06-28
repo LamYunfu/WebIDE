@@ -7,7 +7,7 @@ import { injectable, inject } from "inversify";
 @injectable()
 export class STM32WidgetFactory implements WidgetFactory {
   @inject( STM32Widget)
-  widget:  STM32Widget;
+  public widget:  STM32Widget;
   constructor() {}
   id = STM32Widget.ID;
 

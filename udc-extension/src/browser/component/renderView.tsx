@@ -455,7 +455,7 @@ export class View extends React.Component<View.Props, View.State> {
         },
       });
     }
-    else{                              //教师创建的实验
+    else{                              //教师自定义的实验
       $.ajax({
         headers: {
           accept: "application/json",
