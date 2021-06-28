@@ -93,4 +93,5 @@ export interface UdcService {
   serialPortInput: (message:string) => void
   notifyResearcher:()=>void
   setOutExperimentSetting:(type:string)=>void
+  setCompilerTag:(boolean)=>void
 }

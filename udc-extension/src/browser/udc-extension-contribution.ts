@@ -677,7 +677,7 @@ export class UdcExtensionCommandContribution
     });
     registry.registerCommand(UdcCommands.Compile_Save, {
       execute: () => {
-        this.outExperimentSetting.expType="research"
+        this.udcService.setCompilerTag(true)
         this.commandRegistry.executeCommand(UdcCommands.local_compile_burn.id)
       },
     });
@@ -868,7 +868,7 @@ export class UdcExtensionMenuContribution implements MenuContribution {
       });
       menus.registerMenuAction([...UdcMenus.UDC], {
         commandId: UdcCommands.Compile_Save.id,
-        label: "Save Binary",
+        label: "Compile and Save Binary",
         icon: "x",
         order: "a_3",
       });
