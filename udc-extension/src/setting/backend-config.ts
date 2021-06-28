@@ -32,14 +32,14 @@ export const RASPBERRY_GCC_PORT = "12400";
 export const DISTRIBUTEDCOMPILER_IP = "kubernetes.tinylink.cn";
 export const RESEARCHING_API="api.test.tinylink.cn"
 // //本地使用的路径
-// export const CONFIGPATH = OS.type()==OS.Type.Windows? "D:/config":"/home/config";
-// export const Call_Log_Path = OS.type()==OS.Type.Windows?"D:/call_info.log":"/home/project/call_info.log"
-// export const ROOTPATH=OS.type()==OS.Type.Windows?"D:/all":"/home/project"
+export const CONFIGPATH = OS.type()==OS.Type.Windows? "D:/config":"/home/config";
+export const Call_Log_Path = OS.type()==OS.Type.Windows?"D:/call_info.log":"/home/project/call_info.log"
+export const ROOTPATH=OS.type()==OS.Type.Windows?"D:/all":"/home/project"
 
 //服务器上使用的路径
-export const ROOTPATH="/home/project"
-export const Call_Log_Path="/home/project/call_info.log"
-export const CONFIGPATH="/home/config"
+// export const ROOTPATH="/home/project"
+// export const Call_Log_Path="/home/project/call_info.log"
+// export const CONFIGPATH="/home/config"
 
 @injectable() 
 export class RootDirPath {
