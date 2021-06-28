@@ -19,6 +19,10 @@ import {
   QueueBurnElem,
 } from "udc-extension/lib/node/data_center/program_data";
 import { LdcClientControllerInterface } from "udc-extension/lib/node/services/ldc/interfaces/ldc_client_controller_interface";
+import { OS } from "@theia/core";
+import * as Path from "path";
+import * as Arc from "archiver";
+//import { id } from "rhea";
 //import URI from "@theia/core/lib/common/uri";
 
 //import URI from "@theia/core/lib/common/uri";
@@ -84,10 +88,10 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
         //打开文件视图 
         this.client.openExplore();
         //初始化项目
-        shell.cd(this._rootDir);
-        await shell.exec("git init");
-        await shell.exec("git add .");
-        await shell.exec(`git commit -m "start project"`);
+        // shell.cd(this._rootDir);
+        // await shell.exec("git init");
+        // await shell.exec("git add .");
+        // await shell.exec(`git commit -m "start project"`);
         
         return true;
     }
@@ -362,21 +366,21 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
         return true
       }else{
         console.log("查询的地址是：" + x);
-      //  let result = await this.queryCompileStatus(x);
-        // if(result == "scc"){
-        //   // 停止waiting提示
-        //    this.waitingIndicator.unRegister();
-        //    this.outputResult("Command burning")
-        //    // 又开始等待
-        //    this.waitingIndicator.register()
-        //    //烧写
-        //    let result = await this.burn();
-        //    //烧写成功
-        //    this.waitingIndicator.unRegister()
-        //    return result
-        // }else{
-        //   return false;
-        // }
+       let result = await this.queryCompileStatus(x);
+        if(result == "scc"){
+          // 停止waiting提示
+           this.waitingIndicator.unRegister();
+           this.outputResult("Command burning")
+           // 又开始等待
+           this.waitingIndicator.register()
+           //烧写
+           let result = await this.burn();
+           //烧写成功
+           this.waitingIndicator.unRegister()
+           return result
+        }else{
+          return false;
+        }
       }
         
       
@@ -394,20 +398,21 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
          // console.log("远程烧写文件");
         // console.log("当前根路径是：" + this._rootDir);
         //生成.patch文件
-        shell.cd(this._rootDir);
-        shell.exec("git diff>success.patch");
+        // shell.cd(this._rootDir);
+        // shell.exec("git diff>success.patch");
         //shell.exec("mkdir test");
         // console.log("生成success.patch文件完毕");
-        let patch_uri = path.join(this._rootDir, "success.patch");
+        //let patch_uri = path.join(this._rootDir, "success.patch");
         // console.log("是否存在success.patch文件？" + fs.existsSync(patch_uri))
         
          //获取patch文件内容
-        let patchData = fs.readFileSync(patch_uri);
+        //let patchData = fs.readFileSync(patch_uri);
         console.log("---compile:" + path)
         let ha = Ha.createHash("sha1");
-        // let tp =await this.archiveFile(this._rootDir);
-        // let fileData = fs.readFileSync(tp);
-        ha.update(patchData);
+        let tp =await this.archiveFile(this._rootDir);
+       // return;
+        let fileData = fs.readFileSync(tp);
+        ha.update(fileData);
         //计算哈希值
         let fha = ha.digest("hex");
         this._filehash = fha;
@@ -430,7 +435,7 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
         //'parameters={"filehash":"8bfc2a18e6b72e632c5068ea61d74680c349c66d", "boardType":"STM32F103C8", "compileType":"stm32-hal", "branch":"stm32-hal"};
         console.log("组装好后向后端传递的参数是：" + JSON.stringify(parameters));
         fm.append("parameters", JSON.stringify(parameters));
-        fm.append("patch", patchData, "success.patch");
+        fm.append("patch", fileData, "file.zip");
         
         console.log("请求头是：" + JSON.stringify(fm.getHeaders()));
      //   fs.removeSync(patch_uri);
@@ -566,9 +571,11 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
     //   burnElems.push(be);
     // }
     let be = this.programBurnDataFactory.produceQueueBurnElem();
-    be.address = this._config.projects[0].program.address;
-    be.runtime = this._config.projects[0].program.runtime;
-    be.model = this._config.projects[0].program.model;
+    let config = JSON.parse(this._config)
+    //console.log("配置文件本身是" +config.projects[0].program.address);
+    be.address = config.projects[0].program.address;
+    be.runtime = config.projects[0].program.runtime;
+    be.model =  config.projects[0].program.model;
     be.filehash = this._filehash;
     burnElems.push(be);
     
@@ -579,45 +586,76 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
     //this.dService.refreshMultiData()
     return await this.lcc.burn(skt);
   }
-  //   async archiveFile( path: string){//打包源代码
-  //     let tp = Path.join(this.generateTempFilePath());
-  //     // if(this.projectData.modifyOSCore){
-  //     //   await this.diff.getZipFile(path,tp)
-  //     // }else{
-  //       console.log("------tp:" + tp)
-  //       console.log("arcfile:" + tp);
-  //       let ws = fs.createWriteStream(tp, { encoding: "binary" });
-  //       let ps = new Promise<void>((res) => {
-  //         ws.on("close", () => {
-  //           res();
-  //         });
-  //       });
-  //       let arc = Arc.create("zip");
-  //       arc.directory(path, "/");
-  //       arc.pipe(ws);
-  //       await arc.finalize();
-  //       await ps;
-  //     // }  
-  //     return tp
-  // }
+
+  /**
+   * 将一个文件夹中非空的代码复制到另外一个文件夹中
+   * @param path 源文件夹目录
+   */
+  async fileCopy(source:string, desc:string){
+      //console.log("源路径是：" + source + " 目的路径是：" + desc);
+      let paths = fs.readdirSync(source);
+      paths.forEach((path) => {
+         let _src = Path.join(source, path);
+         let _dst = Path.join(desc, path);
+         var stat = fs.lstatSync(_src);
+         if(stat.isFile()){
+             if(path != "config.json" && stat.size > 0){
+                  console.log("改变的文件是：" + _src);
+                  if(!fs.existsSync(desc)){
+                     fs.mkdirSync(desc, {recursive: true});
+                  }
+                  let readable = fs.readFileSync(_src);
+                  fs.writeFileSync(_dst, readable);
+             }
+         }else{
+             this.fileCopy(_src, _dst);
+         }
+      })
+  }
+
+  async archiveFile( path: string){//打包源代码
+      let tmpPath = Path.join(this.generateTempFilePath());
+      //console.log("临时文件夹是：" + tmpPath);
+      fs.mkdirSync(tmpPath);
+      this.fileCopy(path, tmpPath);
+      let tp = Path.join(this.generateTempFilePath());
+      // if(this.projectData.modifyOSCore){
+      //   await this.diff.getZipFile(path,tp)
+      // }else{
+        console.log("------tp:" + tp)
+        console.log("arcfile:" + tp);
+        let ws = fs.createWriteStream(tp, { encoding: "binary" });
+        let ps = new Promise<void>((res) => {
+          ws.on("close", () => {
+            res();
+          });
+        });
+        let arc = Arc.create("zip");
+        arc.directory(tmpPath , "/");
+        arc.pipe(ws);
+        await arc.finalize();
+        await ps;  
+      // }  
+      return tp
+  }
   
-  // generateTempFilePath(): string {
-  //   if (OS.Type.Windows == OS.type()) {
-  //     return path.join(
-  //       "d://tmp",
-  //       Math.random()
-  //         .toString()
-  //         .substring(3, 15)
-  //     );
-  //   } else {
-  //     return path.join(
-  //       "/tmp",
-  //       Math.random()
-  //         .toString()
-  //         .substring(3, 15)
-  //     );
-  //   }
-  // }
+  generateTempFilePath(): string {
+    if (OS.Type.Windows == OS.type()) {
+      return path.join(
+        "d://tmp",
+        Math.random()
+          .toString()
+          .substring(3, 15)
+      );
+    } else {
+      return path.join(
+        "/tmp",
+        Math.random()
+          .toString()
+          .substring(3, 15)
+      );
+    }
+  }
 
     dispose(): void {
         // do nothing

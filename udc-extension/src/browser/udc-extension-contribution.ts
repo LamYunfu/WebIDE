@@ -428,6 +428,8 @@ export class UdcExtensionCommandContribution
       let stm32_screen_match = log.match("stm32_screen_display");
       let haas100Lamp = this.hass100WidgetFactory.widget;
       let stm32Lamp = this.stm32.widget;
+      //console.log("收到的消息是：" + log);
+      //console.log("是否已经匹配：" + stm32_screen_match);
       //判断是不是HaaS100控制灯亮灭的
       let n = log.search(/LED\s[1-5]/);
       if(n != -1){
@@ -468,7 +470,10 @@ export class UdcExtensionCommandContribution
         console.log(rgb_str);
       } else if(stm32_screen_match != null){
         let screen_str = log.substr(log.indexOf("stm32_screen_display"));
+        console.log("收到的子串是：" + screen_str);
+        console.log("是否有stm32Lamp灯对象：" + stm32Lamp.lamp);
         stm32Lamp.lamp.writeOnScreen(screen_str);
+        //stm32Lamp.lamp.lightChange("[0,0,1]");
       }else {
         //在arduino开发板显示屏幕上输出内容
         this.udcConsoleSession.appendLine(log);

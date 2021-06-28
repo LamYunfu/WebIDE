@@ -13,7 +13,7 @@ export class STM32Widget extends ReactWidget {
   static readonly LABEL = "Display STM32";
   ref: React.RefObject<HTMLCanvasElement>;
   iniImg: Blob; 
-  lamp: Lamp;
+  public lamp: Lamp;
   @inject(MessageService) protected readonly messageService: MessageService;
   @inject(STM32BackendServiceSymbol) stmBackService:STM32BackendService;
   @inject(UdcService) udcService:UdcService;
@@ -72,8 +72,8 @@ export class STM32Widget extends ReactWidget {
         </div>
         {/* <img src={require("../../data/stm32.png")} style={{height:"467px", width:"372px", objectFit:"none"}} /> */}
 
-{/* 
-        <button style = {{marginTop:"500px", marginLeft:"100px"}} onClick={this.testButton.bind(this)}>屏幕显示</button> */}
+
+        <button style = {{marginTop:"500px", marginLeft:"100px"}} onClick={this.testButton.bind(this)}>屏幕显示</button>
       </div>
     );
   }
