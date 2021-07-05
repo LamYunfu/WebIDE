@@ -74,7 +74,11 @@ export class BackendClientImpl implements BackendClient {
     protected readonly commandRegistry: CommandRegistry
    //打开文件的工作空间
    openWorkSpace = async (urlStr: string) => {
+       if(urlStr.indexOf("home") != -1){
+
+       }else{
         urlStr = "/" + urlStr;
+       }
         // alert(urlStr);
         if (
         decodeURI(window.location.href)
@@ -85,6 +89,7 @@ export class BackendClientImpl implements BackendClient {
             .pop() != urlStr.split("\\").pop()
         )
         //alert("so baby pull closer in the back seat");
+        alert("打开工作空间是：" + urlStr);
         await this.ws.open(new URI(urlStr), { preserveWindow: true });
         //return;
         //关掉之前所有打开的文件
