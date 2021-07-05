@@ -88,8 +88,7 @@ export class BackendClientImpl implements BackendClient {
             .split("\\")
             .pop() != urlStr.split("\\").pop()
         )
-        //alert("so baby pull closer in the back seat");
-        alert("打开工作空间是：" + urlStr);
+        //alert("打开工作空间是：" + urlStr);
         await this.ws.open(new URI(urlStr), { preserveWindow: true });
         //return;
         //关掉之前所有打开的文件
