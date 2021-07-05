@@ -90,6 +90,17 @@ export class BackendClientImpl implements BackendClient {
         )
         //alert("打开工作空间是：" + urlStr);
         await this.ws.open(new URI(urlStr), { preserveWindow: true });
+
+        let currentTabs = this.applicationShell.getWidgets('main');
+        if(currentTabs){
+          for(let i = 0;i < currentTabs.length;i++){
+            let thisId = currentTabs[i].id;
+
+            if(thisId.includes("System")){
+              currentTabs[i].close();
+            }
+          }
+        }
         //return;
         //关掉之前所有打开的文件
         //alert("the workspace has been opened successfully!");
