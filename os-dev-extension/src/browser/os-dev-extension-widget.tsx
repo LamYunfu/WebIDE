@@ -107,6 +107,10 @@ export class BackendClientImpl implements BackendClient {
         //this.applicationShell.closeTabs("main");
   };
 
+  async openShell(){
+    await this.commandRegistry.executeCommand("udc:shell:toggle");
+  }
+
   //打开文件导航栏
   openExplore(){
     //alert("创建项目后，点击菜单栏View -> Explore打开文件视图");

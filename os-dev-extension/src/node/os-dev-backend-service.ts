@@ -363,6 +363,7 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
      */
     async remoteBurn(){
       //开始waiting
+      await this.client.openShell();
       this.waitingIndicator.register()
       let x = await this.upload();
       if (x == "error") {

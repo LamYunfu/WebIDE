@@ -16,4 +16,5 @@ export const BackendClient = Symbol('BackendClient');
 export interface BackendClient {
     openWorkSpace(urlStr:string):void;
     openExplore():void;
+    openShell():void;
 }
