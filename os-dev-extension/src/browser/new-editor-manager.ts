@@ -37,13 +37,13 @@ export class CustomEditorManager extends EditorManager {
         if(uri.toString().includes("SystemDev")){
             //先从远端下载文件
             let path_uri:string = uri.toString();
-            //console.log("从远端下载文件 " + uri.toString()); 
+            console.log("从远端下载文件 " + uri.toString()); 
             //获取文件路径
-            let a = path_uri.indexOf("/");
+            let a = path_uri.indexOf("SystemDev");
             let b = path_uri.indexOf("/", a+1);
             let c = path_uri.indexOf("/", b+1);
-            let d = path_uri.indexOf("/", c+1);
-            let file_path = path_uri.substr(d+1);
+            //let d = path_uri.indexOf("/", c+1);
+            let file_path = path_uri.substr(c+1);
             console.log("截取的文件路径为：" + file_path);
             //下载该文件
             //console.log("是否已经注入了后端变量" + this.wbs.toString());

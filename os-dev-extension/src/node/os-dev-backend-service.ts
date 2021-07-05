@@ -286,6 +286,7 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
         let param_post = {"name":"stm32_gcc", "version":"stm32-std", "path":"test.c"};
         param_post["path"] = file_path;
         //从config.json中获取库的名称和分支信息
+        console.log("下载的单个文件路径是：" + file_path);
         let root_dir = uri.substr(8);
         let file_dir = root_dir;
         //console.log("目录是：" + root_dir);
