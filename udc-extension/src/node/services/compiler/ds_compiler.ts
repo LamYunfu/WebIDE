@@ -16,6 +16,7 @@ import { LdcShellInterface } from "../ldc_shell/interfaces/ldc_shell_interface";
 import { ProjectData } from "../../data_center/project_data";
 import { Differ } from '../diff/diff';
 import { ResearchNotifier } from './research_notifier';
+import { CompilerTag } from './compiler_tag';
 export function bindDistributedCompiler(bind: interfaces.Bind) {
   bind(DistributedCompiler)
     .toSelf()
@@ -31,7 +32,8 @@ export class DistributedCompiler { //分布式编译器
     @inject(FileCompressor) readonly fileCompressor: FileCompressor,
     @inject(LocalBurnerNotifier) readonly lbn:LocalBurnerNotifier,
     @inject(Differ) readonly diff:Differ,
-    @inject(ResearchNotifier) readonly rn :ResearchNotifier
+    @inject(ResearchNotifier) readonly rn :ResearchNotifier,
+    @inject(CompilerTag) readonly ct:CompilerTag
   ) { }
   outputResult(mes: string, type: string = "sys") {
     this.ldcShell.outputResult(mes, type);
@@ -127,7 +129,10 @@ export class DistributedCompiler { //分布式编译器
                   }
 
                 }
-                this.lbn.notifyResearch(JSON.stringify(xx))
+                if(this.ct.isCompileAndSaveBinary){
+                  this.ct.isCompileAndSaveBinary=false
+                  this.lbn.notifyResearch(JSON.stringify(xx))
+                }              
               }
              
               // this.lbn.notify("http://localhost:8827"+ `/linklab/compilev2/api/compile/block/status?filehash=${fha}&boardtype=${boardType}&compiletype=${compileType}`)
@@ -147,7 +152,10 @@ export class DistributedCompiler { //分布式编译器
                   }
 
                 }
-                this.lbn.notifyResearch(JSON.stringify(xx))
+                if(this.ct.isCompileAndSaveBinary){
+                  this.ct.isCompileAndSaveBinary=false
+                  this.lbn.notifyResearch(JSON.stringify(xx))
+                }          
             }
             // this.lbn.notify("http://192.168.190.224:8827"+ `/download?filehash=${fha}&boardtype=${boardType}`)
             console.log("-----eeeee-----")

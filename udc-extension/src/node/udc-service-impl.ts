@@ -33,6 +33,7 @@ import { MultiProjectData } from './data_center/multi_project_data';
 import { LdcLogger } from './services/ldc/new_ldc/new_ldc';
 import { OSTemplate } from './services/file_template/os_template';
 import { ResearchNotifier } from './services/compiler/research_notifier';
+import { CompilerTag } from './services/compiler/compiler_tag';
 @injectable()
 export class UdcServiceImpl implements UdcService {
   constructor(
@@ -66,7 +67,8 @@ export class UdcServiceImpl implements UdcService {
     @inject(LdcLogger) protected ldcLogger:LdcLogger,
   //  @inject(OSTemplate) protected osTemplate:OSTemplate
     @inject(ResearchNotifier) protected rn :ResearchNotifier,
-    @inject(ExperimentController) readonly experimentController:ExperimentController
+    @inject(ExperimentController) readonly experimentController:ExperimentController,
+    @inject(CompilerTag) readonly ct:CompilerTag
   ) { }
   //搜索单个文件
   // searchFile(file_path: string){
@@ -401,5 +403,8 @@ export class UdcServiceImpl implements UdcService {
   }
   setOutExperimentSetting(type:string){
       this.experimentController.outExperimentSetting=type
+  }
+  setCompilerTag(value:boolean){
+    this.ct.isCompileAndSaveBinary=value
   }
 }
