@@ -290,11 +290,13 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
         let root_dir = uri.substr(8);
         let file_dir = root_dir;
         //console.log("目录是：" + root_dir);
-        let a = root_dir.indexOf("SystemDev\\");
+        //let a = root_dir.indexOf("SystemDev\\");
+        let a = root_dir.indexOf("SystemDev");
         let b = root_dir.indexOf("/", a+1)
-        root_dir = root_dir.substr(0,b);
+        let c = root_dir.indexOf("/", b+1);
+        root_dir = root_dir.substr(0,c);
         let config_path = path.join(root_dir, "config.json");
-        console.log("文件根目录是：" + config_path);
+        console.log("config.json文件根目录是：" + config_path);
         //读取config.json文件中的内容，获取库信息和版本信息
         let config_json = fs.readFileSync(config_path);
         let config:any = JSON.parse(config_json.toString());
