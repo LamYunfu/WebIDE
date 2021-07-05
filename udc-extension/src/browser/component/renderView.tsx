@@ -2121,10 +2121,10 @@ export class View extends React.Component<View.Props, View.State> {
         showLocalBurn={_this.props.showLocalBurn}
       />
     </MyContext.Provider>
-    ):  this.state.viewType == "15" ? (
+    ): (this.state.viewType == "15") ? (
       // this.state.viewType == "5" ?
       <GettingStart openGettingStartPage={this.props.openGettingStartPage}/>
-    ): (this.state.viewType ) == "18" ? (
+    ): (this.state.viewType  == "18") ? (
       //自由编程
       <MyContext.Provider
         value={{
