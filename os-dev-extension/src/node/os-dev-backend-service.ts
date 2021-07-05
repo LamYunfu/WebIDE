@@ -22,6 +22,7 @@ import { LdcClientControllerInterface } from "udc-extension/lib/node/services/ld
 import { OS } from "@theia/core";
 import * as Path from "path";
 import * as Arc from "archiver";
+import { convertToObject } from "typescript";
 //import { id } from "rhea";
 //import URI from "@theia/core/lib/common/uri";
 
@@ -61,7 +62,7 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
         let tmp = path.join(ROOTPATH, "SystemDev");
         fs.existsSync(tmp) ? "" : fs.mkdirSync(tmp);
         let uri = path.join(tmp, folderName);
-        //console.log("路径是：" + uri);
+        console.log("路径是：" + uri);
         //创建文件夹
         if(fs.existsSync(uri)){
           return false; 
@@ -84,6 +85,7 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
         // await this.downLoadGit(git_uri, config.osType, config.branch);
         //打开调用前端方法文件夹工作空间，在右边显示
         uri.replace(/\\/g,"\/");
+        console.log("打开工作空间的路径是" + uri);
         this.client.openWorkSpace(uri);
         //打开文件视图 
         this.client.openExplore();
