@@ -18,6 +18,7 @@ export class LdcClientController implements LdcClientControllerInterface {
     @inject(LdcShellInterface) protected ldcShell: LdcShellInterface,
     @inject(EventCenter) protected ec: EventCenter
   ) { }
+  burnLibrary: (ske: Skeleton, config: string) => Promise<boolean>;
   isConnected() {
     return this.sc.isConnected()
   }

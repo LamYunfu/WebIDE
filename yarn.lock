@@ -1355,7 +1355,7 @@
     uuid "^3.2.1"
     zip-dir "^1.0.2"
 
-"@theia/git@^0.8.0":
+"@theia/git@0.8.0", "@theia/git@^0.8.0":
   version "0.8.0"
   resolved "https://registry.npm.taobao.org/@theia/git/download/@theia/git-0.8.0.tgz#aefbda4db28a530993271068095d09b8ce2e69fe"
   integrity sha1-rvvaTbKKUwmTJxBoCV0JuM4uaf4=

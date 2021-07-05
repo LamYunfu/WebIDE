@@ -222,6 +222,102 @@ export class LdcLogger implements LdcClientControllerInterface ,FileServerInterf
         }
         return true;
     }
+
+    /**
+     * 库文件烧写,构造包的方式和普通实验的构包方式不太一样，
+     * 由于没有在一开始创建的时候使用init方法，所以pdata内容为空，这些数据直接从config.json中获取传输过来，主要放在传入的config中
+     * @param skelton 烧写内容
+     * @param config 其他构包的内容
+     * @returns 
+     */
+    async burnLibrary(skelton:Skeleton, config:string):Promise<boolean>{
+        //console.log("配置文件是：" + config);
+        let tag = await this.prepare()
+        if (!tag) {
+            this.outputResult(" User doesn't not login", "err")
+        }
+        console.log("new_ldc burn ");
+        let tasks: TaskItem[] = [];
+        let ps = skelton.program;
+        if (ps == undefined || ps.length == 0) {
+            return false;
+        }
+        let config_parse = JSON.parse(config);
+        for (let i in ps) {
+            let item = ps[i];
+            //构包
+            tasks.push({
+                boardname: config_parse.projects[0].program.model,
+                deviceid: "",
+                clientid: "",
+                runtime: item.runtime!,
+                filehash: (await this.uploadToLdcLib(item.filehash!,config_parse.serverType,config_parse.serverType,config_parse.branch,i))!,
+                taskindex: parseInt(i) + 1
+            })
+        }
+
+        console.log("烧写的参数是：" +  JSON.stringify({ tasks: tasks }));
+        let p = await new Promise<boolean>((bk) => {
+            let request = http.request(
+                {
+                    method: "POST",
+                    hostname: this.loginHostName,
+                    path: this.burnPath,
+                    headers: {
+                        Authorization: this.authorization,
+                    }
+                }
+                ,
+                (res) => {
+                    let tmp: Buffer | undefined = undefined
+                    res.on("data", (data) => {
+                        if (tmp == undefined) {
+                            tmp = data
+                        } else {
+                            tmp = Buffer.concat([tmp, data])
+                        }
+                    })
+                    res.on("close", () => {
+                        let raw = tmp!.toString()
+                        let json = JSON.parse(raw);
+                        console.log("程序烧写的结果是：" + raw);
+                        if (json["code"] == 0) {
+                            // this.outputResult(raw)
+                            bk(true)
+                        } else {
+                            // this.outputResult(json["msg"])
+                            bk(false)
+                        }
+                    })
+                }
+            )
+            let d = JSON.stringify({ tasks: tasks });
+            console.log(d);
+            request.write(d)
+            request.end()
+        }
+        )
+        return true
+    }
+
+    /**
+     * 从ldc下载编译好的库代码二进制文件
+     * @param hash hash校验值
+     * @param boardType 开发板类型
+     * @param deviceType 设备类型
+     * @param compileType 编译类型
+     * @param index 
+     * @returns 
+     */
+    async uploadToLdcLib(hash: string, boardType: string,deviceType:string ,compileType: string,index:string=""){
+        let buff = await this.downloadHex(hash,boardType,compileType) 
+        if(!buff){
+            console.log("buff is null");
+            return ""
+        }
+        return await this.uploadHex(buff,deviceType)
+    }
+
     async burn(skelton: Skeleton): Promise<boolean> {
         let tag = await this.prepare()
         if (!tag) {

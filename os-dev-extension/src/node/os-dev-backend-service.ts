@@ -376,7 +376,9 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
            //烧写
            let result = await this.burn();
            //烧写成功
+           console.log("已经烧写成功");
            this.waitingIndicator.unRegister()
+           this.outputResult("Burning Succeed!");
            return result
         }else{
           return false;
@@ -580,11 +582,12 @@ export class OSdevBackendServiceImpl implements OSdevBackendService {
     burnElems.push(be);
     
     // 一个skt对象里面包含多个be对象，skt代表的是一次实验的一组烧写对象
-    let skt = this.programBurnDataFactory.produceAdhocSketon();
-    skt.pid = "0000";//projectData.pid;
+    let skt = this.programBurnDataFactory.produceQueueSketon();
+    skt.pid = "1000";//projectData.pid;
     skt.program = burnElems;
     //this.dService.refreshMultiData()
-    return await this.lcc.burn(skt);
+    console.log("开始烧写代码" + JSON.stringify(skt));
+    return await this.lcc.burnLibrary(skt, this._config);
   }
 
   /**

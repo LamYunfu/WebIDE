@@ -9,4 +9,5 @@ export interface LdcClientControllerInterface {
   disconnect: () => Promise<boolean>;
   isConnected: () => boolean
   burn: (ske: Skeleton) => Promise<boolean>;
+  burnLibrary:(ske:Skeleton, config:string) => Promise<boolean>;
 }

@@ -279,10 +279,11 @@ export class ServerConnection implements ServerConnectionInterface {
   };
   async program(ske: Skeleton): Promise<boolean> {
     try {
-      console.log(JSON.stringify(ske))
+      console.log("烧写的内容是：" + JSON.stringify(ske))
       this.cis.storeCallInfoInstantly("start", CallSymbol.LDDP);
       this.sendPacket(Packet.MULTI_DEVICE_PROGRAM, JSON.stringify(ske));
       return true;
+      
     } catch (error) {
       this.outputResult(error,"err")
       return false;
